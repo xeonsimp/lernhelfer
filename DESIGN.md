@@ -163,7 +163,7 @@ Zwei Papiertöne, zwei Tinten, ein Signal; im Dunkelmodus tauschen Papier und Ti
 - **Druckerschwärze** (tinte): Text, alle Linien, gefüllte Knöpfe, das Ticker-Band, Fokusring, Textauswahl. Die eigentliche Markenfarbe ist die Druckfarbe.
 
 ### Secondary
-- **Signal-Bordeaux** (bordeaux) mit **Bordeaux-Papier** (auf-bordeaux) als Schrift darauf: ausschließlich die nächste offene Frist, im Ticker-Eintrag und in der Terminzeile. Kontrast 8.1:1.
+- **Signal-Bordeaux** (bordeaux) mit **Bordeaux-Papier** (auf-bordeaux) als Schrift darauf: ausschließlich die nächste offene Frist, im Ticker-Eintrag, in der Terminzeile und in deren Meldung. Kontrast 8.1:1.
 
 ### Neutral
 - **Lachspapier** (papier): Seitengrund, Eingabefelder, Vorderseite der Karteikarte, Schrift auf Druckerschwärze.
@@ -248,7 +248,16 @@ Gesetzt wie ein Druckvermerk: Rahmen aus Tinte, kein Radius.
 22px Quadrat, 1.5px Rahmen, kein Radius. Abgehakt = ausgefüllt mit Tinte und 4px Papierrand innen, wie ein angekreuztes Wahlfeld. In der Bordeaux-Zeile invertiert (Rahmen und Füllung in Bordeaux-Papier). Erledigte Fristen werden in Sepia-Tinte durchgestrichen.
 
 ### Fristen-Ticker (Signatur)
-Ein randabfallendes Band in Druckerschwärze mit Papier-Schrift, nur mit offenen Fristen: Code in Versalien 850/wdth 75, Titel, Datum, „Frist in n Tagen“. Einträge durch 1.5px-Senkrechte in 30 % Papier getrennt; die nächste Frist trägt Bordeaux. Das Band ist für eine nahtlose Schleife mindestens auf acht Einträge pro Hälfte aufgefüllt und läuft linear (7s pro Eintrag). Antippen, Hover oder Fokus hält es an; bei reduzierter Bewegung steht es und lässt sich seitlich scrollen. Nur auf dem Titelblatt.
+Ein randabfallendes Band in Druckerschwärze mit Papier-Schrift, nur mit offenen Fristen: Code in Versalien 850/wdth 75, Titel, Datum, „Frist in n Tagen“. Einträge durch 1.5px-Senkrechte in 30 % Papier getrennt; die nächste Frist trägt Bordeaux. Das Band ist für eine nahtlose Schleife mindestens auf acht Einträge pro Hälfte aufgefüllt und läuft linear (8.5s pro Eintrag). Jeder Eintrag ist ein Knopf und öffnet die Meldung zum Termin. Hover (nur bei echten Zeigegeräten) oder Tastaturfokus hält das Band an; auf dem Touchscreen läuft es immer weiter. Bei reduzierter Bewegung steht es und lässt sich seitlich scrollen. Nur auf dem Titelblatt.
+
+### Meldung (Termin-Details)
+Modaler `<dialog>` auf Papier mit 3px-Rahmen und 8px-Kopflinie (Bordeaux, wenn es die nächste Frist ist). Dachzeile „FACH · CODE · FRIST“ in Archivo-Versalien, Titel in Source Serif 800, darunter eine Faktentabelle zwischen 1.5px-Linien (Wann mit Countdown, Wo, Art), dann der Info-Text aus der Ausgabe und eine Knopfreihe: Erledigt-Kästchen (nur Fristen), „Zur Fach-Ausgabe“, „Schließen“. Öffnet aus dem Ticker und aus jeder Terminzeile; Klick auf den Hintergrund oder Esc schließt.
+
+### Formeln
+LaTeX aus den Ausgaben wird mit KaTeX als MathML gesetzt; der Browser nimmt seine eigene Mathe-Schrift. Abgesetzte Formeln 1.15em mit eigenem waagrechten Scrollbereich, damit lange Gleichungen am Handy nicht die Spalte sprengen.
+
+### Druckkosten
+Wie der Preis im Zeitungskopf: die Datumszeile endet mit „Druckkosten Monat x $ · Guthaben y $“ (OpenRouter `/key` und `/credits`), der Kopf jeder Ausgabe mit „Preis x $“.
 
 ### Ressort-Spalte und Aufmacher
 Keine Karte: eine Spalte unter einer 3px-Linie mit Ressortname (Headline), Schlagzeile (Serif), Anriss, Meta-Zeile („Nr. n · Datum · n Begriffe“) und einem Rahmenknopf am Spaltenfuß. Die ganze Spalte ist klickbar; Hover unterstreicht den Ressortnamen 3px. Während des Drucks ersetzt „Geht in Druck …“ den Knopf, darunter eine 4px-Walze, die sich von links füllt und ausblendet (1.6s, `cubic-bezier(0.16, 1, 0.3, 1)`; bei reduzierter Bewegung statisch).
