@@ -1,0 +1,23 @@
+{
+  "BWL": [
+    {"name": "VO Folien", "art": "folien", "url": "6135087175/CourseNode/114441187849610"},
+    {"name": "VO Syllabus", "art": "syllabus", "url": "6135087175/CourseNode/114441187849612"},
+    {"name": "PS Syllabus", "art": "syllabus", "url": "6148883013/CourseNode/114596026008044"},
+    {"name": "PS Aufgabenliste", "art": "ps", "url": "6148883013/CourseNode/114596026008046"},
+    {"name": "PS Folien", "art": "ps", "url": "6148883013/CourseNode/114596026008056"},
+    {"name": "PS Texte", "art": "ps", "url": "6148883013/CourseNode/114596026008054"}
+  ],
+  "VWL": [
+    {"name": "VO Folien", "art": "folien", "url": "6137348119/CourseNode/114452232038705"},
+    {"name": "Syllabus", "art": "syllabus", "url": "6137348119/CourseNode/114452232038699"}
+  ],
+  "Mathematik": [
+    {"name": "VO Folien", "art": "folien", "url": "6146949238/CourseNode/114575145916238/path%3D~~VO/0"},
+    {"name": "Syllabus", "art": "syllabus", "url": "6146949238/CourseNode/114575145762107"},
+    {"name": "PS", "art": "ps", "url": "6146949238/CourseNode/114575145916238/path%3D~~PS/0"}
+  ],
+  "Englisch": [
+    {"name": "Class material", "art": "folien", "url": "6142656732/CourseNode/114518605929050"},
+    {"name": "General information", "art": "syllabus", "url": "6142656732/CourseNode/114596027159519"}
+  ]
+}

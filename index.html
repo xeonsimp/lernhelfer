@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; connect-src https://openrouter.ai https://api.github.com; img-src data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Lernhelfer</title>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js" integrity="sha384-/TQbtLCAerC3jgaim+N78RZSDYV7ryeoBCVqTuzRrFec2akfBkHS7ACQ3PQhvMVi" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js" integrity="sha384-+VfUPEb0PdtChMwmBcBmykRMDd+v6D/oFmB3rZM/puCMDYcIvF968OimRh4KQY9a" crossorigin="anonymous"></script>
+<style>
+  :root { --bg:#f6f5f2; --karte:#fff; --text:#1d1d1f; --leise:#6b6b6b; --akzent:#1f5fbf; --rand:#e2e0da; color-scheme:light dark; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#141414; --karte:#1e1e1e; --text:#ececec; --leise:#9a9a9a; --akzent:#3b6fd6; --rand:#333; } }
+  body { margin:0; background:var(--bg); color:var(--text); font:17px/1.55 -apple-system, "Segoe UI", system-ui, sans-serif; }
+  main { max-width:880px; margin:0 auto; padding:16px; }
+  header { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  h1 { font-size:1.4rem; margin:8px 0 16px; }
+  nav, .zeile { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+  form { display:grid; gap:12px; background:var(--karte); border:1px solid var(--rand); border-radius:14px; padding:16px; margin-bottom:16px; }
+  label { display:grid; gap:4px; }
+  input, select, button { font:inherit; padding:10px 14px; border-radius:10px; border:1px solid var(--rand); background:var(--karte); color:var(--text); min-width:0; }
+  select { flex:1 1 260px; }
+  button { cursor:pointer; }
+  nav button[aria-pressed="true"], button.haupt { background:var(--akzent); border-color:transparent; color:#fff; }
+  :disabled { opacity:.5; cursor:default; }
+  .leise, #status { color:var(--leise); margin:0; }
+  #status { min-height:1.5em; margin-bottom:12px; }
+  article { background:var(--karte); border:1px solid var(--rand); border-radius:14px; padding:4px 22px 18px; overflow-wrap:anywhere; }
+  article table { border-collapse:collapse; display:block; overflow-x:auto; }
+  article th, article td { border-bottom:1px solid var(--rand); padding:6px 10px; text-align:left; vertical-align:top; }
+</style>
+</head>
+<body>
+<main>
+  <header><h1>Lernhelfer</h1><button id="zahnrad">Einstellungen</button></header>
+  <form id="einstellungen" hidden>
+    <label>OpenRouter-Key <input id="e-or" type="password" autocomplete="off" required></label>
+    <label>GitHub-Token (nur für das Daten-Repo) <input id="e-gh" type="password" autocomplete="off" required></label>
+    <label>Daten-Repo <input id="e-repo" placeholder="benutzername/lernhelfer-daten" autocapitalize="off" required></label>
+    <button class="haupt">Speichern</button>
+    <p class="leise">Wird nur in diesem Browser auf diesem Gerät gespeichert, nie auf GitHub.</p>
+  </form>
+  <div id="app" hidden>
+    <nav id="faecher"></nav>
+    <div class="zeile"><select id="datei" aria-label="Unterlage"></select></div>
+    <div class="zeile">
+      <select id="modell" aria-label="Modell"></select>
+      <button id="lernen" class="haupt">Lernseite erstellen</button>
+    </div>
+    <p id="status" role="status"></p>
+    <article id="seite" hidden></article>
+  </div>
+</main>
+<script>
+const MODELLE = {
+  'GPT-6 Luna · MAX thinking': { model: 'openai/gpt-6-luna', reasoning: { effort: 'max' } },
+  'MiMo V2.6 Pro': { model: 'xiaomi/mimo-v2.6-pro', reasoning: { enabled: true } },
+  'GPT-6.1 Sol · xhigh': { model: 'openai/gpt-6.1-sol', reasoning: { effort: 'xhigh' } },
+};
+const auftrag = (fach, datei) => `Du bist Tutor:in für Studierende im 1. Semester Wirtschaftswissenschaften an der Universität Innsbruck.
+Heute ist ${new Date().toLocaleDateString('de-AT')}. Fach: ${fach}. Ausgewählte Unterlage: ${datei}.
+
+Erstelle eine Lernseite in Markdown mit genau diesen Abschnitten:
+
+## Zusammenfassung
+Die Kernaussagen der ausgewählten Unterlage, logisch gegliedert und verständlich erklärt. Beispiele aus den Folien übernehmen.
+
+## Wichtige Begriffe
+Tabelle | Begriff | Definition |. Alle prüfungsrelevanten Begriffe, präzise definiert.
+
+## Fürs nächste Proseminar
+Was ich auf Basis dieser Unterlage und der PS-Unterlagen fürs nächste Proseminar wissen und vorbereiten muss (Aufgaben, Abgaben, Termine).
+
+## Was mich in der nächsten Einheit erwartet
+Laut Syllabus: nächster Termin, Thema und was ich vorher lesen oder tun sollte.
+
+Stütze dich nur auf die Unterlagen unten. Steht etwas nicht darin, schreib das ehrlich, statt zu raten.`;
+
+const $ = id => document.getElementById(id);
+const merk = (k, v) => { try { return v === undefined ? localStorage.getItem(k) : localStorage.setItem(k, v); } catch { return null; } };
+let cfg = JSON.parse(merk('cfg') || 'null');
+let fach, daten = {}, seiten = {};  // seiten[fach][dateiname] = sha
+
+// GitHub-Inhalte des privaten Daten-Repos; roh = Dateiinhalt, sonst JSON (Ordnerliste, Speichern)
+async function gh(pfad, { method = 'GET', body, roh = true } = {}) {
+  const r = await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${pfad.split('/').map(encodeURIComponent).join('/')}`, {
+    method, body: body && JSON.stringify(body), cache: 'no-store',
+    headers: { Authorization: 'Bearer ' + cfg.github, Accept: roh ? 'application/vnd.github.raw+json' : 'application/vnd.github+json' },
+  });
+  if (r.status === 404 && method === 'GET') return null;
+  if (!r.ok) throw new Error(`GitHub ${r.status} – Token und Daten-Repo in den Einstellungen prüfen`);
+  return roh ? r.text() : r.json();
+}
+
+async function openrouter(modell, prompt) {
+  const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + cfg.openrouter, 'Content-Type': 'application/json', 'X-Title': 'OLAT Lernhelfer' },
+    body: JSON.stringify({ ...MODELLE[modell], messages: [{ role: 'user', content: prompt }] }),
+  });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || j.error) throw new Error('OpenRouter: ' + (j.error?.message || r.status));
+  return j.choices[0].message.content;
+}
+
+const seitenName = datei => datei.replaceAll('/', ' - ') + '.md';
+const base64 = s => btoa(Array.from(new TextEncoder().encode(s), b => String.fromCharCode(b)).join(''));
+
+async function start() {
+  $('einstellungen').hidden = !!cfg;
+  $('app').hidden = !cfg;
+  if (!cfg) return;
+  if (!$('modell').options.length) {
+    Object.keys(MODELLE).forEach(m => $('modell').add(new Option(m, m)));
+    if (MODELLE[merk('modell')]) $('modell').value = merk('modell');
+  }
+  $('status').textContent = 'Lade Fächer …';
+  const faecher = ((await gh('faecher', { roh: false })) || []).map(f => f.name.replace(/\.json$/, ''));
+  if (!faecher.length) return 'Noch keine Daten – am PC einmal holen.bat starten.';
+  $('faecher').replaceChildren(...faecher.map(f => {
+    const b = document.createElement('button');
+    b.textContent = f;
+    b.onclick = () => los('Lade ' + f + ' …', () => zeigeFach(f));
+    return b;
+  }));
+  return zeigeFach(faecher.includes(merk('fach')) ? merk('fach') : faecher[0]);
+}
+
+async function zeigeFach(f) {
+  fach = f;
+  merk('fach', f);
+  for (const b of $('faecher').children) b.setAttribute('aria-pressed', b.textContent === f);
+  daten[f] ??= JSON.parse(await gh(`faecher/${f}.json`));
+  seiten[f] ??= Object.fromEntries(((await gh(`lernseiten/${f}`, { roh: false })) || []).map(s => [s.name, s.sha]));
+  const liste = daten[f].dateien;
+  $('datei').replaceChildren(...liste.map(d => new Option((seiten[f][seitenName(d.datei)] ? '✓ ' : '') + d.datei, d.datei)));
+  $('datei').value = (liste.filter(d => d.art === 'folien').at(-1) || liste.at(-1))?.datei ?? '';
+  await zeigeSeite();
+  return `Stand OLAT: ${daten[f].stand} – neue Folien holt der PC mit holen.bat.`;
+}
+
+async function zeigeSeite() {
+  const name = seitenName($('datei').value);
+  const da = !!seiten[fach]?.[name];
+  $('lernen').textContent = da ? 'Neu erstellen' : 'Lernseite erstellen';
+  $('seite').hidden = !da;
+  if (!da) return;
+  const md = await gh(`lernseiten/${fach}/${name}`);
+  if (window.marked && window.DOMPurify) $('seite').innerHTML = DOMPurify.sanitize(marked.parse(md));
+  else $('seite').textContent = md;
+}
+
+async function lernen() {
+  const datei = $('datei').value, modell = $('modell').value, name = seitenName(datei);
+  const teile = [auftrag(fach, datei)];
+  for (const d of daten[fach].dateien) {
+    if (d.datei === datei) teile.splice(1, 0, `=== AUSGEWÄHLTE UNTERLAGE: ${d.datei} ===\n${d.text}`);
+    // ponytail: harte Kürzung pro Kontext-Datei; Auswahl nach Datum, falls PS-Ordner sehr groß werden
+    else if (d.art !== 'folien') teile.push(`=== ${d.art.toUpperCase()}: ${d.datei} ===\n${d.text.slice(0, 15000)}`);
+  }
+  const md = `*${modell} · ${new Date().toLocaleDateString('de-AT')}*\n\n` + await openrouter(modell, teile.join('\n\n'));
+  const r = await gh(`lernseiten/${fach}/${name}`, { method: 'PUT', roh: false, body: { message: `Lernseite ${fach}: ${datei}`, content: base64(md), sha: seiten[fach][name] } });
+  seiten[fach][name] = r.content.sha;
+  $('datei').selectedOptions[0].text = '✓ ' + datei;
+  await zeigeSeite();
+  return 'Fertig und gespeichert.';
+}
+
+async function los(text, fn) {
+  const felder = $('app').querySelectorAll('button, select');
+  felder.forEach(e => e.disabled = true);
+  $('status').textContent = text;
+  try { $('status').textContent = (await fn()) || ''; }
+  catch (e) { $('status').textContent = 'Fehler: ' + e.message; }
+  finally { felder.forEach(e => e.disabled = false); }
+}
+
+$('datei').onchange = () => los('Lade Lernseite …', zeigeSeite);
+$('modell').onchange = () => merk('modell', $('modell').value);
+$('lernen').onclick = () => los(`${$('modell').value} arbeitet … das kann ein paar Minuten dauern. App bitte so lange offen lassen.`, lernen);
+$('zahnrad').onclick = () => {
+  $('e-or').value = cfg?.openrouter || ''; $('e-gh').value = cfg?.github || ''; $('e-repo').value = cfg?.repo || '';
+  $('einstellungen').hidden = !$('einstellungen').hidden;
+};
+$('einstellungen').onsubmit = e => {
+  e.preventDefault();
+  cfg = { openrouter: $('e-or').value.trim(), github: $('e-gh').value.trim(), repo: $('e-repo').value.trim() };
+  merk('cfg', JSON.stringify(cfg));
+  daten = {}; seiten = {};
+  los('', start);
+};
+los('', start);
+</script>
+</body>
+</html>

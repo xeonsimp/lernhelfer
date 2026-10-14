@@ -1,0 +1,12 @@
+# Geheimnisse und private Inhalte – nie auf GitHub
+openrouter_key.txt
+.olat-sitzung.json
+.zugang
+material/
+lernseiten/
+daten/
+.claude/
+__pycache__/
+openrouter_key*
+*.txt
+.impeccable/
