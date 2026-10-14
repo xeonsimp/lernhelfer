@@ -451,16 +451,26 @@ let kette = Promise.resolve();  // GitHub verträgt keine gleichzeitigen Commits
 const nacheinander = fn => { const p = kette.then(fn); kette = p.catch(() => {}); return p; };
 
 async function openrouter(modell, prompt) {
-  const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: { Authorization: 'Bearer ' + cfg.openrouter, 'Content-Type': 'application/json', 'X-Title': 'OLAT Lernhelfer' },
-    body: JSON.stringify({ ...MODELLE[modell], messages: [{ role: 'user', content: prompt }] }),
-  });
-  const j = await r.json().catch(() => ({}));
-  if (!r.ok || j.error) throw new Error('OpenRouter: ' + (j.error?.message || r.status));
-  // Bei MAX thinking kann das Nachdenken das Ausgabelimit aufbrauchen; eine abgeschnittene Ausgabe nicht speichern
+  const frage = async einstellung => {
+    const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + cfg.openrouter, 'Content-Type': 'application/json', 'X-Title': 'OLAT Lernhelfer' },
+      body: JSON.stringify({ ...einstellung, messages: [{ role: 'user', content: prompt }] }),
+    });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok || j.error) throw new Error('OpenRouter: ' + (j.error?.message || r.status));
+    return j;
+  };
+  let j = await frage(MODELLE[modell]), kosten = j.usage?.cost || 0;
+  // MAX thinking kann das ganze Ausgabelimit (128k Token) mit Nachdenken aufbrauchen; dann einmal mit xhigh nachdrucken
+  if (j.choices[0].finish_reason === 'length' && MODELLE[modell].reasoning?.effort === 'max') {
+    status('Die Ausgabe war zu lang für MAX thinking und wird mit xhigh neu gesetzt …');
+    j = await frage({ ...MODELLE[modell], reasoning: { effort: 'xhigh' } });
+    kosten += j.usage?.cost || 0;
+    status('');
+  }
   if (j.choices[0].finish_reason === 'length') throw new Error('Die Ausgabe wurde abgeschnitten, weil das Modell zu lange nachgedacht hat. Bitte noch einmal drucken.');
-  return { text: j.choices[0].message.content, kosten: j.usage?.cost };
+  return { text: j.choices[0].message.content, kosten };
 }
 async function kosten() {
   if (!cfg) return;
