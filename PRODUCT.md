@@ -22,7 +22,8 @@ Kennt den Terminplan jedes Fachs (aus dem Syllabus) und die tatsächlich hochgel
 
 ## Operating Context
 
-- OLAT (OpenOLAT, lms.uibk.ac.at) mit SSO und Authenticator-App; neue Unterlagen holt ein Skript am PC (`holen.bat`), weil der Login 2FA verlangt.
+- OLAT (OpenOLAT, lms.uibk.ac.at) mit SSO und Authenticator-App; neue Unterlagen holt ein Programm am Windows-PC (`holen.py`, eingerichtet über eine Datei aus der App, ohne Admin-Rechte nach %LOCALAPPDATA%\Lernhelfer), weil der Login 2FA verlangt. Es findet die Kurse selbst unter „Meine Kurse → Aktiv“ und lädt Text über die GitHub-API hoch.
+- Einrichten für Technik-Ferne: OpenRouter per Login-Knopf (OAuth PKCE), GitHub über vorausgefüllte Links plus eingefügten Schlüssel, weitere Geräte per QR-Code. Die Anleitung liegt in der App (#/anleitung).
 - Die App ist eine statische Seite auf GitHub Pages; Daten liegen in einem privaten GitHub-Repo; Modelle laufen über OpenRouter (GPT-6 Luna, MiMo V2.6 Pro, GPT-6.1 Sol), gewählt pro Erstellung.
 - Wöchentlicher Rhythmus: VO und PS je Fach, Abgaben und Onlinetests mit Fristen.
 

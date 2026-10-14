@@ -333,11 +333,11 @@ def test_lesen(page, frei, startknopf):
 
 
 def zeitraum(seite):
-    """(von, bis) aus „Verfügbarkeit: 15.10.2026, 16:30 bis 19.10.2026, 18:00“ bzw. „Bis …“ / „Ab …“; fehlt = None."""
-    zeile = (re.search(r"Verfügbarkeit:([^\n]*)", seite.split("Informationen")[-1]) or [None, ""])[1]
+    """(von, bis) aus „Verfügbarkeit: 15.10.2026, 16:30 bis 19.10.2026, 18:00“, „Bis …“, „Abgelaufen am …“ oder „Ab …“."""
+    zeile = (re.search(r"Verfügbarkeit:([^\n]*)", seite) or [None, ""])[1]
     d = [datetime.strptime(f"{t}, {u}", "%d.%m.%Y, %H:%M") for t, u in re.findall(r"(\d\d\.\d\d\.\d{4}), (\d\d:\d\d)", zeile)]
     if len(d) == 1:
-        return (None, d[0]) if zeile.strip().lower().startswith("bis") else (d[0], None)
+        return (d[0], None) if re.match(r"\s*ab\b", zeile, re.I) else (None, d[0])
     return (d[0], d[1]) if len(d) == 2 else (None, None)
 
 
@@ -362,9 +362,8 @@ def testliste(fach):
         if t.startswith("Selbsttest „"):  # Selbsttest-Baustein: die Datei enthält schon die Fragen
             aus.append({"fach": fach, "titel": f.stem, "art": "selbsttest", "fragen": t})
             continue
-        info = t.split("Informationen")[-1]
         von, bis = zeitraum(t)
-        zahl = lambda muster: (m := re.search(muster, info)) and float(m.group(1).replace(",", "."))
+        zahl = lambda muster: (m := re.search(muster, t)) and float(m.group(1).replace(",", "."))
         aus.append({"fach": fach, "titel": f.stem, "art": "test", "startseite": t,
                     "fragen": fragen.read_text("utf-8") if fragen.exists() else None,
                     "von": von and von.isoformat(timespec="minutes"), "bis": bis and bis.isoformat(timespec="minutes"),

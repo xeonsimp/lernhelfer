@@ -272,7 +272,7 @@ Tagesköpfe in Archivo 750 mit 1.5px-Unterlinie und Countdown („· heute“, �
 3px-Rahmen, min 15rem hoch, Begriff zentriert in Archivo 850/wdth 72, Rückseite in tiefem Lachspapier mit Definition in Serif. Dreht sich in 0.55s um die Y-Achse (bei reduzierter Bewegung sofort). Darunter zwei gleich breite Knöpfe „Nochmal“ (Rahmen) und „Gewusst“ (voll); die Liste aller Begriffe als Aufklapper mit gedrehtem Linienwinkel.
 
 ### Navigation
-Eine schlichte Werkzeugleiste über dem Zeitungskopf (Titelblatt, Kalender, Word Power, Einstellungen): Archivo 500, 0.9375rem, ohne Unterstreichung, Hover unterstreicht, bricht zwischen den Links um, nie in einem Link. Archiv-Ausgaben als Datumsreihe; die aktuelle mit 3px-Unterstreichung und 850.
+Eine schlichte Werkzeugleiste über dem Zeitungskopf (Titelblatt, Kalender, Onlinetests, Word Power nur wenn im Speicher eingerichtet, Anleitung, Einrichten; vor dem Einrichten nur Anleitung und Einrichten): Archivo 500, 0.9375rem, ohne Unterstreichung, Hover unterstreicht, bricht zwischen den Links um, nie in einem Link. Archiv-Ausgaben als Datumsreihe; die aktuelle mit 3px-Unterstreichung und 850.
 
 ### Übungsaufgaben (erst rechnen, dann aufdecken)
 Eigene Rubrik nach dem Wochenraster: zwei Spalten (eine auf dem Handy), jede Aufgabe mit Dachzeile „Aufgabe N · Quelle“ in Archivo 850 Versal, Titel in Source Serif 800, Aufgabentext, dann ein `<details>` mit Knopf „Lösung aufdecken / verdecken“. Die Lösung steht in einem Kasten mit 1.5px-Tintenrand auf `--papier-tief`, nie mit farbigem Seitenstreifen. Quelle im Markdown: `### Quelle · Titel`, Aufgabe, `#### Lösung`, Lösungsweg.
@@ -285,6 +285,15 @@ Kopf wie eine Rubrik (Archivo 900 bei 65% Breite) mit KW und Zeitraum als Meta-Z
 
 ### Word Power (Werkstatt hinter Passwort)
 Englisch-Hausaufgabe im Zeitungslayout: Ausgabe-Kopf (Name, Schlagzeile, Meta-Zeile darunter), dann nummerierte Schritte mit 3px-Linie und großer Archivo-Überschrift. Felder mit 1.5px-Tintenrand ohne Radius. Laufende Schritte zeigen die Druckwalze als Status. Der fertige Entwurf steht als Blatt auf `--papier-tief` mit 1.5px-Rand. Vor dem Entsperren ist nur das Passwortfeld sichtbar.
+
+### Einrichten (Assistent)
+Gleicher Aufbau wie Word Power: Ausgabe-Kopf, dann nummerierte Schritte (1 KI-Guthaben, 2 Privater Speicher, 3 OLAT-Abgleich am PC, 4 iPad und Handy), vor dem Einrichten davor „Schon eingerichtet?“ mit Kamera-Scan und Linkfeld. Unter jeder Schritt-Überschrift eine Stand-Zeile als Stimmzettel-Kästchen (Archivo 850 Versal): leer = offen, gefüllt = erledigt, durchgestrichen = Problem. Kein Bordeaux, keine Häkchen-Icons. Der QR-Code steht schwarz auf Weiß in einem Rahmen, auch im Dunkelmodus, damit Kameras ihn lesen.
+
+### Onlinetests
+Überblick wie die Kurstabelle: Gruppen „Jetzt offen“, „Demnächst“, „Zum Üben“, „Erledigt und vorbei“ als Rubriken, Zeilen mit Fach-Etikett, Titel, Meta-Zeile und Frist rechts in Tabellenziffern. Nur der offene Test mit der nächsten Frist liegt auf Bordeaux. Die Einzelansicht zeigt die Aufgabenstellung als Blatt auf `--papier-tief` (Source Serif, Zeilenumbrüche wie in OLAT) und darunter den Löser: Passwortfeld, danach Fragen einspaltig im Stil der Übungsaufgaben mit „Rechenweg zeigen“.
+
+### Anleitung
+Lesemodus: Ausgabe-Kopf, Inhaltsverzeichnis in zwei Spalten, Kapitel mit 3px-Linie und Archivo-900-Überschrift, Fließtext in Source Serif bei max 68ch, Hinweis-Kasten mit 6px-Tintenrand links auf `--papier-tief`, Hilfe als Frage-Antwort-Liste.
 
 ## Do's and Don'ts
 

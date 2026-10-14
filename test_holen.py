@@ -71,6 +71,8 @@ def test():
         == (d(2026, 10, 15, 16, 30), d(2026, 10, 19, 18, 0))
     assert holen.zeitraum("Informationen\nVerfügbarkeit: Bis 19.10.2026, 08:00 (wird automatisch eingezogen)") == (None, d(2026, 10, 19, 8, 0))
     assert holen.zeitraum("Informationen\nMax. Lösungsversuche: 100 | Verbleibend: 100") == (None, None)
+    assert holen.zeitraum("Informationen\nVerfügbarkeit: Abgelaufen am 12.10.2026, 18:00") == (None, d(2026, 10, 12, 18, 0))
+    assert holen.zeitraum("Informationen\nVerfügbarkeit: Ab 21.10.2026, 15:00") == (d(2026, 10, 21, 15, 0), None)
 
     class Seite:  # genau ein Startknopf
         locator = lambda self, sel: type("L", (), {"count": lambda s: 1})()
