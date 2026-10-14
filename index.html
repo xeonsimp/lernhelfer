@@ -461,16 +461,16 @@ async function openrouter(modell, prompt) {
     if (!r.ok || j.error) throw new Error('OpenRouter: ' + (j.error?.message || r.status));
     return j;
   };
-  let j = await frage(MODELLE[modell]), kosten = j.usage?.cost || 0;
+  let j = await frage(MODELLE[modell]), kosten = j.usage?.cost || 0, xhigh = false;
   // MAX thinking kann das ganze Ausgabelimit (128k Token) mit Nachdenken aufbrauchen; dann einmal mit xhigh nachdrucken
   if (j.choices[0].finish_reason === 'length' && MODELLE[modell].reasoning?.effort === 'max') {
     status('Die Ausgabe war zu lang für MAX thinking und wird mit xhigh neu gesetzt …');
     j = await frage({ ...MODELLE[modell], reasoning: { effort: 'xhigh' } });
-    kosten += j.usage?.cost || 0;
+    kosten += j.usage?.cost || 0; xhigh = true;
     status('');
   }
   if (j.choices[0].finish_reason === 'length') throw new Error('Die Ausgabe wurde abgeschnitten, weil das Modell zu lange nachgedacht hat. Bitte noch einmal drucken.');
-  return { text: j.choices[0].message.content, kosten };
+  return { text: j.choices[0].message.content, kosten, xhigh };
 }
 async function kosten() {
   if (!cfg) return;
@@ -531,7 +531,7 @@ async function drucke(f) {
     const modell = $('modell').value;
     const antwortKI = await openrouter(modell, prompt);
     const preis = antwortKI.kosten != null ? ` · Druckkosten ${antwortKI.kosten} $` : '';
-    const text = `*${modell} · ${datum(HEUTE, { day: '2-digit', month: '2-digit', year: 'numeric' })}${preis}*\n\n` + antwortKI.text;
+    const text = `*${antwortKI.xhigh ? modell.replace('MAX thinking', 'xhigh (MAX abgeschnitten)') : modell} · ${datum(HEUTE, { day: '2-digit', month: '2-digit', year: 'numeric' })}${preis}*\n\n` + antwortKI.text;
     const alt = r.ausgaben.find(a => a.datum === HEUTE);
     const antwort = await nacheinander(() => gh(`lernseiten/${f}/${HEUTE}.md`, { method: 'PUT', roh: false, body: { message: `Ausgabe ${f} ${HEUTE}`, content: base64(text), sha: alt?.sha } }));
     r.ausgaben = [{ datum: HEUTE, sha: antwort.content.sha }, ...r.ausgaben.filter(a => a.datum !== HEUTE)];
@@ -686,7 +686,7 @@ async function ausgabeZeigen(f, tag) {
       a.schlagzeile && el('p', { class: 'schlagzeile' }, a.schlagzeile)),
     r.druckt && presse(f),
     r.fehler && el('p', { class: 'fehlertext' }, r.fehler),
-    rubrik(el('p', {}, 'Diese Woche'), a.quellen.length ? `Aus den Unterlagen: ${a.quellen.map(q => q.split('/').pop().replace(/\.\w+$/, '').replace(/_/g, ' ')).join(' · ')}` : 'Aus den Folien und PS-Unterlagen der letzten Einheit'),
+    rubrik(el('p', {}, 'Diese Woche'), a.quellen.length ? `Aus den Unterlagen: ${[...new Set(a.quellen.map(q => q.split('/').pop().replace(/\.\w+$/, '').replace(/_/g, ' ')))].join(' · ')}` : 'Aus den Folien und PS-Unterlagen der letzten Einheit'),
     el('div', { class: 'raster' },
       el('article', { class: 'artikel' }, markdown(el('div', { class: 'text' }), abschnitt(a, 'zusammenfassung') || 'Keine Zusammenfassung in dieser Ausgabe.')),
       teil('blick', 'Auf einen Blick', 'auf einen blick'),
