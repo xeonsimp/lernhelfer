@@ -5,6 +5,7 @@ Ist die OLAT-Sitzung abgelaufen, öffnet sich Edge: dort selbst einloggen (SSO +
 """
 import html
 import json
+import logging
 import re
 import subprocess
 import sys
@@ -19,6 +20,7 @@ KURSE = json.loads((BASIS / "kurse.json").read_text("utf-8"))
 SITZUNG = BASIS / ".olat-sitzung.json"
 OLAT = "https://lms.uibk.ac.at"
 ARTEN = ["folien", "ps", "syllabus"]
+logging.getLogger("pypdf").setLevel(logging.ERROR)  # harmlose Warnungen bei schief gebauten PDFs
 
 
 def natur(s):
@@ -72,37 +74,47 @@ def olat_login(p):
         browser.close()
 
 
+def oeffne(page, url):
+    page.goto(url)
+    page.wait_for_load_state("networkidle")
+    groesse = page.locator("#o_main_center_content_inner .o_table_pagination .dropdown-toggle")
+    if groesse.count() and groesse.inner_text().strip() != "250":  # Ordner zeigen sonst nur 20 Dateien
+        groesse.click()
+        page.locator(".o_table_pagination .dropdown-menu a", has_text="250").click()
+        page.locator(".o_table_pagination .dropdown-toggle", has_text="250").wait_for()
+
+
 def sync(ctx, page, fach):
     neu = []
     for q in KURSE[fach]:
         ziel = MATERIAL / fach / q["name"]
         ziel.mkdir(parents=True, exist_ok=True)
         url = f"{OLAT}/auth/RepositoryEntry/{q['url']}"
-        page.goto(url)
-        page.wait_for_load_state("networkidle")
+        oeffne(page, url)
         main = page.locator("#o_main_center_content_inner")
+        herunterladen = main.locator("a:visible", has_text="Herunterladen")
+        seite = main.locator("iframe[src*='/m/']:not([src*='viewer.html'])")  # HTML-Seite, kein PDF-Betrachter
         karten = main.locator(".o_folder_card:not(:has(.o_filetype_folder))")
         if main.locator(".o_folder_card").count():  # Ordner
             # ponytail: Unterordner werden übersprungen (bei Bedarf eigener Eintrag in kurse.json),
             # vorhandene Dateien nicht neu geladen – geänderte Datei mit gleichem Namen: lokal löschen.
             namen = [n.strip() for n in karten.locator(".o_folder_card_title").all_inner_texts()]
             for name in [n for n in namen if not (ziel / n).exists()]:
-                page.goto(url)  # OLAT lädt die Seite nach jedem Download neu
-                page.wait_for_load_state("networkidle")
+                oeffne(page, url)  # OLAT lädt die Seite nach jedem Download neu
                 karten.filter(has=page.get_by_text(name, exact=True)).locator("a:has(.o_icon_actions)").click()
                 with page.expect_download() as dl:
                     page.get_by_role("link", name="Herunterladen", exact=True).last.click()
                 dl.value.save_as(ziel / name)
                 neu.append(f"{fach}: {q['name']}/{name}")
-        elif main.get_by_text("Herunterladen").count():  # einzelne Datei
+        elif herunterladen.count():  # einzelne Datei
             with page.expect_download() as dl:
-                main.get_by_text("Herunterladen").first.click()
+                herunterladen.first.click()
             name = dl.value.suggested_filename
             if not (ziel / name).exists():
                 neu.append(f"{fach}: {q['name']}/{name}")
             dl.value.save_as(ziel / name)
-        elif main.locator("iframe[src*='/m/']").count():  # eingebettete HTML-Seite
-            src = main.locator("iframe[src*='/m/']").first.get_attribute("src")
+        elif seite.count():  # eingebettete HTML-Seite
+            src = seite.first.get_attribute("src")
             name = unquote(src.rsplit("/", 1)[-1])
             if not (ziel / name).exists():
                 neu.append(f"{fach}: {q['name']}/{name}")
