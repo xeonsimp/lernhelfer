@@ -597,9 +597,9 @@
         <p class="meta">Englisch, Communication in Business</p>
       </header>
       <form id="wp-sperre" class="sperre">
-        <label>Passwort <input id="wp-pin" name="passwort" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Vier Wörter …" required></label>
+        <label>Passwort <input id="wp-pin" name="passwort" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Passwort" required></label>
         <div><button class="knopf voll">Öffnen</button></div>
-        <p class="klein" id="wp-sperre-text" role="status">Das Passwort aus vier Wörtern bekommst du von der Person, die dir den Lernhelfer gezeigt hat.</p>
+        <p class="klein" id="wp-sperre-text" role="status">Das Passwort bekommst du von der Person, die dir den Lernhelfer gezeigt hat.</p>
       </form>
       <div id="wp-werk" hidden>
         <section class="schritt" aria-labelledby="wp-s1">
@@ -748,7 +748,7 @@
         </div>
         <p>Abgelaufene Tests zeigen deine Antworten und die Lösung von OLAT, Selbsttests sind zum Üben da. Beides nimmt die Wochenausgabe für die Übungsaufgaben.</p>
         <p><b>Der Löser</b> zeigt die Fragen eines Tests einzeln, mit Formeln wie in OLAT. Bei jeder Frage „Lösen lassen“ tippen: Du bekommst das Ergebnis so, wie es in OLAT eingetragen wird, und den Rechenweg zum Aufklappen. Bei „Rückfrage“ fragst du nach, was unklar ist. Mit „Weiter“ und „Zurück“ gehst du durch die Fragen; Lösungen und Rückfragen bleiben gespeichert. Gedacht ist er zum Vergleichen: erst selbst lösen, dann mit dem Löser prüfen, dann selbst in OLAT eintragen. Der Löser schreibt nichts nach OLAT. Ob KI bei einem Test erlaubt ist, legt jede Lehrveranstaltung selbst fest, meist im Syllabus.</p>
-        <p>Löser und <a href="#/wordpower">Word Power</a> (Englisch-Hausaufgaben) haben ein Passwort aus vier Wörtern. Du bekommst es von der Person, die dir den Lernhelfer gezeigt hat. Groß- und Kleinschreibung und Leerzeichen sind egal.</p>
+        <p>Löser und <a href="#/wordpower">Word Power</a> (Englisch-Hausaufgaben) haben ein Passwort. Du bekommst es von der Person, die dir den Lernhelfer gezeigt hat. Groß- und Kleinschreibung ist egal.</p>
 
         <h2 id="a-pc">Der Abgleich am PC</h2>
         <ul>
@@ -1524,7 +1524,7 @@ async function entsperren(bereich, pin) {
   const antwort = await fetch(`geschuetzt/${bereich}.json`);
   if (!antwort.ok) throw new Error('Dieser Bereich ist gerade nicht erreichbar. Später nochmal versuchen.');
   const j = await antwort.json(), b = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
-  const basis = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin.toLowerCase().replace(/[^a-zäöüß]/g, '')), 'PBKDF2', false, ['deriveKey']);
+  const basis = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin.toLowerCase().replace(/[^a-zäöüß0-9]/g, '')), 'PBKDF2', false, ['deriveKey']);
   const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b(j.salt), iterations: j.iter, hash: 'SHA-256' }, basis, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
   try { return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b(j.iv) }, key, b(j.daten)))); }
   catch { throw new Error('Falsches Passwort.'); }
@@ -1805,9 +1805,9 @@ function testZeigen(t) {
     try { LOESER_PROMPT = (await entsperren('onlinetest', e.target.elements.pw.value)).system; testZeigen(t); }
     catch (err) { hinweis.textContent = err.message; }
   } },
-    el('label', {}, 'Passwort', el('input', { name: 'pw', type: 'password', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', placeholder: 'Vier Wörter …', required: true })),
+    el('label', {}, 'Passwort', el('input', { name: 'pw', type: 'password', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', placeholder: 'Passwort', required: true })),
     el('div', {}, el('button', { class: 'knopf voll' }, 'Öffnen')),
-    el('p', { class: 'klein', role: 'status' }, 'Das Passwort aus vier Wörtern bekommst du von der Person, die dir den Lernhelfer gezeigt hat.'));
+    el('p', { class: 'klein', role: 'status' }, 'Das Passwort bekommst du von der Person, die dir den Lernhelfer gezeigt hat.'));
   const ueber = q?.nr == null ? (t.ergebnis ? 'Test mit Lösung' : 'Aufgabenstellung') : `Frage ${q.nr}`;
   $('onlinetests').replaceChildren(...[
     el('a', { class: 'zurueck', href: '#/onlinetests' }, 'Alle Onlinetests'),

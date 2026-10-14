@@ -8,7 +8,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 
 const [bereich, ...worte] = process.argv.slice(2);
-const passwort = worte.join('').toLowerCase().replace(/[^a-zäöüß]/g, '');
+const passwort = worte.join('').toLowerCase().replace(/[^a-zäöüß0-9]/g, '');
 const quellen = {
   wordpower: () => {
     const html = readFileSync('Z:/opus/index.html', 'utf8');
@@ -17,7 +17,7 @@ const quellen = {
   },
   onlinetest: () => ({ system: readFileSync(new URL('loeser_prompt.txt', import.meta.url), 'utf8') }),
 };
-if (!quellen[bereich] || passwort.length < 20) throw new Error('Aufruf: node verschluesseln.mjs wordpower|onlinetest "<vier zufällige Wörter>"');
+if (!quellen[bereich] || passwort.length < 8) throw new Error('Aufruf: node verschluesseln.mjs wordpower|onlinetest "<Passwort, mind. 8 Zeichen>"');
 const klartext = JSON.stringify(quellen[bereich]());
 
 const iter = 1_000_000;  // PBKDF2 bremst jeden Rateversuch auf rund 1/10 000 s pro Grafikkarte
