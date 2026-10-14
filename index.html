@@ -1159,7 +1159,13 @@ function meldung(t, naechste) {
     el('div', { class: 'knopfreihe' },
       frist && el('label', { class: 'haken' }, el('input', { type: 'checkbox', checked: !!merk(fristSchluessel(t)),
         onchange: e => { merk(fristSchluessel(t), e.target.checked ? '1' : null); if (document.body.dataset.ansicht === 'titelblatt') titelblatt(); } }), 'Erledigt'),
-      R[t.fach] && el('a', { class: 'knopf', href: `#/${encodeURIComponent(t.fach)}` }, `Zu ${t.fach}`),
+      // vergangene Einheit: direkt zur Ausgabe dieses Tages, gibt es keine, wird sie erstellt
+      R[t.fach] && (['VO', 'PS', 'UE'].includes(t.art) && t.datum <= HEUTE
+        ? R[t.fach].ausgaben.some(x => x.datum === t.datum)
+          ? el('a', { class: 'knopf', href: `#/${encodeURIComponent(t.fach)}/${t.datum}` }, `Zusammenfassung vom ${kurz(t.datum)}`)
+          : el('button', { class: 'knopf', type: 'button', disabled: R[t.fach].druckt, onclick: () => { d.close(); location.hash = `#/${encodeURIComponent(t.fach)}`; drucke(t.fach, t.datum); } },
+            R[t.fach].druckt ? 'Wird gerade erstellt …' : 'Zusammenfassung erstellen')
+        : el('a', { class: 'knopf', href: `#/${encodeURIComponent(t.fach)}` }, `Zu ${t.fach}`)),
       el('button', { class: 'knopf voll', type: 'button', onclick: () => d.close() }, 'Schließen'))));
   d.showModal();
 }
@@ -1234,8 +1240,8 @@ function chat(schluessel, kontext, { platzhalter, einstellung, vorschlaege = [],
     el('div', { class: 'verlauf', 'aria-live': 'polite', hidden: !c.verlauf.length }, c.verlauf.map(m => m.role === 'user'
       ? el('p', { class: 'frage' }, el('span', { class: 'sr' }, 'Deine Frage: '), m.content)
       : el('div', { class: 'antwort' }, el('span', { class: 'sr' }, 'Antwort: '), markdown(el('div', { class: 'text' }), m.content)))),
-    !c.verlauf.length && !c.laeuft && vorschlaege.length > 0 && el('div', { class: 'vorschlaege' },
-      vorschlaege.map(v => el('button', { class: 'vorschlag', type: 'button', onclick: () => { feld.value = v; stelle(); } }, v))),
+    !c.verlauf.length && !c.laeuft && vorschlaege.length > 0 ? el('div', { class: 'vorschlaege' },
+      vorschlaege.map(v => el('button', { class: 'vorschlag', type: 'button', onclick: () => { feld.value = v; stelle(); } }, v))) : '',
     el('form', { class: 'frageform', onsubmit: e => { e.preventDefault(); stelle(); } },
       el('label', { for: id, class: 'sr' }, 'Deine Frage'), feld,
       el('div', { class: 'knopfreihe' },
