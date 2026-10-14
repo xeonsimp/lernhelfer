@@ -172,8 +172,7 @@
   math[display="block"] { margin: 0.9em 0; padding: 4px 0; overflow: auto hidden; font-size: 1.15em; }
 
   /* Meldung zu einem Termin */
-  .meldung { width: min(36rem, calc(100% - 32px)); max-height: calc(100% - 32px); padding: 0; border: var(--dick); border-top-width: 8px; background: var(--papier); color: var(--tinte); box-shadow: 0 24px 48px -20px rgb(0 0 0 / 0.5); }
-  .meldung.naechste { border-top-color: var(--bordeaux); }
+  .meldung { width: min(36rem, calc(100% - 32px)); max-height: calc(100% - 32px); padding: 0; border: var(--dick); background: var(--papier); color: var(--tinte); box-shadow: 0 24px 48px -20px rgb(0 0 0 / 0.5); }
   .meldung::backdrop { background: color-mix(in srgb, #1b1511 55%, transparent); }
   .meldung[open] { animation: auftauchen 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
   @keyframes auftauchen { from { opacity: 0; transform: translateY(14px); } }
