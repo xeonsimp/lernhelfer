@@ -48,6 +48,21 @@ def test():
     mp = lambda uri: (f'--b\r\nContent-Disposition: form-data; name="dispatchuri"\r\n\r\n{uri}\r\n'
                       '--b\r\nContent-Disposition: form-data; name="cid"\r\n\r\nselectItem\r\n--b--')
     assert erlaubt("POST", form, mp("o_fi1109214309"), frei) and not erlaubt("POST", form, mp("o_fi1109151020"), frei)
+
+    # Unterbrechen (Formular-Knopf ohne cid) und „Ok“ im Dialog – echte Anfragen vom 14.10.2026
+    presented = "&qtiworks_presented_ooMathe_item_63_RESPONSE_1=1"
+    unterbrechen = {None: "o_fi1110563221"}
+    assert erlaubt("POST", form, "dispatchuri=o_fi1110563221&dispatchevent=2&_csrf=x" + presented, unterbrechen)
+    assert erlaubt("POST", form, "dispatchuri=o_fi1110563221&dispatchevent=2&qtiworks_response_1=", unterbrechen)  # leeres Feld
+    for gefahr in ("dispatchuri=o_fi1110563221&dispatchevent=2&qtiworks_response_1=47",  # Unterbrechen mit Antwort
+                   "dispatchuri=o_fi1110563220&dispatchevent=2",  # Test beenden, während Unterbrechen frei ist
+                   "_csrf=x&oow=1109141558"):  # Autosave
+        assert not erlaubt("POST", form, gefahr, unterbrechen), gefahr
+    assert not erlaubt("POST", form, "dispatchuri=o_fi1110563221&dispatchevent=2", frei)  # Unterbrechen erst am Schluss
+    ok = {"link_0": "/auth/22:1:1110563449:2:1/"}
+    assert erlaubt("POST", "https://lms.uibk.ac.at/auth/22:1:1110563449:2:1/", "cid=link_0&_csrf=x", ok)
+    assert not erlaubt("POST", "https://lms.uibk.ac.at/auth/22:1:1110563450:2:1/", "cid=link_1&_csrf=x", ok)  # Abbrechen
+    assert not erlaubt("POST", "https://lms.uibk.ac.at/auth/22:1:1110563451:2:1/", "cid=link_0&_csrf=x", ok)  # anderer Dialog
     print("ok")
 
 

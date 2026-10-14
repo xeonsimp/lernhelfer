@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; font-src 'self'; connect-src https://openrouter.ai https://api.github.com; img-src data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; font-src 'self'; connect-src https://openrouter.ai https://api.github.com https://www.youtube.com; img-src data: https://i.ytimg.com; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Lernhelfer">
@@ -46,8 +46,8 @@
 
   /* Werkzeugleiste über dem Kopf */
   .leiste { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 12px 0; font: 500 0.9375rem/1.2 var(--grot); }
-  .leiste nav { display: flex; gap: 16px; align-items: center; }
-  .leiste a { text-decoration: none; padding: 10px 0; }
+  .leiste nav { display: flex; flex-wrap: wrap; gap: 0 16px; align-items: center; }
+  .leiste a { text-decoration: none; padding: 10px 0; white-space: nowrap; }
   .leiste a:hover { text-decoration: underline; }
   select { appearance: none; min-height: 44px; padding: 8px 40px 8px 12px; border: var(--duenn); border-radius: 0; font: 600 0.9375rem var(--grot); font-stretch: 85%;
     background: var(--papier) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235b4337' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 14px center; }
@@ -124,7 +124,7 @@
 
   /* Terminkalender */
   .termine { border-top: var(--dick); padding-top: 14px; }
-  .termine h2, .abschnitt h2, .lexikon h2, .archiv h2 { margin: 0 0 10px; font: 850 1.125rem/1.1 var(--grot); font-stretch: 75%; text-transform: uppercase; letter-spacing: 0.04em; }
+  .termine h2, .abschnitt h2, .lexikon h2, .archiv h2, .fragen h2 { margin: 0 0 10px; font: 850 1.125rem/1.1 var(--grot); font-stretch: 75%; text-transform: uppercase; letter-spacing: 0.04em; }
   .tag { margin: 0; padding: 0; list-style: none; }
   .tag + .tag { margin-top: 14px; }
   .tag h3 { margin: 0 0 4px; padding-bottom: 4px; border-bottom: var(--duenn); font: 750 0.9375rem/1.2 var(--grot); font-stretch: 85%; font-variant-numeric: tabular-nums; }
@@ -188,7 +188,8 @@
   .meldung .knopfreihe { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
   .meldung .knopfreihe .haken { margin-right: auto; font: 700 0.9375rem var(--grot); font-stretch: 88%; }
   [data-ansicht="ausgabe"] .titel { font-size: clamp(2.25rem, 7vw, 3.25rem); }
-  [data-ansicht="ausgabe"] .ticker, [data-ansicht="einstellungen"] .ticker { display: none; }
+  [data-ansicht="ausgabe"] .ticker, [data-ansicht="einstellungen"] .ticker, [data-ansicht="wordpower"] .ticker { display: none; }
+  .warnung { color: var(--tinte); font-weight: 750; }
   .artikel > .text > :first-child { margin-top: 0.6em; }
   .artikel > .text > p:first-of-type::first-line { font-weight: 650; }
   .artikel > .text > p:first-of-type::first-letter { float: left; margin: 0.07em 0.1em 0 0; font: 900 3.6em/0.78 var(--grot); font-stretch: 62%; }
@@ -233,6 +234,79 @@
   .liste dt.gewusst::after { content: " – gewusst"; font-weight: 500; color: var(--tinte-2); }
   .liste dd { margin: 2px 0 0; font-size: 0.9375rem; line-height: 1.5; }
 
+  /* Übungsaufgaben: erst selbst rechnen, dann aufdecken */
+  .uebungen { margin-top: 40px; }
+  .aufgaben { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; }
+  .aufgabe { display: grid; gap: 8px; align-content: start; padding: 16px 0 24px; border-bottom: var(--duenn); }
+  .aufgabe .dachzeile, .fragen .dachzeile { margin: 0; font: 850 0.8125rem/1.2 var(--grot); font-stretch: 78%; text-transform: uppercase; letter-spacing: 0.05em; color: var(--tinte-2); }
+  .aufgabe h3 { margin: 0; font: 800 1.3125rem/1.15 var(--serif); text-wrap: balance; }
+  .aufgabe .text { font-size: 1rem; }
+  .loesung > summary { list-style: none; width: max-content; }
+  .loesung > summary::-webkit-details-marker { display: none; }
+  .loesung[open] > summary .zu, .loesung:not([open]) > summary .auf { display: none; }
+  .loesung > .text { margin-top: 12px; padding: 14px 16px 2px; border: var(--duenn); background: var(--papier-tief); }
+
+  /* Fragen zur Ausgabe */
+  .fragen { margin-top: 40px; border-top: var(--dick); padding-top: 14px; max-width: 760px; }
+  .uebungen .rubrik { margin-top: 0; }
+  .verlauf { display: grid; gap: 18px; margin: 16px 0; }
+  .verlauf .frage { margin: 4px 0 0; font: italic 600 1.125rem/1.45 var(--serif); }
+  .verlauf .antwort { padding-bottom: 14px; border-bottom: var(--duenn); }
+  .frageform textarea, .werkstatt input, .werkstatt textarea { display: block; width: 100%; min-height: 46px; padding: 10px 12px; border: var(--duenn); border-radius: 0; background: var(--papier); color: inherit; font: 450 1rem/1.5 var(--grot); resize: vertical; }
+  .frageform textarea { min-height: 5.5rem; }
+  .frageform textarea:focus-visible, .werkstatt :is(input, textarea):focus-visible { outline-offset: 0; }
+  :is(.fragen, .werkstatt, .kal-panel) .knopfreihe { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 10px; }
+
+  /* Kalender */
+  .kalender { margin-top: 18px; border-top: var(--dick); padding-top: 14px; }
+  .kal-kopf { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
+  .kal-kopf h2 { margin: 0; font: 900 clamp(2.25rem, 5vw, 3.25rem)/0.9 var(--grot); font-stretch: 65%; text-transform: uppercase; }
+  .kal-kopf .meta { margin-top: 8px; }
+  .kal-nav { display: flex; flex-wrap: wrap; gap: 8px; }
+  .woche { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); margin-top: 16px; border-top: var(--dick); }
+  .kal-tag { min-width: 0; min-height: 13rem; padding: 10px 10px 16px; border-left: var(--duenn); }
+  .kal-tag:first-child { border-left: 0; }
+  .kal-tag h3 { margin: 0 0 6px; font: 850 0.875rem/1.2 var(--grot); font-stretch: 80%; text-transform: uppercase; letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
+  .kal-tag.heute { background: var(--papier-tief); }
+  .kal-eintrag { display: grid; gap: 1px; width: 100%; margin: 0; padding: 7px 0 8px; border: 0; border-bottom: 1px solid color-mix(in srgb, var(--tinte) 25%, transparent); background: none; color: inherit; text-align: left; cursor: pointer; font: 450 0.875rem/1.3 var(--grot); font-stretch: 92%; overflow-wrap: anywhere; }
+  .kal-eintrag .zeit { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .kal-eintrag b { font: 850 0.75rem/1.2 var(--grot); font-stretch: 78%; text-transform: uppercase; letter-spacing: 0.03em; color: var(--tinte-2); }
+  .kal-eintrag.frist .kal-titel { font-weight: 750; }
+  @media (hover: hover) { .kal-eintrag:hover .kal-titel { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 0.18em; } }
+  .kal-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; margin-top: 36px; }
+  .kal-panel { border-top: var(--dick); padding-top: 12px; }
+  .kal-panel h3 { margin: 0 0 6px; font: 850 1.125rem/1.1 var(--grot); font-stretch: 75%; text-transform: uppercase; letter-spacing: 0.04em; }
+  .kal-liste { margin: 10px 0 0; padding: 0; list-style: none; }
+  .kal-liste li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding: 8px 0; border-bottom: 1px solid color-mix(in srgb, var(--tinte) 25%, transparent); font: 550 0.9375rem/1.3 var(--grot); }
+  label.knopf:focus-within { outline: 3px solid var(--tinte); outline-offset: 3px; }
+
+  /* Word Power: Englisch-Hausaufgabe hinter Passwort */
+  .werkstatt { max-width: 880px; }
+  .werkstatt .ausgabe-kopf .meta { margin-top: 12px; }
+  .sperre { display: grid; gap: 12px; max-width: 420px; margin-top: 26px; }
+  .sperre label, .feld { display: grid; gap: 6px; font: 700 0.9375rem var(--grot); font-stretch: 88%; }
+  .sperre input { min-height: 46px; padding: 10px 12px; border: var(--duenn); border-radius: 0; background: var(--papier); font: 600 1.25rem var(--grot); letter-spacing: 0.3em; color: inherit; }
+  .schritt { margin-top: 34px; border-top: var(--dick); padding-top: 12px; }
+  .schritt h2 { display: flex; align-items: baseline; gap: 12px; margin: 0 0 6px; font: 900 clamp(1.75rem, 4vw, 2.5rem)/1 var(--grot); font-stretch: 65%; text-transform: uppercase; }
+  .schritt h2 .nr { color: var(--tinte-2); }
+  .schritt .feld { margin-top: 14px; }
+  .schritt .opt { font-weight: 500; color: var(--tinte-2); }
+  .zeile { display: flex; gap: 8px; }
+  .zeile input { flex: 1; min-width: 0; }
+  .zeile .knopf { justify-content: center; }
+  #wp-out { min-height: 16rem; font-variant-numeric: tabular-nums; }
+  #wp-notes { min-height: 8rem; }
+  .talk { display: flex; align-items: center; gap: 14px; margin-top: 12px; padding: 10px 0; border-block: var(--duenn); }
+  .talk img { width: 112px; aspect-ratio: 16 / 9; object-fit: cover; flex: none; background: var(--papier-tief); }
+  .talk p { margin: 0; }
+  .talk-titel { font: 750 1rem/1.3 var(--serif); }
+  .wp-status { min-height: 1.5em; margin: 12px 0 0; font: 600 0.9375rem/1.4 var(--grot); color: var(--tinte-2); }
+  .wp-status.presse, .wp-status.fehlertext { color: var(--tinte); }
+  .blatt-wp { margin-top: 18px; padding: clamp(18px, 4vw, 40px); border: var(--duenn); background: var(--papier-tief); }
+  .blatt-wp h2 { margin: 1.6em 0 0.5em; padding-bottom: 0.3em; border-bottom: var(--duenn); font: 800 1.5rem/1.2 var(--serif); }
+  .blatt-wp h2:first-child { margin-top: 0; }
+  .blatt-wp b { font-weight: 750; }
+
   /* Archiv */
   .archiv { margin-top: 40px; border-top: var(--dick); padding-top: 14px; }
   .archiv ol { display: flex; flex-wrap: wrap; gap: 0; margin: 0; padding: 0; list-style: none; }
@@ -261,6 +335,11 @@
     .abschnitt.blick { order: -1; margin-bottom: 18px; }
     .artikel { margin: 0 0 18px; padding-right: 0; border-right: 0; }
     .lexikon { grid-template-columns: 1fr; }
+    .woche { grid-template-columns: 1fr; }
+    .kal-tag, .kal-tag:first-child { min-height: 0; padding: 10px 0 12px; border-left: 0; border-top: var(--duenn); }
+    .kal-tag:first-child { border-top: 0; }
+    .kal-tag.heute { margin: 0 calc(var(--rand) * -1); padding-inline: var(--rand); }
+    .kal-tag.ohne:not(.heute) { display: none; }
     .stamm-raster { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .stamm:nth-child(odd) { padding-left: 0; border-left: 0; }
     .stamm:nth-child(even) { padding-right: 0; }
@@ -277,6 +356,9 @@
     [data-ansicht="ausgabe"] .kopf .datumszeile { display: none; }
     [data-ansicht="ausgabe"] .titel { font-size: 1.75rem; }
     .ausgabe-kopf h1 { font-size: 3rem; }
+    .aufgaben, .kal-panels { grid-template-columns: 1fr; }
+    .kal-panel + .kal-panel { margin-top: 28px; }
+    .zeile { flex-direction: column; }
     .stamm-raster { grid-template-columns: 1fr; }
     .stamm, .stamm:nth-child(n) { padding: 12px 0 4px; border-left: 0; }
     .stamm + .stamm { border-top: var(--duenn); }
@@ -288,6 +370,8 @@
   <div class="leiste">
     <nav>
       <a href="#/" id="nach-titel" hidden class="zurueck"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M11 3L5 9l6 6" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>Titelblatt</a>
+      <a href="#/kalender">Kalender</a>
+      <a href="#/wordpower">Word Power</a>
       <a href="#/einstellungen">Einstellungen</a>
     </nav>
   </div>
@@ -312,12 +396,58 @@
         <section class="termine" aria-labelledby="t-kopf">
           <h2 id="t-kopf">Termine der nächsten zwei Wochen</h2>
           <div id="tage"></div>
+          <p class="fuss"><a href="#/kalender">Ganzer Kalender</a> · Termine ins iPad übernehmen, eigene .ics-Dateien</p>
           <p class="fuss" id="stand"></p>
         </section>
       </div>
     </section>
 
     <section id="ausgabe" hidden></section>
+
+    <section id="kalender" hidden class="kalender"></section>
+
+    <section id="wordpower" hidden class="werkstatt">
+      <header class="ausgabe-kopf">
+        <h1>Word Power</h1>
+        <p class="schlagzeile">Vom YouTube-Talk zum Hausaufgaben-Entwurf</p>
+        <p class="meta">Englisch · Communication in Business</p>
+      </header>
+      <form id="wp-sperre" class="sperre">
+        <label>Passwort <input id="wp-pin" type="password" inputmode="numeric" autocomplete="off" required></label>
+        <div><button class="knopf voll">Öffnen</button></div>
+        <p class="klein" id="wp-sperre-text" role="status">Dieser Bereich ist mit einem Passwort geschützt.</p>
+      </form>
+      <div id="wp-werk" hidden>
+        <section class="schritt" aria-labelledby="wp-s1">
+          <h2 id="wp-s1"><span class="nr">1</span> Transkript</h2>
+          <p class="klein">Gemini hört sich das Video an und schreibt alles mit Zeitstempeln mit, ohne Füllwörter.</p>
+          <form id="wp-tform" class="feld" novalidate>
+            <label for="wp-url">YouTube-Link</label>
+            <div class="zeile">
+              <input id="wp-url" type="url" inputmode="url" placeholder="https://www.youtube.com/watch?v=…" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
+              <button id="wp-go" class="knopf voll">Transkribieren</button>
+            </div>
+          </form>
+          <div id="wp-talk" class="talk" hidden><img id="wp-thumb" alt=""><div><p id="wp-ttitle" class="talk-titel"></p><p id="wp-tauthor" class="meta"></p></div></div>
+          <p id="wp-st" class="wp-status" role="status"></p>
+          <label class="feld">Transkript <textarea id="wp-out" spellcheck="false" placeholder="Hier erscheint das Transkript. Du kannst auch eins einfügen."></textarea></label>
+          <div class="knopfreihe"><button id="wp-dl" class="knopf" type="button" disabled>Als .txt herunterladen</button></div>
+        </section>
+        <section class="schritt" aria-labelledby="wp-s2">
+          <h2 id="wp-s2"><span class="nr">2</span> Hausaufgabe</h2>
+          <p class="klein">Word Power Journal, Talk-Skript, Cue Card, Lernstrategien und Progress-Tabelle aus dem Transkript. Mit Stichpunkten kommt ein Reflection-Entwurf dazu.</p>
+          <label class="feld"><span>Stichpunkte für die Reflection <span class="opt">optional</span></span>
+            <textarea id="wp-notes" placeholder="Was ist diese Woche passiert, was war schwierig, was hat dich überrascht?"></textarea></label>
+          <div class="knopfreihe"><button id="wp-hwgo" class="knopf voll" type="button">Hausaufgabe aus Transkript erstellen</button></div>
+          <p id="wp-hwst" class="wp-status" role="status"></p>
+          <div id="wp-blatt" class="blatt-wp text" hidden></div>
+          <div class="knopfreihe">
+            <button id="wp-hwdl" class="knopf" type="button" disabled>Als .html herunterladen (öffnet in Word)</button>
+            <button id="wp-zu" class="knopf" type="button">Wieder sperren</button>
+          </div>
+        </section>
+      </div>
+    </section>
 
     <section id="einstellungen" hidden class="einrichtung">
       <h2>Einrichten</h2>
@@ -358,12 +488,12 @@ const UHR = heute.toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digi
 
 const auftrag = (fach, tag) => `Du bist Tutor:in für Studierende im 1. Semester Wirtschaftswissenschaften an der Universität Innsbruck.
 Heute ist ${tag}, ${UHR} Uhr (${HEUTE}). Fach: ${fach}.
-Unten stehen ALLE Unterlagen, die in OLAT für dieses Fach liegen: Vorlesungsfolien, Proseminar-Unterlagen, Syllabus und Tests (TEST). Bei den Tests sind das die Startseiten der bewerteten Onlinetests mit Thema und Bearbeitungszeitraum, nach Ablauf auch mit den Fragen, der eigenen Antwort in [eckigen Klammern] und der Lösung, sowie die Fragen der unbewerteten Selbsttests.
+Unten stehen ALLE Unterlagen, die in OLAT für dieses Fach liegen: Vorlesungsfolien, Proseminar-Unterlagen, Syllabus und Tests (TEST). Bei den Tests sind das die Startseiten der Onlinetests mit Thema, Bearbeitungszeitraum und Bewertung, nach Ablauf auch mit den Fragen, der eigenen Antwort in [eckigen Klammern] und der Lösung; die Fragen laufender Onlinetests, gelesen während der Bearbeitungszeit, mit „Max. … Punkt“ im Kopf jeder Frage; und die Fragen der unbewerteten Selbsttests.
 
 Schritt 1 (nur für dich, nicht ausgeben): Bestimme mit dem Terminplan im Syllabus und dem heutigen Datum, welche Vorlesungs- und PS-Einheit zuletzt stattgefunden hat, welche Unterlagen dazu gehören und welche Einheiten, Abgaben und Tests als Nächstes kommen. Unterlagen, die dafür nicht relevant sind, ignorierst du.
 
 Schritt 2: Schreibe die Wochenausgabe in Markdown mit genau diesen Abschnitten. Trenne dabei streng:
-- Die ersten vier Abschnitte enthalten NUR, was sich von Woche zu Woche ändert: Inhalte der Folien, die konkreten nächsten Einheiten, aktuelle Aufgaben und Fristen.
+- Die ersten fünf Abschnitte enthalten NUR, was sich von Woche zu Woche ändert: Inhalte der Folien, die konkreten nächsten Einheiten, aktuelle Aufgaben, Tests und Fristen.
 - Was das ganze Semester gleich bleibt (regelmäßige Zeiten und Räume, Lehrende, Leistungsbeurteilung, Anwesenheit, Abgabeformat, KI-Regeln, Literatur), steht NUR im Abschnitt Stammdaten und wird in den anderen Abschnitten nicht wiederholt.
 
 ## Auf einen Blick
@@ -374,7 +504,20 @@ Nur der Stoff aus den Folien und PS-Unterlagen der letzten Einheit, ausführlich
 
 ## Nächstes Proseminar
 Datum, Thema, was man dafür wissen und vorbereiten muss, Aufgaben und Abgaben dieser Einheit mit Frist.
-Die Onlinetests gehören hierher, denn das PS bespricht sie: Name, Thema und Bearbeitungszeitraum des laufenden bzw. nächsten Onlinetests. Liegen von einem abgelaufenen Onlinetest Fragen und Lösung vor, rechne unter ### Onlinetest … jede Frage Schritt für Schritt vor (Ansatz, Formel, Rechnung, Ergebnis). War die eigene Antwort falsch, zeig, wo der Fehler lag. Aufgaben eines noch laufenden Onlinetests rechnest du nie vor. Gibt es Selbsttest-Fragen zum aktuellen Stoff, rechne unter ### Übungsaufgaben 2–3 davon mit vollständigem Lösungsweg vor.
+Die Onlinetests gehören hierher, denn das PS bespricht sie: Name, Thema und Bearbeitungszeitraum des laufenden bzw. nächsten Onlinetests, welche Aufgabentypen darin vorkommen und was man dafür können muss. Vorgerechnet wird im nächsten Abschnitt.
+
+## Übungsaufgaben
+4–8 Aufgaben zur Vorbereitung auf das nächste PS, jede genau in dieser Form:
+### Quelle · kurzer Titel
+Vollständige Aufgabenstellung mit allen Zahlen, bei Auswahlfragen mit den Antwortmöglichkeiten.
+#### Lösung
+Lösungsweg Schritt für Schritt (Ansatz, Formel, Rechnung) und das Ergebnis **fett**.
+Nimm die Aufgaben in dieser Reihenfolge:
+1. Fragen abgelaufener Onlinetests mit den Originalzahlen (Quelle „Onlinetest N“, Lösung laut OLAT). War die eigene Antwort falsch, zeig in der Lösung, wo der Fehler lag.
+2. Fragen laufender Onlinetests ohne Punkte (Max. 0 Punkte, etwa PS-Aufgaben) vollständig.
+3. Zu jeder Frage eines laufenden bewerteten Onlinetests mit Punkten eine gleichartige Aufgabe mit anderen Zahlen (Quelle „Übung zu Onlinetest N“). Die Originalaufgabe rechnest du nie vor, solange der Test läuft.
+4. Selbsttest-Fragen zum aktuellen Stoff (Quelle „Selbsttest …“).
+Gibt es keine Tests, bilde Aufgaben im Stil der PS-Unterlagen (Quelle „Übung“).
 
 ## Nächste Vorlesung
 Datum, Thema und was man vorher lesen oder tun sollte. Liegen die Folien schon in OLAT, gib einen kurzen inhaltlichen Ausblick.
@@ -393,7 +536,7 @@ Steht zu einer Unterüberschrift nichts in den Unterlagen, schreib „Nicht ange
 
 Schritt 3: Ganz am Ende genau ein Codeblock \`\`\`json mit diesem Aufbau:
 {"schlagzeile": "Zeitungsschlagzeile zur letzten Einheit, höchstens 60 Zeichen",
- "quellen": ["Dateinamen der Unterlagen, auf denen die vier Wochenabschnitte beruhen"],
+ "quellen": ["Dateinamen der Unterlagen, auf denen die fünf Wochenabschnitte beruhen"],
  "termine": [{"datum": "JJJJ-MM-TT", "zeit": "HH:MM oder null", "art": "VO, PS, Abgabe, Test oder Sonstiges", "code": "kurzer Code wie VO 05 oder PS EH3", "titel": "worum es geht", "ort": "Raum oder null", "info": "2–4 Sätze laut Unterlagen: was genau ansteht oder abzugeben ist (Thema, Umfang, Form, Abgabeweg, erlaubte Hilfsmittel) und wie man sich vorbereitet"}],
  "begriffe": [{"begriff": "...", "definition": "präzise, 1–2 Sätze"}]}
 In "termine" stehen alle Termine der nächsten 21 Tage ab heute (Vorlesungen, Proseminare, Abgaben, Tests), aber nur solche, deren Datum in den Unterlagen steht oder sich eindeutig aus einem dort genannten festen Wochenrhythmus ergibt. Vermutete Termine gehören nicht in die Liste. Jeder Onlinetest, dessen Bearbeitungszeitraum in diese 21 Tage fällt, steht mit art "Test" und dem Ende des Zeitraums als datum und zeit darin; Beginn des Zeitraums und Anzahl der Fragen gehören ins info-Feld. In "begriffe" 10–25 prüfungsrelevante Begriffe der letzten Einheit.
@@ -451,17 +594,18 @@ async function gh(pfad, { method = 'GET', body, roh = true } = {}) {
 let kette = Promise.resolve();  // GitHub verträgt keine gleichzeitigen Commits auf denselben Branch
 const nacheinander = fn => { const p = kette.then(fn); kette = p.catch(() => {}); return p; };
 
+async function anfrage(einstellung, messages) {
+  const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + cfg.openrouter, 'Content-Type': 'application/json', 'X-Title': 'OLAT Lernhelfer' },
+    body: JSON.stringify({ ...einstellung, messages }),
+  });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok || j.error) throw new Error('OpenRouter: ' + (j.error?.message || r.status));
+  return j;
+}
 async function openrouter(modell, prompt) {
-  const frage = async einstellung => {
-    const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + cfg.openrouter, 'Content-Type': 'application/json', 'X-Title': 'OLAT Lernhelfer' },
-      body: JSON.stringify({ ...einstellung, messages: [{ role: 'user', content: prompt }] }),
-    });
-    const j = await r.json().catch(() => ({}));
-    if (!r.ok || j.error) throw new Error('OpenRouter: ' + (j.error?.message || r.status));
-    return j;
-  };
+  const frage = einstellung => anfrage(einstellung, [{ role: 'user', content: prompt }]);
   let j = await frage(MODELLE[modell]), kosten = j.usage?.cost || 0, xhigh = false;
   // MAX thinking kann das ganze Ausgabelimit (128k Token) mit Nachdenken aufbrauchen; dann einmal mit xhigh nachdrucken
   if (j.choices[0].finish_reason === 'length' && MODELLE[modell].reasoning?.effort === 'max') {
@@ -495,7 +639,7 @@ function zerlege(text, tag) {
   }
   const liste = x => Array.isArray(x) ? x : [];
   return {
-    datum: tag, meta: meta?.[1] || '', abschnitte,
+    datum: tag, meta: meta?.[1] || '', abschnitte, roh: rest,
     preis: Number(meta?.[1].match(/Druckkosten ([\d.]+) \$/)?.[1]) || null,
     schlagzeile: String(daten.schlagzeile || ''),
     quellen: liste(daten.quellen).filter(q => typeof q === 'string'),
@@ -606,7 +750,7 @@ function ticker(fristen, naechste) {
 }
 function meldung(t, naechste) {
   const d = $('meldung'), frist = FRISTEN.has(t.art);
-  const wann = [datum(t.datum, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }), t.zeit && `${t.zeit} Uhr`].filter(Boolean).join(', ');
+  const wann = [datum(t.datum, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }), t.zeit && `${t.zeit}${t.ende ? '–' + t.ende : ''} Uhr`].filter(Boolean).join(', ');
   d.className = `meldung${naechste ? ' naechste' : ''}`;
   d.replaceChildren(el('div', { class: 'innen' },
     el('p', { class: 'dachzeile' }, `${t.fach} · ${t.code || t.art}${frist ? ' · Frist' : ''}`),
@@ -620,7 +764,7 @@ function meldung(t, naechste) {
     el('div', { class: 'knopfreihe' },
       frist && el('label', { class: 'haken' }, el('input', { type: 'checkbox', checked: !!merk(fristSchluessel(t)),
         onchange: e => { merk(fristSchluessel(t), e.target.checked ? '1' : null); titelblatt(); } }), 'Erledigt'),
-      el('a', { class: 'knopf', href: `#/${encodeURIComponent(t.fach)}` }, `Zur ${t.fach}-Ausgabe`),
+      R[t.fach] && el('a', { class: 'knopf', href: `#/${encodeURIComponent(t.fach)}` }, `Zur ${t.fach}-Ausgabe`),
       el('button', { class: 'knopf voll', type: 'button', onclick: () => d.close() }, 'Schließen'))));
   d.showModal();
 }
@@ -665,6 +809,74 @@ function lexikon(f, begriffe) {
   zeige();
   return box;
 }
+function uebungen(text) {
+  // Jede Aufgabe: „### Quelle · Titel“, Aufgabentext, „#### Lösung“, Lösungsweg
+  return el('section', { class: 'uebungen', 'aria-labelledby': 'ueb-kopf' },
+    el('div', { class: 'rubrik' }, el('h2', { id: 'ueb-kopf' }, 'Übungsaufgaben'), el('p', { class: 'meta' }, 'Erst selbst rechnen, dann aufdecken')),
+    el('div', { class: 'aufgaben' }, ('\n' + text).split(/\n### /).slice(1).map((s, i) => {
+      const [kopf, ...rest] = s.split('\n');
+      const [aufgabe, loesung] = rest.join('\n').split(/^#### Lösung\s*$/m);
+      const trenner = kopf.indexOf(' · ');
+      return el('article', { class: 'aufgabe' },
+        el('p', { class: 'dachzeile' }, `Aufgabe ${i + 1}${trenner > 0 ? ' · ' + kopf.slice(0, trenner) : ''}`),
+        el('h3', {}, (trenner > 0 ? kopf.slice(trenner + 3) : kopf).trim()),
+        markdown(el('div', { class: 'text' }), aufgabe),
+        loesung && el('details', { class: 'loesung' },
+          el('summary', { class: 'knopf' }, el('span', { class: 'zu' }, 'Lösung aufdecken'), el('span', { class: 'auf' }, 'Lösung verdecken')),
+          markdown(el('div', { class: 'text' }), loesung)));
+    })));
+}
+
+// Fragen zur Ausgabe: kurzer Chat, der nur die Ausgabe und die OLAT-Unterlagen des Fachs kennt
+const CHATS = {};  // Fach|Datum → { verlauf, laeuft, hinweis }; bleibt beim Neuzeichnen erhalten
+function fragen(f, a) {
+  const schluessel = `chat:${f}:${a.datum}`;
+  const c = CHATS[schluessel] ??= { verlauf: (() => { try { return JSON.parse(merk(schluessel) || '[]'); } catch { return []; } })(), laeuft: false, hinweis: '' };
+  const feld = el('textarea', { id: 'frage', rows: 3, placeholder: 'z. B. Wie komme ich bei der Elastizität auf die Formel?' });
+  const box = el('section', { class: 'fragen', 'aria-labelledby': 'fr-kopf' });
+  const zeige = () => box.replaceChildren(
+    el('h2', { id: 'fr-kopf' }, 'Fragen zur Ausgabe'),
+    el('p', { class: 'klein' }, `Antworten nur aus dieser Ausgabe und den OLAT-Unterlagen für ${f}.`),
+    el('div', { class: 'verlauf', 'aria-live': 'polite' }, c.verlauf.map(m => m.role === 'user'
+      ? el('div', {}, el('p', { class: 'dachzeile' }, 'Frage'), el('p', { class: 'frage' }, m.content))
+      : el('div', { class: 'antwort' }, el('p', { class: 'dachzeile' }, 'Antwort'), markdown(el('div', { class: 'text' }), m.content)))),
+    el('form', { class: 'frageform', onsubmit: e => { e.preventDefault(); stelle(); } },
+      el('label', { for: 'frage', class: 'sr' }, 'Deine Frage'), feld,
+      el('div', { class: 'knopfreihe' },
+        c.laeuft ? el('div', { class: 'presse' }, 'Die Redaktion schreibt …') : el('button', { class: 'knopf voll' }, 'Frage stellen'),
+        c.verlauf.length && !c.laeuft && el('button', { class: 'knopf', type: 'button', onclick: () => { c.verlauf = []; c.hinweis = ''; merk(schluessel, null); zeige(); } }, 'Verlauf löschen'),
+        c.hinweis && el('span', { class: 'meta' }, c.hinweis))));
+  async function stelle() {
+    const q = feld.value.trim();
+    if (!q || c.laeuft) return;
+    c.verlauf.push({ role: 'user', content: q }); c.laeuft = true; c.hinweis = ''; zeige();
+    try {
+      const quellen = await quelle(f);
+      const kontext = `Du beantwortest Fragen von Studierenden zum Fach ${f} (1. Semester Wirtschaftswissenschaften, Universität Innsbruck). Heute ist ${TAG}.
+Stütze dich nur auf die Wochenausgabe und die OLAT-Unterlagen unten. Steht etwas nicht darin, sag das ehrlich.
+Antworte knapp und verständlich auf Deutsch. Formeln in LaTeX zwischen \\( und \\), abgesetzt zwischen \\[ und \\].
+Aufgaben eines noch laufenden bewerteten Onlinetests rechnest du nicht mit den Originalzahlen vor, sondern erklärst den Weg an einem Beispiel mit anderen Zahlen.
+
+=== WOCHENAUSGABE vom ${a.datum} ===
+${a.roh}
+
+` + quellen.dateien.map(d => `=== ${d.art.toUpperCase()}: ${d.datei} ===\n${d.text.slice(0, 60000)}`).join('\n\n');
+      const m = MODELLE[$('modell').value];  // schneller als beim Drucken: mittleres Nachdenken reicht für Rückfragen
+      const j = await anfrage({ ...m, reasoning: m.reasoning?.effort ? { effort: 'medium' } : m.reasoning }, [{ role: 'system', content: kontext }, ...c.verlauf]);
+      c.verlauf.push({ role: 'assistant', content: j.choices[0].message.content || 'Keine Antwort erhalten.' });
+      merk(schluessel, JSON.stringify(c.verlauf));
+      c.hinweis = `Antwort für ${geld(j.usage?.cost || 0)}`;
+    } catch (err) {
+      c.verlauf.pop(); c.hinweis = err.message; feld.value = q;
+    }
+    c.laeuft = false;
+    if (box.isConnected) zeige(); else if (document.body.dataset.ansicht === 'ausgabe') zeichne();
+    kosten();
+  }
+  zeige();
+  return box;
+}
+
 async function ausgabeZeigen(f, tag) {
   const r = R[f];
   const sektion = $('ausgabe');
@@ -684,7 +896,8 @@ async function ausgabeZeigen(f, tag) {
       el('h1', {}, f),
       el('p', { class: 'datumszeile' }, el('span', {}, `Ausgabe vom ${datum(tag, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`),
         el('span', { class: 'neben' }, a.meta.split(' · ')[0] || ''), a.preis && el('span', {}, `Preis ${geld(a.preis)}`)),
-      a.schlagzeile && el('p', { class: 'schlagzeile' }, a.schlagzeile)),
+      a.schlagzeile && el('p', { class: 'schlagzeile' }, a.schlagzeile),
+      f === 'Englisch' && el('p', {}, el('a', { class: 'knopf', href: '#/wordpower' }, 'Word Power · Hausaufgaben-Werkstatt'))),
     r.druckt && presse(f),
     r.fehler && el('p', { class: 'fehlertext' }, r.fehler),
     rubrik(el('p', {}, 'Diese Woche'), a.quellen.length ? `Aus den Unterlagen: ${[...new Set(a.quellen.map(q => q.split('/').pop().replace(/\.\w+$/, '').replace(/_/g, ' ')))].join(' · ')}` : 'Aus den Folien und PS-Unterlagen der letzten Einheit'),
@@ -693,7 +906,9 @@ async function ausgabeZeigen(f, tag) {
       teil('blick', 'Auf einen Blick', 'auf einen blick'),
       teil('', 'Nächstes Proseminar', 'nächstes proseminar'),
       teil('', 'Nächste Vorlesung', 'nächste vorlesung')),
+    abschnitt(a, 'übungsaufgaben') && uebungen(abschnitt(a, 'übungsaufgaben')),
     lexikon(f, a.begriffe),
+    fragen(f, a),
     stamm && el('section', { class: 'stammdaten', 'aria-labelledby': 'stamm-kopf' },
       rubrik(el('h2', { id: 'stamm-kopf' }, 'Stammdaten'), 'Aus dem Syllabus · gilt das ganze Semester'),
       el('div', { class: 'stamm-raster' }, ('\n' + stamm).split(/\n### /).slice(1).map(s => {
@@ -706,13 +921,311 @@ async function ausgabeZeigen(f, tag) {
   ].filter(Boolean));
 }
 
+/* ---------- Kalender ---------- */
+let woche = 0, KAL = null;  // KAL: [{ name, sha, termine }] aus kalender/*.ics im Daten-Repo
+const alleTermine = () => Object.keys(R).flatMap(f => (aktuell(f)?.termine || []).map(t => ({ ...t, fach: f })));
+const zwei = n => String(n).padStart(2, '0');
+const uhr = d => `${zwei(d.getHours())}:${zwei(d.getMinutes())}`;
+
+function icsLesen(text, name) {
+  const lies = w => {  // 20261014 / 20261014T081500 / 20261014T071500Z → lokales Datum
+    const m = (w || '').match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})\d{2}(Z)?)?/);
+    if (!m) return null;
+    // ponytail: TZID wird als Zeitzone des Geräts gelesen (Innsbruck); fremde Zeitzonen bräuchten eine Tabelle
+    return { d: m[6] ? new Date(Date.UTC(+m[1], m[2] - 1, +m[3], +m[4], +m[5])) : new Date(+m[1], m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0)), ganz: !m[4] };
+  };
+  const klar = s => (s || '').replace(/\\n/gi, '\n').replace(/\\([,;\\])/g, '$1').trim();
+  const aus = [];
+  let e = null, tiefe = 0;
+  for (const z of text.replace(/\r?\n[ \t]/g, '').split(/\r?\n/)) {
+    if (z === 'BEGIN:VEVENT') { e = {}; tiefe = 0; continue; }
+    if (!e) continue;
+    if (z === 'END:VEVENT') {
+      const start = lies(e.DTSTART), ende = lies(e.DTEND);
+      if (start) {
+        const dauer = ende ? ende.d - start.d : 0, ex = new Set((e.EXDATE || []).map(w => +lies(w)?.d));
+        const r = Object.fromEntries((e.RRULE || '').split(';').filter(Boolean).map(p => p.split('=')));
+        let tage = [start.d];
+        if (r.FREQ === 'DAILY' || r.FREQ === 'WEEKLY') {  // ponytail: nur tägliche/wöchentliche Serien, sonst erster Termin
+          const u = lies(r.UNTIL), bis = u ? new Date(+u.d + (u.ganz ? 864e5 - 1 : 0)) : new Date(start.d.getFullYear() + 1, start.d.getMonth(), start.d.getDate());
+          const max = Math.min(+r.COUNT || Infinity, 400), schritt = (+r.INTERVAL || 1) * (r.FREQ === 'WEEKLY' ? 7 : 1);
+          const wt = r.FREQ === 'WEEKLY' && r.BYDAY ? r.BYDAY.split(',').map(t => ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'].indexOf(t.slice(-2))) : [null];
+          tage = [];
+          for (const w = new Date(start.d); w <= bis && tage.length < max; w.setDate(w.getDate() + schritt))
+            for (const t of wt) {
+              const d = new Date(w);
+              if (t != null) d.setDate(w.getDate() - (w.getDay() + 6) % 7 + t);
+              if (d >= start.d && d <= bis && tage.length < max) tage.push(d);
+            }
+        }
+        for (const d of tage.filter(d => !ex.has(+d)))
+          aus.push({ datum: iso(d), zeit: start.ganz ? null : uhr(d), ende: !start.ganz && dauer ? uhr(new Date(+d + dauer)) : null,
+            titel: klar(e.SUMMARY) || 'Termin', ort: klar(e.LOCATION) || null, info: klar(e.DESCRIPTION) || null, fach: name, art: 'Termin', code: '' });
+      }
+      e = null; continue;
+    }
+    if (/^BEGIN:/.test(z)) { tiefe++; continue; }  // VALARM u. Ä. im Termin überspringen
+    if (/^END:/.test(z)) { tiefe = Math.max(0, tiefe - 1); continue; }
+    const m = !tiefe && z.match(/^((?:[^:"]|"[^"]*")*):(.*)$/);
+    if (!m) continue;
+    const kopf = m[1].split(';')[0];
+    if (kopf === 'EXDATE') (e.EXDATE ||= []).push(...m[2].split(',')); else e[kopf] = m[2];
+  }
+  return aus;
+}
+async function kalenderLaden(neu) {
+  if (KAL && !neu) return KAL;
+  const liste = ((await gh('kalender', { roh: false })) || []).filter(d => /\.ics$/i.test(d.name));
+  KAL = await Promise.all(liste.map(async d => ({ name: d.name.replace(/\.ics$/i, ''), sha: d.sha, termine: icsLesen(await gh(`kalender/${d.name}`) || '', d.name.replace(/\.ics$/i, '')) })));
+  return KAL;
+}
+async function kalenderHochladen(dateien) {
+  try {
+    for (const d of dateien) {
+      const text = await d.text();
+      if (!text.includes('BEGIN:VCALENDAR')) { status(`${d.name} ist keine Kalenderdatei (.ics).`, true); continue; }
+      const name = d.name.replace(/\.ics$/i, '').replace(/[^\p{L}\p{N} ._-]/gu, '_') + '.ics';
+      const alt = KAL?.find(k => k.name + '.ics' === name);
+      await nacheinander(() => gh(`kalender/${name}`, { method: 'PUT', roh: false, body: { message: `Kalender ${name}`, content: base64(text), sha: alt?.sha } }));
+    }
+    await kalenderLaden(true);
+  } catch (e) { status(e.message, true); }
+  kalenderZeigen();
+}
+async function kalenderLoeschen(k) {
+  if (!confirm(`Kalender „${k.name}“ aus der App entfernen?`)) return;
+  try {
+    await nacheinander(() => gh(`kalender/${k.name}.ics`, { method: 'DELETE', roh: false, body: { message: `Kalender ${k.name} entfernt`, sha: k.sha } }));
+    await kalenderLaden(true);
+  } catch (e) { status(e.message, true); }
+  kalenderZeigen();
+}
+
+// Kalenderdatei mit Erinnerungen, damit das iPad auch bei geschlossener App an Fristen erinnert
+const terminId = t => 'lh' + [...`${t.fach}|${t.datum}|${t.zeit || ''}|${t.art}|${t.code || ''}`]
+  .reduce((h, c) => Math.imul(h ^ c.codePointAt(0), 16777619) >>> 0, 2166136261).toString(36) + '@lernhelfer';
+function icsExport(termine) {
+  const text = s => String(s || '').replace(/[\\;,]/g, m => '\\' + m).replace(/\r?\n/g, '\\n');
+  const stempel = d => `${iso(d).replace(/-/g, '')}T${zwei(d.getHours())}${zwei(d.getMinutes())}00`;
+  const zeilen = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Lernhelfer//DE', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'X-WR-CALNAME:Lernhelfer'];
+  for (const t of termine) {
+    const frist = FRISTEN.has(t.art), mitZeit = /^\d{1,2}:\d{2}$/.test(t.zeit || '');
+    const start = new Date(`${t.datum}T${mitZeit ? t.zeit.padStart(5, '0') : '12:00'}`);
+    const ende = new Date(+start + (mitZeit ? (frist ? 0 : 90 * 6e4) : 864e5));
+    zeilen.push('BEGIN:VEVENT', `UID:${terminId(t)}`, `DTSTAMP:${new Date().toISOString().replace(/[-:]|\.\d+/g, '')}`,
+      mitZeit ? `DTSTART:${stempel(start)}` : `DTSTART;VALUE=DATE:${t.datum.replace(/-/g, '')}`,
+      mitZeit ? `DTEND:${stempel(ende)}` : `DTEND;VALUE=DATE:${iso(ende).replace(/-/g, '')}`,
+      `SUMMARY:${text(`${t.fach} ${t.code || t.art}${frist ? ' · Frist' : ''}: ${t.titel || ''}`)}`,
+      t.ort && `LOCATION:${text(t.ort)}`, t.info && `DESCRIPTION:${text(t.info)}`,
+      // Fristen: einen Tag und zwei Stunden vorher; ganztägige um 9 Uhr am Vortag
+      ...(frist ? (mitZeit ? ['-P1D', '-PT2H'] : ['-PT15H']) : []).flatMap(v => ['BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${text(t.titel || t.art)}`, `TRIGGER:${v}`, 'END:VALARM']),
+      'END:VEVENT');
+  }
+  zeilen.push('END:VCALENDAR');
+  const inhalt = zeilen.filter(Boolean).map(z => z.match(/.{1,36}/gu).join('\r\n ')).join('\r\n') + '\r\n';
+  const a = el('a', { href: URL.createObjectURL(new Blob([inhalt], { type: 'text/calendar;charset=utf-8' })), download: 'lernhelfer-termine.ics' });
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+  termine.forEach(t => merk('ics:' + terminId(t), '1'));
+  status(`${termine.length} Termine als Kalenderdatei geladen. Auf dem iPad die Datei öffnen und „Alle hinzufügen“ tippen.`);
+  kalenderZeigen();
+}
+
+function kalenderZeigen() {
+  const s = $('kalender');
+  const montag = new Date(heute.getFullYear(), heute.getMonth(), heute.getDate() - (heute.getDay() + 6) % 7 + 7 * woche);
+  const tage = Array.from({ length: 7 }, (_, i) => new Date(montag.getFullYear(), montag.getMonth(), montag.getDate() + i));
+  const alle = [...alleTermine(), ...(KAL || []).flatMap(k => k.termine)];
+  const kuenftig = alleTermine().filter(t => tageBis(t.datum) >= 0);
+  const neue = kuenftig.filter(t => !merk('ics:' + terminId(t)));
+  const eintrag = t => el('button', { class: `kal-eintrag${FRISTEN.has(t.art) ? ' frist' : ''}`, type: 'button', onclick: () => meldung(t, false) },
+    el('span', { class: 'zeit' }, t.zeit ? `${t.zeit}${t.ende ? '–' + t.ende : ''}` : 'ganztägig'),
+    el('span', { class: 'kal-titel' }, t.titel || t.art),
+    el('b', {}, `${t.fach}${t.code ? ' ' + t.code : ''}${FRISTEN.has(t.art) ? ' · Frist' : ''}`),
+    t.ort && el('span', { class: 'meta' }, t.ort));
+  s.replaceChildren(
+    el('div', { class: 'kal-kopf' },
+      el('div', {}, el('h2', {}, 'Kalender'),
+        el('p', { class: 'meta' }, `Kalenderwoche ${kw(montag)} · ${montag.toLocaleDateString('de-AT', { day: 'numeric', month: 'long' })} bis ${tage[6].toLocaleDateString('de-AT', { day: 'numeric', month: 'long', year: 'numeric' })}`)),
+      el('div', { class: 'kal-nav' },
+        el('button', { class: 'knopf', type: 'button', onclick: () => { woche--; kalenderZeigen(); } }, 'Woche zurück'),
+        el('button', { class: 'knopf', type: 'button', disabled: woche === 0, onclick: () => { woche = 0; kalenderZeigen(); } }, 'Heute'),
+        el('button', { class: 'knopf', type: 'button', onclick: () => { woche++; kalenderZeigen(); } }, 'Woche vor'))),
+    el('div', { class: 'woche' }, tage.map(d => {
+      const liste = alle.filter(t => t.datum === iso(d)).sort((a, b) => (a.zeit || '').localeCompare(b.zeit || ''));
+      return el('section', { class: `kal-tag${iso(d) === HEUTE ? ' heute' : ''}${liste.length ? '' : ' ohne'}`, 'aria-label': datum(iso(d), { weekday: 'long', day: 'numeric', month: 'long' }) },
+        el('h3', {}, d.toLocaleDateString('de-AT', { weekday: 'short', day: '2-digit', month: '2-digit' }), iso(d) === HEUTE ? ' · heute' : ''),
+        liste.map(eintrag));
+    })),
+    el('div', { class: 'kal-panels' },
+      el('div', { class: 'kal-panel' },
+        el('h3', {}, 'In den iPad-Kalender'),
+        el('p', { class: 'klein' }, 'Lädt alle kommenden Termine und Fristen aus den Ausgaben als Kalenderdatei. Auf dem iPad öffnen und „Alle hinzufügen“ tippen. Fristen erinnern dann einen Tag und zwei Stunden vorher, auch wenn die App zu ist.'),
+        el('div', { class: 'knopfreihe' },
+          el('button', { class: 'knopf voll', type: 'button', disabled: !neue.length, onclick: () => icsExport(neue) }, neue.length ? `${neue.length} neue Termine übernehmen` : 'Alle Termine übernommen'),
+          kuenftig.length > neue.length && el('button', { class: 'knopf', type: 'button', onclick: () => icsExport(kuenftig) }, 'Alle noch einmal'))),
+      el('div', { class: 'kal-panel' },
+        el('h3', {}, 'Eigene Kalender (.ics)'),
+        el('p', { class: 'klein' }, 'Zum Beispiel der Stundenplan aus LFU:online. Die Datei liegt im privaten Daten-Repo und erscheint so auf allen Geräten im Kalender oben.'),
+        KAL == null ? el('p', { class: 'meta' }, 'Lade Kalender …') : el('ul', { class: 'kal-liste' }, KAL.map(k => el('li', {},
+          el('span', {}, `${k.name} · ${k.termine.length} Termine`),
+          el('button', { class: 'knopf', type: 'button', onclick: () => kalenderLoeschen(k) }, 'Entfernen')))),
+        el('div', { class: 'knopfreihe' }, el('label', { class: 'knopf' }, 'ICS-Datei hinzufügen',
+          el('input', { type: 'file', accept: '.ics,text/calendar', multiple: true, class: 'sr', onchange: e => kalenderHochladen([...e.target.files]) }))))));
+  if (!KAL) kalenderLaden().then(() => document.body.dataset.ansicht === 'kalender' && kalenderZeigen()).catch(e => { KAL = []; status(e.message, true); });
+}
+
+/* ---------- Word Power: Englisch-Hausaufgabe, nur mit Passwort ---------- */
+// Die Prompts liegen verschlüsselt im privaten Daten-Repo (englisch/wordpower.json, erstellt mit wordpower_verschluesseln.mjs);
+// ohne Passwort gibt es nichts zu entschlüsseln. Entsperrt bleibt es nur bis zum Neuladen.
+const WP_TRANSKRIPT = 'google/gemini-3.8-flash';  // nur Gemini über Google AI Studio nimmt YouTube-Links
+const WP_MODELL = 'openai/gpt-6-luna';
+const WP_DOC_CSS = ':root{color-scheme:light}html{background:#fdfbf6}'
+  + 'body{max-width:780px;margin:0 auto;padding:40px;padding:clamp(24px,5vw,56px);color:#1b2130;'
+  + 'font:17px/1.65 Literata,"Iowan Old Style",Georgia,serif}'
+  + 'h2{font-size:1.5em;line-height:1.25;margin:2.2em 0 .7em;padding-bottom:.35em;border-bottom:1px solid #ddd6c6}'
+  + 'h2:first-child{margin-top:0}h3{font-size:1.12em;margin:1.8em 0 .4em}p{margin:.45em 0}b{color:#23389a}'
+  + 'li{margin:.3em 0}table{border-collapse:collapse;width:100%;margin:1em 0;font-size:.92em}'
+  + 'th,td{border:1px solid #cfc7b5;padding:.5em .7em;text-align:left;vertical-align:top}th{background:#f1ede3}';
+let WP = null, wpTitel = merk('wp.title') || '', wpDoc = merk('wp.doc') || '', wpWach = null;
+
+async function wpEntsperren(pin) {
+  const roh = await gh('englisch/wordpower.json');
+  if (!roh) throw new Error('Word Power ist in diesem Daten-Repo nicht eingerichtet.');
+  const j = JSON.parse(roh), b = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const basis = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b(j.salt), iterations: j.iter, hash: 'SHA-256' }, basis, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+  try { return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b(j.iv) }, key, b(j.daten)))); }
+  catch { throw new Error('Falsches Passwort.'); }
+}
+function wordpower() {
+  $('wp-sperre').hidden = !!WP; $('wp-werk').hidden = !WP;
+  $('wp-dl').disabled = !$('wp-out').value.trim();
+}
+const wpSag = (knoten, text, art) => { knoten.textContent = text; knoten.className = 'wp-status' + (art ? ' ' + art : ''); };
+const wpWarum = e => e instanceof TypeError ? 'Keine Verbindung. Bist du online, und blieb der Bildschirm an?' : e.message;
+async function wpBeschaeftigt(knopf, an) {
+  knopf.disabled = an;
+  try {  // Bildschirm wach halten: die Sperre beendet sonst die laufende Anfrage
+    if (an) wpWach = await navigator.wakeLock?.request('screen');
+    else { await wpWach?.release(); wpWach = null; }
+  } catch {}
+}
+function wpSpeichern(text, name, typ) {
+  const a = el('a', { href: URL.createObjectURL(new Blob([text], { type: typ })), download: name });
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+}
+function wpVideo() {  // youtu.be, shorts, live, embed, watch → eine Form, die Gemini sicher versteht
+  const m = $('wp-url').value.match(/(?:[?&]v=|youtu\.be\/|\/shorts\/|\/live\/|\/embed\/)([\w-]{11})/);
+  return m && 'https://www.youtube.com/watch?v=' + m[1];
+}
+async function wpNachschlagen() {  // Titel und Vorschaubild über YouTube oEmbed
+  const v = wpVideo();
+  if (!v) { $('wp-talk').hidden = true; return; }
+  try {
+    const j = await (await fetch('https://www.youtube.com/oembed?format=json&url=' + encodeURIComponent(v))).json();
+    if (v !== wpVideo()) return;
+    wpTitel = j.title; merk('wp.title', wpTitel);
+    $('wp-thumb').src = j.thumbnail_url; $('wp-ttitle').textContent = j.title; $('wp-tauthor').textContent = j.author_name;
+    $('wp-talk').hidden = false;
+  } catch { $('wp-talk').hidden = true; }
+}
+// OpenRouter gestreamt: zeigt Fortschritt und hält die Verbindung offen
+async function wpStrom(body, beiText, beimDenken) {
+  const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST', body: JSON.stringify({ ...body, stream: true, usage: { include: true } }),
+    headers: { Authorization: 'Bearer ' + cfg.openrouter, 'Content-Type': 'application/json', 'X-Title': 'OLAT Lernhelfer' },
+  });
+  if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error('OpenRouter ' + r.status + ': ' + (j.error?.message || r.statusText)); }
+  const leser = r.body.pipeThrough(new TextDecoderStream()).getReader();
+  let puffer = '', text = '', preis = 0;
+  for (;;) {
+    const { value, done } = await leser.read();
+    if (done) break;
+    puffer += value;
+    const zeilen = puffer.split('\n'); puffer = zeilen.pop();
+    for (const z of zeilen) {
+      if (!z.startsWith('data: ') || z === 'data: [DONE]') continue;  // „: OPENROUTER PROCESSING“ u. Ä.
+      const m = JSON.parse(z.slice(6));
+      if (m.error) throw new Error('OpenRouter: ' + (m.error.message || JSON.stringify(m.error)));
+      if (m.usage) preis = m.usage.cost || 0;  // kommt im letzten Stück, mit echtem Preis in $
+      const d = m.choices?.[0]?.delta || {};
+      if (d.content) { text += d.content; beiText(text); } else if (d.reasoning && beimDenken) beimDenken();
+    }
+  }
+  if (!text.trim()) throw new Error('Leere Antwort von OpenRouter. Bitte nochmal versuchen.');
+  return { text: text.trim().replace(/^```\w*\s*|\s*```$/g, ''), preis };
+}
+function wpZeigen() {
+  if (!wpDoc) return;
+  const inhalt = wpDoc.match(/<body>([\s\S]*)<\/body>/)?.[1] || '';
+  if (window.DOMPurify) $('wp-blatt').innerHTML = DOMPurify.sanitize(inhalt); else $('wp-blatt').textContent = inhalt;
+  $('wp-blatt').hidden = false; $('wp-hwdl').disabled = false;
+}
+$('wp-sperre').onsubmit = async e => {
+  e.preventDefault();
+  $('wp-sperre-text').textContent = 'Prüfe …';
+  try { WP = await wpEntsperren($('wp-pin').value); $('wp-pin').value = ''; $('wp-sperre-text').textContent = ''; wordpower(); }
+  catch (err) { $('wp-sperre-text').textContent = err.message; }
+};
+$('wp-zu').onclick = () => { WP = null; wordpower(); $('wp-sperre-text').textContent = 'Gesperrt.'; };
+for (const [id, k] of [['wp-url', 'wp.url'], ['wp-out', 'wp.out'], ['wp-notes', 'wp.notes']]) {
+  $(id).value = merk(k) || '';
+  $(id).addEventListener('input', () => { merk(k, $(id).value); wordpower(); });
+}
+$('wp-url').addEventListener('change', wpNachschlagen);
+$('wp-dl').onclick = () => wpSpeichern($('wp-out').value, 'transkript.txt', 'text/plain;charset=utf-8');
+$('wp-hwdl').onclick = () => wpSpeichern(wpDoc, 'word-power.html', 'text/html;charset=utf-8');
+$('wp-tform').onsubmit = async e => {
+  e.preventDefault();
+  const st = $('wp-st'), v = wpVideo();
+  if (!v) return wpSag(st, 'Das sieht nicht nach einem YouTube-Link aus.', 'fehlertext');
+  await wpBeschaeftigt($('wp-go'), true);
+  wpNachschlagen(); wpSag(st, 'Gemini sieht sich das Video an …', 'presse');
+  try {
+    const { text, preis } = await wpStrom({ model: WP_TRANSKRIPT, provider: { only: ['google-ai-studio'] }, reasoning: { effort: 'low' },
+      messages: [{ role: 'user', content: [{ type: 'text', text: WP.transcribe }, { type: 'video_url', video_url: { url: v } }] }] },
+      t => {
+        const o = $('wp-out'), marken = t.match(/\d\d:\d\d:\d\d/g);
+        o.value = t; o.scrollTop = o.scrollHeight;
+        wpSag(st, 'Transkribiere …' + (marken ? ' bei ' + marken.pop().replace(/^00:/, '') : ''), 'presse');
+      });
+    $('wp-out').value = text; merk('wp.out', text);
+    wpSag(st, `Fertig · Kosten ${geld(preis)}`);
+  } catch (err) {
+    merk('wp.out', $('wp-out').value);  // Teiltranskript behalten
+    wpSag(st, wpWarum(err), 'fehlertext');
+  }
+  wordpower(); wpBeschaeftigt($('wp-go'), false); kosten();
+};
+$('wp-hwgo').onclick = async () => {
+  const st = $('wp-hwst');
+  if (!$('wp-out').value.trim()) return wpSag(st, 'Erst transkribieren oder ein Transkript einfügen.', 'fehlertext');
+  await wpBeschaeftigt($('wp-hwgo'), true); wpSag(st, 'Starte …', 'presse');
+  const notizen = $('wp-notes').value;
+  const nachricht = `Talk: ${wpTitel}\nLink: ${wpVideo() || $('wp-url').value.trim()}\n\nTranscript:\n${$('wp-out').value}\n\n`
+    + (notizen.trim() ? `Student's notes for the reflection:\n${notizen}` : 'No notes given: skip section 7.');
+  try {
+    const { text, preis } = await wpStrom({ model: WP_MODELL, reasoning: { effort: 'medium' }, messages: [
+      { role: 'system', content: WP.homework }, { role: 'user', content: nachricht }] },
+      t => wpSag(st, 'Schreibt … ' + t.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length + ' Wörter', 'presse'),
+      () => wpSag(st, 'Denkt nach …', 'presse'));
+    wpDoc = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Word Power</title><style>${WP_DOC_CSS}</style></head><body>${text}</body></html>`;
+    merk('wp.doc', wpDoc); wpZeigen(); wpSag(st, `Fertig · Kosten ${geld(preis)}`);
+  } catch (err) { wpSag(st, wpWarum(err), 'fehlertext'); }
+  wpBeschaeftigt($('wp-hwgo'), false); kosten();
+};
+wpZeigen();
+if (wpVideo()) wpNachschlagen();
+
 /* ---------- Ansichten ---------- */
 let ansicht = '';
 async function zeichne() {
   const [teil, tag] = location.hash.replace(/^#\/?/, '').split('/').map(decodeURIComponent);
-  const neu = !cfg || teil === 'einstellungen' ? 'einstellungen' : R[teil] ? 'ausgabe' : 'titelblatt';
+  const neu = !cfg || teil === 'einstellungen' ? 'einstellungen' : ['kalender', 'wordpower'].includes(teil) ? teil : R[teil] ? 'ausgabe' : 'titelblatt';
   if ($('meldung').open) $('meldung').close();
-  for (const id of ['titelblatt', 'ausgabe', 'einstellungen']) $(id).hidden = id !== neu;
+  for (const id of ['titelblatt', 'ausgabe', 'einstellungen', 'kalender', 'wordpower']) $(id).hidden = id !== neu;
   document.body.dataset.ansicht = neu;
   $('druck').hidden = neu !== 'titelblatt';
   $('nach-titel').hidden = neu === 'titelblatt';
@@ -723,8 +1236,10 @@ async function zeichne() {
     $('abmelden').hidden = !cfg;
   } else if (neu === 'ausgabe') {
     try { await ausgabeZeigen(teil, tag); } catch (e) { status(e.message, true); }
-  } else titelblatt();
-  if (neu !== ansicht) { ansicht = neu; scrollTo(0, 0); }
+  } else if (neu === 'kalender') kalenderZeigen();
+  else if (neu === 'wordpower') wordpower();
+  else titelblatt();
+  if (neu !== ansicht) { ansicht = neu; scrollTo(0, 0); if (cfg && Object.keys(R).length) status(''); }
 }
 
 async function start() {
@@ -737,9 +1252,13 @@ async function start() {
   kosten();
   try { await laden(); status(''); } catch (e) { status(e.message, true); }
   await zeichne();
-  const staende = await Promise.all(Object.keys(R).map(f => quelle(f).then(q => q.stand).catch(() => null)));
-  const stand = staende.filter(Boolean).sort().pop();
-  if (stand) $('stand').textContent = `Unterlagen aus OLAT, Stand ${stand}. Neue holt der PC mit holen.bat.`;
+  // abgleich.json schreibt der PC (holen.py): wann zuletzt abgeglichen, oder dass er neu bei OLAT einloggen muss
+  const abgleich = await gh('abgleich.json').then(t => t && JSON.parse(t)).catch(() => null);
+  const wann = abgleich && new Date(abgleich.zeit).toLocaleString('de-AT', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+  $('stand').textContent = !abgleich ? 'Neue Unterlagen holt der PC aus OLAT (holen.bat).'
+    : abgleich.ok ? `OLAT-Abgleich ${wann}: ${abgleich.text}. Der PC gleicht von selbst ab, solange er läuft.`
+    : `${abgleich.text} (seit ${wann})`;
+  $('stand').classList.toggle('warnung', abgleich?.ok === false);
 }
 
 window.onhashchange = zeichne;

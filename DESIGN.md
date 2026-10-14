@@ -272,7 +272,19 @@ Tagesköpfe in Archivo 750 mit 1.5px-Unterlinie und Countdown („· heute“, �
 3px-Rahmen, min 15rem hoch, Begriff zentriert in Archivo 850/wdth 72, Rückseite in tiefem Lachspapier mit Definition in Serif. Dreht sich in 0.55s um die Y-Achse (bei reduzierter Bewegung sofort). Darunter zwei gleich breite Knöpfe „Nochmal“ (Rahmen) und „Gewusst“ (voll); die Liste aller Begriffe als Aufklapper mit gedrehtem Linienwinkel.
 
 ### Navigation
-Eine schlichte Werkzeugleiste über dem Zeitungskopf: Archivo 500, 0.9375rem, ohne Unterstreichung, Hover unterstreicht. Archiv-Ausgaben als Datumsreihe; die aktuelle mit 3px-Unterstreichung und 850.
+Eine schlichte Werkzeugleiste über dem Zeitungskopf (Titelblatt, Kalender, Word Power, Einstellungen): Archivo 500, 0.9375rem, ohne Unterstreichung, Hover unterstreicht, bricht zwischen den Links um, nie in einem Link. Archiv-Ausgaben als Datumsreihe; die aktuelle mit 3px-Unterstreichung und 850.
+
+### Übungsaufgaben (erst rechnen, dann aufdecken)
+Eigene Rubrik nach dem Wochenraster: zwei Spalten (eine auf dem Handy), jede Aufgabe mit Dachzeile „Aufgabe N · Quelle“ in Archivo 850 Versal, Titel in Source Serif 800, Aufgabentext, dann ein `<details>` mit Knopf „Lösung aufdecken / verdecken“. Die Lösung steht in einem Kasten mit 1.5px-Tintenrand auf `--papier-tief`, nie mit farbigem Seitenstreifen. Quelle im Markdown: `### Quelle · Titel`, Aufgabe, `#### Lösung`, Lösungsweg.
+
+### Fragen zur Ausgabe
+Leserbrief-Form unter dem Lexikon, max 760px: Etikett „Frage“ / „Antwort“ in Archivo Versal, die Frage kursiv in Source Serif 600 (Lesegröße, keine Display-Kursive), die Antwort als normaler Text mit Formeln, getrennt durch 1.5px-Linien. Während die Antwort entsteht, steht die Druckwalze („Die Redaktion schreibt …“) an Stelle des Knopfs; danach der Preis der Antwort als Meta-Zeile.
+
+### Kalender (Wochenansicht)
+Kopf wie eine Rubrik (Archivo 900 bei 65% Breite) mit KW und Zeitraum als Meta-Zeile, rechts drei Knöpfe. Darunter sieben Spalten mit 1.5px-Senkrechten; der heutige Tag liegt auf `--papier-tief`, nicht in Bordeaux. Einträge: Zeit fett mit Tabellenziffern, Titel, Quelle (Fach oder Kalendername) als kleines Versal-Etikett, Ort. Fristen sind nur über „· Frist“ und Gewicht markiert. Unter 1080px stapeln sich die Tage; leere Tage außer heute fallen weg. Zwei Felder darunter: Export ins iPad und eigene .ics-Dateien.
+
+### Word Power (Werkstatt hinter Passwort)
+Englisch-Hausaufgabe im Zeitungslayout: Ausgabe-Kopf (Name, Schlagzeile, Meta-Zeile darunter), dann nummerierte Schritte mit 3px-Linie und großer Archivo-Überschrift. Felder mit 1.5px-Tintenrand ohne Radius. Laufende Schritte zeigen die Druckwalze als Status. Der fertige Entwurf steht als Blatt auf `--papier-tief` mit 1.5px-Rand. Vor dem Entsperren ist nur das Passwortfeld sichtbar.
 
 ## Do's and Don'ts
 

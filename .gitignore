@@ -10,3 +10,5 @@ __pycache__/
 openrouter_key*
 *.txt
 .impeccable/
+.olat-chrome/
+holen.log
