@@ -253,6 +253,9 @@ Ein randabfallendes Band in Druckerschwärze mit Papier-Schrift, nur mit offenen
 ### Meldung (Termin-Details)
 Modaler `<dialog>` auf Papier mit 3px-Rahmen rundum. Dachzeile „FACH · CODE · FRIST“ in Archivo-Versalien (Bordeaux, wenn es die nächste Frist ist), Titel in Source Serif 800, darunter eine Faktentabelle zwischen 1.5px-Linien (Wann mit Countdown, Wo, Art), dann der Info-Text aus der Ausgabe und eine Knopfreihe: Erledigt-Kästchen (nur Fristen), „Zur Fach-Ausgabe“, „Schließen“. Öffnet aus dem Ticker und aus jeder Terminzeile; Klick auf den Hintergrund oder Esc schließt.
 
+### Rubriken: Diese Woche und Stammdaten
+Die Ausgabe trennt sichtbar, was sich wöchentlich ändert und was das Semester über gilt. Eine Rubrik-Leiste (3px-Linie oben, 1.5px unten, Archivo 900 wdth 62 in Versalien, rechts die Herkunft als Meta-Zeile) steht vor jedem Teil: „Diese Woche · Aus den Unterlagen: …“ über Zusammenfassung, Auf einen Blick, PS, VO und Lexikon; „Stammdaten · Aus dem Syllabus · gilt das ganze Semester“ unten vor dem Archiv. Wochenstoff ist Zeitungstext in Source Serif; Stammdaten sind Nachschlagedaten in Archivo 450 mit Tabellenziffern, in vier Spalten mit 1.5px-Senkrechten (Termine und Orte, Leistungsbeurteilung, Regeln, Material und Kontakt), am Tablet zwei, am Handy eine.
+
 ### Formeln
 LaTeX aus den Ausgaben wird mit KaTeX als MathML gesetzt; der Browser nimmt seine eigene Mathe-Schrift. Abgesetzte Formeln 1.15em mit eigenem waagrechten Scrollbereich, damit lange Gleichungen am Handy nicht die Spalte sprengen.
 

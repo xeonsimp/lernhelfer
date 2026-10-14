@@ -193,6 +193,21 @@
   .artikel > .text > p:first-of-type::first-line { font-weight: 650; }
   .artikel > .text > p:first-of-type::first-letter { float: left; margin: 0.07em 0.1em 0 0; font: 900 3.6em/0.78 var(--grot); font-stretch: 62%; }
 
+  /* Rubriken: was diese Woche aus den Folien kommt, und was das ganze Semester gilt */
+  .rubrik { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 24px; margin-top: 34px; padding: 10px 0 8px; border-top: var(--dick); border-bottom: var(--duenn); }
+  .rubrik > :first-child { margin: 0; font: 900 clamp(1.625rem, 3.2vw, 2.25rem)/1 var(--grot); font-stretch: 62%; text-transform: uppercase; letter-spacing: 0.01em; }
+  .rubrik .meta { max-width: 80ch; overflow-wrap: anywhere; }
+  .rubrik + .raster { margin-top: 18px; }
+  .stammdaten { margin-top: 48px; }
+  .stammdaten .rubrik { margin-top: 0; }
+  .stamm-raster { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .stamm { padding: 14px 20px 6px; border-left: var(--duenn); }
+  .stamm:first-child { padding-left: 0; border-left: 0; }
+  .stamm:last-child { padding-right: 0; }
+  .stamm h3 { margin: 0 0 8px; font: 850 0.9375rem/1.2 var(--grot); font-stretch: 78%; text-transform: uppercase; letter-spacing: 0.04em; }
+  .stamm .text { font: 450 0.9375rem/1.45 var(--grot); font-stretch: 92%; font-variant-numeric: tabular-nums; }
+  .stamm .text ul { padding-left: 1em; }
+
   /* Lexikon */
   .lexikon { margin-top: 40px; border-top: var(--dick); padding-top: 14px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 360px); gap: 16px 48px; align-items: start; }
   .lexikon > * { min-width: 0; }
@@ -246,6 +261,10 @@
     .abschnitt.blick { order: -1; margin-bottom: 18px; }
     .artikel { margin: 0 0 18px; padding-right: 0; border-right: 0; }
     .lexikon { grid-template-columns: 1fr; }
+    .stamm-raster { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .stamm:nth-child(odd) { padding-left: 0; border-left: 0; }
+    .stamm:nth-child(even) { padding-right: 0; }
+    .stamm:nth-child(n+3) { border-top: var(--duenn); }
   }
   @media (max-width: 640px) {
     .ressorts, .ressorts.mit-aufmacher { grid-template-columns: 1fr; }
@@ -258,6 +277,9 @@
     [data-ansicht="ausgabe"] .kopf .datumszeile { display: none; }
     [data-ansicht="ausgabe"] .titel { font-size: 1.75rem; }
     .ausgabe-kopf h1 { font-size: 3rem; }
+    .stamm-raster { grid-template-columns: 1fr; }
+    .stamm, .stamm:nth-child(n) { padding: 12px 0 4px; border-left: 0; }
+    .stamm + .stamm { border-top: var(--duenn); }
   }
 </style>
 </head>
@@ -340,22 +362,37 @@ Unten stehen ALLE Unterlagen, die in OLAT für dieses Fach liegen: Vorlesungsfol
 
 Schritt 1 (nur für dich, nicht ausgeben): Bestimme mit dem Terminplan im Syllabus und dem heutigen Datum, welche Vorlesungs- und PS-Einheit zuletzt stattgefunden hat, welche Unterlagen dazu gehören und welche Einheiten, Abgaben und Tests als Nächstes kommen. Unterlagen, die dafür nicht relevant sind, ignorierst du.
 
-Schritt 2: Schreibe die Wochenausgabe in Markdown mit genau diesen Abschnitten:
+Schritt 2: Schreibe die Wochenausgabe in Markdown mit genau diesen Abschnitten. Trenne dabei streng:
+- Die ersten vier Abschnitte enthalten NUR, was sich von Woche zu Woche ändert: Inhalte der Folien, die konkreten nächsten Einheiten, aktuelle Aufgaben und Fristen.
+- Was das ganze Semester gleich bleibt (regelmäßige Zeiten und Räume, Lehrende, Leistungsbeurteilung, Anwesenheit, Abgabeformat, KI-Regeln, Literatur), steht NUR im Abschnitt Stammdaten und wird in den anderen Abschnitten nicht wiederholt.
 
 ## Auf einen Blick
-3–5 Stichpunkte: was zuletzt dran war, was als Nächstes kommt, was bis wann fällig ist. Nenne zum Schluss die verwendeten Unterlagen (Dateinamen).
+3–5 Stichpunkte: was zuletzt dran war, was als Nächstes kommt, was bis wann fällig ist.
 
 ## Zusammenfassung der letzten Einheit
-Ausführlich und verständlich, gegliedert mit ### Zwischenüberschriften. Beispiele aus den Folien übernehmen. Hat noch keine Einheit stattgefunden, fasse die Einführung bzw. den Syllabus zusammen.
+Nur der Stoff aus den Folien und PS-Unterlagen der letzten Einheit, ausführlich und verständlich, gegliedert mit ### Zwischenüberschriften. Beispiele aus den Folien übernehmen. Keine Organisation. Hat noch keine Einheit stattgefunden, fasse die inhaltliche Einführung zusammen.
 
 ## Nächstes Proseminar
-Datum, Thema, was ich wissen und vorbereiten muss, Aufgaben und Abgaben mit Frist.
+Datum, Thema, was man dafür wissen und vorbereiten muss, Aufgaben und Abgaben dieser Einheit mit Frist.
 
 ## Nächste Vorlesung
-Datum, Uhrzeit, Ort, Thema und was ich vorher lesen oder tun sollte. Liegen die Folien schon in OLAT, gib einen kurzen Ausblick.
+Datum, Thema und was man vorher lesen oder tun sollte. Liegen die Folien schon in OLAT, gib einen kurzen inhaltlichen Ausblick.
+
+## Stammdaten
+Knappe Stichpunkte aus Syllabus und organisatorischen Unterlagen, genau mit diesen Unterüberschriften:
+### Termine und Orte
+Regelmäßige Zeiten, Räume, Lehrende der VO und des PS.
+### Leistungsbeurteilung
+Teilleistungen mit Gewichtung, Punkte bzw. Notenschlüssel, Prüfungstermine.
+### Regeln
+Anwesenheit, Abgabeform und -weg, Fehlversuche, Nutzung von KI.
+### Material und Kontakt
+Literatur, OLAT-Bereiche, Kontakt und Sprechstunden.
+Steht zu einer Unterüberschrift nichts in den Unterlagen, schreib „Nicht angegeben.“
 
 Schritt 3: Ganz am Ende genau ein Codeblock \`\`\`json mit diesem Aufbau:
 {"schlagzeile": "Zeitungsschlagzeile zur letzten Einheit, höchstens 60 Zeichen",
+ "quellen": ["Dateinamen der Unterlagen, auf denen die vier Wochenabschnitte beruhen"],
  "termine": [{"datum": "JJJJ-MM-TT", "zeit": "HH:MM oder null", "art": "VO, PS, Abgabe, Test oder Sonstiges", "code": "kurzer Code wie VO 05 oder PS EH3", "titel": "worum es geht", "ort": "Raum oder null", "info": "2–4 Sätze laut Unterlagen: was genau ansteht oder abzugeben ist (Thema, Umfang, Form, Abgabeweg, erlaubte Hilfsmittel) und wie man sich vorbereitet"}],
  "begriffe": [{"begriff": "...", "definition": "präzise, 1–2 Sätze"}]}
 In "termine" stehen alle Termine der nächsten 21 Tage ab heute (Vorlesungen, Proseminare, Abgaben, Tests), aber nur solche, deren Datum in den Unterlagen steht oder sich eindeutig aus einem dort genannten festen Wochenrhythmus ergibt. Vermutete Termine gehören nicht in die Liste. In "begriffe" 10–25 prüfungsrelevante Begriffe der letzten Einheit.
@@ -421,6 +458,8 @@ async function openrouter(modell, prompt) {
   });
   const j = await r.json().catch(() => ({}));
   if (!r.ok || j.error) throw new Error('OpenRouter: ' + (j.error?.message || r.status));
+  // Bei MAX thinking kann das Nachdenken das Ausgabelimit aufbrauchen; eine abgeschnittene Ausgabe nicht speichern
+  if (j.choices[0].finish_reason === 'length') throw new Error('Die Ausgabe wurde abgeschnitten, weil das Modell zu lange nachgedacht hat. Bitte noch einmal drucken.');
   return { text: j.choices[0].message.content, kosten: j.usage?.cost };
 }
 async function kosten() {
@@ -448,6 +487,7 @@ function zerlege(text, tag) {
     datum: tag, meta: meta?.[1] || '', abschnitte,
     preis: Number(meta?.[1].match(/Druckkosten ([\d.]+) \$/)?.[1]) || null,
     schlagzeile: String(daten.schlagzeile || ''),
+    quellen: liste(daten.quellen).filter(q => typeof q === 'string'),
     termine: liste(daten.termine).filter(t => t && /^\d{4}-\d{2}-\d{2}$/.test(t.datum)),
     begriffe: liste(daten.begriffe).filter(b => b && b.begriff && b.definition),
   };
@@ -625,6 +665,8 @@ async function ausgabeZeigen(f, tag) {
   }
   tag = tag && r.ausgaben.some(x => x.datum === tag) ? tag : r.ausgaben[0].datum;
   const a = await ausgabe(f, tag);
+  const stamm = abschnitt(a, 'stammdaten');
+  const rubrik = (kopf, zusatz) => el('div', { class: 'rubrik' }, kopf, el('p', { class: 'meta' }, zusatz));
   const teil = (klasse, titel, anfang) => el('section', { class: `abschnitt ${klasse}` }, el('h2', {}, titel), markdown(el('div', { class: 'text' }), abschnitt(a, anfang) || 'Nicht in dieser Ausgabe.'));
   sektion.replaceChildren(...[
     el('header', { class: 'ausgabe-kopf' },
@@ -634,12 +676,19 @@ async function ausgabeZeigen(f, tag) {
       a.schlagzeile && el('p', { class: 'schlagzeile' }, a.schlagzeile)),
     r.druckt && presse(f),
     r.fehler && el('p', { class: 'fehlertext' }, r.fehler),
+    rubrik(el('p', {}, 'Diese Woche'), a.quellen.length ? `Aus den Unterlagen: ${a.quellen.map(q => q.split('/').pop().replace(/\.\w+$/, '').replace(/_/g, ' ')).join(' · ')}` : 'Aus den Folien und PS-Unterlagen der letzten Einheit'),
     el('div', { class: 'raster' },
       el('article', { class: 'artikel' }, markdown(el('div', { class: 'text' }), abschnitt(a, 'zusammenfassung') || 'Keine Zusammenfassung in dieser Ausgabe.')),
       teil('blick', 'Auf einen Blick', 'auf einen blick'),
       teil('', 'Nächstes Proseminar', 'nächstes proseminar'),
       teil('', 'Nächste Vorlesung', 'nächste vorlesung')),
     lexikon(f, a.begriffe),
+    stamm && el('section', { class: 'stammdaten', 'aria-labelledby': 'stamm-kopf' },
+      rubrik(el('h2', { id: 'stamm-kopf' }, 'Stammdaten'), 'Aus dem Syllabus · gilt das ganze Semester'),
+      el('div', { class: 'stamm-raster' }, ('\n' + stamm).split(/\n### /).slice(1).map(s => {
+        const [kopf, ...rest] = s.split('\n');
+        return el('div', { class: 'stamm' }, el('h3', {}, kopf.trim()), markdown(el('div', { class: 'text' }), rest.join('\n')));
+      }))),
     el('section', { class: 'archiv', 'aria-labelledby': 'arch-kopf' }, el('h2', { id: 'arch-kopf' }, 'Alle Ausgaben'),
       el('ol', {}, r.ausgaben.map(x => el('li', {}, el('a', { href: `#/${encodeURIComponent(f)}/${x.datum}`, 'aria-current': x.datum === tag ? 'page' : null }, datum(x.datum, { day: '2-digit', month: '2-digit', year: 'numeric' })))))),
     el('p', {}, el('button', { class: 'knopf voll', type: 'button', disabled: r.druckt, onclick: () => drucke(f) }, `Neue Ausgabe für ${f} drucken`)),
