@@ -358,7 +358,7 @@ const UHR = heute.toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digi
 
 const auftrag = (fach, tag) => `Du bist Tutor:in für Studierende im 1. Semester Wirtschaftswissenschaften an der Universität Innsbruck.
 Heute ist ${tag}, ${UHR} Uhr (${HEUTE}). Fach: ${fach}.
-Unten stehen ALLE Unterlagen, die in OLAT für dieses Fach liegen: Vorlesungsfolien, Proseminar-Unterlagen und Syllabus.
+Unten stehen ALLE Unterlagen, die in OLAT für dieses Fach liegen: Vorlesungsfolien, Proseminar-Unterlagen, Syllabus und Tests (TEST). Bei den Tests sind das die Startseiten der bewerteten Onlinetests mit Thema und Bearbeitungszeitraum, nach Ablauf auch mit den Fragen, der eigenen Antwort in [eckigen Klammern] und der Lösung, sowie die Fragen der unbewerteten Selbsttests.
 
 Schritt 1 (nur für dich, nicht ausgeben): Bestimme mit dem Terminplan im Syllabus und dem heutigen Datum, welche Vorlesungs- und PS-Einheit zuletzt stattgefunden hat, welche Unterlagen dazu gehören und welche Einheiten, Abgaben und Tests als Nächstes kommen. Unterlagen, die dafür nicht relevant sind, ignorierst du.
 
@@ -374,6 +374,7 @@ Nur der Stoff aus den Folien und PS-Unterlagen der letzten Einheit, ausführlich
 
 ## Nächstes Proseminar
 Datum, Thema, was man dafür wissen und vorbereiten muss, Aufgaben und Abgaben dieser Einheit mit Frist.
+Die Onlinetests gehören hierher, denn das PS bespricht sie: Name, Thema und Bearbeitungszeitraum des laufenden bzw. nächsten Onlinetests. Liegen von einem abgelaufenen Onlinetest Fragen und Lösung vor, rechne unter ### Onlinetest … jede Frage Schritt für Schritt vor (Ansatz, Formel, Rechnung, Ergebnis). War die eigene Antwort falsch, zeig, wo der Fehler lag. Aufgaben eines noch laufenden Onlinetests rechnest du nie vor. Gibt es Selbsttest-Fragen zum aktuellen Stoff, rechne unter ### Übungsaufgaben 2–3 davon mit vollständigem Lösungsweg vor.
 
 ## Nächste Vorlesung
 Datum, Thema und was man vorher lesen oder tun sollte. Liegen die Folien schon in OLAT, gib einen kurzen inhaltlichen Ausblick.
@@ -395,7 +396,7 @@ Schritt 3: Ganz am Ende genau ein Codeblock \`\`\`json mit diesem Aufbau:
  "quellen": ["Dateinamen der Unterlagen, auf denen die vier Wochenabschnitte beruhen"],
  "termine": [{"datum": "JJJJ-MM-TT", "zeit": "HH:MM oder null", "art": "VO, PS, Abgabe, Test oder Sonstiges", "code": "kurzer Code wie VO 05 oder PS EH3", "titel": "worum es geht", "ort": "Raum oder null", "info": "2–4 Sätze laut Unterlagen: was genau ansteht oder abzugeben ist (Thema, Umfang, Form, Abgabeweg, erlaubte Hilfsmittel) und wie man sich vorbereitet"}],
  "begriffe": [{"begriff": "...", "definition": "präzise, 1–2 Sätze"}]}
-In "termine" stehen alle Termine der nächsten 21 Tage ab heute (Vorlesungen, Proseminare, Abgaben, Tests), aber nur solche, deren Datum in den Unterlagen steht oder sich eindeutig aus einem dort genannten festen Wochenrhythmus ergibt. Vermutete Termine gehören nicht in die Liste. In "begriffe" 10–25 prüfungsrelevante Begriffe der letzten Einheit.
+In "termine" stehen alle Termine der nächsten 21 Tage ab heute (Vorlesungen, Proseminare, Abgaben, Tests), aber nur solche, deren Datum in den Unterlagen steht oder sich eindeutig aus einem dort genannten festen Wochenrhythmus ergibt. Vermutete Termine gehören nicht in die Liste. Jeder Onlinetest, dessen Bearbeitungszeitraum in diese 21 Tage fällt, steht mit art "Test" und dem Ende des Zeitraums als datum und zeit darin; Beginn des Zeitraums und Anzahl der Fragen gehören ins info-Feld. In "begriffe" 10–25 prüfungsrelevante Begriffe der letzten Einheit.
 
 Formeln setzt du in LaTeX: im Fließtext zwischen \\( und \\), abgesetzt zwischen \\[ und \\]. In den JSON-Feldern stehen keine LaTeX-Formeln, sondern einfache Schreibweise wie x², a/b oder √x.
 
