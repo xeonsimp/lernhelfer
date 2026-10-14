@@ -37,7 +37,7 @@
   <form id="einstellungen" hidden>
     <label>OpenRouter-Key <input id="e-or" type="password" autocomplete="off" required></label>
     <label>GitHub-Token (nur für das Daten-Repo) <input id="e-gh" type="password" autocomplete="off" required></label>
-    <label>Daten-Repo <input id="e-repo" placeholder="benutzername/lernhelfer-daten" autocapitalize="off" required></label>
+    <label>Daten-Repo <input id="e-repo" value="xeonsimp/lernhelfer-daten" autocapitalize="off" required></label>
     <button class="haupt">Speichern</button>
     <p class="leise">Wird nur in diesem Browser auf diesem Gerät gespeichert, nie auf GitHub.</p>
   </form>
@@ -180,7 +180,7 @@ $('datei').onchange = () => los('Lade Lernseite …', zeigeSeite);
 $('modell').onchange = () => merk('modell', $('modell').value);
 $('lernen').onclick = () => los(`${$('modell').value} arbeitet … das kann ein paar Minuten dauern. App bitte so lange offen lassen.`, lernen);
 $('zahnrad').onclick = () => {
-  $('e-or').value = cfg?.openrouter || ''; $('e-gh').value = cfg?.github || ''; $('e-repo').value = cfg?.repo || '';
+  $('e-or').value = cfg?.openrouter || ''; $('e-gh').value = cfg?.github || ''; $('e-repo').value = cfg?.repo || 'xeonsimp/lernhelfer-daten';
   $('einstellungen').hidden = !$('einstellungen').hidden;
 };
 $('einstellungen').onsubmit = e => {
