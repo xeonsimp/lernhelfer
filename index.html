@@ -1538,7 +1538,7 @@ function kalenderNachladen() {  // beim Start: Heute braucht den Stundenplan fü
 // Ihre Prompts liegen verschlüsselt neben der App (geschuetzt/<bereich>.json, erstellt mit verschluesseln.mjs), damit alle sie
 // haben; ohne Passwort gibt es nichts zu entschlüsseln. Groß/klein, Leer- und Satzzeichen zählen nicht. Entsperrt bis zum Neuladen.
 async function entsperren(bereich, pin) {
-  const antwort = await fetch(`geschuetzt/${bereich}.json`);
+  const antwort = await fetch(`geschuetzt/${bereich}.json`, { cache: 'no-store' });
   if (!antwort.ok) throw new Error('Dieser Bereich ist gerade nicht erreichbar. Später nochmal versuchen.');
   const j = await antwort.json(), b = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
   const basis = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin.toLowerCase().replace(/[^a-zäöüß0-9]/g, '')), 'PBKDF2', false, ['deriveKey']);
