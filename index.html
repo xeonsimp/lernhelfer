@@ -7,11 +7,12 @@
 <meta name="referrer" content="no-referrer">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Lernhelfer">
-<meta name="theme-color" content="#fbe3d3" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1d1512" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111317" media="(prefers-color-scheme: dark)">
 <title>Lernhelfer</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23fbe3d3'/%3E%3Cpath d='M9 6h5v16h9v4H9z' fill='%231b1511'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232446c8'/%3E%3Cpath d='M11 8h3.6v13H22v3H11z' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preload" href="fonts/Archivo.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js" integrity="sha384-/TQbtLCAerC3jgaim+N78RZSDYV7ryeoBCVqTuzRrFec2akfBkHS7ACQ3PQhvMVi" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js" integrity="sha384-+VfUPEb0PdtChMwmBcBmykRMDd+v6D/oFmB3rZM/puCMDYcIvF968OimRh4KQY9a" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script>
@@ -19,450 +20,517 @@
   @font-face { font-family: "Archivo"; src: url("fonts/Archivo.woff2") format("woff2"); font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; }
   @font-face { font-family: "Source Serif 4"; src: url("fonts/SourceSerif4.woff2") format("woff2"); font-weight: 200 900; font-display: swap; }
 
+  /* Ruhiges Werkzeug: weißer Grund, kühle Grautöne, Königsblau nur für Handlung, Auswahl und Zustand.
+     Gelesen wird in Serif (Zusammenfassung, Antworten, Anleitung), bedient wird in Sans. */
   :root {
-    --papier: #fbe3d3; --papier-tief: #e8c2aa; --tinte: #1b1511; --tinte-2: #5b4337;
-    --bordeaux: #8e1838; --bordeaux-text: #8e1838; --auf-bordeaux: #fff1e8;
-    --grot: "Archivo", "Arial Narrow", sans-serif; --serif: "Source Serif 4", Georgia, serif;
-    --dick: 3px solid var(--tinte); --duenn: 1.5px solid var(--tinte);
-    --rand: max(16px, min(4vw, 48px));
+    --bg: #ffffff; --bg-2: #f5f6f8; --bg-3: #eaecf0;
+    --linie: #e3e6eb; --linie-2: #cbd0d8;
+    --text: #14161b; --text-2: #4c5361; --text-3: #656d7a;
+    --akzent: #2446c8; --akzent-hover: #1b389f; --akzent-flaeche: #edf1ff; --akzent-text: #2446c8; --auf-akzent: #ffffff;
+    --ok: #146c43; --ok-flaeche: #e6f4ec; --warn: #8f4700; --warn-flaeche: #fff2e0; --fehler: #b3261e; --fehler-flaeche: #fdecea;
+    --schatten: 0 1px 2px rgb(18 22 32 / 0.06), 0 6px 20px -8px rgb(18 22 32 / 0.18);
+    --schatten-gross: 0 2px 6px rgb(18 22 32 / 0.08), 0 28px 64px -20px rgb(18 22 32 / 0.35);
+    --haken: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    --sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif; --serif: "Source Serif 4", Georgia, serif;
+    --r-s: 8px; --r: 10px; --r-l: 14px; --r-xl: 20px;
+    --tabs: 58px;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
-    :root { --papier: #1d1512; --papier-tief: #2b201a; --tinte: #f6d9c5; --tinte-2: #c9a794; --bordeaux-text: #ef7d97; color-scheme: dark; }
+    :root {
+      --bg: #111317; --bg-2: #181b21; --bg-3: #23272f;
+      --linie: #2a2f38; --linie-2: #3c434e;
+      --text: #eceef3; --text-2: #b0b7c3; --text-3: #949ba8;
+      --akzent: #7f99ff; --akzent-hover: #a0b3ff; --akzent-flaeche: #1b2344; --akzent-text: #a0b3ff; --auf-akzent: #0b0f1f;
+      --ok: #5fd39b; --ok-flaeche: #12291f; --warn: #f4ad57; --warn-flaeche: #2d2213; --fehler: #ff8a80; --fehler-flaeche: #351a19;
+      --schatten: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -8px rgb(0 0 0 / 0.6);
+      --schatten-gross: 0 2px 6px rgb(0 0 0 / 0.5), 0 28px 64px -16px rgb(0 0 0 / 0.75);
+      --haken: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%230b0f1f' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      color-scheme: dark;
+    }
   }
 
   * { box-sizing: border-box; }
-  html { background: var(--papier); -webkit-text-size-adjust: 100%; scrollbar-color: var(--tinte-2) var(--papier); }
-  body { margin: 0; background: var(--papier); color: var(--tinte); font: 400 1.0625rem/1.6 var(--serif); caret-color: var(--bordeaux-text); }
-  ::selection { background: var(--tinte); color: var(--papier); }
-  a { color: inherit; text-decoration-thickness: 1.5px; text-underline-offset: 0.18em; }
-  :focus-visible { outline: 3px solid var(--tinte); outline-offset: 3px; }
-  button, input, select { font: inherit; color: inherit; }
+  html { background: var(--bg); -webkit-text-size-adjust: 100%; scrollbar-color: var(--linie-2) transparent; }
+  @media (pointer: fine) { html { overscroll-behavior: none; } }
+  html:has(#ausgabe:not([hidden])) { scroll-padding-top: 64px; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 400 0.9375rem/1.5 var(--sans); -webkit-font-smoothing: antialiased; caret-color: var(--akzent); -webkit-tap-highlight-color: transparent; }
+  ::selection { background: color-mix(in srgb, var(--akzent) 24%, transparent); }
+  a { color: var(--akzent-text); text-decoration: none; }
+  @media (hover: hover) { a:hover { text-decoration: underline; text-underline-offset: 0.2em; } }
+  :focus-visible { outline: 2px solid var(--akzent); outline-offset: 2px; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  a, button, label, summary, .knopf { touch-action: manipulation; }
+  h1, h2, h3 { text-wrap: balance; }
+  p, li, dd { text-wrap: pretty; }
   [hidden] { display: none !important; }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .sprung { position: fixed; left: 12px; top: 12px; z-index: 50; padding: 10px 14px; border-radius: var(--r); background: var(--akzent); color: var(--auf-akzent); font-weight: 650; transform: translateY(-160%); }
+  .sprung:focus { transform: none; }
+  svg.ic { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
 
-  .seite { max-width: 1320px; margin: 0 auto; padding: 0 var(--rand) 64px; }
-  .grot { font-family: var(--grot); }
+  /* App-Gerüst: Seitenleiste ab 900px, darunter eine Leiste unten wie bei iPhone-Apps */
+  .app { min-height: 100dvh; }
+  .seitenleiste { display: none; }
+  main { width: 100%; max-width: 1180px; margin: 0 auto; padding: 20px max(16px, env(safe-area-inset-right)) calc(var(--tabs) + env(safe-area-inset-bottom) + 40px) max(16px, env(safe-area-inset-left)); }
+  main:focus { outline: none; }
+  .tabs { position: fixed; inset: auto 0 0; z-index: 20; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); border-top: 1px solid var(--linie);
+    background: color-mix(in srgb, var(--bg) 86%, transparent); -webkit-backdrop-filter: saturate(1.8) blur(18px); backdrop-filter: saturate(1.8) blur(18px); }
+  .tabs a { display: grid; justify-items: center; align-content: center; gap: 3px; min-height: var(--tabs); padding: 6px 2px 4px; color: var(--text-3); font: 600 0.6875rem/1.1 var(--sans); text-decoration: none; -webkit-user-select: none; user-select: none; }
+  .tabs a[aria-current] { color: var(--akzent-text); }
+  .tabs svg.ic { width: 24px; height: 24px; }
+  .tabs a:active svg { transform: scale(0.92); }
+  @media (min-width: 900px) {
+    .tabs { display: none; }
+    .app { display: grid; grid-template-columns: 252px minmax(0, 1fr); }
+    .seitenleiste { display: block; border-right: 1px solid var(--linie); background: var(--bg-2); }
+    .leiste-innen { position: sticky; top: 0; display: flex; flex-direction: column; height: 100dvh; overflow-y: auto; padding: 18px 12px 16px; overscroll-behavior: contain; }
+    main { padding: 36px clamp(24px, 4vw, 56px) 80px; }
+    .nur-schmal { display: none !important; }
+  }
+  .marke { display: flex; align-items: center; gap: 10px; padding: 6px 10px; color: var(--text); font: 750 1.0625rem/1 var(--sans); letter-spacing: -0.01em; }
+  .marke:hover { text-decoration: none; }
+  .zeichen { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: var(--akzent); color: var(--auf-akzent); font: 800 0.9375rem/1 var(--sans); }
+  .heute-klein { margin: 4px 10px 18px 46px; color: var(--text-3); font-size: 0.8125rem; font-variant-numeric: tabular-nums; }
+  .navi { display: grid; gap: 1px; }
+  .navi a { display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 6px 10px; border-radius: var(--r-s); color: var(--text-2); font-weight: 550; text-decoration: none; }
+  .navi svg.ic { width: 18px; height: 18px; color: var(--text-3); }
+  @media (hover: hover) { .navi a:hover { background: var(--bg-3); color: var(--text); } }
+  .navi a[aria-current] { background: var(--bg); color: var(--text); box-shadow: 0 0 0 1px var(--linie), 0 1px 2px rgb(18 22 32 / 0.06); }
+  .navi a[aria-current] svg.ic { color: var(--akzent-text); }
+  .navi .punkt { display: grid; place-items: center; width: 18px; height: 18px; flex: none; }
+  .navi .punkt::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--linie-2); }
+  .navi a[aria-current] .punkt::before { background: var(--akzent); }
+  .navi .laeuft { width: 12px; height: 12px; margin-left: auto; border: 2px solid var(--linie-2); border-top-color: var(--akzent); border-radius: 50%; animation: drehen 0.9s linear infinite; }
+  @keyframes drehen { to { transform: rotate(1turn); } }
+  .navi .gruppe { margin: 18px 10px 6px; color: var(--text-3); font: 600 0.75rem/1 var(--sans); }
+  .navi hr { width: calc(100% - 20px); margin: 14px 10px; border: 0; border-top: 1px solid var(--linie); }
+  .seitenleiste .kosten { margin: auto 10px 0; padding-top: 18px; color: var(--text-3); font-size: 0.8125rem; line-height: 1.45; font-variant-numeric: tabular-nums; }
+  .seitenleiste .kosten span { display: block; }
 
-  /* Werkzeugleiste über dem Kopf */
-  .leiste { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 12px 0; font: 500 0.9375rem/1.2 var(--grot); }
-  .leiste nav { display: flex; flex-wrap: wrap; gap: 0 16px; align-items: center; }
-  .leiste a { text-decoration: none; padding: 10px 0; white-space: nowrap; }
-  .leiste a:hover { text-decoration: underline; }
-  select { appearance: none; min-height: 44px; padding: 8px 40px 8px 12px; border: var(--duenn); border-radius: 0; font: 600 0.9375rem var(--grot); font-stretch: 85%;
-    background: var(--papier) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235b4337' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 14px center; }
-  .knopf { min-height: 44px; padding: 10px 18px; border: var(--duenn); border-radius: 0; background: transparent; cursor: pointer; font: 700 0.9375rem/1.1 var(--grot); font-stretch: 85%; letter-spacing: 0.01em; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
-  .knopf.voll { background: var(--tinte); color: var(--papier); }
-  .knopf:hover { background: var(--papier-tief); }
-  .knopf.voll:hover { background: var(--tinte-2); border-color: var(--tinte-2); }
-  .knopf:disabled { opacity: 0.45; cursor: default; }
-  .knopf:disabled:hover { background: transparent; }
-  .knopf.voll:disabled:hover { background: var(--tinte); }
-  .knopf svg { width: 16px; height: 16px; flex: none; }
-
-  /* Zeitungskopf */
-  .kopf { border-top: var(--dick); padding-top: 14px; }
-  /* Nameplate füllt die Satzbreite: 7.26 = Breite von „LERNHELFER“ in em bei wdth 100 (gemessen 7.24) */
-  .kopf { container-type: inline-size; }
-  .titel { margin: 0; font: 900 calc(100cqw / 7.26)/0.8 var(--grot); font-stretch: 100%; letter-spacing: -0.015em; text-transform: uppercase; }
-  .titel a { text-decoration: none; }
-  .datumszeile { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 24px; margin: 14px 0 0; padding: 8px 0; border-top: var(--dick); border-bottom: var(--duenn);
-    font: 650 0.8125rem/1.3 var(--grot); font-stretch: 90%; text-transform: uppercase; letter-spacing: 0.06em; font-variant-numeric: tabular-nums; }
-  .druck { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px 14px; margin: 12px 0 0; }
-  .druck .meta a { text-decoration-thickness: 1px; }
-
-  /* Fristen-Ticker */
-  .ticker { margin: 0 calc(var(--rand) * -1); background: var(--tinte); color: var(--papier); overflow: hidden; }
-  .ticker-band { display: flex; width: max-content; animation: laufen var(--dauer, 60s) linear infinite; }
-  /* Anhalten nur mit Maus oder Tastatur; auf dem Touchscreen bliebe :hover nach dem Antippen hängen */
-  @media (hover: hover) { .ticker:hover .ticker-band { animation-play-state: paused; } }
-  .ticker:has(:focus-visible) .ticker-band { animation-play-state: paused; }
-  @keyframes laufen { to { transform: translateX(-50%); } }
-  .ticker-eintrag { display: flex; align-items: baseline; gap: 10px; padding: 11px 22px; margin: 0; border: 0; background: none; color: inherit; cursor: pointer; white-space: nowrap; font: 500 0.9375rem/1.2 var(--grot); font-stretch: 82%; font-variant-numeric: tabular-nums; border-right: 1.5px solid color-mix(in srgb, var(--papier) 30%, transparent); }
-  .ticker-eintrag:focus-visible { outline-color: var(--papier); outline-offset: -5px; }
-  @media (hover: hover) { .ticker-eintrag:hover > span:first-of-type { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 0.18em; } }
-  .ticker-eintrag b { font-weight: 850; font-stretch: 75%; text-transform: uppercase; letter-spacing: 0.02em; }
-  .ticker-eintrag .wann { font-weight: 750; }
-  .ticker-eintrag.naechste { background: var(--bordeaux); color: var(--auf-bordeaux); }
-  @media (prefers-reduced-motion: reduce) { .ticker { overflow-x: auto; } .ticker-band { animation: none; } }
-
-  #status { min-height: 1.6em; margin: 10px 0 0; font: 600 0.9375rem/1.4 var(--grot); color: var(--tinte-2); }
-  #status.fehler { color: var(--tinte); }
-  #status.fehler::before { content: "Fehler: "; font-weight: 850; }
-
-  /* Titelblatt */
-  .blatt { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(300px, 1fr); gap: 0 40px; margin-top: 18px; }
-  .blatt > * { min-width: 0; }
-  /* 6er-Raster: ohne Aufmacher 2×2, mit Aufmacher eine breite Geschichte und drei Spalten darunter */
-  .ressorts { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); align-content: start; }
-  .ressort { grid-column: span 3; position: relative; padding: 16px 20px 26px; border-top: var(--dick); border-left: var(--duenn); display: flex; flex-direction: column; gap: 10px; }
-  .ressorts:not(.mit-aufmacher) .ressort:nth-child(odd), .ressorts.mit-aufmacher .ressort:nth-child(-n+2) { padding-left: 0; border-left: 0; }
-  .ressorts:not(.mit-aufmacher) .ressort:nth-child(even), .ressorts.mit-aufmacher .ressort:nth-child(3n+1) { padding-right: 0; }
-  .ressorts.mit-aufmacher .ressort { grid-column: span 2; }
-  .ressorts.mit-aufmacher .aufmacher { grid-column: 1 / -1; padding-right: 0; }
-  .ressort h2 { margin: 0; font: 900 clamp(2.25rem, 4.5vw, 3.25rem)/0.9 var(--grot); font-stretch: 65%; text-transform: uppercase; letter-spacing: -0.01em; }
-  .mit-aufmacher .ressort:not(.aufmacher) h2 { font-size: clamp(1.75rem, 2.6vw, 2.25rem); }
-  .mit-aufmacher .ressort:not(.aufmacher) .schlagzeile { font-size: 1.1875rem; }
-  .aufmacher h2 { font-size: clamp(2.75rem, 6vw, 4.25rem); }
-  .aufmacher .schlagzeile { font-size: clamp(1.625rem, 2.8vw, 2.125rem); line-height: 1.1; max-width: 26ch; }
-  .aufmacher .anriss { -webkit-line-clamp: 4; max-width: 62ch; font-size: 1.0625rem; }
-  .ressort h2 a { text-decoration: none; }
-  .ressort h2 a::after { content: ""; position: absolute; inset: 0; }
-  .ressort:hover h2 a { text-decoration: underline; text-decoration-thickness: 3px; }
-  .schlagzeile { margin: 0; font: 750 1.375rem/1.18 var(--serif); text-wrap: balance; }
-  .anriss { margin: 0; color: var(--tinte-2); font-size: 1rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-  .meta { margin: 0; font: 550 0.8125rem/1.3 var(--grot); font-stretch: 90%; color: var(--tinte-2); font-variant-numeric: tabular-nums; }
-  .ressort .aktionen { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 6px; }
-  .fehlertext { margin: 0; font: 600 0.9375rem/1.4 var(--grot); }
-  .fehlertext::before { content: "Fehler: "; font-weight: 850; }
-
-  /* „Geht in Druck“ */
-  .presse { display: grid; gap: 8px; font: 700 0.9375rem var(--grot); font-stretch: 85%; }
-  .presse::after { content: ""; height: 4px; background: var(--tinte); transform-origin: left; animation: walze 1.6s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
-  @keyframes walze { 0% { transform: scaleX(0); } 70% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1); opacity: 0; } }
-  @media (prefers-reduced-motion: reduce) { .presse::after { animation: none; } }
-
-  /* Terminkalender */
-  .termine { border-top: var(--dick); padding-top: 14px; }
-  .termine h2, .abschnitt h2, .lexikon h2, .archiv h2, .fragen h2 { margin: 0 0 10px; font: 850 1.125rem/1.1 var(--grot); font-stretch: 75%; text-transform: uppercase; letter-spacing: 0.04em; }
-  .tag { margin: 0; padding: 0; list-style: none; }
-  .tag + .tag { margin-top: 14px; }
-  .tag h3 { margin: 0 0 4px; padding-bottom: 4px; border-bottom: var(--duenn); font: 750 0.9375rem/1.2 var(--grot); font-stretch: 85%; font-variant-numeric: tabular-nums; }
-  .termin { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr) auto; gap: 2px 12px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid color-mix(in srgb, var(--tinte) 25%, transparent); font: 450 0.9375rem/1.35 var(--grot); font-stretch: 92%; font-variant-numeric: tabular-nums; }
-  .termin .zeit { font-weight: 650; }
-  .termin button.was { margin: 0; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
-  @media (hover: hover) { .termin button.was:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 0.18em; } }
-  .termin .was b { font-weight: 800; text-transform: uppercase; font-stretch: 78%; letter-spacing: 0.02em; margin-right: 6px; }
-  .termin .ort { display: block; color: var(--tinte-2); font-size: 0.8125rem; }
-  .termin .wann { font-weight: 700; white-space: nowrap; text-align: right; }
-  .termin.naechste { margin: 0 -10px; padding: 9px 10px; background: var(--bordeaux); color: var(--auf-bordeaux); border-bottom-color: transparent; }
-  .termin.naechste .ort { color: inherit; opacity: 0.85; }
-  .termin.erledigt .was, .termin.erledigt .wann { text-decoration: line-through; text-decoration-thickness: 1.5px; color: var(--tinte-2); }
-  /* Fristen abhaken: Kästchen wie auf einem Stimmzettel, ausgefüllt = erledigt */
-  .haken { display: inline-flex; align-items: center; gap: 8px; min-height: 32px; cursor: pointer; }
-  .haken input { appearance: none; -webkit-appearance: none; flex: none; width: 22px; height: 22px; margin: 0; border: var(--duenn); border-radius: 0; background: var(--papier); cursor: pointer; }
-  .haken input:checked { background: var(--tinte); box-shadow: inset 0 0 0 4px var(--papier); }
-  .termin.naechste .haken input { border-color: var(--auf-bordeaux); background: var(--bordeaux); }
-  .termin.naechste .haken input:checked { background: var(--auf-bordeaux); box-shadow: inset 0 0 0 4px var(--bordeaux); }
-  .leer { margin: 0; color: var(--tinte-2); font: 500 0.9375rem/1.5 var(--grot); }
-  .fuss { margin-top: 18px; font: 500 0.8125rem/1.5 var(--grot); color: var(--tinte-2); }
-
-  /* Ausgabe */
-  .ausgabe-kopf { border-top: var(--dick); padding-top: 14px; margin-top: 4px; }
-  .ausgabe-kopf h1 { margin: 0; font: 900 clamp(3rem, 11vw, 6rem)/0.85 var(--grot); font-stretch: 62%; text-transform: uppercase; }
-  .ausgabe-kopf .schlagzeile { margin: 18px 0 0; max-width: 24ch; font-size: clamp(1.75rem, 4.2vw, 2.75rem); line-height: 1.08; font-weight: 800; letter-spacing: -0.01em; }
-  .raster { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 360px); grid-template-rows: auto auto 1fr; gap: 0 48px; margin-top: 26px; }
-  .raster > * { min-width: 0; }
-  .artikel { grid-column: 1; grid-row: 1 / span 3; border-top: var(--dick); padding: 6px 23px 0 0; margin-right: -24px; border-right: var(--duenn); }
-  .abschnitt { grid-column: 2; border-top: var(--dick); padding: 14px 0 22px; }
-  .abschnitt.blick { background: var(--papier-tief); padding: 14px 18px 18px; border-top-width: 6px; }
-  .text { max-width: 68ch; overflow-x: auto; }  /* lange Formeln im Fließtext brechen nicht um: dann scrollt der Text, nicht die Seite */
-  .text h3 { margin: 1.6em 0 0.35em; font: 800 1.1875rem/1.2 var(--grot); font-stretch: 80%; }
-  .text p, .text ul, .text ol { margin: 0 0 0.85em; }
-  .text ul, .text ol { padding-left: 1.2em; }
-  .text li { margin-bottom: 0.35em; }
-  .text li::marker { color: var(--tinte-2); }
-  .text strong { font-weight: 700; }
-  .text table { border-collapse: collapse; display: block; overflow-x: auto; font: 450 0.9375rem/1.4 var(--grot); }
-  .text th, .text td { padding: 6px 10px 6px 0; border-bottom: 1px solid color-mix(in srgb, var(--tinte) 30%, transparent); text-align: left; vertical-align: top; }
-  .abschnitt .text { font-size: 1rem; }
-  .text code { overflow-wrap: anywhere; }
-  /* Formeln: KaTeX liefert MathML, der Browser setzt sie mit seiner Mathe-Schrift */
-  math { font-size: 1.08em; }
-  math[display="block"] { margin: 0.9em 0; padding: 4px 0; overflow: auto hidden; font-size: 1.15em; }
-
-  /* Meldung zu einem Termin */
-  .meldung { width: min(36rem, calc(100% - 32px)); max-height: calc(100% - 32px); padding: 0; border: var(--dick); background: var(--papier); color: var(--tinte); box-shadow: 0 24px 48px -20px rgb(0 0 0 / 0.5); }
-  .meldung::backdrop { background: color-mix(in srgb, #1b1511 55%, transparent); }
-  .meldung[open] { animation: auftauchen 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-  @keyframes auftauchen { from { opacity: 0; transform: translateY(14px); } }
-  @media (prefers-reduced-motion: reduce) { .meldung[open] { animation: none; } }
-  .meldung .innen { display: grid; gap: 14px; padding: 18px 22px 22px; }
-  .meldung .dachzeile { margin: 0; font: 850 0.875rem/1.2 var(--grot); font-stretch: 78%; text-transform: uppercase; letter-spacing: 0.05em; }
-  .meldung.naechste .dachzeile { color: var(--bordeaux-text); }
-  .meldung h2 { margin: 0; font: 800 clamp(1.5rem, 5vw, 2rem)/1.1 var(--serif); text-wrap: balance; }
-  .meldung dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 16px; margin: 0; padding: 10px 0; border-block: var(--duenn); font: 500 0.9375rem/1.35 var(--grot); font-variant-numeric: tabular-nums; }
-  .meldung dt { font-weight: 800; font-stretch: 80%; text-transform: uppercase; letter-spacing: 0.03em; }
-  .meldung dd { margin: 0; }
-  .meldung .info { margin: 0; font-size: 1.0625rem; line-height: 1.55; }
-  .meldung .knopfreihe { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
-  .meldung .knopfreihe .haken { margin-right: auto; font: 700 0.9375rem var(--grot); font-stretch: 88%; }
-  [data-ansicht="ausgabe"] .titel { font-size: clamp(2.25rem, 7vw, 3.25rem); }
-  [data-ansicht="ausgabe"] .ticker, [data-ansicht="einstellungen"] .ticker, [data-ansicht="wordpower"] .ticker,
-  [data-ansicht="onlinetests"] .ticker, [data-ansicht="anleitung"] .ticker { display: none; }
-  .warnung { color: var(--tinte); font-weight: 750; }
-  .artikel > .text > :first-child { margin-top: 0.6em; }
-  .artikel > .text > p:first-of-type::first-line { font-weight: 650; }
-  .artikel > .text > p:first-of-type::first-letter { float: left; margin: 0.07em 0.1em 0 0; font: 900 3.6em/0.78 var(--grot); font-stretch: 62%; }
-
-  /* Rubriken: was diese Woche aus den Folien kommt, und was das ganze Semester gilt */
-  .rubrik { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 24px; margin-top: 34px; padding: 10px 0 8px; border-top: var(--dick); border-bottom: var(--duenn); }
-  .rubrik > :first-child { margin: 0; font: 900 clamp(1.625rem, 3.2vw, 2.25rem)/1 var(--grot); font-stretch: 62%; text-transform: uppercase; letter-spacing: 0.01em; }
-  .rubrik .meta { max-width: 80ch; overflow-wrap: anywhere; }
-  .rubrik + .raster { margin-top: 18px; }
-  .stammdaten { margin-top: 48px; }
-  .stammdaten .rubrik { margin-top: 0; }
-  .stamm-raster { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .stamm { padding: 14px 20px 6px; border-left: var(--duenn); }
-  .stamm:first-child { padding-left: 0; border-left: 0; }
-  .stamm:last-child { padding-right: 0; }
-  .stamm h3 { margin: 0 0 8px; font: 850 0.9375rem/1.2 var(--grot); font-stretch: 78%; text-transform: uppercase; letter-spacing: 0.04em; }
-  .stamm .text { font: 450 0.9375rem/1.45 var(--grot); font-stretch: 92%; font-variant-numeric: tabular-nums; }
-  .stamm .text ul { padding-left: 1em; }
-
-  /* Lexikon */
-  .lexikon { margin-top: 40px; border-top: var(--dick); padding-top: 14px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 360px); gap: 16px 48px; align-items: start; }
-  .lexikon > * { min-width: 0; }
-  .lexikon .fortschritt { margin: 0 0 12px; font: 600 0.9375rem var(--grot); font-variant-numeric: tabular-nums; color: var(--tinte-2); }
-  .karte { position: relative; display: block; width: 100%; min-height: 15rem; padding: 0; border: 0; background: none; cursor: pointer; perspective: 1400px; text-align: center; }
-  .karte .innen { position: relative; display: block; min-height: 15rem; transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1); transform-style: preserve-3d; }
-  .karte.um .innen { transform: rotateY(180deg); }
-  .karte .seite-v, .karte .seite-h { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px 28px; border: var(--dick); background: var(--papier); backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 10px 24px -14px color-mix(in srgb, var(--tinte) 55%, transparent); }
-  .karte .seite-h { transform: rotateY(180deg); background: var(--papier-tief); }
-  .karte .begriff { font: 850 clamp(1.5rem, 3.5vw, 2.25rem)/1.05 var(--grot); font-stretch: 72%; text-wrap: balance; }
-  .karte .definition { font: 400 1.0625rem/1.5 var(--serif); text-wrap: pretty; }
-  .karte .hinweis { font: 550 0.8125rem var(--grot); color: var(--tinte-2); }
-  @media (prefers-reduced-motion: reduce) { .karte .innen { transition: none; } }
-  .karten-aktionen { display: flex; gap: 8px; margin-top: 14px; }
-  .karten-aktionen .knopf { flex: 1; justify-content: center; }
-  .liste { margin: 0; }
-  .liste summary { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px 0; list-style: none; font: 750 0.9375rem var(--grot); font-stretch: 85%; }
-  .liste summary::-webkit-details-marker { display: none; }
-  .liste summary::before { content: ""; width: 7px; height: 7px; margin: 0 3px; border: solid currentColor; border-width: 0 2px 2px 0; transform: rotate(-45deg); transition: transform 0.2s; }
-  .liste[open] summary::before { transform: rotate(45deg); }
-  .liste dl { margin: 6px 0 0; }
-  .liste dt { margin-top: 12px; font: 800 1rem/1.25 var(--grot); font-stretch: 85%; }
-  .liste dt.gewusst::after { content: " – gewusst"; font-weight: 500; color: var(--tinte-2); }
-  .liste dd { margin: 2px 0 0; font-size: 0.9375rem; line-height: 1.5; }
-
-  /* Übungsaufgaben: erst selbst rechnen, dann aufdecken */
-  .uebungen { margin-top: 40px; }
-  .aufgaben { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; }
-  .aufgabe { display: grid; gap: 8px; align-content: start; padding: 16px 0 24px; border-bottom: var(--duenn); }
-  .aufgabe .dachzeile, .fragen .dachzeile { margin: 0; font: 850 0.8125rem/1.2 var(--grot); font-stretch: 78%; text-transform: uppercase; letter-spacing: 0.05em; color: var(--tinte-2); }
-  .aufgabe h3 { margin: 0; font: 800 1.3125rem/1.15 var(--serif); text-wrap: balance; }
-  .aufgabe .text { font-size: 1rem; }
-  .loesung > summary { list-style: none; width: max-content; }
-  .loesung > summary::-webkit-details-marker { display: none; }
-  .loesung[open] > summary .zu, .loesung:not([open]) > summary .auf { display: none; }
-  .loesung > .text { margin-top: 12px; padding: 14px 16px 2px; border: var(--duenn); background: var(--papier-tief); }
-
-  /* Fragen zur Ausgabe */
-  .fragen { margin-top: 40px; border-top: var(--dick); padding-top: 14px; max-width: 760px; }
-  .uebungen .rubrik { margin-top: 0; }
-  .verlauf { display: grid; gap: 18px; margin: 16px 0; }
-  .verlauf .frage { margin: 4px 0 0; font: italic 600 1.125rem/1.45 var(--serif); }
-  .verlauf .antwort { padding-bottom: 14px; border-bottom: var(--duenn); }
-  .frageform textarea, .werkstatt input, .werkstatt textarea { display: block; width: 100%; min-height: 46px; padding: 10px 12px; border: var(--duenn); border-radius: 0; background: var(--papier); color: inherit; font: 450 1rem/1.5 var(--grot); resize: vertical; }
-  .frageform textarea { min-height: 5.5rem; }
-  .frageform textarea:focus-visible, .werkstatt :is(input, textarea):focus-visible { outline-offset: 0; }
-  :is(.fragen, .werkstatt, .kal-panel) .knopfreihe { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 10px; }
-
-  /* Kalender */
-  .kalender { margin-top: 18px; border-top: var(--dick); padding-top: 14px; }
-  .kal-kopf { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 24px; }
-  .kal-kopf h2 { margin: 0; font: 900 clamp(2.25rem, 5vw, 3.25rem)/0.9 var(--grot); font-stretch: 65%; text-transform: uppercase; }
-  .kal-kopf .meta { margin-top: 8px; }
-  .kal-nav { display: flex; flex-wrap: wrap; gap: 8px; }
-  .woche { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); margin-top: 16px; border-top: var(--dick); }
-  .kal-tag { min-width: 0; min-height: 13rem; padding: 10px 10px 16px; border-left: var(--duenn); }
-  .kal-tag:first-child { border-left: 0; }
-  .kal-tag h3 { margin: 0 0 6px; font: 850 0.875rem/1.2 var(--grot); font-stretch: 80%; text-transform: uppercase; letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
-  .kal-tag.heute { background: var(--papier-tief); }
-  .kal-eintrag { display: grid; gap: 1px; width: 100%; margin: 0; padding: 7px 0 8px; border: 0; border-bottom: 1px solid color-mix(in srgb, var(--tinte) 25%, transparent); background: none; color: inherit; text-align: left; cursor: pointer; font: 450 0.875rem/1.3 var(--grot); font-stretch: 92%; overflow-wrap: anywhere; }
-  .kal-eintrag .zeit { font-weight: 700; font-variant-numeric: tabular-nums; }
-  .kal-eintrag b { font: 850 0.75rem/1.2 var(--grot); font-stretch: 78%; text-transform: uppercase; letter-spacing: 0.03em; color: var(--tinte-2); }
-  .kal-eintrag.frist .kal-titel { font-weight: 750; }
-  @media (hover: hover) { .kal-eintrag:hover .kal-titel { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 0.18em; } }
-  .kal-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; margin-top: 36px; }
-  .kal-panel { border-top: var(--dick); padding-top: 12px; }
-  .kal-panel h3 { margin: 0 0 6px; font: 850 1.125rem/1.1 var(--grot); font-stretch: 75%; text-transform: uppercase; letter-spacing: 0.04em; }
-  .kal-liste { margin: 10px 0 0; padding: 0; list-style: none; }
-  .kal-liste li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding: 8px 0; border-bottom: 1px solid color-mix(in srgb, var(--tinte) 25%, transparent); font: 550 0.9375rem/1.3 var(--grot); }
-  label.knopf:focus-within { outline: 3px solid var(--tinte); outline-offset: 3px; }
-
-  /* Word Power: Englisch-Hausaufgabe hinter Passwort */
-  .werkstatt { max-width: 880px; }
-  .werkstatt .ausgabe-kopf .meta { margin-top: 12px; }
-  .sperre { display: grid; gap: 12px; max-width: 420px; margin-top: 26px; }
-  .sperre label, .feld { display: grid; gap: 6px; font: 700 0.9375rem var(--grot); font-stretch: 88%; }
-  .sperre input { min-height: 46px; padding: 10px 12px; border: var(--duenn); border-radius: 0; background: var(--papier); font: 600 1.25rem var(--grot); letter-spacing: 0.3em; color: inherit; }
-  .schritt { margin-top: 34px; border-top: var(--dick); padding-top: 12px; }
-  .schritt h2 { display: flex; align-items: baseline; gap: 12px; margin: 0 0 6px; font: 900 clamp(1.75rem, 4vw, 2.5rem)/1 var(--grot); font-stretch: 65%; text-transform: uppercase; }
-  .schritt h2 .nr { color: var(--tinte-2); }
-  .schritt .feld { margin-top: 14px; }
-  .schritt .opt { font-weight: 500; color: var(--tinte-2); }
+  /* Knöpfe und Felder */
+  .knopf { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 40px; padding: 8px 14px; border: 1px solid var(--linie-2); border-radius: var(--r); background: var(--bg);
+    color: var(--text); font: 600 0.9375rem/1.2 var(--sans); text-align: center; text-decoration: none; cursor: pointer; -webkit-user-select: none; user-select: none;
+    box-shadow: 0 1px 2px rgb(18 22 32 / 0.05); transition: background-color 0.15s, border-color 0.15s, transform 0.1s; }
+  @media (hover: hover) { .knopf:hover { background: var(--bg-2); text-decoration: none; } }
+  .knopf:active { transform: scale(0.98); }
+  .knopf.voll { border-color: var(--akzent); background: var(--akzent); color: var(--auf-akzent); }
+  @media (hover: hover) { .knopf.voll:hover { border-color: var(--akzent-hover); background: var(--akzent-hover); } }
+  .knopf:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  @media (hover: hover) { .knopf:disabled:hover { background: var(--bg); } .knopf.voll:disabled:hover { background: var(--akzent); } }
+  @media (pointer: coarse) { .knopf { min-height: 44px; } }
+  .knopfreihe { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 14px; }
+  input:not([type="checkbox"], [type="file"]), textarea, select { display: block; width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid var(--linie-2); border-radius: var(--r);
+    background: var(--bg); color: var(--text); font: 400 1rem/1.4 var(--sans); transition: border-color 0.15s; }
+  textarea { resize: vertical; line-height: 1.5; }
+  :is(input, textarea, select):focus-visible { outline: 2px solid var(--akzent); outline-offset: -1px; border-color: var(--akzent); }
+  ::placeholder { color: var(--text-3); opacity: 1; }
+  select { appearance: none; -webkit-appearance: none; padding-right: 40px; cursor: pointer;
+    background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23858c99' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center; }
+  .feld { display: grid; gap: 6px; margin-top: 16px; font-weight: 600; font-size: 0.875rem; }
+  .feld .opt { font-weight: 400; color: var(--text-3); }
   .zeile { display: flex; gap: 8px; }
   .zeile input { flex: 1; min-width: 0; }
-  .zeile .knopf { justify-content: center; }
+  .zeile .knopf { flex: none; }
+  .haken { display: inline-flex; align-items: center; gap: 10px; min-height: 32px; cursor: pointer; font-weight: 600; font-size: 0.875rem; }
+  .haken input { appearance: none; -webkit-appearance: none; flex: none; width: 20px; height: 20px; margin: 0; border: 1.5px solid var(--linie-2); border-radius: 6px; background: var(--bg); cursor: pointer; transition: background-color 0.15s, border-color 0.15s; }
+  .haken input:checked { border-color: var(--akzent); background: var(--akzent) var(--haken) center / 15px no-repeat; }
+  @media (pointer: coarse) { .haken input { width: 22px; height: 22px; } }
+
+  /* Text und Zustände */
+  .klein { margin: 6px 0 0; color: var(--text-2); font-size: 0.875rem; line-height: 1.55; }
+  .meta { margin: 0; color: var(--text-3); font-size: 0.8125rem; line-height: 1.45; font-variant-numeric: tabular-nums; }
+  .leer { margin: 0; color: var(--text-2); font-size: 0.9375rem; }
+  .fehlertext { margin: 8px 0 0; color: var(--fehler); font-size: 0.875rem; font-weight: 600; }
+  .fehlertext::before { content: "Fehler: "; }
+  .pille { display: inline-flex; align-items: center; min-height: 22px; padding: 1px 8px; border-radius: 999px; background: var(--bg-3); color: var(--text-2); font: 600 0.75rem/1.3 var(--sans); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .pille.akzent { background: var(--akzent-flaeche); color: var(--akzent-text); }
+  .pille.warn { background: var(--warn-flaeche); color: var(--warn); }
+  #status { margin: 0 0 18px; padding: 10px 14px; border-radius: var(--r); background: var(--bg-2); color: var(--text-2); font-size: 0.875rem; font-weight: 550; }
+  #status:empty { display: none; }
+  #status.fehler { background: var(--fehler-flaeche); color: var(--fehler); }
+  #status.fehler::before { content: "Fehler: "; font-weight: 700; }
+  /* Läuft gerade (Ausgabe erstellen, Antwort, Löser): ein schmaler Balken unter dem Hinweis */
+  .presse { position: relative; display: block; padding-bottom: 12px; overflow: hidden; color: var(--text-2); font-size: 0.875rem; font-weight: 600; }
+  .presse::before, .presse::after { content: ""; position: absolute; left: 0; bottom: 0; height: 3px; border-radius: 3px; }
+  .presse::before { right: 0; background: var(--bg-3); }
+  .presse::after { width: 40%; background: var(--akzent); animation: laden 1.3s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+  @keyframes laden { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+  @media (prefers-reduced-motion: reduce) { .presse::after { width: 100%; opacity: 0.35; animation: none; } .navi .laeuft { animation: none; } }
+
+  /* Seitenkopf, Abschnitte */
+  .ausgabe-kopf, .seitenkopf { margin: 0 0 28px; }
+  .seitenkopf { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px; }
+  :is(.ausgabe-kopf, .seitenkopf) h1 { margin: 0; font: 700 1.75rem/1.15 var(--sans); letter-spacing: -0.02em; }
+  .ausgabe-kopf > .schlagzeile { margin: 8px 0 0; color: var(--text-2); font-size: 1.0625rem; line-height: 1.45; }
+  .ausgabe-kopf > .meta, .unterzeile { margin: 8px 0 0; }
+  .unterzeile { display: flex; flex-wrap: wrap; gap: 4px 16px; color: var(--text-2); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+  .kopf-aktionen { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .kopf-aktionen .meta { margin-right: 4px; }
+  @media (min-width: 900px) { :is(.ausgabe-kopf, .seitenkopf) h1 { font-size: 2rem; } }
+  .zurueck { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; margin: 0 0 6px -4px; color: var(--akzent-text); font-weight: 600; font-size: 0.9375rem; }
+  .zurueck::before { content: ""; width: 18px; height: 18px; background: currentColor; -webkit-mask: var(--pfeil-links) center / contain no-repeat; mask: var(--pfeil-links) center / contain no-repeat; }
+  :root { --pfeil-links: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M15 5l-7 7 7 7' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    --pfeil-rechts: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 5l7 7-7 7' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+  .pfeil { width: 18px; height: 18px; flex: none; background: var(--text-3); -webkit-mask: var(--pfeil-rechts) center / contain no-repeat; mask: var(--pfeil-rechts) center / contain no-repeat; }
+  main h2 { margin: 0 0 12px; font: 650 1.125rem/1.3 var(--sans); letter-spacing: -0.005em; }
+  .block { margin-top: 32px; }
+  .block-kopf, .rubrik { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; margin: 0 0 12px; }
+  .block-kopf h2, .rubrik > :first-child { margin: 0; }
+  .rubrik > :first-child { font: 650 1.25rem/1.3 var(--sans); letter-spacing: -0.01em; }
+  .liste-rahmen { margin: 0; padding: 0; list-style: none; border: 1px solid var(--linie); border-radius: var(--r-l); background: var(--bg); overflow: hidden; }
+  .liste-rahmen > * + * { border-top: 1px solid var(--linie); }
+
+  /* Heute */
+  .heute-raster { display: grid; gap: 32px; }
+  @media (min-width: 1100px) {
+    .heute-raster { grid-template-columns: minmax(0, 1fr) minmax(320px, 400px); grid-template-rows: auto 1fr; grid-template-areas: "faecher fristen" "faecher termine"; gap: 32px 40px; align-items: start; }
+    #naechstes { grid-area: fristen; } .h-faecher { grid-area: faecher; } .h-termine { grid-area: termine; }
+    #naechstes .frist { grid-template-columns: auto minmax(0, 1fr); }
+    #naechstes .frist .pille { grid-column: 2; justify-self: start; margin-top: 2px; }
+  }
+  .frist { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 2px 12px; align-items: center; padding: 12px 16px; }
+  .mehr { display: block; width: 100%; min-height: 44px; padding: 10px 16px; border: 0; background: none; color: var(--akzent-text); font-weight: 600; font-size: 0.875rem; text-align: left; cursor: pointer; }
+  @media (hover: hover) { .mehr:hover { background: var(--bg-2); } }
+  .frist .haken { min-height: 28px; }
+  .frist button.was { display: grid; gap: 2px; min-width: 0; margin: 0; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; }
+  .frist .titel { font-weight: 600; overflow-wrap: anywhere; }
+  @media (hover: hover) { .frist button.was:hover .titel { text-decoration: underline; text-underline-offset: 0.2em; } }
+  .frist.erledigt .titel { color: var(--text-3); text-decoration: line-through; }
+  .fach { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; padding: 14px 16px; background: var(--bg); transition: background-color 0.15s; }
+  @media (hover: hover) { .fach:hover { background: var(--bg-2); } }
+  .fach > div { display: grid; gap: 3px; min-width: 0; }
+  .fach h3 { margin: 0; font: 650 1.0625rem/1.3 var(--sans); }
+  .fach h3 a { color: var(--text); }
+  .fach h3 a::after { content: ""; position: absolute; inset: 0; }
+  .fach h3 a:hover { text-decoration: none; }
+  .fach .schlagzeile { margin: 0; font: 500 1rem/1.4 var(--serif); }
+  .fach .anriss { margin: 0; color: var(--text-2); font-size: 0.875rem; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .fach .presse, .fach .fehlertext { grid-column: 1 / -1; }
+  .willkommen { padding: 24px; border-radius: var(--r-l); background: var(--bg-2); }
+  .willkommen h3 { margin: 0 0 6px; font: 650 1.25rem/1.3 var(--sans); }
+  .termine-feld { padding: 16px 18px 8px; border-radius: var(--r-l); background: var(--bg-2); }
+  .tag { margin: 0; padding: 0; list-style: none; }
+  .tag + .tag { margin-top: 16px; }
+  .tag h3 { margin: 0 0 2px; color: var(--text-2); font: 600 0.8125rem/1.3 var(--sans); font-variant-numeric: tabular-nums; }
+  .termin { display: grid; grid-template-columns: 3rem minmax(0, 1fr) auto; gap: 2px 10px; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--linie); font-size: 0.875rem; line-height: 1.4; }
+  .tag .termin:last-child { border-bottom: 0; }
+  .termin .zeit { color: var(--text-2); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .termin button.was { min-width: 0; margin: 0; padding: 0; border: 0; background: none; color: var(--text); text-align: left; cursor: pointer; overflow-wrap: anywhere; }
+  @media (hover: hover) { .termin button.was:hover { text-decoration: underline; text-underline-offset: 0.2em; } }
+  .termin .was b { margin-right: 6px; font-weight: 650; }
+  .termin .ort { display: block; color: var(--text-3); font-size: 0.8125rem; }
+  .termin.erledigt .was { color: var(--text-3); text-decoration: line-through; }
+  .abgleich { margin: 32px 0 0; color: var(--text-3); font-size: 0.8125rem; }
+  .abgleich.warnung { color: var(--warn); font-weight: 600; }
+  .abgleich[data-kosten] { display: flex; flex-wrap: wrap; gap: 0 14px; margin-top: 8px; }
+
+  /* Meldung zu einem Termin: am Handy ein Blatt von unten */
+  .meldung { width: min(34rem, calc(100% - 32px)); max-height: calc(100dvh - 48px); padding: 0; border: 1px solid var(--linie); border-radius: var(--r-xl); background: var(--bg); color: var(--text); box-shadow: var(--schatten-gross); overscroll-behavior: contain; }
+  .meldung::backdrop { background: rgb(8 10 14 / 0.45); }
+  .meldung[open] { animation: auftauchen 0.22s cubic-bezier(0.16, 1, 0.3, 1); }
+  @keyframes auftauchen { from { opacity: 0; transform: translateY(10px) scale(0.985); } }
+  @media (max-width: 640px) {
+    .meldung { width: 100%; max-width: 100%; margin: auto 0 0; border-radius: var(--r-xl) var(--r-xl) 0 0; border-width: 1px 0 0; padding-bottom: env(safe-area-inset-bottom); }
+    .meldung[open] { animation-name: hochschieben; animation-duration: 0.3s; }
+  }
+  @keyframes hochschieben { from { transform: translateY(100%); } }
+  @media (prefers-reduced-motion: reduce) { .meldung[open] { animation: none; } }
+  .meldung .innen { display: grid; gap: 14px; padding: 22px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .meldung h2 { margin: 0; font: 650 1.375rem/1.25 var(--sans); letter-spacing: -0.01em; }
+  .meldung dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 16px; margin: 0; padding: 12px 14px; border-radius: var(--r); background: var(--bg-2); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+  .meldung dt { color: var(--text-3); font-weight: 600; }
+  .meldung dd { margin: 0; }
+  .meldung .info { margin: 0; font: 400 1.0625rem/1.55 var(--serif); }
+  .meldung .knopfreihe { margin-top: 4px; }
+  .meldung .knopfreihe .haken { margin-right: auto; }
+
+  /* Ausgabe eines Fachs */
+  #ausgabe .ausgabe-kopf { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px; margin-bottom: 20px; }
+  #ausgabe .ausgabe-kopf > div:first-child { min-width: 0; max-width: 46rem; }
+  #ausgabe .ausgabe-kopf .schlagzeile { margin: 10px 0 0; color: var(--text); font: 600 1.5rem/1.25 var(--serif); letter-spacing: -0.01em; }
+  @media (min-width: 900px) { #ausgabe .ausgabe-kopf .schlagzeile { font-size: 1.75rem; } }
+  .quellen { margin: 0 0 8px; color: var(--text-3); font-size: 0.8125rem; }
+  .quellen summary { width: max-content; min-height: 32px; }
+  .quellen p { margin: 4px 0 0; max-width: 80ch; overflow-wrap: anywhere; }
+  .abschnitte { position: sticky; top: 0; z-index: 5; display: flex; gap: 4px; margin: 0 -16px 28px; padding: 8px 16px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid var(--linie);
+    background: color-mix(in srgb, var(--bg) 88%, transparent); -webkit-backdrop-filter: saturate(1.8) blur(14px); backdrop-filter: saturate(1.8) blur(14px); }
+  .abschnitte::-webkit-scrollbar { display: none; }
+  .abschnitte button { flex: none; min-height: 34px; padding: 6px 12px; border: 0; border-radius: 999px; background: none; color: var(--text-2); font-weight: 600; font-size: 0.875rem; cursor: pointer; transition: background-color 0.15s, color 0.15s; }
+  @media (hover: hover) { .abschnitte button:hover { background: var(--bg-2); color: var(--text); } }
+  .abschnitte button[aria-current] { background: var(--bg-3); color: var(--text); }
+  @media (min-width: 900px) { .abschnitte { margin-inline: 0; padding-inline: 0; } }
+  .teil { margin-top: 48px; }
+  .raster { display: grid; gap: 20px; }
+  .raster > * { min-width: 0; }
+  .abschnitt.blick { order: -1; }
+  @media (min-width: 1100px) {
+    .raster { grid-template-columns: minmax(0, 1fr) 340px; grid-template-rows: auto auto 1fr; gap: 16px 48px; }
+    .artikel { grid-column: 1; grid-row: 1 / span 3; }
+    .abschnitt { grid-column: 2; }
+    .abschnitt.blick { order: 0; }
+  }
+  .abschnitt { padding: 16px 18px; border: 1px solid var(--linie); border-radius: var(--r-l); }
+  .abschnitt.blick { border-color: transparent; background: var(--bg-2); }
+  .abschnitt h2 { margin-bottom: 8px; font-size: 1rem; }
+  .artikel > h2 { font-size: 1.25rem; }
+  .text { max-width: 68ch; overflow-x: auto; font: 400 1.0625rem/1.65 var(--serif); }  /* lange Formeln scrollen im Text, nicht die Seite */
+  .text > :first-child { margin-top: 0; }
+  .text h3 { margin: 1.7em 0 0.4em; font: 650 1.0625rem/1.3 var(--sans); }
+  .text p, .text ul, .text ol { margin: 0 0 0.85em; }
+  .text ul, .text ol { padding-left: 1.25em; }
+  .text li { margin-bottom: 0.35em; }
+  .text li::marker { color: var(--text-3); }
+  .text strong, .text b { font-weight: 650; }
+  .text a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+  .text table { display: block; overflow-x: auto; border-collapse: collapse; font: 400 0.875rem/1.45 var(--sans); font-variant-numeric: tabular-nums; }
+  .text th, .text td { padding: 7px 14px 7px 0; border-bottom: 1px solid var(--linie); text-align: left; vertical-align: top; }
+  .text th { color: var(--text-2); font-weight: 650; }
+  .text code { padding: 1px 5px; border-radius: 5px; background: var(--bg-3); font-size: 0.875em; overflow-wrap: anywhere; }
+  .abschnitt .text { font-size: 0.9375rem; line-height: 1.55; }
+  /* Formeln: KaTeX liefert MathML, der Browser setzt sie mit seiner Mathe-Schrift */
+  math { font-size: 1.05em; }
+  math[display="block"] { margin: 0.9em 0; padding: 4px 0; overflow: auto hidden; font-size: 1.12em; }
+
+  /* Übungsaufgaben: erst selbst rechnen, dann aufdecken */
+  .aufgaben { display: grid; gap: 12px; }
+  @media (min-width: 1100px) { .aufgaben { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .aufgaben.einspaltig { grid-template-columns: minmax(0, 1fr); }
+  .aufgabe { display: grid; gap: 10px; align-content: start; min-width: 0; padding: 18px 20px; border: 1px solid var(--linie); border-radius: var(--r-l); }
+  .aufgabe h3 { display: flex; align-items: baseline; gap: 10px; margin: 0; font: 650 1.0625rem/1.35 var(--sans); }
+  .nr { display: inline-grid; place-items: center; flex: none; min-width: 26px; height: 26px; padding: 0 6px; border-radius: 999px; background: var(--bg-3); color: var(--text-2); font: 700 0.8125rem/1 var(--sans); font-variant-numeric: tabular-nums; }
+  .aufgabe h3 .nr { position: relative; top: -1px; }
+  .aufgabe .meta { margin-top: -4px; }
+  .aufgabe .text { font-size: 1rem; line-height: 1.6; }
+  .loesung > summary { width: max-content; list-style: none; }
+  .loesung > summary::-webkit-details-marker { display: none; }
+  .loesung[open] > summary .zu, .loesung:not([open]) > summary .auf { display: none; }
+  .loesung > .text { margin-top: 12px; padding: 14px 16px; border-radius: var(--r); background: var(--bg-2); }
+
+  /* Lexikon: Karteikarte zum Umdrehen */
+  .lexikon { display: grid; gap: 24px; align-items: start; }
+  @media (min-width: 1100px) { .lexikon { grid-template-columns: minmax(0, 1fr) 340px; gap: 48px; } }
+  .lexikon > * { min-width: 0; }
+  .lexikon .fortschritt { margin: -4px 0 14px; color: var(--text-2); font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+  .karte { position: relative; display: block; width: 100%; min-height: 15rem; padding: 0; border: 0; background: none; cursor: pointer; perspective: 1400px; text-align: center; -webkit-user-select: none; user-select: none; }
+  .karte .innen { position: relative; display: block; min-height: 15rem; transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1); transform-style: preserve-3d; }
+  .karte.um .innen { transform: rotateY(180deg); }
+  .karte .seite-v, .karte .seite-h { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px 28px;
+    border: 1px solid var(--linie); border-radius: 18px; background: var(--bg); box-shadow: var(--schatten); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+  .karte .seite-h { transform: rotateY(180deg); background: var(--bg-2); }
+  .karte .begriff { font: 700 1.625rem/1.15 var(--sans); letter-spacing: -0.015em; text-wrap: balance; }
+  .karte .definition { font: 400 1.0625rem/1.55 var(--serif); text-wrap: pretty; }
+  .karte .hinweis { color: var(--text-3); font-size: 0.8125rem; }
+  @media (prefers-reduced-motion: reduce) { .karte .innen { transition: none; } }
+  .karten-aktionen { display: flex; gap: 8px; margin-top: 14px; }
+  .karten-aktionen .knopf { flex: 1; }
+  :is(.liste, .quellen, .einrichten details) > summary { display: flex; align-items: center; gap: 6px; min-height: 40px; cursor: pointer; list-style: none; font-weight: 600; }
+  :is(.liste, .quellen, .einrichten details) > summary::-webkit-details-marker { display: none; }
+  :is(.liste, .quellen, .einrichten details) > summary::before { content: ""; width: 16px; height: 16px; flex: none; background: currentColor; -webkit-mask: var(--pfeil-rechts) center / contain no-repeat; mask: var(--pfeil-rechts) center / contain no-repeat; transition: transform 0.2s; }
+  :is(.liste, .quellen, .einrichten details)[open] > summary::before { transform: rotate(90deg); }
+  @media (prefers-reduced-motion: reduce) { :is(.liste, .quellen, .einrichten details) > summary::before { transition: none; } }
+  .liste dl { margin: 6px 0 0; }
+  .liste dt { margin-top: 14px; font-weight: 650; }
+  .liste dt.gewusst::after { content: "gewusst"; margin-left: 8px; padding: 1px 7px; border-radius: 999px; background: var(--ok-flaeche); color: var(--ok); font-size: 0.75rem; font-weight: 600; }
+  .liste dd { margin: 2px 0 0; font: 400 0.9375rem/1.5 var(--serif); }
+
+  /* Fragen zur Ausgabe: kurzer Chat */
+  .fragen { max-width: 760px; }
+  .verlauf { display: grid; gap: 14px; margin: 16px 0; }
+  .verlauf .frage { justify-self: end; max-width: 85%; margin: 0; padding: 10px 14px; border-radius: 18px 18px 6px 18px; background: var(--akzent); color: var(--auf-akzent); font-size: 0.9375rem; overflow-wrap: anywhere; }
+  .verlauf .antwort { padding-bottom: 14px; border-bottom: 1px solid var(--linie); }
+  .frageform textarea { min-height: 5.5rem; }
+
+  /* Stammdaten und Archiv */
+  .stamm-raster { display: grid; gap: 12px; }
+  @media (min-width: 700px) { .stamm-raster { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1300px) { .stamm-raster { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .stamm { min-width: 0; padding: 14px 16px; border-radius: var(--r-l); background: var(--bg-2); }
+  .stamm h3 { margin: 0 0 6px; font: 650 0.9375rem/1.3 var(--sans); }
+  .stamm .text { font: 400 0.875rem/1.5 var(--sans); font-variant-numeric: tabular-nums; }
+  .stamm .text ul { padding-left: 1em; }
+  .archiv ol { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+  .archiv a { display: inline-flex; align-items: center; min-height: 36px; padding: 6px 14px; border: 1px solid var(--linie); border-radius: 999px; color: var(--text-2); font-weight: 600; font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+  @media (hover: hover) { .archiv a:hover { background: var(--bg-2); text-decoration: none; } }
+  .archiv a[aria-current] { border-color: var(--text); background: var(--text); color: var(--bg); }
+
+  /* Kalender */
+  .kal-nav { display: flex; flex-wrap: wrap; gap: 8px; }
+  .woche { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border: 1px solid var(--linie); border-radius: var(--r-l); overflow: hidden; }
+  .kal-tag { min-width: 0; min-height: 14rem; padding: 10px 8px 12px; }
+  .kal-tag + .kal-tag { border-left: 1px solid var(--linie); }
+  .kal-tag h2 { margin: 0 0 8px; padding: 0 2px; color: var(--text-2); font: 600 0.8125rem/1.3 var(--sans); font-variant-numeric: tabular-nums; }
+  .kal-tag.heute { background: color-mix(in srgb, var(--akzent-flaeche) 55%, var(--bg)); }
+  .kal-tag.heute h2 { color: var(--akzent-text); }
+  .kal-eintrag { display: grid; gap: 1px; width: 100%; margin: 0 0 6px; padding: 7px 8px; border: 0; border-radius: var(--r-s); background: var(--bg-2); color: var(--text); text-align: left; cursor: pointer; font-size: 0.8125rem; line-height: 1.3; overflow-wrap: anywhere; transition: background-color 0.15s; }
+  @media (hover: hover) { .kal-eintrag:hover { background: var(--bg-3); } }
+  .kal-tag.heute .kal-eintrag { background: var(--bg); }
+  .kal-eintrag .zeit { color: var(--text-2); font-weight: 650; font-variant-numeric: tabular-nums; }
+  .kal-eintrag .kal-titel { font-weight: 550; }
+  .kal-eintrag b { color: var(--text-3); font-size: 0.75rem; font-weight: 600; }
+  .kal-eintrag.frist { background: var(--akzent-flaeche); }
+  .kal-eintrag.frist b { color: var(--akzent-text); }
+  .kal-panels { display: grid; gap: 16px; margin-top: 32px; }
+  @media (min-width: 900px) { .kal-panels { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .kal-panel { padding: 18px 20px; border: 1px solid var(--linie); border-radius: var(--r-l); }
+  .kal-panel h2 { margin: 0; font: 650 1rem/1.3 var(--sans); }
+  .kal-liste { margin: 12px 0 0; padding: 0; list-style: none; }
+  .kal-liste li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding: 8px 0; border-bottom: 1px solid var(--linie); font-size: 0.875rem; }
+  label.knopf:focus-within { outline: 2px solid var(--akzent); outline-offset: 2px; }
+  @media (max-width: 1080px) {
+    .woche { grid-template-columns: minmax(0, 1fr); }
+    .kal-tag { min-height: 0; padding: 12px 14px; }
+    .kal-tag + .kal-tag { border-left: 0; border-top: 1px solid var(--linie); }
+    .kal-tag.ohne:not(.heute) { display: none; }
+    .kal-tag .kal-eintrag { padding: 9px 10px; font-size: 0.875rem; }
+  }
+
+  /* Werkstätten: Word Power, Einrichten, Onlinetests, Anleitung */
+  .werkstatt { max-width: 860px; }
+  .sperre { display: grid; gap: 12px; max-width: 420px; padding: 20px; border: 1px solid var(--linie); border-radius: var(--r-l); }
+  .sperre label { display: grid; gap: 6px; font-weight: 600; font-size: 0.875rem; }
+  .sperre .klein { margin: 0; }
+  .schritt .sperre { margin-top: 10px; padding: 0; border: 0; }
+  .schritt { margin-top: 16px; padding: 20px; border: 1px solid var(--linie); border-radius: var(--r-l); scroll-margin-top: 16px; }
+  .schritt h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 6px; }
+  .nr.ok { position: relative; color: transparent; background: var(--ok-flaeche); }
+  .nr.ok::after { content: ""; position: absolute; inset: 6px; background: var(--ok); -webkit-mask: var(--haken) center / contain no-repeat; mask: var(--haken) center / contain no-repeat; }
   #wp-out { min-height: 16rem; font-variant-numeric: tabular-nums; }
   #wp-notes { min-height: 8rem; }
-  .talk { display: flex; align-items: center; gap: 14px; margin-top: 12px; padding: 10px 0; border-block: var(--duenn); }
-  .talk img { width: 112px; aspect-ratio: 16 / 9; object-fit: cover; flex: none; background: var(--papier-tief); }
+  .talk { display: flex; align-items: center; gap: 14px; margin-top: 12px; padding: 10px; border-radius: var(--r); background: var(--bg-2); }
+  .talk img { width: 112px; aspect-ratio: 16 / 9; flex: none; border-radius: 6px; object-fit: cover; background: var(--bg-3); }
   .talk p { margin: 0; }
-  .talk-titel { font: 750 1rem/1.3 var(--serif); }
-  .wp-status { min-height: 1.5em; margin: 12px 0 0; font: 600 0.9375rem/1.4 var(--grot); color: var(--tinte-2); }
-  .wp-status.presse, .wp-status.fehlertext { color: var(--tinte); }
-  .blatt-wp { margin-top: 18px; padding: clamp(18px, 4vw, 40px); border: var(--duenn); background: var(--papier-tief); }
-  .blatt-wp h2 { margin: 1.6em 0 0.5em; padding-bottom: 0.3em; border-bottom: var(--duenn); font: 800 1.5rem/1.2 var(--serif); }
+  .talk-titel { font-weight: 600; }
+  .wp-status { min-height: 1.5em; margin: 12px 0 0; color: var(--text-2); font-size: 0.875rem; font-weight: 600; }
+  .wp-status.fehlertext { color: var(--fehler); }
+  .blatt-wp { margin-top: 16px; padding: clamp(18px, 4vw, 36px); border: 1px solid var(--linie); border-radius: var(--r-l); background: var(--bg-2); }
+  .blatt-wp h2 { margin: 1.6em 0 0.5em; padding-bottom: 0.3em; border-bottom: 1px solid var(--linie); font: 650 1.375rem/1.25 var(--serif); }
   .blatt-wp h2:first-child { margin-top: 0; }
-  .blatt-wp b { font-weight: 750; }
 
-  /* Einrichten: Stand jedes Schritts als Stimmzettel-Kästchen, gefüllt = erledigt */
-  .stand { display: flex; align-items: center; gap: 8px; margin: 2px 0 8px; font: 850 0.8125rem/1.2 var(--grot); font-stretch: 78%; text-transform: uppercase; letter-spacing: 0.05em; color: var(--tinte-2); }
-  .stand::before { content: ""; flex: none; width: 12px; height: 12px; border: var(--duenn); }
-  .stand.ok { color: var(--tinte); }
-  .stand.ok::before { background: var(--tinte); }
-  .stand.warnung::before { background: linear-gradient(to top right, transparent 44%, currentColor 44% 56%, transparent 56%); }  /* durchgestrichen, Bordeaux bleibt der nächsten Frist */
-  .schritte { display: grid; gap: 16px; margin: 14px 0 0; padding-left: 1.4em; }
-  .schritte li::marker { font: 850 1rem var(--grot); }
-  .schritte li > .knopf { margin-bottom: 6px; }
+  /* Einrichten: Stand jedes Schritts als Abzeichen */
+  .stand { display: inline-flex; align-items: center; gap: 7px; margin: 4px 0 6px; padding: 3px 10px 3px 9px; border-radius: 999px; background: var(--bg-2); color: var(--text-2); font-size: 0.8125rem; font-weight: 600; }
+  .stand::before { content: ""; width: 7px; height: 7px; flex: none; border-radius: 50%; background: var(--text-3); }
+  .stand.ok { background: var(--ok-flaeche); color: var(--ok); }
+  .stand.warnung { background: var(--warn-flaeche); color: var(--warn); }
+  .stand.ok::before, .stand.warnung::before { background: currentColor; }
+  .schritte { display: grid; gap: 14px; margin: 14px 0 0; padding-left: 1.5em; }
+  .schritte li::marker { color: var(--text-3); font-weight: 700; }
+  .schritte li > .knopf { margin-bottom: 4px; }
   .schritte p { margin: 0; }
   .einrichten details { margin-top: 14px; }
-  .einrichten details > summary { cursor: pointer; width: max-content; padding: 8px 0; font: 700 0.9375rem var(--grot); font-stretch: 88%; }
-  .qr { display: inline-block; margin-top: 12px; padding: 14px; background: #fff; border: var(--duenn); }
+  .einrichten details > summary { width: max-content; color: var(--akzent-text); }
+  .qr { display: inline-block; margin-top: 14px; padding: 14px; border-radius: var(--r-l); background: #fff; box-shadow: 0 0 0 1px var(--linie); }
   .qr svg { display: block; width: min(240px, 62vw); height: auto; }
-  .kamera { display: block; width: min(100%, 420px); aspect-ratio: 4 / 3; object-fit: cover; margin-top: 12px; border: var(--duenn); background: var(--papier-tief); }
+  .kamera { display: block; width: min(100%, 420px); aspect-ratio: 4 / 3; margin-top: 12px; border-radius: var(--r-l); object-fit: cover; background: var(--bg-3); }
 
-  /* Onlinetests: Überblick wie eine Kurstabelle, Einzelansicht mit Aufgabenstellung und Löser */
-  .testgruppe { margin-top: 30px; }
-  .testgruppe .rubrik { margin-top: 0; }
-  .testzeilen { margin: 0; padding: 0; list-style: none; }
-  .testzeile { display: grid; grid-template-columns: 8rem minmax(0, 1fr) auto; gap: 2px 16px; align-items: baseline; padding: 11px 0; border-bottom: 1px solid color-mix(in srgb, var(--tinte) 25%, transparent); font: 450 0.9375rem/1.35 var(--grot); font-stretch: 92%; font-variant-numeric: tabular-nums; }
-  .testzeile b { font-weight: 850; font-stretch: 78%; text-transform: uppercase; letter-spacing: 0.02em; }
-  .testzeile a { font-weight: 750; text-decoration: none; }
-  @media (hover: hover) { .testzeile a:hover { text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 0.18em; } }
-  .testzeile .ort { display: block; color: var(--tinte-2); font-size: 0.8125rem; }
-  .testzeile .wann { font-weight: 700; white-space: nowrap; text-align: right; }
-  .testzeile.naechste { margin: 0 -10px; padding: 11px 10px; background: var(--bordeaux); color: var(--auf-bordeaux); border-bottom-color: transparent; }
-  .testzeile.naechste .ort { color: inherit; opacity: 0.85; }
-  .aufgabentext { max-height: 70vh; overflow: auto; margin: 10px 0 0; padding: 16px 18px; border-top: var(--dick); background: var(--papier-tief); white-space: pre-wrap; overflow-wrap: anywhere; font: 400 1rem/1.55 var(--serif); }
-  .aufgaben.einspaltig { grid-template-columns: minmax(0, 1fr); max-width: 760px; }
+  /* Onlinetests */
+  .testgruppe { margin-top: 32px; }
+  .testzeilen { margin: 0; padding: 0; list-style: none; border: 1px solid var(--linie); border-radius: var(--r-l); overflow: hidden; }
+  .testzeile { position: relative; display: grid; grid-template-columns: 6.5rem minmax(0, 1fr) auto; gap: 2px 14px; align-items: center; padding: 12px 16px; transition: background-color 0.15s; }
+  .testzeile + .testzeile { border-top: 1px solid var(--linie); }
+  @media (hover: hover) { .testzeile:hover { background: var(--bg-2); } }
+  .testzeile b { color: var(--text-2); font-size: 0.8125rem; font-weight: 650; }
+  .testzeile a { color: var(--text); font-weight: 600; }
+  .testzeile a::after { content: ""; position: absolute; inset: 0; }
+  .testzeile a:hover { text-decoration: none; }
+  .testzeile .ort { display: block; color: var(--text-3); font-size: 0.8125rem; font-weight: 400; }
+  .testzeile .wann { justify-self: end; }
+  .aufgabentext { max-height: 60vh; margin: 12px 0 0; padding: 16px 18px; overflow: auto; border-radius: var(--r-l); background: var(--bg-2); white-space: pre-wrap; overflow-wrap: anywhere; font: 400 0.9375rem/1.6 var(--sans); overscroll-behavior: contain; }
 
-  /* Anleitung */
-  .anleitung .text { max-width: 68ch; }
-  .anleitung .text h2 { margin: 44px 0 10px; padding-top: 12px; border-top: var(--dick); font: 900 clamp(1.75rem, 3.6vw, 2.5rem)/1 var(--grot); font-stretch: 62%; text-transform: uppercase; }
-  .anleitung .text ol > li::marker { font: 850 1rem var(--grot); }
-  .anleitung .inhalt { columns: 2 16rem; margin: 22px 0 0; padding: 12px 0 0 1.4em; border-top: var(--duenn); font: 600 0.9375rem/1.9 var(--grot); }
+  /* Anleitung: Lesen */
+  .anleitung { max-width: 760px; }
+  .anleitung .inhalt { columns: 2 15rem; margin: 0; padding: 14px 18px 14px 2.4em; border-radius: var(--r-l); background: var(--bg-2); font-weight: 550; line-height: 2; }
+  .anleitung .inhalt li::marker { color: var(--text-3); }
+  .anleitung .text { max-width: none; }
+  .anleitung .text h2 { margin: 48px 0 12px; font: 700 1.375rem/1.25 var(--sans); letter-spacing: -0.01em; scroll-margin-top: 20px; }
+  .anleitung .text h3 { margin-top: 1.5em; }
+  .anleitung .text ol > li::marker { color: var(--text-3); font: 600 0.9375rem var(--sans); }
   .anleitung dl { margin: 0; }
-  .anleitung dt { margin-top: 16px; font: 800 1.0625rem/1.3 var(--grot); font-stretch: 88%; }
+  .anleitung dt { margin-top: 20px; font: 650 1rem/1.35 var(--sans); }
   .anleitung dd { margin: 4px 0 0; }
-  .anleitung .kasten { margin: 18px 0; padding: 12px 16px 2px; border-top: var(--dick); border-bottom: var(--duenn); background: var(--papier-tief); }
+  .anleitung .kasten { margin: 20px 0; padding: 14px 18px; border-radius: var(--r-l); background: var(--bg-2); }
+  .anleitung .kasten p { margin: 0; }
 
-  /* Archiv */
-  .archiv { margin-top: 40px; border-top: var(--dick); padding-top: 14px; }
-  .archiv ol { display: flex; flex-wrap: wrap; gap: 0; margin: 0; padding: 0; list-style: none; }
-  .archiv a { display: inline-block; padding: 10px 16px 10px 0; margin-right: 16px; font: 600 0.9375rem var(--grot); font-variant-numeric: tabular-nums; text-decoration: none; }
-  .archiv a[aria-current] { text-decoration: underline; text-decoration-thickness: 3px; font-weight: 850; }
-  .zurueck { display: inline-flex; align-items: center; gap: 8px; }
-  .zurueck svg { width: 18px; height: 18px; }
-
-  /* Einstellungen */
-  .einrichtung { max-width: 640px; margin-top: 18px; border-top: var(--dick); padding-top: 14px; }
-  .einrichtung h2 { margin: 0 0 6px; font: 900 2.25rem/1 var(--grot); font-stretch: 65%; text-transform: uppercase; }
-  .einrichtung ol { padding-left: 1.2em; }
-  .einrichtung li { margin-bottom: 0.4em; }
-  .einrichtung form { display: grid; gap: 16px; margin-top: 18px; }
-  .einrichtung label { display: grid; gap: 6px; font: 700 0.9375rem var(--grot); font-stretch: 88%; }
-  .einrichtung input { min-height: 46px; padding: 10px 12px; border: var(--duenn); border-radius: 0; background: var(--papier); font: 450 1rem var(--grot); }
-  .einrichtung input:focus-visible { outline-offset: 0; }
-  .einrichtung .knopfreihe { display: flex; flex-wrap: wrap; gap: 8px; }
-  .klein { font: 500 0.875rem/1.5 var(--grot); color: var(--tinte-2); margin: 0; }
-
-  @media (max-width: 1080px) {
-    .blatt { grid-template-columns: 1fr; }
-    .termine { margin-top: 28px; }
-    .raster { grid-template-columns: 1fr; grid-template-rows: none; }
-    .artikel, .abschnitt { grid-column: 1; grid-row: auto; }
-    .abschnitt.blick { order: -1; margin-bottom: 18px; }
-    .artikel { margin: 0 0 18px; padding-right: 0; border-right: 0; }
-    .lexikon { grid-template-columns: 1fr; }
-    .woche { grid-template-columns: 1fr; }
-    .kal-tag, .kal-tag:first-child { min-height: 0; padding: 10px 0 12px; border-left: 0; border-top: var(--duenn); }
-    .kal-tag:first-child { border-top: 0; }
-    .kal-tag.heute { margin: 0 calc(var(--rand) * -1); padding-inline: var(--rand); }
-    .kal-tag.ohne:not(.heute) { display: none; }
-    .stamm-raster { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .stamm:nth-child(odd) { padding-left: 0; border-left: 0; }
-    .stamm:nth-child(even) { padding-right: 0; }
-    .stamm:nth-child(n+3) { border-top: var(--duenn); }
-  }
   @media (max-width: 640px) {
-    .ressorts, .ressorts.mit-aufmacher { grid-template-columns: 1fr; }
-    .ressort, .ressorts .ressort:nth-child(n), .ressorts.mit-aufmacher .ressort { grid-column: auto; padding: 14px 0 22px; border-left: 0; }
-    .datumszeile .neben { display: none; }
-    .termin { grid-template-columns: 3rem minmax(0, 1fr); }
-    .termin .wann { grid-column: 2; text-align: left; }
-    .druck { justify-content: flex-start; }
-    /* Kurz-Check vor der Einheit: „Auf einen Blick“ soll im ersten Bildschirm stehen */
-    [data-ansicht="ausgabe"] .kopf .datumszeile { display: none; }
-    [data-ansicht="ausgabe"] .titel { font-size: 1.75rem; }
-    .ausgabe-kopf h1 { font-size: 3rem; }
-    .aufgaben, .kal-panels { grid-template-columns: 1fr; }
-    .kal-panel + .kal-panel { margin-top: 28px; }
+    :is(.ausgabe-kopf, .seitenkopf) h1 { font-size: 1.625rem; }
     .zeile { flex-direction: column; }
+    .termin { grid-template-columns: 2.75rem minmax(0, 1fr); }
+    .termin .pille { grid-column: 2; justify-self: start; }
     .testzeile { grid-template-columns: minmax(0, 1fr); }
+    .testzeile .wann { justify-self: start; margin-top: 4px; }
+    .frist { grid-template-columns: auto minmax(0, 1fr); }
+    .frist .pille { grid-column: 2; justify-self: start; margin-top: 2px; }
     .aufgabentext { max-height: none; }  /* am Handy kein Scrollen im Scrollen */
-    .testzeile .wann { text-align: left; }
-    .stamm-raster { grid-template-columns: 1fr; }
-    .stamm, .stamm:nth-child(n) { padding: 12px 0 4px; border-left: 0; }
-    .stamm + .stamm { border-top: var(--duenn); }
+    .schritt, .aufgabe { padding: 16px; }
   }
 </style>
 </head>
 <body>
-<div class="seite">
-  <div class="leiste">
-    <nav>
-      <a href="#/" id="nach-titel" hidden class="zurueck"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M11 3L5 9l6 6" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>Titelblatt</a>
-      <a href="#/kalender" class="mit-daten">Kalender</a>
-      <a href="#/onlinetests" class="mit-daten">Onlinetests</a>
-      <a href="#/wordpower" class="mit-daten">Word Power</a>
-      <a href="#/anleitung">Anleitung</a>
-      <a href="#/einstellungen">Einrichten</a>
+<a class="sprung" href="#inhalt" onclick="event.preventDefault(); document.getElementById('inhalt').focus();">Zum Inhalt springen</a>
+<div class="app">
+  <aside class="seitenleiste"><div class="leiste-innen">
+    <a class="marke" href="#/" translate="no"><span class="zeichen" aria-hidden="true">L</span>Lernhelfer</a>
+    <p class="heute-klein" id="datumszeile"></p>
+    <nav class="navi" aria-label="Hauptnavigation">
+      <a href="#/" data-ansicht="titelblatt" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5L12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z"/></svg>Heute</a>
+      <p class="gruppe mit-daten" id="nav-faecher-kopf">Fächer</p>
+      <div class="navi mit-daten" id="nav-faecher"></div>
+      <p class="gruppe mit-daten">Werkzeuge</p>
+      <a href="#/kalender" data-ansicht="kalender" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Kalender</a>
+      <a href="#/onlinetests" data-ansicht="onlinetests" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4.5" width="14" height="16" rx="2.5"/><path d="M9.5 3.5h5M9 12.5l2 2 4-4"/></svg>Onlinetests</a>
+      <a href="#/wordpower" data-ansicht="wordpower" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a1 1 0 0 1 1 1v9.5a1 1 0 0 1-1 1h-8L7 20v-3.5H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg><span translate="no">Word Power</span></a>
+      <hr>
+      <a href="#/anleitung" data-ansicht="anleitung"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10.5 5 8.3 4.5 4 4.5v14c4.3 0 6.5.5 8 2 1.5-1.5 3.7-2 8-2v-14c-4.3 0-6.5.5-8 2zM12 6.5v14"/></svg>Anleitung</a>
+      <a href="#/einstellungen" data-ansicht="einstellungen"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>Einrichten</a>
     </nav>
-  </div>
+    <p class="kosten" data-kosten></p>
+  </div></aside>
 
-  <header class="kopf">
-    <p class="titel"><a href="#/">Lernhelfer</a></p>
-    <p class="datumszeile" id="datumszeile"></p>
-    <div class="druck" id="druck">
-      <span class="meta">Druckt mit <a href="#/einstellungen" id="modell-name"></a></span>
-      <button class="knopf voll" id="alle" type="button">Alle Ressorts neu drucken</button>
-    </div>
-  </header>
-  <div class="ticker" id="ticker" hidden role="region" aria-label="Offene Fristen"></div>
-  <dialog class="meldung" id="meldung" aria-labelledby="m-titel"></dialog>
-  <p id="status" role="status"></p>
-
-  <main>
+  <main id="inhalt" tabindex="-1">
+    <p id="status" role="status" aria-live="polite"></p>
     <section id="titelblatt" hidden>
-      <h1 class="sr">Titelblatt</h1>
-      <div class="blatt">
-        <div class="ressorts" id="ressorts"></div>
-        <section class="termine" aria-labelledby="t-kopf">
-          <h2 id="t-kopf">Termine der nächsten zwei Wochen</h2>
-          <div id="tage"></div>
-          <p class="fuss"><a href="#/kalender">Ganzer Kalender</a> · Termine ins iPad übernehmen, eigene .ics-Dateien</p>
-          <p class="fuss" id="stand"></p>
+      <header class="seitenkopf">
+        <div>
+          <h1 id="heute-titel">Heute</h1>
+          <p class="unterzeile" id="heute-zeile"></p>
+        </div>
+        <div class="kopf-aktionen">
+          <p class="meta">Erstellt mit <a href="#/einstellungen" id="modell-name"></a></p>
+          <button class="knopf" id="alle" type="button">Alle Fächer neu erstellen</button>
+        </div>
+      </header>
+      <div class="heute-raster">
+        <section aria-labelledby="n-kopf" id="naechstes">
+          <div class="block-kopf"><h2 id="n-kopf">Als Nächstes</h2><p class="meta">Fristen der nächsten zwei Wochen</p></div>
+          <ul class="liste-rahmen" id="fristen"></ul>
+        </section>
+        <section aria-labelledby="f-kopf" class="h-faecher">
+          <div class="block-kopf"><h2 id="f-kopf">Fächer</h2><p class="meta">Antippen für die Wochenausgabe</p></div>
+          <div class="liste-rahmen" id="ressorts"></div>
+        </section>
+        <section aria-labelledby="t-kopf" class="h-termine">
+          <div class="block-kopf"><h2 id="t-kopf">Termine</h2><a href="#/kalender" class="meta">Ganzer Kalender</a></div>
+          <div class="termine-feld" id="tage"></div>
         </section>
       </div>
+      <p class="abgleich" id="stand"></p>
+      <p class="abgleich nur-schmal" data-kosten></p>
     </section>
-
     <section id="ausgabe" hidden></section>
 
     <section id="kalender" hidden class="kalender"></section>
 
     <section id="wordpower" hidden class="werkstatt">
       <header class="ausgabe-kopf">
-        <h1>Word Power</h1>
+        <h1 translate="no">Word Power</h1>
         <p class="schlagzeile">Vom YouTube-Talk zum Hausaufgaben-Entwurf</p>
-        <p class="meta">Englisch · Communication in Business</p>
+        <p class="meta">Englisch, Communication in Business</p>
       </header>
       <form id="wp-sperre" class="sperre">
-        <label>Passwort <input id="wp-pin" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" required></label>
+        <label>Passwort <input id="wp-pin" name="passwort" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Vier Wörter …" required></label>
         <div><button class="knopf voll">Öffnen</button></div>
-        <p class="klein" id="wp-sperre-text" role="status">Dieser Bereich ist mit einem Passwort geschützt.</p>
+        <p class="klein" id="wp-sperre-text" role="status">Das Passwort aus vier Wörtern bekommst du von der Person, die dir den Lernhelfer gezeigt hat.</p>
       </form>
       <div id="wp-werk" hidden>
         <section class="schritt" aria-labelledby="wp-s1">
@@ -471,20 +539,20 @@
           <form id="wp-tform" class="feld" novalidate>
             <label for="wp-url">YouTube-Link</label>
             <div class="zeile">
-              <input id="wp-url" type="url" inputmode="url" placeholder="https://www.youtube.com/watch?v=…" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
+              <input id="wp-url" name="youtube" type="url" inputmode="url" autocomplete="off" placeholder="https://www.youtube.com/watch?v=…" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
               <button id="wp-go" class="knopf voll">Transkribieren</button>
             </div>
           </form>
           <div id="wp-talk" class="talk" hidden><div><p id="wp-ttitle" class="talk-titel"></p><p id="wp-tauthor" class="meta"></p></div></div>
           <p id="wp-st" class="wp-status" role="status"></p>
-          <label class="feld">Transkript <textarea id="wp-out" spellcheck="false" placeholder="Hier erscheint das Transkript. Du kannst auch eins einfügen."></textarea></label>
+          <label class="feld">Transkript <textarea id="wp-out" name="transkript" spellcheck="false" placeholder="Hier erscheint das Transkript. Du kannst auch eins einfügen."></textarea></label>
           <div class="knopfreihe"><button id="wp-dl" class="knopf" type="button" disabled>Als .txt herunterladen</button></div>
         </section>
         <section class="schritt" aria-labelledby="wp-s2">
           <h2 id="wp-s2"><span class="nr">2</span> Hausaufgabe</h2>
           <p class="klein">Word Power Journal, Talk-Skript, Cue Card, Lernstrategien und Progress-Tabelle aus dem Transkript. Mit Stichpunkten kommt ein Reflection-Entwurf dazu.</p>
           <label class="feld"><span>Stichpunkte für die Reflection <span class="opt">optional</span></span>
-            <textarea id="wp-notes" placeholder="Was ist diese Woche passiert, was war schwierig, was hat dich überrascht?"></textarea></label>
+            <textarea id="wp-notes" name="notizen" placeholder="Was ist diese Woche passiert, was war schwierig, was hat dich überrascht? …"></textarea></label>
           <div class="knopfreihe"><button id="wp-hwgo" class="knopf voll" type="button">Hausaufgabe aus Transkript erstellen</button></div>
           <p id="wp-hwst" class="wp-status" role="status"></p>
           <div id="wp-blatt" class="blatt-wp text" hidden></div>
@@ -507,7 +575,7 @@
       <div id="ei-schritte"></div>
       <section class="schritt" aria-labelledby="ei-einst">
         <h2 id="ei-einst">Einstellungen</h2>
-        <label class="feld">Modell für neue Ausgaben <select id="modell"></select></label>
+        <label class="feld">Modell für neue Ausgaben <select id="modell" name="modell"></select></label>
         <p class="klein">GPT-6 Luna schreibt am gründlichsten, MiMo ist am schnellsten und günstigsten. Eine Ausgabe kostet meist 1 bis 8 Cent.</p>
         <div id="abmelden-teil">
           <div class="knopfreihe"><button class="knopf" type="button" id="abmelden">Zugang von diesem Gerät löschen</button></div>
@@ -520,7 +588,7 @@
       <header class="ausgabe-kopf">
         <h1>Anleitung</h1>
         <p class="schlagzeile">Jede Woche das Wichtigste aus OLAT, ohne selbst zu suchen.</p>
-        <p class="meta">Für das 1. Semester Wirtschaftswissenschaften an der Universität Innsbruck · Stand Oktober 2026</p>
+        <p class="meta">Für das 1. Semester Wirtschaftswissenschaften an der Universität Innsbruck, Stand Oktober 2026</p>
       </header>
       <ol class="inhalt">
         <li><a href="#a-was">Was der Lernhelfer macht</a></li>
@@ -536,7 +604,7 @@
       </ol>
       <div class="text">
         <h2 id="a-was">Was der Lernhelfer macht</h2>
-        <p>Deine Lehrenden laden jede Woche Folien, PS-Unterlagen und Onlinetests in OLAT. Der Lernhelfer holt das alles automatisch ab und macht daraus <b>pro Fach eine Wochenausgabe</b> wie eine Zeitung:</p>
+        <p>Deine Lehrenden laden jede Woche Folien, PS-Unterlagen und Onlinetests in OLAT. Der Lernhelfer holt das alles automatisch ab und macht daraus <b>pro Fach eine Wochenausgabe</b>:</p>
         <ul>
           <li><b>Auf einen Blick:</b> was zuletzt dran war, was als Nächstes kommt, was bis wann fällig ist.</li>
           <li><b>Zusammenfassung der letzten Einheit:</b> der Stoff aus den Folien, ausführlich und verständlich.</li>
@@ -545,7 +613,7 @@
           <li><b>Lexikon:</b> die wichtigsten Begriffe als Karteikarten zum Abfragen.</li>
           <li><b>Fragen zur Ausgabe:</b> ein kurzer Chat, der nur die Unterlagen dieses Fachs kennt.</li>
         </ul>
-        <p>Dazu kommen ein Titelblatt mit allen Terminen und Fristen der nächsten zwei Wochen, ein Kalender, der deine Fristen auch ins iPad übernimmt, und ein Überblick über alle Onlinetests. Was in den Unterlagen nicht steht, erfindet der Lernhelfer nicht, sondern sagt es.</p>
+        <p>Dazu kommen die Seite <b>Heute</b> mit allen Terminen und Fristen der nächsten zwei Wochen, ein Kalender, der deine Fristen auch ins iPad übernimmt, und ein Überblick über alle Onlinetests. Was in den Unterlagen nicht steht, erfindet der Lernhelfer nicht, sondern sagt es.</p>
 
         <h2 id="a-brauchst">Was du brauchst</h2>
         <ul>
@@ -557,14 +625,14 @@
         </ul>
 
         <h2 id="a-einrichten">Einrichten in vier Schritten</h2>
-        <p>Öffne <b>xeonsimp.github.io/lernhelfer</b> am Windows-PC in Chrome und tippe oben auf <a href="#/einstellungen">Einrichten</a>. Dort steht bei jedem Schritt, ob er erledigt ist.</p>
-        <h3>1 · KI-Guthaben verbinden</h3>
+        <p>Öffne <b>xeonsimp.github.io/lernhelfer</b> am Windows-PC in Chrome. Die App startet direkt bei <a href="#/einstellungen">Einrichten</a>; dort steht bei jedem Schritt, ob er erledigt ist.</p>
+        <h3>1. KI-Guthaben verbinden</h3>
         <ol>
           <li>Auf „Mit OpenRouter verbinden“ tippen. OpenRouter ist der Dienst, über den die KI-Modelle laufen.</li>
           <li>Anmelden (am schnellsten mit deinem Google-Konto) und „Authorize“ bestätigen. Du landest wieder im Lernhelfer.</li>
           <li>Auf „Guthaben aufladen“ tippen und 5 $ einzahlen.</li>
         </ol>
-        <h3>2 · Privaten Speicher anlegen</h3>
+        <h3>2. Privaten Speicher anlegen</h3>
         <p>Deine Unterlagen und Ausgaben liegen in einem privaten Speicher bei GitHub. Nur du kommst dran.</p>
         <ol>
           <li>„GitHub-Konto anlegen“: E-Mail, Passwort und Benutzername wählen, E-Mail bestätigen. Hast du schon ein Konto, einfach einloggen.</li>
@@ -572,7 +640,7 @@
           <li>„Schlüssel erzeugen“: Name und Rechte sind schon ausgefüllt. Bei <b>Repository access</b> „Only select repositories“ wählen und <i>lernhelfer-daten</i> auswählen. Ganz unten <b>Generate token</b> tippen und den Schlüssel kopieren (er beginnt mit <code>github_pat_</code>).</li>
           <li>Zurück im Lernhelfer den Schlüssel einfügen und „Verbinden“ tippen. Der Lernhelfer findet den Speicher selbst.</li>
         </ol>
-        <h3>3 · OLAT-Abgleich am PC</h3>
+        <h3>3. OLAT-Abgleich am PC</h3>
         <ol>
           <li>Auf „PC-Programm herunterladen“ tippen. Fragt Chrome, ob du die Datei behalten willst: <b>Behalten</b>.</li>
           <li>Die Datei <i>Lernhelfer-PC-einrichten</i> öffnen. Zeigt Windows „Der Computer wurde durch Windows geschützt“: auf <b>Weitere Informationen</b> und dann <b>Trotzdem ausführen</b> tippen. Das kommt bei jedem Programm, das nicht aus dem Microsoft Store stammt.</li>
@@ -580,7 +648,7 @@
           <li>Der Lernhelfer sucht deine Kurse unter „Meine Kurse“ und lädt die Unterlagen. Steht im Fenster „Fertig“, kann es zu. Die Datei löscht sich danach selbst, weil dein Speicher-Schlüssel darin steht.</li>
         </ol>
         <p>Ab jetzt gleicht der PC von selbst ab, solange er läuft. Auf dem Desktop liegt eine Verknüpfung <b>Lernhelfer OLAT</b> für den Abgleich von Hand.</p>
-        <h3>4 · iPad und Handy verbinden</h3>
+        <h3>4. iPad und Handy verbinden</h3>
         <ol>
           <li>Am PC unter Einrichten bei Schritt 4 auf „QR-Code zeigen“ tippen.</li>
           <li>Mit der Kamera des iPads auf den Code halten und den Link öffnen. Das iPad ist fertig eingerichtet.</li>
@@ -589,15 +657,15 @@
 
         <h2 id="a-woche">Jede Woche</h2>
         <ol>
-          <li>Auf dem Titelblatt ein Fach antippen.</li>
-          <li>Sind neue Folien da (der PC holt sie von selbst), tippe auf <b>Neu drucken</b>. Die Ausgabe ist nach ein bis drei Minuten fertig. Die App muss dabei offen bleiben. Mit „Alle Ressorts neu drucken“ geht es für alle Fächer auf einmal.</li>
-          <li>Lesen, Übungsaufgaben erst selbst rechnen und dann aufdecken, Begriffe im Lexikon abfragen. Was unklar bleibt, unten bei „Fragen zur Ausgabe“ stellen.</li>
+          <li>Unter <b>Heute</b> (oder links in der Seitenleiste) ein Fach antippen.</li>
+          <li>Sind neue Folien da (der PC holt sie von selbst), tippe auf <b>Neu erstellen</b>. Die Ausgabe ist nach ein bis drei Minuten fertig. Die App muss dabei offen bleiben. Mit „Alle Fächer neu erstellen“ geht es für alle Fächer auf einmal.</li>
+          <li>Lesen, Übungsaufgaben erst selbst rechnen und dann aufdecken, Begriffe im Lexikon abfragen. Was unklar bleibt, bei „Fragen“ stellen. Die Leiste oben in der Ausgabe springt zu jedem Teil.</li>
         </ol>
-        <p>Ältere Ausgaben bleiben unter „Alle Ausgaben“ erhalten. Welches Modell schreibt, stellst du unter Einrichten ein.</p>
+        <p>Ältere Ausgaben bleiben unter „Frühere Ausgaben“ erhalten. Welches Modell schreibt, stellst du unter Einrichten ein.</p>
 
         <h2 id="a-termine">Termine und Kalender</h2>
         <ul>
-          <li>Das <b>Titelblatt</b> zeigt alle Termine der nächsten zwei Wochen. Fristen (Abgaben, Tests) laufen oben als Band durch und lassen sich abhaken.</li>
+          <li><b>Heute</b> zeigt alle Termine der nächsten zwei Wochen. Fristen (Abgaben, Tests) stehen oben unter „Als Nächstes“ und lassen sich abhaken.</li>
           <li>Der <b>Kalender</b> zeigt Woche für Woche alles auf einmal.</li>
           <li><b>Ins iPad übernehmen:</b> Im Kalender auf „Neue Termine übernehmen“ tippen, die Datei öffnen und „Alle hinzufügen“ wählen. Das iPad erinnert dann einen Tag und zwei Stunden vor jeder Frist, auch wenn der Lernhelfer zu ist.</li>
           <li><b>Eigene Kalender:</b> Den Stundenplan aus LFU:online kannst du als .ics-Datei herunterladen und im Kalender mit „ICS-Datei hinzufügen“ hochladen. Er erscheint dann auf allen Geräten.</li>
@@ -614,7 +682,7 @@
 
         <h2 id="a-pc">Der Abgleich am PC</h2>
         <ul>
-          <li>Solange der PC an ist, hält er alle 30 Minuten die OLAT-Anmeldung wach und holt höchstens alle 12 Stunden neue Unterlagen. Auf dem Titelblatt steht unten, wann zuletzt abgeglichen wurde.</li>
+          <li>Solange der PC an ist, hält er alle 30 Minuten die OLAT-Anmeldung wach und holt höchstens alle 12 Stunden neue Unterlagen. Unten auf der Seite Heute steht, wann zuletzt abgeglichen wurde.</li>
           <li>War der PC lange aus, ist die OLAT-Anmeldung abgelaufen. Dann öffnet sich nach dem Einschalten Chrome mit der OLAT-Anmeldung, einfach einloggen. Oder auf dem Desktop <b>Lernhelfer OLAT</b> doppelklicken.</li>
           <li>Sofort abgleichen, etwa wenn gerade neue Folien hochgeladen wurden: ebenfalls <b>Lernhelfer OLAT</b> doppelklicken.</li>
           <li>Neue Kurse sucht der Lernhelfer zu Beginn jedes Semesters selbst unter „Meine Kurse“ in OLAT.</li>
@@ -628,7 +696,7 @@
           <li>Eine Frage zur Ausgabe: unter 1 Cent.</li>
           <li>Ein ganzes Semester mit vier Fächern und einer Ausgabe pro Woche: etwa 2 bis 5 $.</li>
         </ul>
-        <p>Oben auf dem Titelblatt stehen die Kosten des Monats und dein Restguthaben. Ist das Guthaben leer, druckt nichts mehr, bis du nachlädst. Mehr als dein Guthaben kann nie abgebucht werden.</p>
+        <p>Links unten in der Seitenleiste (am Handy unten auf der Seite Heute) stehen die Kosten des Monats und dein Restguthaben. Ist das Guthaben leer, entsteht nichts mehr, bis du nachlädst. Mehr als dein Guthaben kann nie abgebucht werden.</p>
 
         <h2 id="a-sicher">Datenschutz und Sicherheit</h2>
         <ul>
@@ -641,7 +709,7 @@
 
         <h2 id="a-hilfe">Wenn etwas nicht geht</h2>
         <dl>
-          <dt>Unten auf dem Titelblatt steht „OLAT-Anmeldung am PC abgelaufen“.</dt>
+          <dt>Unten auf der Seite Heute steht „OLAT-Anmeldung am PC abgelaufen“.</dt>
           <dd>Am PC auf dem Desktop <b>Lernhelfer OLAT</b> doppelklicken und im Chrome-Fenster einloggen.</dd>
           <dt>„GitHub antwortet 401“ oder „Schlüssel abgelaufen“.</dt>
           <dd>Der Speicher-Schlüssel gilt ein Jahr. Unter Einrichten bei Schritt 2 einen neuen erzeugen und einfügen, dann bei Schritt 3 das PC-Programm noch einmal laden und öffnen. Danach die anderen Geräte mit dem QR-Code neu verbinden.</dd>
@@ -652,7 +720,7 @@
           <dt>Ein Fach fehlt oder ist zu viel.</dt>
           <dd>Der Lernhelfer nimmt die Kurse des aktuellen Semesters aus OLAT unter „Meine Kurse“ → „Aktiv“. Ein Kurs, der dort nicht steht, fehlt auch hier.</dd>
           <dt>Eine Ausgabe wurde abgeschnitten oder klingt falsch.</dt>
-          <dd>Noch einmal drucken oder unter Einrichten ein anderes Modell wählen. Im Zweifel gilt immer, was in OLAT steht.</dd>
+          <dd>Noch einmal erstellen oder unter Einrichten ein anderes Modell wählen. Im Zweifel gilt immer, was in OLAT steht.</dd>
           <dt>Das schwarze Fenster beim Einrichten zeigt einen Fehler.</dt>
           <dd>Meist war kurz das Internet weg. Die Datei unter Einrichten bei Schritt 3 noch einmal herunterladen und öffnen; was schon da ist, wird nicht noch einmal geladen.</dd>
         </dl>
@@ -660,6 +728,14 @@
     </section>
   </main>
 </div>
+<nav class="tabs" aria-label="Hauptnavigation">
+  <a href="#/" data-ansicht="titelblatt" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5L12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z"/></svg>Heute</a>
+  <a href="#/kalender" data-ansicht="kalender" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Kalender</a>
+  <a href="#/onlinetests" data-ansicht="onlinetests" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4.5" width="14" height="16" rx="2.5"/><path d="M9.5 3.5h5M9 12.5l2 2 4-4"/></svg>Tests</a>
+  <a href="#/anleitung" data-ansicht="anleitung"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10.5 5 8.3 4.5 4 4.5v14c4.3 0 6.5.5 8 2 1.5-1.5 3.7-2 8-2v-14c-4.3 0-6.5.5-8 2zM12 6.5v14"/></svg>Anleitung</a>
+  <a href="#/einstellungen" data-ansicht="einstellungen"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>Einrichten</a>
+</nav>
+<dialog class="meldung" id="meldung" aria-labelledby="m-titel"></dialog>
 <script>
 const MODELLE = {
   'GPT-6 Luna · MAX thinking': { model: 'openai/gpt-6-luna', reasoning: { effort: 'max' } },
@@ -758,7 +834,7 @@ const markdown = (knoten, s, inline) => {
   knoten.innerHTML = DOMPurify.sanitize(html);
   return knoten;
 };
-const geld = x => `${x.toLocaleString('de-AT', { minimumFractionDigits: 2, maximumFractionDigits: x < 0.1 ? 3 : 2 })} $`;
+const geld = x => `${x.toLocaleString('de-AT', { minimumFractionDigits: 2, maximumFractionDigits: x < 0.1 ? 3 : 2 })}\u00a0$`;
 const MONAT = heute.toLocaleDateString('de-AT', { month: 'long' });
 const tageBis = datum => Math.round((Date.parse(datum) - Date.parse(HEUTE)) / 864e5);
 const datum = (d, opt) => new Date(d + 'T12:00').toLocaleDateString('de-AT', opt);
@@ -807,7 +883,7 @@ async function openrouter(modell, prompt) {
     kosten += j.usage?.cost || 0; xhigh = true;
     status('');
   }
-  if (j.choices[0].finish_reason === 'length') throw new Error('Die Ausgabe wurde abgeschnitten, weil das Modell zu lange nachgedacht hat. Bitte noch einmal drucken.');
+  if (j.choices[0].finish_reason === 'length') throw new Error('Die Ausgabe wurde abgeschnitten, weil das Modell zu lange nachgedacht hat. Bitte noch einmal erstellen.');
   return { text: j.choices[0].message.content, kosten, xhigh };
 }
 async function kosten() {
@@ -817,7 +893,8 @@ async function kosten() {
   const [k, c] = await Promise.all([hol('key'), hol('credits')]);
   const monat = k?.data?.usage_monthly, rest = c?.data && c.data.total_credits - c.data.total_usage;
   if (rest != null && rest !== GUTHABEN) { GUTHABEN = rest; if (document.body.dataset.ansicht === 'einstellungen') einrichtenZeigen(); }
-  $('kosten').textContent = [monat != null && `Druckkosten ${MONAT} ${geld(monat)}`, rest != null && `Guthaben ${geld(rest)}`].filter(Boolean).join(' · ');
+  for (const k of document.querySelectorAll('[data-kosten]'))
+    k.replaceChildren(...[monat != null && el('span', {}, `Im ${MONAT} ${geld(monat)} verbraucht`), rest != null && el('span', {}, `Guthaben ${geld(rest)}`)].filter(Boolean));
 }
 
 function zerlege(text, tag) {
@@ -834,7 +911,7 @@ function zerlege(text, tag) {
   const liste = x => Array.isArray(x) ? x : [];
   return {
     datum: tag, meta: meta?.[1] || '', abschnitte, roh: rest,
-    preis: Number(meta?.[1].match(/Druckkosten ([\d.]+) \$/)?.[1]) || null,
+    preis: Number(meta?.[1].match(/[Kk]osten ([\d.]+) \$/)?.[1]) || null,
     schlagzeile: String(daten.schlagzeile || ''),
     quellen: liste(daten.quellen).filter(q => typeof q === 'string'),
     termine: liste(daten.termine).filter(t => t && /^\d{4}-\d{2}-\d{2}$/.test(t.datum)),
@@ -869,7 +946,7 @@ async function drucke(f) {
     const prompt = [auftrag(f, TAG), ...q.dateien.map(d => `=== ${d.art.toUpperCase()}: ${d.datei} ===\n${d.text.slice(0, 60000)}`)].join('\n\n');
     const modell = $('modell').value;
     const antwortKI = await openrouter(modell, prompt);
-    const preis = antwortKI.kosten != null ? ` · Druckkosten ${antwortKI.kosten} $` : '';
+    const preis = antwortKI.kosten != null ? ` · Kosten ${antwortKI.kosten} $` : '';
     const text = `*${antwortKI.xhigh ? modell.replace('MAX thinking', 'xhigh (MAX abgeschnitten)') : modell} · ${datum(HEUTE, { day: '2-digit', month: '2-digit', year: 'numeric' })}${preis}*\n\n` + antwortKI.text;
     const alt = r.ausgaben.find(a => a.datum === HEUTE);
     const antwort = await nacheinander(() => gh(`lernseiten/${f}/${HEUTE}.md`, { method: 'PUT', roh: false, body: { message: `Ausgabe ${f} ${HEUTE}`, content: base64(text), sha: alt?.sha } }));
@@ -882,87 +959,86 @@ async function drucke(f) {
   }
 }
 
-/* ---------- Titelblatt ---------- */
+/* ---------- Heute ---------- */
 const fristSchluessel = t => `frist:${t.fach}|${t.datum}|${t.code || ''}|${t.titel || ''}`;
 function kommende() {
   return Object.keys(R).flatMap(f => (aktuell(f)?.termine || []).map(t => ({ ...t, fach: f })))
     .filter(t => tageBis(t.datum) >= 0 && tageBis(t.datum) <= 14)
     .sort((a, b) => (a.datum + (a.zeit || '99')).localeCompare(b.datum + (b.zeit || '99')));
 }
-function presse(f) {
-  return el('div', { class: 'presse' }, 'Geht in Druck … App bitte offen lassen.');
+function presse() {
+  return el('p', { class: 'presse', role: 'status' }, 'Wird erstellt … App bitte offen lassen.');
 }
-function ressortSpalte(f, aufmacher) {
+let ALLE_FRISTEN = false;
+const fristPille = (t, naechste) => el('span', { class: `pille${tageBis(t.datum) <= 1 ? ' warn' : naechste ? ' akzent' : ''}` }, faellig(tageBis(t.datum)));
+function fachZeile(f) {
   const r = R[f], a = aktuell(f);
   const blick = a && abschnitt(a, 'auf einen blick').split('\n').find(z => /^\s*[-*]\s/.test(z));
-  return el('article', { class: `ressort${aufmacher ? ' aufmacher' : ''}`, 'aria-busy': r.druckt ? 'true' : null },
-    el('h2', {}, el('a', { href: `#/${encodeURIComponent(f)}` }, f)),
-    a ? [
-      el('p', { class: 'schlagzeile' }, a.schlagzeile || 'Ausgabe ohne Schlagzeile'),
-      blick && el('p', { class: 'anriss' }, blick.replace(/^\s*[-*]\s+/, '').replace(/[*_`]/g, '')),
-      el('p', { class: 'meta' }, `Nr. ${r.ausgaben.length} · ${kurz(a.datum)} · ${a.begriffe.length} Begriffe`),
-    ] : el('p', { class: 'schlagzeile' }, 'Noch keine Ausgabe.'),
-    r.fehler && el('p', { class: 'fehlertext' }, r.fehler),
-    r.druckt ? presse(f) : el('div', { class: 'aktionen' },
-      el('button', { class: a ? 'knopf' : 'knopf voll', type: 'button', onclick: () => drucke(f) }, a ? 'Neu drucken' : 'Erste Ausgabe drucken')),
-  );
+  return el('article', { class: 'fach', 'aria-busy': r.druckt ? 'true' : null },
+    el('div', {},
+      el('h3', {}, el('a', { href: `#/${encodeURIComponent(f)}` }, f)),
+      a ? [el('p', { class: 'schlagzeile' }, a.schlagzeile || 'Ausgabe ohne Schlagzeile'),
+        blick && el('p', { class: 'anriss' }, blick.replace(/^\s*[-*]\s+/, '').replace(/[*_`]/g, '').replace(/\\\(|\\\)/g, '')),
+        el('p', { class: 'meta' }, `Ausgabe vom ${kurz(a.datum)}, ${a.begriffe.length} Begriffe`)]
+        : el('p', { class: 'anriss' }, 'Noch keine Ausgabe. Antippen und erstellen.')),
+    el('span', { class: 'pfeil', 'aria-hidden': 'true' }),
+    r.druckt && presse(),
+    r.fehler && el('p', { class: 'fehlertext' }, r.fehler));
 }
 function titelblatt() {
   const termine = kommende();
-  const naechste = termine.find(t => FRISTEN.has(t.art) && !merk(fristSchluessel(t)));
-  // Aufmacher ist das Fach mit der nächsten offenen Frist
-  const faecher = Object.keys(R).sort((a, b) => (b === naechste?.fach) - (a === naechste?.fach));
-  $('ressorts').classList.toggle('mit-aufmacher', !faecher.length || (!!naechste && faecher.length === 4));
-  $('ressorts').replaceChildren(...faecher.length ? faecher.map(f => ressortSpalte(f, naechste && faecher.length === 4 && f === naechste.fach))
-    : [el('article', { class: 'ressort aufmacher' }, el('h2', {}, 'Willkommen'),  // vor dem ersten Abgleich gibt es noch keine Fächer
-      el('p', { class: 'schlagzeile' }, 'Gleich kommen deine Fächer'),
-      el('p', { class: 'anriss' }, 'Sobald der PC zum ersten Mal mit OLAT abgeglichen hat, steht hier jedes Fach mit seiner Wochenausgabe. Das PC-Programm gibt es unter Einrichten bei Schritt 3.'),
-      el('div', { class: 'aktionen' }, el('a', { class: 'knopf voll', href: '#/einstellungen' }, 'Zum Einrichten'), el('a', { class: 'knopf', href: '#/anleitung' }, 'Anleitung')))]);
+  const offen = termine.filter(t => FRISTEN.has(t.art) && !merk(fristSchluessel(t)));
+  const naechste = offen[0];
+  $('heute-titel').textContent = heute.toLocaleDateString('de-AT', { weekday: 'long', day: 'numeric', month: 'long' });
+  $('heute-zeile').replaceChildren(el('span', {}, `Kalenderwoche ${kw(heute)}`),
+    el('span', {}, offen.length ? `${offen.length} offene ${offen.length === 1 ? 'Frist' : 'Fristen'} in zwei Wochen` : 'Keine offenen Fristen in zwei Wochen'));
+  const faecher = Object.keys(R);
+  $('ressorts').replaceChildren(...faecher.length ? faecher.map(fachZeile)
+    : [el('div', { class: 'willkommen' }, el('h3', {}, 'Gleich kommen deine Fächer'),  // vor dem ersten Abgleich gibt es noch keine Fächer
+      el('p', { class: 'klein' }, 'Sobald der PC zum ersten Mal mit OLAT abgeglichen hat, steht hier jedes Fach mit seiner Wochenausgabe. Das PC-Programm gibt es unter Einrichten bei Schritt 3.'),
+      el('div', { class: 'knopfreihe' }, el('a', { class: 'knopf voll', href: '#/einstellungen' }, 'Zum Einrichten'), el('a', { class: 'knopf', href: '#/anleitung' }, 'Anleitung')))]);
+  $('ressorts').classList.toggle('liste-rahmen', faecher.length > 0);
+  const abhaken = t => el('label', { class: 'haken' }, el('input', { type: 'checkbox', checked: !!merk(fristSchluessel(t)), 'aria-label': `${t.fach} ${t.titel || t.art} erledigt`,
+    onchange: e => { merk(fristSchluessel(t), e.target.checked ? '1' : null); titelblatt(); } }));
+  const fristen = termine.filter(t => FRISTEN.has(t.art)), sichtbar = ALLE_FRISTEN ? fristen : offen.slice(0, 3);
+  $('naechstes').hidden = !fristen.length;
+  $('fristen').replaceChildren(...sichtbar.map(t => el('li', { class: `frist${merk(fristSchluessel(t)) ? ' erledigt' : ''}` },
+    abhaken(t),
+    el('button', { class: 'was', type: 'button', onclick: () => meldung(t, t === naechste) },
+      el('span', { class: 'titel' }, t.titel || t.art),
+      el('span', { class: 'meta' }, `${t.fach} ${t.code || t.art}, ${kurz(t.datum)}${t.zeit ? ', ' + t.zeit : ''}`)),
+    merk(fristSchluessel(t)) ? el('span', { class: 'pille' }, 'erledigt') : fristPille(t, t === naechste))),
+    (ALLE_FRISTEN || fristen.length > sichtbar.length) && el('li', {}, el('button', { class: 'mehr', type: 'button', 'aria-expanded': String(ALLE_FRISTEN),
+      onclick: () => { ALLE_FRISTEN = !ALLE_FRISTEN; titelblatt(); } }, ALLE_FRISTEN ? 'Nur die nächsten offenen zeigen' : `Alle ${fristen.length} Fristen zeigen, auch erledigte`)));
   const tage = new Map();
   for (const t of termine) tage.set(t.datum, [...(tage.get(t.datum) || []), t]);
   $('tage').replaceChildren(...(termine.length ? [...tage].map(([d, liste]) => el('ul', { class: 'tag' },
-    el('h3', {}, `${datum(d, { weekday: 'long', day: 'numeric', month: 'long' })} · ${faellig(tageBis(d))}`),
+    el('h3', {}, `${datum(d, { weekday: 'long', day: 'numeric', month: 'long' })}, ${faellig(tageBis(d))}`),
     liste.map(t => {
       const frist = FRISTEN.has(t.art), fertig = frist && merk(fristSchluessel(t));
-      return el('li', { class: `termin${t === naechste ? ' naechste' : ''}${fertig ? ' erledigt' : ''}` },
+      return el('li', { class: `termin${fertig ? ' erledigt' : ''}` },
         el('span', { class: 'zeit' }, t.zeit || '–'),
         el('button', { class: 'was', type: 'button', onclick: () => meldung(t, t === naechste) }, el('b', {}, `${t.fach} ${t.code || t.art}`), t.titel || '', t.ort && el('span', { class: 'ort' }, t.ort)),
-        frist && el('label', { class: 'haken wann' }, el('input', { type: 'checkbox', checked: !!fertig, 'aria-label': `${t.fach} ${t.titel} erledigt`,
-          onchange: e => { merk(fristSchluessel(t), e.target.checked ? '1' : null); titelblatt(); } }), `Frist ${faellig(tageBis(t.datum))}`),
-      );
+        frist && el('span', { class: `pille${fertig ? '' : ' akzent'}` }, fertig ? 'erledigt' : 'Frist'));
     }),
-  )) : [el('p', { class: 'leer' }, Object.values(R).some(r => r.ausgaben.length) ? 'Keine Termine in den nächsten zwei Wochen gefunden.' : 'Sobald Ausgaben gedruckt sind, stehen hier alle Termine und Fristen.')]));
-  ticker(termine.filter(t => FRISTEN.has(t.art) && !merk(fristSchluessel(t))), naechste);
-}
-function ticker(fristen, naechste) {
-  const t = $('ticker');
-  t.hidden = !fristen.length;
-  if (!fristen.length) return;
-  const eintrag = (x, versteckt) => el('button', { type: 'button', class: `ticker-eintrag${x === naechste ? ' naechste' : ''}`, 'aria-hidden': versteckt ? 'true' : null, tabindex: versteckt ? '-1' : null, onclick: () => meldung(x, x === naechste) },
-    el('b', {}, `${x.fach} ${x.code || x.art}`), el('span', {}, x.titel || ''), el('span', {}, kurz(x.datum)), el('span', { class: 'wann' }, `Frist ${faellig(tageBis(x.datum))}`));
-  // Jede Hälfte des Bands braucht mindestens ~8 Einträge, sonst reißt die Schleife bei wenigen Fristen auf breiten Bildschirmen ab
-  const runde = Array.from({ length: Math.ceil(8 / fristen.length) }, () => fristen).flat();
-  const band = el('div', { class: 'ticker-band', style: `--dauer:${runde.length * 8.5}s` },
-    runde.map((x, i) => eintrag(x, i >= fristen.length)), runde.map(x => eintrag(x, true)));
-  t.replaceChildren(band);
+  )) : [el('p', { class: 'leer', style: 'padding-bottom: 8px' }, Object.values(R).some(r => r.ausgaben.length) ? 'Keine Termine in den nächsten zwei Wochen gefunden.' : 'Sobald Ausgaben erstellt sind, stehen hier alle Termine und Fristen.')]));
 }
 function meldung(t, naechste) {
   const d = $('meldung'), frist = FRISTEN.has(t.art);
   const wann = [datum(t.datum, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }), t.zeit && `${t.zeit}${t.ende ? '–' + t.ende : ''} Uhr`].filter(Boolean).join(', ');
-  d.className = `meldung${naechste ? ' naechste' : ''}`;
   d.replaceChildren(el('div', { class: 'innen' },
-    el('p', { class: 'dachzeile' }, `${t.fach} · ${t.code || t.art}${frist ? ' · Frist' : ''}`),
+    el('div', { class: 'chips' }, el('span', { class: 'pille' }, t.fach), (t.code || t.art) && el('span', { class: 'pille' }, t.code || t.art), frist && fristPille(t, naechste)),
     el('h2', { id: 'm-titel' }, t.titel || t.art),
     el('dl', {},
-      el('dt', {}, 'Wann'), el('dd', {}, `${wann} · ${faellig(tageBis(t.datum))}`),
+      el('dt', {}, 'Wann'), el('dd', {}, `${wann}, ${faellig(tageBis(t.datum))}`),
       t.ort && [el('dt', {}, 'Wo'), el('dd', {}, t.ort)],
-      el('dt', {}, 'Art'), el('dd', {}, t.art)),
+      el('dt', {}, 'Art'), el('dd', {}, frist ? `${t.art} mit Frist` : t.art)),
     t.info ? markdown(el('p', { class: 'info' }), t.info, true)
-      : el('p', { class: 'info' }, 'Die Ausgabe zu diesem Fach beschreibt die nächsten Einheiten genauer. Ab der nächsten Ausgabe stehen die Details auch hier.'),
+      : el('p', { class: 'klein' }, 'Die Ausgabe zu diesem Fach beschreibt die nächsten Einheiten genauer. Ab der nächsten Ausgabe stehen die Details auch hier.'),
     el('div', { class: 'knopfreihe' },
       frist && el('label', { class: 'haken' }, el('input', { type: 'checkbox', checked: !!merk(fristSchluessel(t)),
-        onchange: e => { merk(fristSchluessel(t), e.target.checked ? '1' : null); titelblatt(); } }), 'Erledigt'),
-      R[t.fach] && el('a', { class: 'knopf', href: `#/${encodeURIComponent(t.fach)}` }, `Zur ${t.fach}-Ausgabe`),
+        onchange: e => { merk(fristSchluessel(t), e.target.checked ? '1' : null); if (document.body.dataset.ansicht === 'titelblatt') titelblatt(); } }), 'Erledigt'),
+      R[t.fach] && el('a', { class: 'knopf', href: `#/${encodeURIComponent(t.fach)}` }, `Zu ${t.fach}`),
       el('button', { class: 'knopf voll', type: 'button', onclick: () => d.close() }, 'Schließen'))));
   d.showModal();
 }
@@ -971,8 +1047,8 @@ $('meldung').onclick = e => { if (e.target === $('meldung')) $('meldung').close(
 /* ---------- Ausgabe ---------- */
 function lexikon(f, begriffe) {
   const schluessel = b => `lex:${f}:${b.begriff}`;
-  const box = el('section', { class: 'lexikon', 'aria-labelledby': 'lex-kopf' });
-  if (!begriffe.length) { box.append(el('h2', { id: 'lex-kopf' }, 'Lexikon'), el('p', { class: 'leer' }, 'Diese Ausgabe enthält keine Begriffe.')); return box; }
+  const box = el('div', { class: 'lexikon' });
+  if (!begriffe.length) { box.append(el('p', { class: 'leer' }, 'Diese Ausgabe enthält keine Begriffe.')); return box; }
   let stapel = [...begriffe].sort((a, b) => !!merk(schluessel(a)) - !!merk(schluessel(b)));
   const karte = el('button', { class: 'karte', type: 'button' });
   const fortschritt = el('p', { class: 'fortschritt', 'aria-live': 'polite' });
@@ -995,9 +1071,9 @@ function lexikon(f, begriffe) {
     stapel.push(b);
     zeige();
   };
-  const zuruecksetzen = () => { begriffe.forEach(x => merk(schluessel(x), null)); stapel = [...begriffe]; zeige(); };
+  const zuruecksetzen = () => { if (!confirm('Alle Begriffe wieder als nicht gewusst markieren?')) return; begriffe.forEach(x => merk(schluessel(x), null)); stapel = [...begriffe]; zeige(); };
   box.append(
-    el('div', {}, el('h2', { id: 'lex-kopf' }, 'Lexikon'), fortschritt, karte,
+    el('div', {}, fortschritt, karte,
       el('div', { class: 'karten-aktionen' },
         el('button', { class: 'knopf', type: 'button', onclick: () => weiter(false) }, 'Nochmal'),
         el('button', { class: 'knopf voll', type: 'button', onclick: () => weiter(true) }, 'Gewusst'))),
@@ -1009,20 +1085,18 @@ function lexikon(f, begriffe) {
 }
 function uebungen(text) {
   // Jede Aufgabe: „### Quelle · Titel“, Aufgabentext, „#### Lösung“, Lösungsweg
-  return el('section', { class: 'uebungen', 'aria-labelledby': 'ueb-kopf' },
-    el('div', { class: 'rubrik' }, el('h2', { id: 'ueb-kopf' }, 'Übungsaufgaben'), el('p', { class: 'meta' }, 'Erst selbst rechnen, dann aufdecken')),
-    el('div', { class: 'aufgaben' }, ('\n' + text).split(/\n### /).slice(1).map((s, i) => {
-      const [kopf, ...rest] = s.split('\n');
-      const [aufgabe, loesung] = rest.join('\n').split(/^#### Lösung\s*$/m);
-      const trenner = kopf.indexOf(' · ');
-      return el('article', { class: 'aufgabe' },
-        el('p', { class: 'dachzeile' }, `Aufgabe ${i + 1}${trenner > 0 ? ' · ' + kopf.slice(0, trenner) : ''}`),
-        el('h3', {}, (trenner > 0 ? kopf.slice(trenner + 3) : kopf).trim()),
-        markdown(el('div', { class: 'text' }), aufgabe),
-        loesung && el('details', { class: 'loesung' },
-          el('summary', { class: 'knopf' }, el('span', { class: 'zu' }, 'Lösung aufdecken'), el('span', { class: 'auf' }, 'Lösung verdecken')),
-          markdown(el('div', { class: 'text' }), loesung)));
-    })));
+  return el('div', { class: 'aufgaben' }, ('\n' + text).split(/\n### /).slice(1).map((s, i) => {
+    const [kopf, ...rest] = s.split('\n');
+    const [aufgabe, loesung] = rest.join('\n').split(/^#### Lösung\s*$/m);
+    const trenner = kopf.indexOf(' · ');
+    return el('article', { class: 'aufgabe' },
+      el('h3', {}, el('span', { class: 'nr' }, String(i + 1)), (trenner > 0 ? kopf.slice(trenner + 3) : kopf).trim()),
+      trenner > 0 && el('p', { class: 'meta' }, `Quelle: ${kopf.slice(0, trenner)}`),
+      markdown(el('div', { class: 'text' }), aufgabe),
+      loesung && el('details', { class: 'loesung' },
+        el('summary', { class: 'knopf' }, el('span', { class: 'zu' }, 'Lösung aufdecken'), el('span', { class: 'auf' }, 'Lösung verdecken')),
+        markdown(el('div', { class: 'text' }), loesung)));
+  }));
 }
 
 // Fragen zur Ausgabe: kurzer Chat, der nur die Ausgabe und die OLAT-Unterlagen des Fachs kennt
@@ -1030,19 +1104,18 @@ const CHATS = {};  // Fach|Datum → { verlauf, laeuft, hinweis }; bleibt beim N
 function fragen(f, a) {
   const schluessel = `chat:${f}:${a.datum}`;
   const c = CHATS[schluessel] ??= { verlauf: (() => { try { return JSON.parse(merk(schluessel) || '[]'); } catch { return []; } })(), laeuft: false, hinweis: '' };
-  const feld = el('textarea', { id: 'frage', rows: 3, placeholder: 'z. B. Wie komme ich bei der Elastizität auf die Formel?' });
-  const box = el('section', { class: 'fragen', 'aria-labelledby': 'fr-kopf' });
+  const feld = el('textarea', { id: 'frage', name: 'frage', rows: 3, placeholder: 'z. B. Wie komme ich bei der Elastizität auf die Formel …', enterkeyhint: 'send',
+    onkeydown: e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); stelle(); } } });
+  const box = el('div', { class: 'fragen' });
   const zeige = () => box.replaceChildren(
-    el('h2', { id: 'fr-kopf' }, 'Fragen zur Ausgabe'),
-    el('p', { class: 'klein' }, `Antworten nur aus dieser Ausgabe und den OLAT-Unterlagen für ${f}.`),
-    el('div', { class: 'verlauf', 'aria-live': 'polite' }, c.verlauf.map(m => m.role === 'user'
-      ? el('div', {}, el('p', { class: 'dachzeile' }, 'Frage'), el('p', { class: 'frage' }, m.content))
-      : el('div', { class: 'antwort' }, el('p', { class: 'dachzeile' }, 'Antwort'), markdown(el('div', { class: 'text' }), m.content)))),
+    el('div', { class: 'verlauf', 'aria-live': 'polite', hidden: !c.verlauf.length }, c.verlauf.map(m => m.role === 'user'
+      ? el('p', { class: 'frage' }, el('span', { class: 'sr' }, 'Deine Frage: '), m.content)
+      : el('div', { class: 'antwort' }, el('span', { class: 'sr' }, 'Antwort: '), markdown(el('div', { class: 'text' }), m.content)))),
     el('form', { class: 'frageform', onsubmit: e => { e.preventDefault(); stelle(); } },
       el('label', { for: 'frage', class: 'sr' }, 'Deine Frage'), feld,
       el('div', { class: 'knopfreihe' },
-        c.laeuft ? el('div', { class: 'presse' }, 'Die Redaktion schreibt …') : el('button', { class: 'knopf voll' }, 'Frage stellen'),
-        c.verlauf.length && !c.laeuft && el('button', { class: 'knopf', type: 'button', onclick: () => { c.verlauf = []; c.hinweis = ''; merk(schluessel, null); zeige(); } }, 'Verlauf löschen'),
+        c.laeuft ? el('p', { class: 'presse' }, 'Antwort kommt …') : el('button', { class: 'knopf voll' }, 'Frage stellen'),
+        c.verlauf.length > 0 && !c.laeuft && el('button', { class: 'knopf', type: 'button', onclick: () => { if (!confirm('Alle Fragen und Antworten zu dieser Ausgabe löschen?')) return; c.verlauf = []; c.hinweis = ''; merk(schluessel, null); zeige(); } }, 'Verlauf löschen'),
         c.hinweis && el('span', { class: 'meta' }, c.hinweis))));
   async function stelle() {
     const q = feld.value.trim();
@@ -1075,48 +1148,66 @@ ${a.roh}
   return box;
 }
 
+let SPION = null;  // markiert beim Scrollen den sichtbaren Teil in der Sprungleiste
 async function ausgabeZeigen(f, tag) {
   const r = R[f];
   const sektion = $('ausgabe');
+  SPION?.disconnect();
   if (!r.ausgaben.length) {
-    sektion.replaceChildren(...[el('header', { class: 'ausgabe-kopf' }, el('h1', {}, f), el('p', { class: 'schlagzeile' }, 'Noch keine Ausgabe.')),
-      r.druckt ? presse(f) : el('p', {}, el('button', { class: 'knopf voll', type: 'button', onclick: () => drucke(f) }, 'Erste Ausgabe drucken')),
+    sektion.replaceChildren(...[
+      el('a', { class: 'zurueck nur-schmal', href: '#/' }, 'Heute'),
+      el('header', { class: 'ausgabe-kopf' }, el('div', {}, el('h1', {}, f),
+        el('p', { class: 'unterzeile' }, 'Noch keine Ausgabe. Die erste ist nach ein bis drei Minuten fertig.'))),
+      r.druckt ? presse() : el('button', { class: 'knopf voll', type: 'button', onclick: () => drucke(f) }, 'Erste Ausgabe erstellen'),
       r.fehler && el('p', { class: 'fehlertext' }, r.fehler)].filter(Boolean));
     return;
   }
   tag = tag && r.ausgaben.some(x => x.datum === tag) ? tag : r.ausgaben[0].datum;
   const a = await ausgabe(f, tag);
-  const stamm = abschnitt(a, 'stammdaten');
-  const rubrik = (kopf, zusatz) => el('div', { class: 'rubrik' }, kopf, el('p', { class: 'meta' }, zusatz));
-  const teil = (klasse, titel, anfang) => el('section', { class: `abschnitt ${klasse}` }, el('h2', {}, titel), markdown(el('div', { class: 'text' }), abschnitt(a, anfang) || 'Nicht in dieser Ausgabe.'));
+  const stamm = abschnitt(a, 'stammdaten'), ueb = abschnitt(a, 'übungsaufgaben');
+  const kasten = (klasse, titel, anfang) => el('section', { class: `abschnitt ${klasse}` }, el('h2', {}, titel), markdown(el('div', { class: 'text' }), abschnitt(a, anfang) || 'Nicht in dieser Ausgabe.'));
+  const teil = (id, titel, zusatz, inhalt) => el('section', { class: 'teil', id, 'aria-labelledby': id + '-k' },
+    el('div', { class: 'rubrik' }, el('h2', { id: id + '-k' }, titel), zusatz && el('p', { class: 'meta' }, zusatz)), inhalt);
+  const quellen = [...new Set(a.quellen.map(q => q.split('/').pop().replace(/\.\w+$/, '').replace(/_/g, ' ')))];
+  const ziele = [['teil-ueberblick', 'Überblick'], ueb && ['teil-uebungen', 'Übungen'], ['teil-lexikon', 'Lexikon'], ['teil-fragen', 'Fragen'],
+    stamm && ['teil-stamm', 'Stammdaten'], ['teil-archiv', 'Frühere Ausgaben']].filter(Boolean);
+  const ruhig = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const leiste = el('nav', { class: 'abschnitte', 'aria-label': 'Teile der Ausgabe' }, ziele.map(([id, text]) =>
+    el('button', { type: 'button', 'data-ziel': id, onclick: () => $(id).scrollIntoView({ behavior: ruhig() ? 'auto' : 'smooth' }) }, text)));
   sektion.replaceChildren(...[
+    el('a', { class: 'zurueck nur-schmal', href: '#/' }, 'Heute'),
     el('header', { class: 'ausgabe-kopf' },
-      el('h1', {}, f),
-      el('p', { class: 'datumszeile' }, el('span', {}, `Ausgabe vom ${datum(tag, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`),
-        el('span', { class: 'neben' }, a.meta.split(' · ')[0] || ''), a.preis && el('span', {}, `Preis ${geld(a.preis)}`)),
-      a.schlagzeile && el('p', { class: 'schlagzeile' }, a.schlagzeile),
-      f === 'Englisch' && el('p', {}, el('a', { class: 'knopf', href: '#/wordpower' }, 'Word Power · Hausaufgaben-Werkstatt'))),
-    r.druckt && presse(f),
+      el('div', {},
+        el('h1', {}, f),
+        a.schlagzeile && el('p', { class: 'schlagzeile' }, a.schlagzeile),
+        el('p', { class: 'unterzeile' }, el('span', {}, `Ausgabe vom ${datum(tag, { weekday: 'long', day: 'numeric', month: 'long' })}`),
+          a.meta && el('span', {}, a.meta.split(' · ')[0]), a.preis && el('span', {}, `Kosten ${geld(a.preis)}`))),
+      el('div', { class: 'kopf-aktionen' },
+        f === 'Englisch' && el('a', { class: 'knopf', href: '#/wordpower' }, el('span', { translate: 'no' }, 'Word Power')),
+        !r.druckt && el('button', { class: 'knopf voll', type: 'button', onclick: () => drucke(f) }, 'Neu erstellen'))),
+    r.druckt && presse(),
     r.fehler && el('p', { class: 'fehlertext' }, r.fehler),
-    rubrik(el('p', {}, 'Diese Woche'), a.quellen.length ? `Aus den Unterlagen: ${[...new Set(a.quellen.map(q => q.split('/').pop().replace(/\.\w+$/, '').replace(/_/g, ' ')))].join(' · ')}` : 'Aus den Folien und PS-Unterlagen der letzten Einheit'),
-    el('div', { class: 'raster' },
-      el('article', { class: 'artikel' }, markdown(el('div', { class: 'text' }), abschnitt(a, 'zusammenfassung') || 'Keine Zusammenfassung in dieser Ausgabe.')),
-      teil('blick', 'Auf einen Blick', 'auf einen blick'),
-      teil('', 'Nächstes Proseminar', 'nächstes proseminar'),
-      teil('', 'Nächste Vorlesung', 'nächste vorlesung')),
-    abschnitt(a, 'übungsaufgaben') && uebungen(abschnitt(a, 'übungsaufgaben')),
-    lexikon(f, a.begriffe),
-    fragen(f, a),
-    stamm && el('section', { class: 'stammdaten', 'aria-labelledby': 'stamm-kopf' },
-      rubrik(el('h2', { id: 'stamm-kopf' }, 'Stammdaten'), 'Aus dem Syllabus · gilt das ganze Semester'),
+    quellen.length > 0 && el('details', { class: 'quellen' }, el('summary', {}, `Beruht auf ${quellen.length} ${quellen.length === 1 ? 'Unterlage' : 'Unterlagen'}`), el('p', {}, quellen.join(', '))),
+    leiste,
+    el('div', { class: 'raster', id: 'teil-ueberblick' },
+      el('article', { class: 'artikel' }, el('h2', {}, 'Zusammenfassung der letzten Einheit'), markdown(el('div', { class: 'text' }), abschnitt(a, 'zusammenfassung') || 'Keine Zusammenfassung in dieser Ausgabe.')),
+      kasten('blick', 'Auf einen Blick', 'auf einen blick'),
+      kasten('', 'Nächstes Proseminar', 'nächstes proseminar'),
+      kasten('', 'Nächste Vorlesung', 'nächste vorlesung')),
+    ueb && teil('teil-uebungen', 'Übungsaufgaben', 'Erst selbst rechnen, dann aufdecken', uebungen(ueb)),
+    teil('teil-lexikon', 'Lexikon', a.begriffe.length ? `${a.begriffe.length} Begriffe der letzten Einheit` : null, lexikon(f, a.begriffe)),
+    teil('teil-fragen', 'Fragen', `Antworten nur aus dieser Ausgabe und den OLAT-Unterlagen für ${f}`, fragen(f, a)),
+    stamm && teil('teil-stamm', 'Stammdaten', 'Aus dem Syllabus, gilt das ganze Semester',
       el('div', { class: 'stamm-raster' }, ('\n' + stamm).split(/\n### /).slice(1).map(s => {
         const [kopf, ...rest] = s.split('\n');
         return el('div', { class: 'stamm' }, el('h3', {}, kopf.trim()), markdown(el('div', { class: 'text' }), rest.join('\n')));
       }))),
-    el('section', { class: 'archiv', 'aria-labelledby': 'arch-kopf' }, el('h2', { id: 'arch-kopf' }, 'Alle Ausgaben'),
-      el('ol', {}, r.ausgaben.map(x => el('li', {}, el('a', { href: `#/${encodeURIComponent(f)}/${x.datum}`, 'aria-current': x.datum === tag ? 'page' : null }, datum(x.datum, { day: '2-digit', month: '2-digit', year: 'numeric' })))))),
-    el('p', {}, el('button', { class: 'knopf voll', type: 'button', disabled: r.druckt, onclick: () => drucke(f) }, `Neue Ausgabe für ${f} drucken`)),
+    teil('teil-archiv', 'Frühere Ausgaben', null, el('div', { class: 'archiv' },
+      el('ol', {}, r.ausgaben.map(x => el('li', {}, el('a', { href: `#/${encodeURIComponent(f)}/${x.datum}`, 'aria-current': x.datum === tag ? 'page' : null }, datum(x.datum, { day: '2-digit', month: '2-digit', year: 'numeric' }))))))),
   ].filter(Boolean));
+  SPION = new IntersectionObserver(eintraege => eintraege.forEach(e => e.isIntersecting && leiste.querySelectorAll('button').forEach(b =>
+    b.dataset.ziel === e.target.id ? b.setAttribute('aria-current', 'true') : b.removeAttribute('aria-current'))), { rootMargin: '-15% 0px -75% 0px' });
+  ziele.forEach(([id]) => SPION.observe($(id)));
 }
 
 /* ---------- Kalender ---------- */
@@ -1239,12 +1330,12 @@ function kalenderZeigen() {
   const eintrag = t => el('button', { class: `kal-eintrag${FRISTEN.has(t.art) ? ' frist' : ''}`, type: 'button', onclick: () => meldung(t, false) },
     el('span', { class: 'zeit' }, t.zeit ? `${t.zeit}${t.ende ? '–' + t.ende : ''}` : 'ganztägig'),
     el('span', { class: 'kal-titel' }, t.titel || t.art),
-    el('b', {}, `${t.fach}${t.code ? ' ' + t.code : ''}${FRISTEN.has(t.art) ? ' · Frist' : ''}`),
+    el('b', {}, `${t.fach}${t.code ? ' ' + t.code : ''}${FRISTEN.has(t.art) ? ', Frist' : ''}`),
     t.ort && el('span', { class: 'meta' }, t.ort));
   s.replaceChildren(
-    el('div', { class: 'kal-kopf' },
-      el('div', {}, el('h2', {}, 'Kalender'),
-        el('p', { class: 'meta' }, `Kalenderwoche ${kw(montag)} · ${montag.toLocaleDateString('de-AT', { day: 'numeric', month: 'long' })} bis ${tage[6].toLocaleDateString('de-AT', { day: 'numeric', month: 'long', year: 'numeric' })}`)),
+    el('header', { class: 'seitenkopf' },
+      el('div', {}, el('h1', {}, 'Kalender'),
+        el('p', { class: 'unterzeile' }, el('span', {}, `Kalenderwoche ${kw(montag)}`), el('span', {}, `${montag.toLocaleDateString('de-AT', { day: 'numeric', month: 'long' })} bis ${tage[6].toLocaleDateString('de-AT', { day: 'numeric', month: 'long', year: 'numeric' })}`))),
       el('div', { class: 'kal-nav' },
         el('button', { class: 'knopf', type: 'button', onclick: () => { woche--; kalenderZeigen(); } }, 'Woche zurück'),
         el('button', { class: 'knopf', type: 'button', disabled: woche === 0, onclick: () => { woche = 0; kalenderZeigen(); } }, 'Heute'),
@@ -1252,21 +1343,21 @@ function kalenderZeigen() {
     el('div', { class: 'woche' }, tage.map(d => {
       const liste = alle.filter(t => t.datum === iso(d)).sort((a, b) => (a.zeit || '').localeCompare(b.zeit || ''));
       return el('section', { class: `kal-tag${iso(d) === HEUTE ? ' heute' : ''}${liste.length ? '' : ' ohne'}`, 'aria-label': datum(iso(d), { weekday: 'long', day: 'numeric', month: 'long' }) },
-        el('h3', {}, d.toLocaleDateString('de-AT', { weekday: 'short', day: '2-digit', month: '2-digit' }), iso(d) === HEUTE ? ' · heute' : ''),
+        el('h2', {}, d.toLocaleDateString('de-AT', { weekday: 'short', day: '2-digit', month: '2-digit' }), iso(d) === HEUTE ? ', heute' : ''),
         liste.map(eintrag));
     })),
     el('div', { class: 'kal-panels' },
       el('div', { class: 'kal-panel' },
-        el('h3', {}, 'In den iPad-Kalender'),
+        el('h2', {}, 'In den iPad-Kalender'),
         el('p', { class: 'klein' }, 'Lädt alle kommenden Termine und Fristen aus den Ausgaben als Kalenderdatei. Auf dem iPad öffnen und „Alle hinzufügen“ tippen. Fristen erinnern dann einen Tag und zwei Stunden vorher, auch wenn die App zu ist.'),
         el('div', { class: 'knopfreihe' },
           el('button', { class: 'knopf voll', type: 'button', disabled: !neue.length, onclick: () => icsExport(neue) }, neue.length ? `${neue.length} neue Termine übernehmen` : 'Alle Termine übernommen'),
           kuenftig.length > neue.length && el('button', { class: 'knopf', type: 'button', onclick: () => icsExport(kuenftig) }, 'Alle noch einmal'))),
       el('div', { class: 'kal-panel' },
-        el('h3', {}, 'Eigene Kalender (.ics)'),
+        el('h2', {}, 'Eigene Kalender (.ics)'),
         el('p', { class: 'klein' }, 'Zum Beispiel der Stundenplan aus LFU:online. Die Datei liegt im privaten Daten-Repo und erscheint so auf allen Geräten im Kalender oben.'),
         KAL == null ? el('p', { class: 'meta' }, 'Lade Kalender …') : el('ul', { class: 'kal-liste' }, KAL.map(k => el('li', {},
-          el('span', {}, `${k.name} · ${k.termine.length} Termine`),
+          el('span', {}, `${k.name}, ${k.termine.length} Termine`),
           el('button', { class: 'knopf', type: 'button', onclick: () => kalenderLoeschen(k) }, 'Entfernen')))),
         el('div', { class: 'knopfreihe' }, el('label', { class: 'knopf' }, 'ICS-Datei hinzufügen',
           el('input', { type: 'file', accept: '.ics,text/calendar', multiple: true, class: 'sr', onchange: e => kalenderHochladen([...e.target.files]) }))))));
@@ -1332,7 +1423,7 @@ async function wpNachschlagen() {  // Titel und Vorschaubild über YouTube oEmbe
     if (v !== wpVideo()) return;
     wpTitel = j.title; merk('wp.title', wpTitel);
     $('wp-talk').querySelector('img')?.remove();
-    $('wp-talk').prepend(el('img', { src: j.thumbnail_url, alt: '' }));
+    $('wp-talk').prepend(el('img', { src: j.thumbnail_url, alt: '', width: 112, height: 63 }));
     $('wp-ttitle').textContent = j.title; $('wp-tauthor').textContent = j.author_name;
     $('wp-talk').hidden = false;
   } catch { $('wp-talk').hidden = true; }
@@ -1458,11 +1549,13 @@ function testUebersicht() {
   gruppen.fertig.sort((a, b) => (b.bis || '').localeCompare(a.bis || ''));
   const zeile = (t, erste) => {
     const st = teststand(t);
-    const unten = st.gruppe === 'uebung' ? st.text : [punkte(t), st.gruppe === 'offen' && (t.fragen ? 'Fragen gelesen' : 'Fragen kommen mit dem nächsten Abgleich')].filter(Boolean).join(' · ');
-    return el('li', { class: `testzeile${erste ? ' naechste' : ''}` },
+    const unten = st.gruppe === 'uebung' ? st.text : [st.bis && `bis ${zeitpunkt(st.bis)}`, punkte(t), st.gruppe === 'offen' && (t.fragen ? 'Fragen gelesen' : 'Fragen kommen mit dem nächsten Abgleich')].filter(Boolean).join(', ');
+    const rest = st.bis && tageBis(iso(new Date(st.bis)));
+    return el('li', { class: 'testzeile' },
       el('b', {}, t.fach),
       el('span', {}, el('a', { href: `#/onlinetests/${encodeURIComponent(testId(t))}` }, t.titel), unten && el('span', { class: 'ort' }, unten)),
-      st.gruppe !== 'uebung' && el('span', { class: 'wann' }, st.bis ? `bis ${zeitpunkt(st.bis)} · ${faellig(tageBis(iso(new Date(st.bis))))}` : st.text));
+      st.gruppe !== 'uebung' && el('span', { class: `wann pille${st.bis && rest <= 1 ? ' warn' : erste ? ' akzent' : ''}` },
+        st.gruppe === 'offen' && st.bis ? faellig(rest) : st.gruppe === 'bald' ? st.text : st.text));
   };
   const gruppe = (titel, zusatz, liste, hervor) => liste.length > 0 && el('section', { class: 'testgruppe' },
     el('div', { class: 'rubrik' }, el('h2', {}, titel), el('p', { class: 'meta' }, zusatz)),
@@ -1501,14 +1594,14 @@ function testZeigen(t) {
     try { LOESER_PROMPT = (await entsperren('onlinetest', e.target.elements.pw.value)).system; testZeigen(t); }
     catch (err) { hinweis.textContent = err.message; }
   } },
-    el('label', {}, 'Passwort', el('input', { name: 'pw', type: 'password', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', required: true })),
+    el('label', {}, 'Passwort', el('input', { name: 'pw', type: 'password', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', placeholder: 'Vier Wörter …', required: true })),
     el('div', {}, el('button', { class: 'knopf voll' }, 'Öffnen')),
-    el('p', { class: 'klein', role: 'status' }, 'Der Löser ist mit einem Passwort geschützt.'));
+    el('p', { class: 'klein', role: 'status' }, 'Das Passwort aus vier Wörtern bekommst du von der Person, die dir den Lernhelfer gezeigt hat.'));
   const knopfText = !fertigGeloest ? 'Lösen lassen' : fertigGeloest.original === false ? 'Mit den Originalzahlen lösen' : 'Neu lösen';
   $('onlinetests').replaceChildren(...[
-    el('p', {}, el('a', { class: 'zurueck', href: '#/onlinetests' }, 'Alle Onlinetests')),
+    el('a', { class: 'zurueck', href: '#/onlinetests' }, 'Alle Onlinetests'),
     el('header', { class: 'ausgabe-kopf' }, el('h1', {}, t.titel),
-      el('p', { class: 'meta' }, [t.fach, st.text, punkte(t), st.gruppe === 'bald' && t.bis && `bis ${zeitpunkt(t.bis)}`].filter(Boolean).join(' · '))),
+      el('p', { class: 'unterzeile' }, [t.fach, st.text, punkte(t), st.gruppe === 'bald' && t.bis && `bis ${zeitpunkt(t.bis)}`].filter(Boolean).map(x => el('span', {}, x)))),
     el('section', { class: 'schritt', 'aria-labelledby': 'tz-aufgabe' },
       el('h2', { id: 'tz-aufgabe' }, 'Aufgabenstellung'),
       aufgabe ? [el('p', { class: 'klein' }, t.ergebnis ? 'So zeigt OLAT den Test nach Ablauf: deine Antworten in [eckigen Klammern], danach die Lösung.' : 'So wie OLAT die Fragen zeigt. Eingabefelder stehen als [ ], Formeln als LaTeX.'),
@@ -1524,7 +1617,7 @@ function testZeigen(t) {
         el('div', { class: 'knopfreihe' },
           L.laeuft ? el('div', { class: 'presse', id: 'lo-status', role: 'status' }, L.hinweis)
             : el('button', { class: 'knopf voll', type: 'button', disabled: !aufgabe, onclick: () => loesen(t) }, knopfText),
-          fertigGeloest && !L.laeuft && el('span', { class: 'meta' }, `Gelöst ${zeitpunkt(fertigGeloest.zeit)} · ${geld(fertigGeloest.preis || 0)}`)),
+          fertigGeloest && !L.laeuft && el('span', { class: 'meta' }, `Gelöst ${zeitpunkt(fertigGeloest.zeit)}, ${geld(fertigGeloest.preis || 0)}`)),
         L.fehler && el('p', { class: 'fehlertext' }, L.fehler),
         fertigGeloest && loesungZeigen(fertigGeloest.text)]),
   ].filter(Boolean));
@@ -1665,16 +1758,18 @@ function einrichtenZeigen() {
   $('abmelden-teil').hidden = !cfg;
   const stand = (ok, text, warnung) => el('p', { class: `stand${ok ? ' ok' : ''}${warnung ? ' warnung' : ''}` }, text);
   const link = (href, text, voll) => el('a', { class: `knopf${voll ? ' voll' : ''}`, href, target: '_blank', rel: 'noopener' }, text);
-  const nr = (n, text) => el('h2', {}, el('span', { class: 'nr' }, n), text);
+  const nr = (n, text, ok) => el('h2', {}, el('span', { class: `nr${ok ? ' ok' : ''}`, 'aria-hidden': 'true' }, n), text);
   const formular = (id, beschriftung, knopf, aktion, typ = 'text') => el('form', { class: 'feld', novalidate: true, onsubmit: async e => {
     e.preventDefault();
     const k = e.target.querySelector('button');
     k.disabled = true;
-    try { await aktion(e.target.elements.wert.value.trim()); status(''); einrichtenZeigen(); } catch (err) { status(err.message, true); k.disabled = false; }
+    try { await aktion(e.target.elements.wert.value.trim()); status(''); einrichtenZeigen(); }
+    catch (err) { const f = e.target.querySelector('.fehlertext'); f.textContent = err.message; f.hidden = false; e.target.elements.wert.focus(); k.disabled = false; }
   } },
     el('label', { for: 'ei-' + id }, beschriftung),
     el('div', { class: 'zeile' }, el('input', { id: 'ei-' + id, name: 'wert', type: typ, autocomplete: 'off', autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false' }),
-      el('button', { class: 'knopf voll' }, knopf)));
+      el('button', { class: 'knopf voll' }, knopf)),
+    el('p', { class: 'fehlertext', role: 'alert', hidden: true }));
   const kopieren = el('button', { class: 'knopf', type: 'button', onclick: async e => {
     try { await navigator.clipboard.writeText(verbindungsLink()); e.target.textContent = 'Link kopiert'; } catch { status('Kopieren ging nicht. Bitte den QR-Code nehmen.', true); }
   } }, 'Verbindungslink kopieren');
@@ -1690,9 +1785,9 @@ function einrichtenZeigen() {
         if (!v) throw new Error('Das ist kein Verbindungslink des Lernhelfers.');
         await verbinden(v);
       })),
-    el('section', { class: 'schritt', 'aria-labelledby': 'ei-1' }, nr('1', 'KI-Guthaben'),
-      stand(!offenOR, offenOR ? 'Noch nicht verbunden' : `Verbunden${GUTHABEN != null ? ' · Guthaben ' + geld(GUTHABEN) : ''}`, !offenOR && GUTHABEN != null && GUTHABEN < 0.5),
-      el('p', { class: 'klein' }, 'Die Ausgaben schreibt eine KI über OpenRouter. Du zahlst nur, was du verbrauchst: eine Wochenausgabe kostet meist 1 bis 8 Cent, 5 $ reichen für ein Semester.'),
+    el('section', { class: 'schritt', 'aria-labelledby': 'ei-1' }, nr('1', 'KI-Guthaben', !offenOR),
+      stand(!offenOR, offenOR ? 'Noch nicht verbunden' : `Verbunden${GUTHABEN != null ? ', Guthaben ' + geld(GUTHABEN) : ''}`, !offenOR && GUTHABEN != null && GUTHABEN < 0.5),
+      el('p', { class: 'klein' }, 'Die Ausgaben schreibt eine KI über OpenRouter. Du zahlst nur, was du verbrauchst: eine Wochenausgabe kostet meist 1 bis 8\u00a0Cent, 5\u00a0$ reichen für ein Semester.'),
       el('div', { class: 'knopfreihe' },
         el('button', { class: `knopf${offenOR ? ' voll' : ''}`, type: 'button', onclick: orVerbinden }, offenOR ? 'Mit OpenRouter verbinden' : 'Neu verbinden'),
         link('https://openrouter.ai/settings/credits', 'Guthaben aufladen', !offenOR && GUTHABEN != null && GUTHABEN < 0.5)),
@@ -1701,7 +1796,7 @@ function einrichtenZeigen() {
           if (!/^sk-or-/.test(w)) throw new Error('Ein OpenRouter-Schlüssel beginnt mit sk-or-.');
           speichereCfg({ openrouter: w }); kosten();
         }, 'password'))),
-    el('section', { class: 'schritt', 'aria-labelledby': 'ei-2' }, nr('2', 'Privater Speicher'),
+    el('section', { class: 'schritt', 'aria-labelledby': 'ei-2' }, nr('2', 'Privater Speicher', !offenGH),
       stand(!offenGH, offenGH ? 'Noch nicht verbunden' : `Verbunden mit ${cfg.repo}`),
       el('p', { class: 'klein' }, 'Unterlagen und Ausgaben liegen in einem privaten Speicher bei GitHub, kostenlos. Nur du kommst dran.'),
       el('ol', { class: 'schritte' },
@@ -1711,8 +1806,8 @@ function einrichtenZeigen() {
         el('li', {}, link('https://github.com/settings/personal-access-tokens/new?' + new URLSearchParams({ name: 'Lernhelfer', description: 'Lernhelfer-App und PC-Abgleich: nur das Repo lernhelfer-daten', expires_in: '366', contents: 'write' }), 'Schlüssel erzeugen'),
           el('p', { class: 'klein' }, 'Bei „Repository access“ auf „Only select repositories“ und dann lernhelfer-daten wählen. Ganz unten „Generate token“ tippen und den Schlüssel kopieren.')),
         el('li', {}, formular('gh', 'Schlüssel hier einfügen', 'Verbinden', async w => { await ghVerbinden(w); if (fertig()) { history.replaceState(null, '', location.pathname + '#/einstellungen'); start(); } }, 'password')))),
-    el('section', { class: 'schritt', 'aria-labelledby': 'ei-3' }, nr('3', 'OLAT-Abgleich am PC'),
-      stand(!!ABGLEICH?.ok, !ABGLEICH ? 'Noch kein Abgleich' : ABGLEICH.ok ? `Letzter Abgleich ${wann} · ${ABGLEICH.text}` : ABGLEICH.text, ABGLEICH?.ok === false),
+    el('section', { class: 'schritt', 'aria-labelledby': 'ei-3' }, nr('3', 'OLAT-Abgleich am PC', !!ABGLEICH?.ok),
+      stand(!!ABGLEICH?.ok, !ABGLEICH ? 'Noch kein Abgleich' : ABGLEICH.ok ? `Letzter Abgleich ${wann}: ${ABGLEICH.text}` : ABGLEICH.text, ABGLEICH?.ok === false),
       el('p', { class: 'klein' }, 'Ein kleines Programm auf deinem Windows-PC holt neue Folien und Tests aus OLAT, solange der PC an ist. Den OLAT-Login mit Authenticator machst du selbst im Chrome-Fenster.'),
       WINDOWS ? [
         el('div', { class: 'knopfreihe' }, el('button', { class: `knopf${ABGLEICH ? '' : ' voll'}`, type: 'button', disabled: offenGH, onclick: pcDatei }, ABGLEICH ? 'PC-Programm neu laden' : 'PC-Programm herunterladen'),
@@ -1735,7 +1830,7 @@ function einrichtenZeigen() {
 }
 
 /* ---------- Ansichten ---------- */
-let ansicht = '';
+let ansicht = '', ort = null;
 async function zeichne() {
   const v = verbindungLesen(location.hash);  // QR-Code bzw. Verbindungslink von einem anderen Gerät
   if (v) { await verbinden(v); return 'verbunden'; }
@@ -1747,8 +1842,12 @@ async function zeichne() {
   for (const id of ['titelblatt', 'ausgabe', 'einstellungen', 'kalender', 'wordpower', 'onlinetests', 'anleitung']) $(id).hidden = id !== neu;
   document.body.dataset.ansicht = neu;
   document.querySelectorAll('.mit-daten').forEach(a => { a.hidden = !fertig(); });
-  $('druck').hidden = neu !== 'titelblatt';
-  $('nach-titel').hidden = neu === 'titelblatt';
+  document.querySelectorAll('a[data-ansicht]').forEach(a => a.dataset.ansicht === neu ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
+  $('nav-faecher').replaceChildren(...Object.keys(R).map(f => el('a', { href: `#/${encodeURIComponent(f)}`, 'aria-current': neu === 'ausgabe' && teil === f ? 'page' : null },
+    el('span', { class: 'punkt', 'aria-hidden': 'true' }), f, R[f].druckt && el('span', { class: 'laeuft', role: 'img', 'aria-label': 'wird erstellt' }))));
+  $('nav-faecher-kopf').hidden = !fertig() || !Object.keys(R).length;
+  const namen = { kalender: 'Kalender', wordpower: 'Word Power', onlinetests: 'Onlinetests', anleitung: 'Anleitung', einstellungen: 'Einrichten' };
+  document.title = neu === 'titelblatt' ? 'Lernhelfer' : `${neu === 'ausgabe' ? teil : namen[neu]} – Lernhelfer`;
   $('modell-name').textContent = $('modell').value;
   $('alle').disabled = Object.values(R).some(r => r.druckt) || !Object.keys(R).length;
   if (neu !== 'einstellungen') kameraZu();
@@ -1761,13 +1860,16 @@ async function zeichne() {
   else if (neu === 'wordpower') wordpower();
   else if (neu === 'onlinetests') await onlinetestsZeigen(tag);
   else if (neu === 'titelblatt') titelblatt();
+  const woanders = location.hash !== ort;  // Seitenwechsel, nicht nur neu gezeichnet
+  if (woanders && ort != null) $('inhalt').focus({ preventScroll: true });
   if (anker) $(anker)?.scrollIntoView();
-  else if (neu !== ansicht || neu === 'onlinetests') scrollTo(0, 0);
+  else if (woanders) scrollTo(0, 0);
+  ort = location.hash;
   if (neu !== ansicht) { ansicht = neu; if (fertig() && Object.keys(R).length) status(''); }
 }
 
 async function start() {
-  $('datumszeile').replaceChildren(el('span', {}, TAG), el('span', {}, `Kalenderwoche ${kw(heute)}`), el('span', { class: 'neben' }, 'Universität Innsbruck'), el('span', { id: 'kosten' }));
+  $('datumszeile').textContent = `${heute.toLocaleDateString('de-AT', { weekday: 'short', day: 'numeric', month: 'long' })}, KW ${kw(heute)}`;
   if (!$('modell').options.length) Object.keys(MODELLE).forEach(m => $('modell').add(new Option(m, m)));
   if (MODELLE[merk('modell')]) $('modell').value = merk('modell');
   await orZurueck();  // zurück vom OpenRouter-Login (?code=…)
