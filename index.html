@@ -428,7 +428,7 @@
               <button id="wp-go" class="knopf voll">Transkribieren</button>
             </div>
           </form>
-          <div id="wp-talk" class="talk" hidden><img id="wp-thumb" alt=""><div><p id="wp-ttitle" class="talk-titel"></p><p id="wp-tauthor" class="meta"></p></div></div>
+          <div id="wp-talk" class="talk" hidden><div><p id="wp-ttitle" class="talk-titel"></p><p id="wp-tauthor" class="meta"></p></div></div>
           <p id="wp-st" class="wp-status" role="status"></p>
           <label class="feld">Transkript <textarea id="wp-out" spellcheck="false" placeholder="Hier erscheint das Transkript. Du kannst auch eins einfügen."></textarea></label>
           <div class="knopfreihe"><button id="wp-dl" class="knopf" type="button" disabled>Als .txt herunterladen</button></div>
@@ -1127,7 +1127,9 @@ async function wpNachschlagen() {  // Titel und Vorschaubild über YouTube oEmbe
     const j = await (await fetch('https://www.youtube.com/oembed?format=json&url=' + encodeURIComponent(v))).json();
     if (v !== wpVideo()) return;
     wpTitel = j.title; merk('wp.title', wpTitel);
-    $('wp-thumb').src = j.thumbnail_url; $('wp-ttitle').textContent = j.title; $('wp-tauthor').textContent = j.author_name;
+    $('wp-talk').querySelector('img')?.remove();
+    $('wp-talk').prepend(el('img', { src: j.thumbnail_url, alt: '' }));
+    $('wp-ttitle').textContent = j.title; $('wp-tauthor').textContent = j.author_name;
     $('wp-talk').hidden = false;
   } catch { $('wp-talk').hidden = true; }
 }
