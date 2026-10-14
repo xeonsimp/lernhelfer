@@ -1,0 +1,5 @@
+Archivo (Omnibus-Type) und Source Serif 4 (Adobe) stehen unter der SIL Open Font License 1.1.
+Quelle: Google Fonts (latin-Teilmenge, variable Schnitte).
+https://github.com/google/fonts/tree/main/ofl/archivo
+https://github.com/google/fonts/tree/main/ofl/sourceserif4
+https://openfontlicense.org

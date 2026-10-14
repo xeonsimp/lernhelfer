@@ -2,96 +2,377 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; connect-src https://openrouter.ai https://api.github.com; img-src data:; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; font-src 'self'; connect-src https://openrouter.ai https://api.github.com; img-src data:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lernhelfer">
+<meta name="theme-color" content="#fbe3d3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1d1512" media="(prefers-color-scheme: dark)">
 <title>Lernhelfer</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23fbe3d3'/%3E%3Cpath d='M9 6h5v16h9v4H9z' fill='%231b1511'/%3E%3C/svg%3E">
+<link rel="preload" href="fonts/Archivo.woff2" as="font" type="font/woff2" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js" integrity="sha384-/TQbtLCAerC3jgaim+N78RZSDYV7ryeoBCVqTuzRrFec2akfBkHS7ACQ3PQhvMVi" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js" integrity="sha384-+VfUPEb0PdtChMwmBcBmykRMDd+v6D/oFmB3rZM/puCMDYcIvF968OimRh4KQY9a" crossorigin="anonymous"></script>
 <style>
-  :root { --bg:#f6f5f2; --karte:#fff; --text:#1d1d1f; --leise:#6b6b6b; --akzent:#1f5fbf; --rand:#e2e0da; color-scheme:light dark; }
-  @media (prefers-color-scheme: dark) { :root { --bg:#141414; --karte:#1e1e1e; --text:#ececec; --leise:#9a9a9a; --akzent:#3b6fd6; --rand:#333; } }
-  body { margin:0; background:var(--bg); color:var(--text); font:17px/1.55 -apple-system, "Segoe UI", system-ui, sans-serif; }
-  main { max-width:880px; margin:0 auto; padding:16px; }
-  header { display:flex; align-items:center; justify-content:space-between; gap:8px; }
-  h1 { font-size:1.4rem; margin:8px 0 16px; }
-  nav, .zeile { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
-  form { display:grid; gap:12px; background:var(--karte); border:1px solid var(--rand); border-radius:14px; padding:16px; margin-bottom:16px; }
-  label { display:grid; gap:4px; }
-  input, select, button { font:inherit; padding:10px 14px; border-radius:10px; border:1px solid var(--rand); background:var(--karte); color:var(--text); min-width:0; }
-  select { flex:1 1 260px; }
-  button { cursor:pointer; }
-  nav button[aria-pressed="true"], button.haupt { background:var(--akzent); border-color:transparent; color:#fff; }
-  :disabled { opacity:.5; cursor:default; }
-  .leise, #status { color:var(--leise); margin:0; }
-  #status { min-height:1.5em; margin-bottom:12px; }
-  article { background:var(--karte); border:1px solid var(--rand); border-radius:14px; padding:4px 22px 18px; overflow-wrap:anywhere; }
-  article table { border-collapse:collapse; display:block; overflow-x:auto; }
-  article th, article td { border-bottom:1px solid var(--rand); padding:6px 10px; text-align:left; vertical-align:top; }
+  @font-face { font-family: "Archivo"; src: url("fonts/Archivo.woff2") format("woff2"); font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; }
+  @font-face { font-family: "Source Serif 4"; src: url("fonts/SourceSerif4.woff2") format("woff2"); font-weight: 200 900; font-display: swap; }
+
+  :root {
+    --papier: #fbe3d3; --papier-tief: #e8c2aa; --tinte: #1b1511; --tinte-2: #5b4337;
+    --bordeaux: #8e1838; --bordeaux-text: #8e1838; --auf-bordeaux: #fff1e8;
+    --grot: "Archivo", "Arial Narrow", sans-serif; --serif: "Source Serif 4", Georgia, serif;
+    --dick: 3px solid var(--tinte); --duenn: 1.5px solid var(--tinte);
+    --rand: max(16px, min(4vw, 48px));
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --papier: #1d1512; --papier-tief: #2b201a; --tinte: #f6d9c5; --tinte-2: #c9a794; --bordeaux-text: #ef7d97; color-scheme: dark; }
+  }
+
+  * { box-sizing: border-box; }
+  html { background: var(--papier); -webkit-text-size-adjust: 100%; scrollbar-color: var(--tinte-2) var(--papier); }
+  body { margin: 0; background: var(--papier); color: var(--tinte); font: 400 1.0625rem/1.6 var(--serif); caret-color: var(--bordeaux-text); }
+  ::selection { background: var(--tinte); color: var(--papier); }
+  a { color: inherit; text-decoration-thickness: 1.5px; text-underline-offset: 0.18em; }
+  :focus-visible { outline: 3px solid var(--tinte); outline-offset: 3px; }
+  button, input, select { font: inherit; color: inherit; }
+  [hidden] { display: none !important; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  .seite { max-width: 1320px; margin: 0 auto; padding: 0 var(--rand) 64px; }
+  .grot { font-family: var(--grot); }
+
+  /* Werkzeugleiste über dem Kopf */
+  .leiste { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 12px 0; font: 500 0.9375rem/1.2 var(--grot); }
+  .leiste nav { display: flex; gap: 16px; align-items: center; }
+  .leiste a { text-decoration: none; padding: 10px 0; }
+  .leiste a:hover { text-decoration: underline; }
+  select { appearance: none; min-height: 44px; padding: 8px 40px 8px 12px; border: var(--duenn); border-radius: 0; font: 600 0.9375rem var(--grot); font-stretch: 85%;
+    background: var(--papier) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%235b4337' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 14px center; }
+  .knopf { min-height: 44px; padding: 10px 18px; border: var(--duenn); border-radius: 0; background: transparent; cursor: pointer; font: 700 0.9375rem/1.1 var(--grot); font-stretch: 85%; letter-spacing: 0.01em; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+  .knopf.voll { background: var(--tinte); color: var(--papier); }
+  .knopf:hover { background: var(--papier-tief); }
+  .knopf.voll:hover { background: var(--tinte-2); border-color: var(--tinte-2); }
+  .knopf:disabled { opacity: 0.45; cursor: default; }
+  .knopf:disabled:hover { background: transparent; }
+  .knopf.voll:disabled:hover { background: var(--tinte); }
+  .knopf svg { width: 16px; height: 16px; flex: none; }
+
+  /* Zeitungskopf */
+  .kopf { border-top: var(--dick); padding-top: 14px; }
+  /* Nameplate füllt die Satzbreite: 7.26 = Breite von „LERNHELFER“ in em bei wdth 100 (gemessen 7.24) */
+  .kopf { container-type: inline-size; }
+  .titel { margin: 0; font: 900 calc(100cqw / 7.26)/0.8 var(--grot); font-stretch: 100%; letter-spacing: -0.015em; text-transform: uppercase; }
+  .titel a { text-decoration: none; }
+  .datumszeile { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 24px; margin: 14px 0 0; padding: 8px 0; border-top: var(--dick); border-bottom: var(--duenn);
+    font: 650 0.8125rem/1.3 var(--grot); font-stretch: 90%; text-transform: uppercase; letter-spacing: 0.06em; font-variant-numeric: tabular-nums; }
+  .druck { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px 14px; margin: 12px 0 0; }
+  .druck .meta a { text-decoration-thickness: 1px; }
+
+  /* Fristen-Ticker */
+  .ticker { margin: 0 calc(var(--rand) * -1); background: var(--tinte); color: var(--papier); overflow: hidden; }
+  .ticker-band { display: flex; width: max-content; animation: laufen var(--dauer, 60s) linear infinite; }
+  .ticker { cursor: pointer; }
+  .ticker:hover .ticker-band, .ticker:focus-visible .ticker-band, .ticker.steht .ticker-band { animation-play-state: paused; }
+  @keyframes laufen { to { transform: translateX(-50%); } }
+  .ticker-eintrag { display: flex; align-items: baseline; gap: 10px; padding: 11px 22px; white-space: nowrap; font: 500 0.9375rem/1.2 var(--grot); font-stretch: 82%; font-variant-numeric: tabular-nums; border-right: 1.5px solid color-mix(in srgb, var(--papier) 30%, transparent); }
+  .ticker-eintrag b { font-weight: 850; font-stretch: 75%; text-transform: uppercase; letter-spacing: 0.02em; }
+  .ticker-eintrag .wann { font-weight: 750; }
+  .ticker-eintrag.naechste { background: var(--bordeaux); color: var(--auf-bordeaux); }
+  @media (prefers-reduced-motion: reduce) { .ticker { overflow-x: auto; } .ticker-band { animation: none; } }
+
+  #status { min-height: 1.6em; margin: 10px 0 0; font: 600 0.9375rem/1.4 var(--grot); color: var(--tinte-2); }
+  #status.fehler { color: var(--tinte); }
+  #status.fehler::before { content: "Fehler: "; font-weight: 850; }
+
+  /* Titelblatt */
+  .blatt { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(300px, 1fr); gap: 0 40px; margin-top: 18px; }
+  .blatt > * { min-width: 0; }
+  /* 6er-Raster: ohne Aufmacher 2×2, mit Aufmacher eine breite Geschichte und drei Spalten darunter */
+  .ressorts { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); align-content: start; }
+  .ressort { grid-column: span 3; position: relative; padding: 16px 20px 26px; border-top: var(--dick); border-left: var(--duenn); display: flex; flex-direction: column; gap: 10px; }
+  .ressorts:not(.mit-aufmacher) .ressort:nth-child(odd), .ressorts.mit-aufmacher .ressort:nth-child(-n+2) { padding-left: 0; border-left: 0; }
+  .ressorts:not(.mit-aufmacher) .ressort:nth-child(even), .ressorts.mit-aufmacher .ressort:nth-child(3n+1) { padding-right: 0; }
+  .ressorts.mit-aufmacher .ressort { grid-column: span 2; }
+  .ressorts.mit-aufmacher .aufmacher { grid-column: 1 / -1; padding-right: 0; }
+  .ressort h2 { margin: 0; font: 900 clamp(2.25rem, 4.5vw, 3.25rem)/0.9 var(--grot); font-stretch: 65%; text-transform: uppercase; letter-spacing: -0.01em; }
+  .mit-aufmacher .ressort:not(.aufmacher) h2 { font-size: clamp(1.75rem, 2.6vw, 2.25rem); }
+  .mit-aufmacher .ressort:not(.aufmacher) .schlagzeile { font-size: 1.1875rem; }
+  .aufmacher h2 { font-size: clamp(2.75rem, 6vw, 4.25rem); }
+  .aufmacher .schlagzeile { font-size: clamp(1.625rem, 2.8vw, 2.125rem); line-height: 1.1; max-width: 26ch; }
+  .aufmacher .anriss { -webkit-line-clamp: 4; max-width: 62ch; font-size: 1.0625rem; }
+  .ressort h2 a { text-decoration: none; }
+  .ressort h2 a::after { content: ""; position: absolute; inset: 0; }
+  .ressort:hover h2 a { text-decoration: underline; text-decoration-thickness: 3px; }
+  .schlagzeile { margin: 0; font: 750 1.375rem/1.18 var(--serif); text-wrap: balance; }
+  .anriss { margin: 0; color: var(--tinte-2); font-size: 1rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .meta { margin: 0; font: 550 0.8125rem/1.3 var(--grot); font-stretch: 90%; color: var(--tinte-2); font-variant-numeric: tabular-nums; }
+  .ressort .aktionen { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 6px; }
+  .fehlertext { margin: 0; font: 600 0.9375rem/1.4 var(--grot); }
+  .fehlertext::before { content: "Fehler: "; font-weight: 850; }
+
+  /* „Geht in Druck“ */
+  .presse { display: grid; gap: 8px; font: 700 0.9375rem var(--grot); font-stretch: 85%; }
+  .presse::after { content: ""; height: 4px; background: var(--tinte); transform-origin: left; animation: walze 1.6s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+  @keyframes walze { 0% { transform: scaleX(0); } 70% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .presse::after { animation: none; } }
+
+  /* Terminkalender */
+  .termine { border-top: var(--dick); padding-top: 14px; }
+  .termine h2, .abschnitt h2, .lexikon h2, .archiv h2 { margin: 0 0 10px; font: 850 1.125rem/1.1 var(--grot); font-stretch: 75%; text-transform: uppercase; letter-spacing: 0.04em; }
+  .tag { margin: 0; padding: 0; list-style: none; }
+  .tag + .tag { margin-top: 14px; }
+  .tag h3 { margin: 0 0 4px; padding-bottom: 4px; border-bottom: var(--duenn); font: 750 0.9375rem/1.2 var(--grot); font-stretch: 85%; font-variant-numeric: tabular-nums; }
+  .termin { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr) auto; gap: 2px 12px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid color-mix(in srgb, var(--tinte) 25%, transparent); font: 450 0.9375rem/1.35 var(--grot); font-stretch: 92%; font-variant-numeric: tabular-nums; }
+  .termin .zeit { font-weight: 650; }
+  .termin .was b { font-weight: 800; text-transform: uppercase; font-stretch: 78%; letter-spacing: 0.02em; margin-right: 6px; }
+  .termin .ort { display: block; color: var(--tinte-2); font-size: 0.8125rem; }
+  .termin .wann { font-weight: 700; white-space: nowrap; text-align: right; }
+  .termin.naechste { margin: 0 -10px; padding: 9px 10px; background: var(--bordeaux); color: var(--auf-bordeaux); border-bottom-color: transparent; }
+  .termin.naechste .ort { color: inherit; opacity: 0.85; }
+  .termin.erledigt .was, .termin.erledigt .wann { text-decoration: line-through; text-decoration-thickness: 1.5px; color: var(--tinte-2); }
+  /* Fristen abhaken: Kästchen wie auf einem Stimmzettel, ausgefüllt = erledigt */
+  .haken { display: inline-flex; align-items: center; gap: 8px; min-height: 32px; cursor: pointer; }
+  .haken input { appearance: none; -webkit-appearance: none; flex: none; width: 22px; height: 22px; margin: 0; border: var(--duenn); border-radius: 0; background: var(--papier); cursor: pointer; }
+  .haken input:checked { background: var(--tinte); box-shadow: inset 0 0 0 4px var(--papier); }
+  .termin.naechste .haken input { border-color: var(--auf-bordeaux); background: var(--bordeaux); }
+  .termin.naechste .haken input:checked { background: var(--auf-bordeaux); box-shadow: inset 0 0 0 4px var(--bordeaux); }
+  .leer { margin: 0; color: var(--tinte-2); font: 500 0.9375rem/1.5 var(--grot); }
+  .fuss { margin-top: 18px; font: 500 0.8125rem/1.5 var(--grot); color: var(--tinte-2); }
+
+  /* Ausgabe */
+  .ausgabe-kopf { border-top: var(--dick); padding-top: 14px; margin-top: 4px; }
+  .ausgabe-kopf h1 { margin: 0; font: 900 clamp(3rem, 11vw, 6rem)/0.85 var(--grot); font-stretch: 62%; text-transform: uppercase; }
+  .ausgabe-kopf .schlagzeile { margin: 18px 0 0; max-width: 24ch; font-size: clamp(1.75rem, 4.2vw, 2.75rem); line-height: 1.08; font-weight: 800; letter-spacing: -0.01em; }
+  .raster { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 360px); grid-template-rows: auto auto 1fr; gap: 0 48px; margin-top: 26px; }
+  .raster > * { min-width: 0; }
+  .artikel { grid-column: 1; grid-row: 1 / span 3; border-top: var(--dick); padding: 6px 23px 0 0; margin-right: -24px; border-right: var(--duenn); }
+  .abschnitt { grid-column: 2; border-top: var(--dick); padding: 14px 0 22px; }
+  .abschnitt.blick { background: var(--papier-tief); padding: 14px 18px 18px; border-top-width: 6px; }
+  .text { max-width: 68ch; }
+  .text h3 { margin: 1.6em 0 0.35em; font: 800 1.1875rem/1.2 var(--grot); font-stretch: 80%; }
+  .text p, .text ul, .text ol { margin: 0 0 0.85em; }
+  .text ul, .text ol { padding-left: 1.2em; }
+  .text li { margin-bottom: 0.35em; }
+  .text li::marker { color: var(--tinte-2); }
+  .text strong { font-weight: 700; }
+  .text table { border-collapse: collapse; display: block; overflow-x: auto; font: 450 0.9375rem/1.4 var(--grot); }
+  .text th, .text td { padding: 6px 10px 6px 0; border-bottom: 1px solid color-mix(in srgb, var(--tinte) 30%, transparent); text-align: left; vertical-align: top; }
+  .abschnitt .text { font-size: 1rem; }
+  .text code { overflow-wrap: anywhere; }
+  [data-ansicht="ausgabe"] .titel { font-size: clamp(2.25rem, 7vw, 3.25rem); }
+  [data-ansicht="ausgabe"] .ticker, [data-ansicht="einstellungen"] .ticker { display: none; }
+  .artikel > .text > :first-child { margin-top: 0.6em; }
+  .artikel > .text > p:first-of-type::first-line { font-weight: 650; }
+  .artikel > .text > p:first-of-type::first-letter { float: left; margin: 0.07em 0.1em 0 0; font: 900 3.6em/0.78 var(--grot); font-stretch: 62%; }
+
+  /* Lexikon */
+  .lexikon { margin-top: 40px; border-top: var(--dick); padding-top: 14px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 360px); gap: 16px 48px; align-items: start; }
+  .lexikon > * { min-width: 0; }
+  .lexikon .fortschritt { margin: 0 0 12px; font: 600 0.9375rem var(--grot); font-variant-numeric: tabular-nums; color: var(--tinte-2); }
+  .karte { position: relative; display: block; width: 100%; min-height: 15rem; padding: 0; border: 0; background: none; cursor: pointer; perspective: 1400px; text-align: center; }
+  .karte .innen { position: relative; display: block; min-height: 15rem; transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1); transform-style: preserve-3d; }
+  .karte.um .innen { transform: rotateY(180deg); }
+  .karte .seite-v, .karte .seite-h { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px 28px; border: var(--dick); background: var(--papier); backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 10px 24px -14px color-mix(in srgb, var(--tinte) 55%, transparent); }
+  .karte .seite-h { transform: rotateY(180deg); background: var(--papier-tief); }
+  .karte .begriff { font: 850 clamp(1.5rem, 3.5vw, 2.25rem)/1.05 var(--grot); font-stretch: 72%; text-wrap: balance; }
+  .karte .definition { font: 400 1.0625rem/1.5 var(--serif); text-wrap: pretty; }
+  .karte .hinweis { font: 550 0.8125rem var(--grot); color: var(--tinte-2); }
+  @media (prefers-reduced-motion: reduce) { .karte .innen { transition: none; } }
+  .karten-aktionen { display: flex; gap: 8px; margin-top: 14px; }
+  .karten-aktionen .knopf { flex: 1; justify-content: center; }
+  .liste { margin: 0; }
+  .liste summary { display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px 0; list-style: none; font: 750 0.9375rem var(--grot); font-stretch: 85%; }
+  .liste summary::-webkit-details-marker { display: none; }
+  .liste summary::before { content: ""; width: 7px; height: 7px; margin: 0 3px; border: solid currentColor; border-width: 0 2px 2px 0; transform: rotate(-45deg); transition: transform 0.2s; }
+  .liste[open] summary::before { transform: rotate(45deg); }
+  .liste dl { margin: 6px 0 0; }
+  .liste dt { margin-top: 12px; font: 800 1rem/1.25 var(--grot); font-stretch: 85%; }
+  .liste dt.gewusst::after { content: " – gewusst"; font-weight: 500; color: var(--tinte-2); }
+  .liste dd { margin: 2px 0 0; font-size: 0.9375rem; line-height: 1.5; }
+
+  /* Archiv */
+  .archiv { margin-top: 40px; border-top: var(--dick); padding-top: 14px; }
+  .archiv ol { display: flex; flex-wrap: wrap; gap: 0; margin: 0; padding: 0; list-style: none; }
+  .archiv a { display: inline-block; padding: 10px 16px 10px 0; margin-right: 16px; font: 600 0.9375rem var(--grot); font-variant-numeric: tabular-nums; text-decoration: none; }
+  .archiv a[aria-current] { text-decoration: underline; text-decoration-thickness: 3px; font-weight: 850; }
+  .zurueck { display: inline-flex; align-items: center; gap: 8px; }
+  .zurueck svg { width: 18px; height: 18px; }
+
+  /* Einstellungen */
+  .einrichtung { max-width: 640px; margin-top: 18px; border-top: var(--dick); padding-top: 14px; }
+  .einrichtung h2 { margin: 0 0 6px; font: 900 2.25rem/1 var(--grot); font-stretch: 65%; text-transform: uppercase; }
+  .einrichtung ol { padding-left: 1.2em; }
+  .einrichtung li { margin-bottom: 0.4em; }
+  .einrichtung form { display: grid; gap: 16px; margin-top: 18px; }
+  .einrichtung label { display: grid; gap: 6px; font: 700 0.9375rem var(--grot); font-stretch: 88%; }
+  .einrichtung input { min-height: 46px; padding: 10px 12px; border: var(--duenn); border-radius: 0; background: var(--papier); font: 450 1rem var(--grot); }
+  .einrichtung input:focus-visible { outline-offset: 0; }
+  .einrichtung .knopfreihe { display: flex; flex-wrap: wrap; gap: 8px; }
+  .klein { font: 500 0.875rem/1.5 var(--grot); color: var(--tinte-2); margin: 0; }
+
+  @media (max-width: 1080px) {
+    .blatt { grid-template-columns: 1fr; }
+    .termine { margin-top: 28px; }
+    .raster { grid-template-columns: 1fr; grid-template-rows: none; }
+    .artikel, .abschnitt { grid-column: 1; grid-row: auto; }
+    .abschnitt.blick { order: -1; margin-bottom: 18px; }
+    .artikel { margin: 0 0 18px; padding-right: 0; border-right: 0; }
+    .lexikon { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .ressorts, .ressorts.mit-aufmacher { grid-template-columns: 1fr; }
+    .ressort, .ressorts .ressort:nth-child(n), .ressorts.mit-aufmacher .ressort { grid-column: auto; padding: 14px 0 22px; border-left: 0; }
+    .datumszeile span:last-child { display: none; }
+    .termin { grid-template-columns: 3rem minmax(0, 1fr); }
+    .termin .wann { grid-column: 2; text-align: left; }
+    .druck { justify-content: flex-start; }
+    /* Kurz-Check vor der Einheit: „Auf einen Blick“ soll im ersten Bildschirm stehen */
+    [data-ansicht="ausgabe"] .kopf .datumszeile { display: none; }
+    [data-ansicht="ausgabe"] .titel { font-size: 1.75rem; }
+    .ausgabe-kopf h1 { font-size: 3rem; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <header><h1>Lernhelfer</h1><button id="zahnrad">Einstellungen</button></header>
-  <form id="einstellungen" hidden>
-    <label>OpenRouter-Key <input id="e-or" type="password" autocomplete="off" required></label>
-    <label>GitHub-Token (nur für das Daten-Repo) <input id="e-gh" type="password" autocomplete="off" required></label>
-    <label>Daten-Repo <input id="e-repo" value="xeonsimp/lernhelfer-daten" autocapitalize="off" required></label>
-    <button class="haupt">Speichern</button>
-    <p class="leise">Wird nur in diesem Browser auf diesem Gerät gespeichert, nie auf GitHub.</p>
-  </form>
-  <div id="app" hidden>
-    <nav id="faecher"></nav>
-    <div class="zeile"><select id="datei" aria-label="Unterlage"></select></div>
-    <div class="zeile">
-      <select id="modell" aria-label="Modell"></select>
-      <button id="lernen" class="haupt">Lernseite erstellen</button>
-    </div>
-    <p id="status" role="status"></p>
-    <article id="seite" hidden></article>
+<div class="seite">
+  <div class="leiste">
+    <nav>
+      <a href="#/" id="nach-titel" hidden class="zurueck"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M11 3L5 9l6 6" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>Titelblatt</a>
+      <a href="#/einstellungen">Einstellungen</a>
+    </nav>
   </div>
-</main>
+
+  <header class="kopf">
+    <p class="titel"><a href="#/">Lernhelfer</a></p>
+    <p class="datumszeile" id="datumszeile"></p>
+    <div class="druck" id="druck">
+      <span class="meta">Druckt mit <a href="#/einstellungen" id="modell-name"></a></span>
+      <button class="knopf voll" id="alle" type="button">Alle Ressorts neu drucken</button>
+    </div>
+  </header>
+  <div class="ticker" id="ticker" hidden tabindex="0" role="button" aria-pressed="false" aria-label="Fristen-Ticker, antippen zum Anhalten"></div>
+  <p id="status" role="status"></p>
+
+  <main>
+    <section id="titelblatt" hidden>
+      <h1 class="sr">Titelblatt</h1>
+      <div class="blatt">
+        <div class="ressorts" id="ressorts"></div>
+        <section class="termine" aria-labelledby="t-kopf">
+          <h2 id="t-kopf">Termine der nächsten zwei Wochen</h2>
+          <div id="tage"></div>
+          <p class="fuss" id="stand"></p>
+        </section>
+      </div>
+    </section>
+
+    <section id="ausgabe" hidden></section>
+
+    <section id="einstellungen" hidden class="einrichtung">
+      <h2>Einrichten</h2>
+      <p class="klein">Neue Unterlagen holt dein PC mit <b>holen.bat</b> aus OLAT. Diese Seite erstellt daraus jede Woche pro Fach eine Ausgabe.</p>
+      <ol class="klein">
+        <li>OpenRouter-Key von openrouter.ai/keys (am besten mit Ausgabelimit).</li>
+        <li>GitHub-Token, der nur das Daten-Repo lesen und schreiben darf (Contents: Read and write).</li>
+        <li>Name des privaten Daten-Repos.</li>
+      </ol>
+      <form id="formular">
+        <label>OpenRouter-Key <input id="e-or" type="password" autocomplete="off" required></label>
+        <label>GitHub-Token <input id="e-gh" type="password" autocomplete="off" required></label>
+        <label>Daten-Repo <input id="e-repo" value="xeonsimp/lernhelfer-daten" autocapitalize="off" autocorrect="off" spellcheck="false" required></label>
+        <label>Modell für neue Ausgaben <select id="modell"></select></label>
+        <div class="knopfreihe">
+          <button class="knopf voll">Speichern</button>
+          <button class="knopf" type="button" id="abmelden">Von diesem Gerät löschen</button>
+        </div>
+        <p class="klein">Wird nur in diesem Browser auf diesem Gerät gespeichert, nie auf GitHub.</p>
+      </form>
+    </section>
+  </main>
+</div>
 <script>
 const MODELLE = {
   'GPT-6 Luna · MAX thinking': { model: 'openai/gpt-6-luna', reasoning: { effort: 'max' } },
   'MiMo V2.6 Pro': { model: 'xiaomi/mimo-v2.6-pro', reasoning: { enabled: true } },
   'GPT-6.1 Sol · xhigh': { model: 'openai/gpt-6.1-sol', reasoning: { effort: 'xhigh' } },
 };
-const auftrag = (fach, datei) => `Du bist Tutor:in für Studierende im 1. Semester Wirtschaftswissenschaften an der Universität Innsbruck.
-Heute ist ${new Date().toLocaleDateString('de-AT')}. Fach: ${fach}. Ausgewählte Unterlage: ${datei}.
+const ORDNUNG = ['BWL', 'VWL', 'Mathematik', 'Englisch'];
+const FRISTEN = new Set(['Abgabe', 'Test']);
 
-Erstelle eine Lernseite in Markdown mit genau diesen Abschnitten:
+const heute = new Date();
+const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const HEUTE = iso(heute);
+const TAG = heute.toLocaleDateString('de-AT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+const UHR = heute.toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit' });
 
-## Zusammenfassung
-Die Kernaussagen der ausgewählten Unterlage, logisch gegliedert und verständlich erklärt. Beispiele aus den Folien übernehmen.
+const auftrag = (fach, tag) => `Du bist Tutor:in für Studierende im 1. Semester Wirtschaftswissenschaften an der Universität Innsbruck.
+Heute ist ${tag}, ${UHR} Uhr (${HEUTE}). Fach: ${fach}.
+Unten stehen ALLE Unterlagen, die in OLAT für dieses Fach liegen: Vorlesungsfolien, Proseminar-Unterlagen und Syllabus.
 
-## Wichtige Begriffe
-Tabelle | Begriff | Definition |. Alle prüfungsrelevanten Begriffe, präzise definiert.
+Schritt 1 (nur für dich, nicht ausgeben): Bestimme mit dem Terminplan im Syllabus und dem heutigen Datum, welche Vorlesungs- und PS-Einheit zuletzt stattgefunden hat, welche Unterlagen dazu gehören und welche Einheiten, Abgaben und Tests als Nächstes kommen. Unterlagen, die dafür nicht relevant sind, ignorierst du.
 
-## Fürs nächste Proseminar
-Was ich auf Basis dieser Unterlage und der PS-Unterlagen fürs nächste Proseminar wissen und vorbereiten muss (Aufgaben, Abgaben, Termine).
+Schritt 2: Schreibe die Wochenausgabe in Markdown mit genau diesen Abschnitten:
 
-## Was mich in der nächsten Einheit erwartet
-Laut Syllabus: nächster Termin, Thema und was ich vorher lesen oder tun sollte.
+## Auf einen Blick
+3–5 Stichpunkte: was zuletzt dran war, was als Nächstes kommt, was bis wann fällig ist. Nenne zum Schluss die verwendeten Unterlagen (Dateinamen).
 
-Stütze dich nur auf die Unterlagen unten. Steht etwas nicht darin, schreib das ehrlich, statt zu raten.`;
+## Zusammenfassung der letzten Einheit
+Ausführlich und verständlich, gegliedert mit ### Zwischenüberschriften. Beispiele aus den Folien übernehmen. Hat noch keine Einheit stattgefunden, fasse die Einführung bzw. den Syllabus zusammen.
+
+## Nächstes Proseminar
+Datum, Thema, was ich wissen und vorbereiten muss, Aufgaben und Abgaben mit Frist.
+
+## Nächste Vorlesung
+Datum, Uhrzeit, Ort, Thema und was ich vorher lesen oder tun sollte. Liegen die Folien schon in OLAT, gib einen kurzen Ausblick.
+
+Schritt 3: Ganz am Ende genau ein Codeblock \`\`\`json mit diesem Aufbau:
+{"schlagzeile": "Zeitungsschlagzeile zur letzten Einheit, höchstens 60 Zeichen",
+ "termine": [{"datum": "JJJJ-MM-TT", "zeit": "HH:MM oder null", "art": "VO, PS, Abgabe, Test oder Sonstiges", "code": "kurzer Code wie VO 05 oder PS EH3", "titel": "worum es geht", "ort": "Raum oder null"}],
+ "begriffe": [{"begriff": "...", "definition": "präzise, 1–2 Sätze"}]}
+In "termine" stehen alle Termine der nächsten 21 Tage ab heute (Vorlesungen, Proseminare, Abgaben, Tests), aber nur solche, deren Datum in den Unterlagen steht oder sich eindeutig aus einem dort genannten festen Wochenrhythmus ergibt. Vermutete Termine gehören nicht in die Liste. In "begriffe" 10–25 prüfungsrelevante Begriffe der letzten Einheit.
+
+Schreib sachlich wie eine Zeitung, ohne Ich-Form und ohne Bemerkungen über dich selbst. Stütze dich nur auf die Unterlagen. Steht etwas nicht darin oder ist der Terminplan unklar, schreib das ehrlich, statt zu raten.`;
 
 const $ = id => document.getElementById(id);
-const merk = (k, v) => { try { return v === undefined ? localStorage.getItem(k) : localStorage.setItem(k, v); } catch { return null; } };
-let cfg = JSON.parse(merk('cfg') || 'null');
-let fach, daten = {}, seiten = {};  // seiten[fach][dateiname] = sha
+const merk = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch { return null; } };
+const el = (tag, attrs = {}, ...kinder) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v; else if (k.startsWith('on')) e[k] = v; else e.setAttribute(k, v === true ? '' : v);
+  }
+  e.append(...kinder.flat().filter(k => k != null && k !== false));
+  return e;
+};
+const markdown = (knoten, s) => {
+  if (window.marked && window.DOMPurify) knoten.innerHTML = DOMPurify.sanitize(marked.parse(s || ''));
+  else knoten.textContent = s || '';
+  return knoten;
+};
+const tageBis = datum => Math.round((Date.parse(datum) - Date.parse(HEUTE)) / 864e5);
+const datum = (d, opt) => new Date(d + 'T12:00').toLocaleDateString('de-AT', opt);
+const kurz = d => datum(d, { weekday: 'short', day: '2-digit', month: '2-digit' });
+const faellig = n => n === 0 ? 'heute' : n === 1 ? 'morgen' : `in ${n} Tagen`;
+const kw = d => { const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); t.setUTCDate(t.getUTCDate() + 4 - (t.getUTCDay() || 7)); return Math.ceil(((t - Date.UTC(t.getUTCFullYear(), 0, 1)) / 864e5 + 1) / 7); };
+const base64 = s => btoa(Array.from(new TextEncoder().encode(s), b => String.fromCharCode(b)).join(''));
+const status = (text, fehler) => { $('status').textContent = text || ''; $('status').classList.toggle('fehler', !!fehler); };
 
-// GitHub-Inhalte des privaten Daten-Repos; roh = Dateiinhalt, sonst JSON (Ordnerliste, Speichern)
+let cfg = JSON.parse(merk('cfg') || 'null');
+const R = {};  // Fach → { ausgaben: [{datum, sha}], cache: {datum: Ausgabe}, quelle, druckt, fehler }
+
 async function gh(pfad, { method = 'GET', body, roh = true } = {}) {
   const r = await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${pfad.split('/').map(encodeURIComponent).join('/')}`, {
     method, body: body && JSON.stringify(body), cache: 'no-store',
     headers: { Authorization: 'Bearer ' + cfg.github, Accept: roh ? 'application/vnd.github.raw+json' : 'application/vnd.github+json' },
   });
   if (r.status === 404 && method === 'GET') return null;
-  if (!r.ok) throw new Error(`GitHub ${r.status} – Token und Daten-Repo in den Einstellungen prüfen`);
+  if (!r.ok) throw new Error(`GitHub antwortet ${r.status}. Token und Daten-Repo in den Einstellungen prüfen.`);
   return roh ? r.text() : r.json();
 }
+let kette = Promise.resolve();  // GitHub verträgt keine gleichzeitigen Commits auf denselben Branch
+const nacheinander = fn => { const p = kette.then(fn); kette = p.catch(() => {}); return p; };
 
 async function openrouter(modell, prompt) {
   const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -104,93 +385,247 @@ async function openrouter(modell, prompt) {
   return j.choices[0].message.content;
 }
 
-const seitenName = datei => datei.replaceAll('/', ' - ') + '.md';
-const base64 = s => btoa(Array.from(new TextEncoder().encode(s), b => String.fromCharCode(b)).join(''));
+function zerlege(text, tag) {
+  const block = text.match(/```json\s*([\s\S]*?)```\s*$/);
+  let daten = {};
+  try { daten = block ? JSON.parse(block[1]) : {}; } catch { daten = {}; }
+  const rest = block ? text.slice(0, block.index) : text;
+  const meta = rest.match(/^\*(.+?)\*\s*\n/);
+  const abschnitte = {};
+  for (const teil of (meta ? rest.slice(meta[0].length) : rest).split(/^## /m).slice(1)) {
+    const [kopf, ...zeilen] = teil.split('\n');
+    abschnitte[kopf.trim()] = zeilen.join('\n').trim();
+  }
+  const liste = x => Array.isArray(x) ? x : [];
+  return {
+    datum: tag, meta: meta?.[1] || '', abschnitte,
+    schlagzeile: String(daten.schlagzeile || ''),
+    termine: liste(daten.termine).filter(t => t && /^\d{4}-\d{2}-\d{2}$/.test(t.datum)),
+    begriffe: liste(daten.begriffe).filter(b => b && b.begriff && b.definition),
+  };
+}
+const abschnitt = (a, anfang) => Object.entries(a.abschnitte).find(([k]) => k.toLowerCase().startsWith(anfang))?.[1] || '';
+
+async function laden() {
+  const namen = ((await gh('faecher', { roh: false })) || []).map(f => f.name.replace(/\.json$/, ''));
+  namen.sort((a, b) => (ORDNUNG.indexOf(a) + 1 || 99) - (ORDNUNG.indexOf(b) + 1 || 99));
+  for (const f of namen) R[f] = { ausgaben: [], cache: {}, quelle: null, druckt: false, fehler: '' };  // feste Reihenfolge, egal was zuerst lädt
+  await Promise.all(namen.map(async f => {
+    const liste = ((await gh(`lernseiten/${f}`, { roh: false })) || [])
+      .filter(s => /^\d{4}-\d{2}-\d{2}\.md$/.test(s.name)).sort((a, b) => b.name.localeCompare(a.name));
+    R[f].ausgaben = liste.map(s => ({ datum: s.name.slice(0, 10), sha: s.sha }));
+    if (liste[0]) await ausgabe(f, R[f].ausgaben[0].datum);
+  }));
+}
+async function ausgabe(f, tag) {
+  return R[f].cache[tag] ??= zerlege(await gh(`lernseiten/${f}/${tag}.md`) || '', tag);
+}
+const aktuell = f => R[f]?.ausgaben[0] && R[f].cache[R[f].ausgaben[0].datum];
+async function quelle(f) { return R[f].quelle ??= JSON.parse(await gh(`faecher/${f}.json`)); }
+
+async function drucke(f) {
+  const r = R[f];
+  if (r.druckt) return;
+  r.druckt = true; r.fehler = ''; zeichne();
+  try {
+    const q = await quelle(f);
+    const prompt = [auftrag(f, TAG), ...q.dateien.map(d => `=== ${d.art.toUpperCase()}: ${d.datei} ===\n${d.text.slice(0, 60000)}`)].join('\n\n');
+    const modell = $('modell').value;
+    const text = `*${modell} · ${datum(HEUTE, { day: '2-digit', month: '2-digit', year: 'numeric' })}*\n\n` + await openrouter(modell, prompt);
+    const alt = r.ausgaben.find(a => a.datum === HEUTE);
+    const antwort = await nacheinander(() => gh(`lernseiten/${f}/${HEUTE}.md`, { method: 'PUT', roh: false, body: { message: `Ausgabe ${f} ${HEUTE}`, content: base64(text), sha: alt?.sha } }));
+    r.ausgaben = [{ datum: HEUTE, sha: antwort.content.sha }, ...r.ausgaben.filter(a => a.datum !== HEUTE)];
+    r.cache[HEUTE] = zerlege(text, HEUTE);
+  } catch (e) {
+    r.fehler = e.message;
+  } finally {
+    r.druckt = false; zeichne();
+  }
+}
+
+/* ---------- Titelblatt ---------- */
+const fristSchluessel = t => `frist:${t.fach}|${t.datum}|${t.code || ''}|${t.titel || ''}`;
+function kommende() {
+  return Object.keys(R).flatMap(f => (aktuell(f)?.termine || []).map(t => ({ ...t, fach: f })))
+    .filter(t => tageBis(t.datum) >= 0 && tageBis(t.datum) <= 14)
+    .sort((a, b) => (a.datum + (a.zeit || '99')).localeCompare(b.datum + (b.zeit || '99')));
+}
+function presse(f) {
+  return el('div', { class: 'presse' }, 'Geht in Druck … App bitte offen lassen.');
+}
+function ressortSpalte(f, aufmacher) {
+  const r = R[f], a = aktuell(f);
+  const blick = a && abschnitt(a, 'auf einen blick').split('\n').find(z => /^\s*[-*]\s/.test(z));
+  return el('article', { class: `ressort${aufmacher ? ' aufmacher' : ''}`, 'aria-busy': r.druckt ? 'true' : null },
+    el('h2', {}, el('a', { href: `#/${encodeURIComponent(f)}` }, f)),
+    a ? [
+      el('p', { class: 'schlagzeile' }, a.schlagzeile || 'Ausgabe ohne Schlagzeile'),
+      blick && el('p', { class: 'anriss' }, blick.replace(/^\s*[-*]\s+/, '').replace(/[*_`]/g, '')),
+      el('p', { class: 'meta' }, `Nr. ${r.ausgaben.length} · ${kurz(a.datum)} · ${a.begriffe.length} Begriffe`),
+    ] : el('p', { class: 'schlagzeile' }, 'Noch keine Ausgabe.'),
+    r.fehler && el('p', { class: 'fehlertext' }, r.fehler),
+    r.druckt ? presse(f) : el('div', { class: 'aktionen' },
+      el('button', { class: a ? 'knopf' : 'knopf voll', type: 'button', onclick: () => drucke(f) }, a ? 'Neu drucken' : 'Erste Ausgabe drucken')),
+  );
+}
+function titelblatt() {
+  const termine = kommende();
+  const naechste = termine.find(t => FRISTEN.has(t.art) && !merk(fristSchluessel(t)));
+  // Aufmacher ist das Fach mit der nächsten offenen Frist
+  const faecher = Object.keys(R).sort((a, b) => (b === naechste?.fach) - (a === naechste?.fach));
+  $('ressorts').classList.toggle('mit-aufmacher', !!naechste && faecher.length === 4);
+  $('ressorts').replaceChildren(...faecher.map(f => ressortSpalte(f, naechste && faecher.length === 4 && f === naechste.fach)));
+  const tage = new Map();
+  for (const t of termine) tage.set(t.datum, [...(tage.get(t.datum) || []), t]);
+  $('tage').replaceChildren(...(termine.length ? [...tage].map(([d, liste]) => el('ul', { class: 'tag' },
+    el('h3', {}, `${datum(d, { weekday: 'long', day: 'numeric', month: 'long' })} · ${faellig(tageBis(d))}`),
+    liste.map(t => {
+      const frist = FRISTEN.has(t.art), fertig = frist && merk(fristSchluessel(t));
+      return el('li', { class: `termin${t === naechste ? ' naechste' : ''}${fertig ? ' erledigt' : ''}` },
+        el('span', { class: 'zeit' }, t.zeit || '–'),
+        el('span', { class: 'was' }, el('b', {}, `${t.fach} ${t.code || t.art}`), t.titel || '', t.ort && el('span', { class: 'ort' }, t.ort)),
+        frist && el('label', { class: 'haken wann' }, el('input', { type: 'checkbox', checked: !!fertig, 'aria-label': `${t.fach} ${t.titel} erledigt`,
+          onchange: e => { merk(fristSchluessel(t), e.target.checked ? '1' : null); titelblatt(); } }), `Frist ${faellig(tageBis(t.datum))}`),
+      );
+    }),
+  )) : [el('p', { class: 'leer' }, Object.values(R).some(r => r.ausgaben.length) ? 'Keine Termine in den nächsten zwei Wochen gefunden.' : 'Sobald Ausgaben gedruckt sind, stehen hier alle Termine und Fristen.')]));
+  ticker(termine.filter(t => FRISTEN.has(t.art) && !merk(fristSchluessel(t))), naechste);
+}
+function ticker(fristen, naechste) {
+  const t = $('ticker');
+  t.hidden = !fristen.length;
+  if (!fristen.length) return;
+  const eintrag = (x, versteckt) => el('span', { class: `ticker-eintrag${x === naechste ? ' naechste' : ''}`, 'aria-hidden': versteckt ? 'true' : null },
+    el('b', {}, `${x.fach} ${x.code || x.art}`), el('span', {}, x.titel || ''), el('span', {}, kurz(x.datum)), el('span', { class: 'wann' }, `Frist ${faellig(tageBis(x.datum))}`));
+  // Jede Hälfte des Bands braucht mindestens ~8 Einträge, sonst reißt die Schleife bei wenigen Fristen auf breiten Bildschirmen ab
+  const runde = Array.from({ length: Math.ceil(8 / fristen.length) }, () => fristen).flat();
+  const band = el('div', { class: 'ticker-band', style: `--dauer:${runde.length * 7}s` },
+    runde.map((x, i) => eintrag(x, i >= fristen.length)), runde.map(x => eintrag(x, true)));
+  t.replaceChildren(band);
+}
+
+/* ---------- Ausgabe ---------- */
+function lexikon(f, begriffe) {
+  const schluessel = b => `lex:${f}:${b.begriff}`;
+  const box = el('section', { class: 'lexikon', 'aria-labelledby': 'lex-kopf' });
+  if (!begriffe.length) { box.append(el('h2', { id: 'lex-kopf' }, 'Lexikon'), el('p', { class: 'leer' }, 'Diese Ausgabe enthält keine Begriffe.')); return box; }
+  let stapel = [...begriffe].sort((a, b) => !!merk(schluessel(a)) - !!merk(schluessel(b)));
+  const karte = el('button', { class: 'karte', type: 'button' });
+  const fortschritt = el('p', { class: 'fortschritt', 'aria-live': 'polite' });
+  const liste = el('dl');
+  const zeige = () => {
+    const gewusst = begriffe.filter(b => merk(schluessel(b))).length;
+    fortschritt.textContent = `${gewusst} von ${begriffe.length} gewusst`;
+    liste.replaceChildren(...begriffe.flatMap(b => [el('dt', { class: merk(schluessel(b)) ? 'gewusst' : null }, b.begriff), el('dd', {}, b.definition)]));
+    const b = stapel[0];
+    karte.classList.remove('um');
+    karte.setAttribute('aria-label', `Karteikarte ${b.begriff}. Tippen zum Umdrehen.`);
+    karte.replaceChildren(el('span', { class: 'innen' },
+      el('span', { class: 'seite-v' }, el('span', { class: 'begriff' }, b.begriff), el('span', { class: 'hinweis' }, 'Tippen zum Umdrehen')),
+      el('span', { class: 'seite-h', 'aria-hidden': 'true' }, el('span', { class: 'definition' }, b.definition))));
+  };
+  karte.onclick = () => { const um = karte.classList.toggle('um'); karte.querySelector('.seite-h').setAttribute('aria-hidden', String(!um)); };
+  const weiter = gewusst => {
+    const b = stapel.shift();
+    merk(schluessel(b), gewusst ? '1' : null);
+    stapel.push(b);
+    zeige();
+  };
+  const zuruecksetzen = () => { begriffe.forEach(x => merk(schluessel(x), null)); stapel = [...begriffe]; zeige(); };
+  box.append(
+    el('div', {}, el('h2', { id: 'lex-kopf' }, 'Lexikon'), fortschritt, karte,
+      el('div', { class: 'karten-aktionen' },
+        el('button', { class: 'knopf', type: 'button', onclick: () => weiter(false) }, 'Nochmal'),
+        el('button', { class: 'knopf voll', type: 'button', onclick: () => weiter(true) }, 'Gewusst'))),
+    el('details', { class: 'liste' }, el('summary', {}, 'Alle Begriffe als Liste'), liste,
+      el('p', {}, el('button', { class: 'knopf', type: 'button', onclick: zuruecksetzen }, 'Fortschritt zurücksetzen'))),
+  );
+  zeige();
+  return box;
+}
+async function ausgabeZeigen(f, tag) {
+  const r = R[f];
+  const sektion = $('ausgabe');
+  if (!r.ausgaben.length) {
+    sektion.replaceChildren(...[el('header', { class: 'ausgabe-kopf' }, el('h1', {}, f), el('p', { class: 'schlagzeile' }, 'Noch keine Ausgabe.')),
+      r.druckt ? presse(f) : el('p', {}, el('button', { class: 'knopf voll', type: 'button', onclick: () => drucke(f) }, 'Erste Ausgabe drucken')),
+      r.fehler && el('p', { class: 'fehlertext' }, r.fehler)].filter(Boolean));
+    return;
+  }
+  tag = tag && r.ausgaben.some(x => x.datum === tag) ? tag : r.ausgaben[0].datum;
+  const a = await ausgabe(f, tag);
+  const teil = (klasse, titel, anfang) => el('section', { class: `abschnitt ${klasse}` }, el('h2', {}, titel), markdown(el('div', { class: 'text' }), abschnitt(a, anfang) || 'Nicht in dieser Ausgabe.'));
+  sektion.replaceChildren(...[
+    el('header', { class: 'ausgabe-kopf' },
+      el('h1', {}, f),
+      el('p', { class: 'datumszeile' }, el('span', {}, `Ausgabe vom ${datum(tag, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`), el('span', {}, a.meta.split(' · ')[0] || '')),
+      a.schlagzeile && el('p', { class: 'schlagzeile' }, a.schlagzeile)),
+    r.druckt && presse(f),
+    r.fehler && el('p', { class: 'fehlertext' }, r.fehler),
+    el('div', { class: 'raster' },
+      el('article', { class: 'artikel' }, markdown(el('div', { class: 'text' }), abschnitt(a, 'zusammenfassung') || 'Keine Zusammenfassung in dieser Ausgabe.')),
+      teil('blick', 'Auf einen Blick', 'auf einen blick'),
+      teil('', 'Nächstes Proseminar', 'nächstes proseminar'),
+      teil('', 'Nächste Vorlesung', 'nächste vorlesung')),
+    lexikon(f, a.begriffe),
+    el('section', { class: 'archiv', 'aria-labelledby': 'arch-kopf' }, el('h2', { id: 'arch-kopf' }, 'Alle Ausgaben'),
+      el('ol', {}, r.ausgaben.map(x => el('li', {}, el('a', { href: `#/${encodeURIComponent(f)}/${x.datum}`, 'aria-current': x.datum === tag ? 'page' : null }, datum(x.datum, { day: '2-digit', month: '2-digit', year: 'numeric' })))))),
+    el('p', {}, el('button', { class: 'knopf voll', type: 'button', disabled: r.druckt, onclick: () => drucke(f) }, `Neue Ausgabe für ${f} drucken`)),
+  ].filter(Boolean));
+}
+
+/* ---------- Ansichten ---------- */
+let ansicht = '';
+async function zeichne() {
+  const [teil, tag] = location.hash.replace(/^#\/?/, '').split('/').map(decodeURIComponent);
+  const neu = !cfg || teil === 'einstellungen' ? 'einstellungen' : R[teil] ? 'ausgabe' : 'titelblatt';
+  for (const id of ['titelblatt', 'ausgabe', 'einstellungen']) $(id).hidden = id !== neu;
+  document.body.dataset.ansicht = neu;
+  $('druck').hidden = neu !== 'titelblatt';
+  $('nach-titel').hidden = neu === 'titelblatt';
+  $('modell-name').textContent = $('modell').value;
+  $('alle').disabled = Object.values(R).some(r => r.druckt) || !Object.keys(R).length;
+  if (neu === 'einstellungen') {
+    $('e-or').value = cfg?.openrouter || ''; $('e-gh').value = cfg?.github || ''; $('e-repo').value = cfg?.repo || 'xeonsimp/lernhelfer-daten';
+    $('abmelden').hidden = !cfg;
+  } else if (neu === 'ausgabe') {
+    try { await ausgabeZeigen(teil, tag); } catch (e) { status(e.message, true); }
+  } else titelblatt();
+  if (neu !== ansicht) { ansicht = neu; scrollTo(0, 0); }
+}
 
 async function start() {
-  $('einstellungen').hidden = !!cfg;
-  $('app').hidden = !cfg;
+  $('datumszeile').replaceChildren(el('span', {}, TAG), el('span', {}, `Kalenderwoche ${kw(heute)}`), el('span', {}, 'Universität Innsbruck'));
+  if (!$('modell').options.length) Object.keys(MODELLE).forEach(m => $('modell').add(new Option(m, m)));
+  if (MODELLE[merk('modell')]) $('modell').value = merk('modell');
+  await zeichne();
   if (!cfg) return;
-  if (!$('modell').options.length) {
-    Object.keys(MODELLE).forEach(m => $('modell').add(new Option(m, m)));
-    if (MODELLE[merk('modell')]) $('modell').value = merk('modell');
-  }
-  $('status').textContent = 'Lade Fächer …';
-  const faecher = ((await gh('faecher', { roh: false })) || []).map(f => f.name.replace(/\.json$/, ''));
-  if (!faecher.length) return 'Noch keine Daten – am PC einmal holen.bat starten.';
-  $('faecher').replaceChildren(...faecher.map(f => {
-    const b = document.createElement('button');
-    b.textContent = f;
-    b.onclick = () => los('Lade ' + f + ' …', () => zeigeFach(f));
-    return b;
-  }));
-  return zeigeFach(faecher.includes(merk('fach')) ? merk('fach') : faecher[0]);
+  status('Lade die Ausgaben …');
+  try { await laden(); status(''); } catch (e) { status(e.message, true); }
+  await zeichne();
+  const staende = await Promise.all(Object.keys(R).map(f => quelle(f).then(q => q.stand).catch(() => null)));
+  const stand = staende.filter(Boolean).sort().pop();
+  if (stand) $('stand').textContent = `Unterlagen aus OLAT, Stand ${stand}. Neue holt der PC mit holen.bat.`;
 }
 
-async function zeigeFach(f) {
-  fach = f;
-  merk('fach', f);
-  for (const b of $('faecher').children) b.setAttribute('aria-pressed', b.textContent === f);
-  daten[f] ??= JSON.parse(await gh(`faecher/${f}.json`));
-  seiten[f] ??= Object.fromEntries(((await gh(`lernseiten/${f}`, { roh: false })) || []).map(s => [s.name, s.sha]));
-  const liste = daten[f].dateien;
-  $('datei').replaceChildren(...liste.map(d => new Option((seiten[f][seitenName(d.datei)] ? '✓ ' : '') + d.datei, d.datei)));
-  $('datei').value = (liste.filter(d => d.art === 'folien').at(-1) || liste.at(-1))?.datei ?? '';
-  await zeigeSeite();
-  return `Stand OLAT: ${daten[f].stand} – neue Folien holt der PC mit holen.bat.`;
-}
-
-async function zeigeSeite() {
-  const name = seitenName($('datei').value);
-  const da = !!seiten[fach]?.[name];
-  $('lernen').textContent = da ? 'Neu erstellen' : 'Lernseite erstellen';
-  $('seite').hidden = !da;
-  if (!da) return;
-  const md = await gh(`lernseiten/${fach}/${name}`);
-  if (window.marked && window.DOMPurify) $('seite').innerHTML = DOMPurify.sanitize(marked.parse(md));
-  else $('seite').textContent = md;
-}
-
-async function lernen() {
-  const datei = $('datei').value, modell = $('modell').value, name = seitenName(datei);
-  const teile = [auftrag(fach, datei)];
-  for (const d of daten[fach].dateien) {
-    if (d.datei === datei) teile.splice(1, 0, `=== AUSGEWÄHLTE UNTERLAGE: ${d.datei} ===\n${d.text}`);
-    // ponytail: harte Kürzung pro Kontext-Datei; Auswahl nach Datum, falls PS-Ordner sehr groß werden
-    else if (d.art !== 'folien') teile.push(`=== ${d.art.toUpperCase()}: ${d.datei} ===\n${d.text.slice(0, 15000)}`);
-  }
-  const md = `*${modell} · ${new Date().toLocaleDateString('de-AT')}*\n\n` + await openrouter(modell, teile.join('\n\n'));
-  const r = await gh(`lernseiten/${fach}/${name}`, { method: 'PUT', roh: false, body: { message: `Lernseite ${fach}: ${datei}`, content: base64(md), sha: seiten[fach][name] } });
-  seiten[fach][name] = r.content.sha;
-  $('datei').selectedOptions[0].text = '✓ ' + datei;
-  await zeigeSeite();
-  return 'Fertig und gespeichert.';
-}
-
-async function los(text, fn) {
-  const felder = $('app').querySelectorAll('button, select');
-  felder.forEach(e => e.disabled = true);
-  $('status').textContent = text;
-  try { $('status').textContent = (await fn()) || ''; }
-  catch (e) { $('status').textContent = 'Fehler: ' + e.message; }
-  finally { felder.forEach(e => e.disabled = false); }
-}
-
-$('datei').onchange = () => los('Lade Lernseite …', zeigeSeite);
+window.onhashchange = zeichne;
 $('modell').onchange = () => merk('modell', $('modell').value);
-$('lernen').onclick = () => los(`${$('modell').value} arbeitet … das kann ein paar Minuten dauern. App bitte so lange offen lassen.`, lernen);
-$('zahnrad').onclick = () => {
-  $('e-or').value = cfg?.openrouter || ''; $('e-gh').value = cfg?.github || ''; $('e-repo').value = cfg?.repo || 'xeonsimp/lernhelfer-daten';
-  $('einstellungen').hidden = !$('einstellungen').hidden;
+$('ticker').onclick = $('ticker').onkeydown = e => {
+  if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return;
+  e.preventDefault();
+  $('ticker').setAttribute('aria-pressed', String($('ticker').classList.toggle('steht')));
 };
-$('einstellungen').onsubmit = e => {
+$('alle').onclick = () => Promise.all(Object.keys(R).map(drucke));
+$('formular').onsubmit = e => {
   e.preventDefault();
   cfg = { openrouter: $('e-or').value.trim(), github: $('e-gh').value.trim(), repo: $('e-repo').value.trim() };
   merk('cfg', JSON.stringify(cfg));
-  daten = {}; seiten = {};
-  los('', start);
+  for (const k of Object.keys(R)) delete R[k];
+  location.hash = '#/';
+  start();
 };
-los('', start);
+$('abmelden').onclick = () => { merk('cfg', null); cfg = null; for (const k of Object.keys(R)) delete R[k]; zeichne(); };
+start();
 </script>
 </body>
 </html>
