@@ -34,6 +34,7 @@
     --sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif; --serif: "Source Serif 4", Georgia, serif;
     --r-s: 8px; --r: 10px; --r-l: 14px; --r-xl: 20px;
     --tabs: 58px;
+    --f-mathe: #0f766e; --f-vwl: #b45309; --f-bwl: #7c3aed; --f-englisch: #be185d;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
@@ -46,6 +47,7 @@
       --schatten: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -8px rgb(0 0 0 / 0.6);
       --schatten-gross: 0 2px 6px rgb(0 0 0 / 0.5), 0 28px 64px -16px rgb(0 0 0 / 0.75);
       --haken: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%230b0f1f' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      --f-mathe: #5eead4; --f-vwl: #fbbf24; --f-bwl: #c4b5fd; --f-englisch: #f9a8d4;
       color-scheme: dark;
     }
   }
@@ -67,6 +69,11 @@
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .sprung { position: fixed; left: 12px; top: 12px; z-index: 50; padding: 10px 14px; border-radius: var(--r); background: var(--akzent); color: var(--auf-akzent); font-weight: 650; transform: translateY(-160%); }
   .sprung:focus { transform: none; }
+  /* Jedes Fach hat eine Farbe und ein Zeichen: nur zum Wiedererkennen, Handlung bleibt Königsblau */
+  [data-fach="Mathematik"] { --fach: var(--f-mathe); } [data-fach="VWL"] { --fach: var(--f-vwl); }
+  [data-fach="BWL"] { --fach: var(--f-bwl); } [data-fach="Englisch"] { --fach: var(--f-englisch); }
+  .glyph { display: grid; place-items: center; width: 36px; height: 36px; flex: none; border-radius: 10px; background: color-mix(in srgb, var(--fach, var(--akzent)) 13%, var(--bg)); color: var(--fach, var(--akzent-text)); }
+  .glyph svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
   svg.ic { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
 
   /* App-Gerüst: Seitenleiste ab 900px, darunter eine Leiste unten wie bei iPhone-Apps */
@@ -99,8 +106,7 @@
   .navi a[aria-current] { background: var(--bg); color: var(--text); box-shadow: 0 0 0 1px var(--linie), 0 1px 2px rgb(18 22 32 / 0.06); }
   .navi a[aria-current] svg.ic { color: var(--akzent-text); }
   .navi .punkt { display: grid; place-items: center; width: 18px; height: 18px; flex: none; }
-  .navi .punkt::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--linie-2); }
-  .navi a[aria-current] .punkt::before { background: var(--akzent); }
+  .navi .punkt::before { content: ""; width: 8px; height: 8px; border-radius: 3px; background: var(--fach, var(--linie-2)); }
   .navi .laeuft { width: 12px; height: 12px; margin-left: auto; border: 2px solid var(--linie-2); border-top-color: var(--akzent); border-radius: 50%; animation: drehen 0.9s linear infinite; }
   @keyframes drehen { to { transform: rotate(1turn); } }
   .navi .gruppe { margin: 18px 10px 6px; color: var(--text-3); font: 600 0.75rem/1 var(--sans); }
@@ -183,9 +189,11 @@
 
   /* Heute */
   .heute-raster { display: grid; gap: 32px; }
+  .heute-spalte { display: contents; }
+  #naechstes { order: 1; } .h-woche { order: 2; } .h-faecher { order: 3; } .h-chat { order: 4; }
   @media (min-width: 1100px) {
-    .heute-raster { grid-template-columns: minmax(0, 1fr) minmax(320px, 400px); grid-template-rows: auto 1fr; grid-template-areas: "faecher fristen" "faecher termine"; gap: 32px 40px; align-items: start; }
-    #naechstes { grid-area: fristen; } .h-faecher { grid-area: faecher; } .h-termine { grid-area: termine; }
+    .heute-raster { grid-template-columns: minmax(0, 1fr) minmax(320px, 380px); gap: 40px; align-items: start; }
+    .heute-spalte { display: grid; gap: 36px; min-width: 0; }
     #naechstes .frist { grid-template-columns: auto minmax(0, 1fr); }
     #naechstes .frist .pille { grid-column: 2; justify-self: start; margin-top: 2px; }
   }
@@ -197,23 +205,38 @@
   .frist .titel { font-weight: 600; overflow-wrap: anywhere; }
   @media (hover: hover) { .frist button.was:hover .titel { text-decoration: underline; text-underline-offset: 0.2em; } }
   .frist.erledigt .titel { color: var(--text-3); text-decoration: line-through; }
-  .fach { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; padding: 14px 16px; background: var(--bg); transition: background-color 0.15s; }
-  @media (hover: hover) { .fach:hover { background: var(--bg-2); } }
-  .fach > div { display: grid; gap: 3px; min-width: 0; }
-  .fach h3 { margin: 0; font: 650 1.0625rem/1.3 var(--sans); }
-  .fach h3 a { color: var(--text); }
-  .fach h3 a::after { content: ""; position: absolute; inset: 0; }
+  .h-faecher { container: faecher / inline-size; }
+  .faecher-raster { display: grid; gap: 12px; }
+  @container faecher (min-width: 540px) { .faecher-raster { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .fach { position: relative; display: grid; grid-template-rows: auto 1fr auto; gap: 10px; min-width: 0; padding: 16px 18px 14px; border: 1px solid var(--linie); border-radius: var(--r-l); background: var(--bg); transition: border-color 0.15s, box-shadow 0.15s; }
+  @media (hover: hover) { .fach:hover { border-color: var(--linie-2); box-shadow: var(--schatten); } }
+  .fach:has(a:focus-visible) { outline: 2px solid var(--akzent); outline-offset: 2px; }
+  .fach-kopf { display: flex; align-items: center; gap: 12px; }
+  .fach-text { display: grid; gap: 4px; align-content: start; min-width: 0; }
+  .fach h3 { flex: 1; margin: 0; font: 650 1.0625rem/1.3 var(--sans); }
+  .fach h3 a { color: var(--text); outline: none; }
+  .fach h3 a::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
   .fach h3 a:hover { text-decoration: none; }
-  .fach .schlagzeile { margin: 0; font: 500 1rem/1.4 var(--serif); }
+  .fach .schlagzeile { margin: 0; font: 550 1.0625rem/1.35 var(--serif); }
   .fach .anriss { margin: 0; color: var(--text-2); font-size: 0.875rem; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .fach .presse, .fach .fehlertext { grid-column: 1 / -1; }
   .willkommen { padding: 24px; border-radius: var(--r-l); background: var(--bg-2); }
   .willkommen h3 { margin: 0 0 6px; font: 650 1.25rem/1.3 var(--sans); }
-  .termine-feld { padding: 16px 18px 8px; border-radius: var(--r-l); background: var(--bg-2); }
+  /* Diese Woche: fünf Tage zum Antippen, darunter der gewählte Tag */
+  .woche-feld { padding: 12px 14px 6px; border-radius: var(--r-l); background: var(--bg-2); }
+  .tagleiste { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+  .tagknopf { display: grid; justify-items: center; gap: 3px; min-height: 66px; padding: 8px 2px 7px; border: 0; border-radius: var(--r); background: none; color: var(--text-2); cursor: pointer; font-variant-numeric: tabular-nums; transition: background-color 0.15s; }
+  .tagknopf .wt { font: 600 0.75rem/1.2 var(--sans); }
+  .tagknopf .tg { color: var(--text); font: 650 1.1875rem/1.1 var(--sans); }
+  .tagknopf.heute :is(.wt, .tg) { color: var(--akzent-text); }
+  @media (hover: hover) { .tagknopf:hover { background: var(--bg-3); } }
+  .tagknopf[aria-pressed="true"] { background: var(--bg); box-shadow: 0 0 0 1px var(--linie), 0 1px 2px rgb(18 22 32 / 0.06); }
+  .tagknopf .punkte { display: flex; gap: 3px; height: 6px; }
+  .tagknopf .punkte i { width: 6px; height: 6px; border-radius: 50%; background: var(--fach, var(--text-3)); }
+  .tag-titel { margin: 14px 2px 2px; color: var(--text-2); font: 600 0.8125rem/1.3 var(--sans); }
+  .woche-feld .leer { padding: 8px 2px 12px; font-size: 0.875rem; }
   .tag { margin: 0; padding: 0; list-style: none; }
-  .tag + .tag { margin-top: 16px; }
-  .tag h3 { margin: 0 0 2px; color: var(--text-2); font: 600 0.8125rem/1.3 var(--sans); font-variant-numeric: tabular-nums; }
-  .termin { display: grid; grid-template-columns: 3rem minmax(0, 1fr) auto; gap: 2px 10px; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--linie); font-size: 0.875rem; line-height: 1.4; }
+  .termin { position: relative; display: grid; grid-template-columns: 3rem minmax(0, 1fr) auto; gap: 2px 10px; align-items: baseline; padding: 8px 0 8px 12px; border-bottom: 1px solid var(--linie); font-size: 0.875rem; line-height: 1.4; }
+  .termin::before { content: ""; position: absolute; left: 0; top: 9px; bottom: 9px; width: 3px; border-radius: 3px; background: var(--fach, var(--linie-2)); }
   .tag .termin:last-child { border-bottom: 0; }
   .termin .zeit { color: var(--text-2); font-weight: 600; font-variant-numeric: tabular-nums; }
   .termin button.was { min-width: 0; margin: 0; padding: 0; border: 0; background: none; color: var(--text); text-align: left; cursor: pointer; overflow-wrap: anywhere; }
@@ -221,6 +244,16 @@
   .termin .was b { margin-right: 6px; font-weight: 650; }
   .termin .ort { display: block; color: var(--text-3); font-size: 0.8125rem; }
   .termin.erledigt .was { color: var(--text-3); text-decoration: line-through; }
+  /* Frag den Lernhelfer */
+  .assistent { padding: 16px 18px 18px; border: 1px solid var(--linie); border-radius: var(--r-l); background: linear-gradient(180deg, var(--akzent-flaeche), var(--bg) 9rem); }
+  .assistent .fragen { max-width: none; }
+  .assistent .verlauf { margin-top: 4px; }
+  .vorschlaege { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+  .vorschlag { min-height: 36px; padding: 6px 12px; border: 1px solid var(--linie-2); border-radius: 999px; background: var(--bg); color: var(--text-2); font-weight: 550; font-size: 0.875rem; text-align: left; cursor: pointer; transition: border-color 0.15s, color 0.15s; }
+  @media (hover: hover) { .vorschlag:hover { border-color: var(--akzent); color: var(--akzent-text); } }
+  .h-chat h2 { display: flex; align-items: center; gap: 10px; }
+  .h-chat h2 .glyph { width: 30px; height: 30px; border-radius: 9px; }
+  .h-chat h2 .glyph svg { width: 18px; height: 18px; }
   .abgleich { margin: 32px 0 0; color: var(--text-3); font-size: 0.8125rem; }
   .abgleich.warnung { color: var(--warn); font-weight: 600; }
   .abgleich[data-kosten] { display: flex; flex-wrap: wrap; gap: 0 14px; margin-top: 8px; }
@@ -249,6 +282,7 @@
   /* Ausgabe eines Fachs */
   #ausgabe .ausgabe-kopf { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 24px; margin-bottom: 20px; }
   #ausgabe .ausgabe-kopf > div:first-child { min-width: 0; max-width: 46rem; }
+  .titel-zeile { display: flex; align-items: center; gap: 12px; }
   #ausgabe .ausgabe-kopf .schlagzeile { margin: 10px 0 0; color: var(--text); font: 600 1.5rem/1.25 var(--serif); letter-spacing: -0.01em; }
   @media (min-width: 900px) { #ausgabe .ausgabe-kopf .schlagzeile { font-size: 1.75rem; } }
   .quellen { margin: 0 0 8px; color: var(--text-3); font-size: 0.8125rem; }
@@ -357,20 +391,23 @@
 
   /* Kalender */
   .kal-nav { display: flex; flex-wrap: wrap; gap: 8px; }
-  .woche { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border: 1px solid var(--linie); border-radius: var(--r-l); overflow: hidden; }
+  .woche { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border: 1px solid var(--linie); border-radius: var(--r-l); overflow: hidden; }
   .kal-tag { min-width: 0; min-height: 14rem; padding: 10px 8px 12px; }
   .kal-tag + .kal-tag { border-left: 1px solid var(--linie); }
   .kal-tag h2 { margin: 0 0 8px; padding: 0 2px; color: var(--text-2); font: 600 0.8125rem/1.3 var(--sans); font-variant-numeric: tabular-nums; }
   .kal-tag.heute { background: color-mix(in srgb, var(--akzent-flaeche) 55%, var(--bg)); }
   .kal-tag.heute h2 { color: var(--akzent-text); }
-  .kal-eintrag { display: grid; gap: 1px; width: 100%; margin: 0 0 6px; padding: 7px 8px; border: 0; border-radius: var(--r-s); background: var(--bg-2); color: var(--text); text-align: left; cursor: pointer; font-size: 0.8125rem; line-height: 1.3; overflow-wrap: anywhere; transition: background-color 0.15s; }
+  .kal-eintrag { display: grid; align-content: start; gap: 1px; width: 100%; min-width: 0; margin: 0 0 6px; padding: 7px 8px 7px 9px; border: 0; border-left: 3px solid var(--fach, var(--linie-2)); border-radius: 4px var(--r-s) var(--r-s) 4px; background: var(--bg-2); color: var(--text); text-align: left; cursor: pointer; font-size: 0.8125rem; line-height: 1.3; overflow-wrap: break-word; hyphens: auto; transition: background-color 0.15s; }
+  .kal-block { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 4px; margin: 0 0 6px; }
+  .kal-block .kal-eintrag { margin: 0; }
+  .kal-eintrag .kal-titel { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   @media (hover: hover) { .kal-eintrag:hover { background: var(--bg-3); } }
   .kal-tag.heute .kal-eintrag { background: var(--bg); }
   .kal-eintrag .zeit { color: var(--text-2); font-weight: 650; font-variant-numeric: tabular-nums; }
   .kal-eintrag .kal-titel { font-weight: 550; }
   .kal-eintrag b { color: var(--text-3); font-size: 0.75rem; font-weight: 600; }
-  .kal-eintrag.frist { background: var(--akzent-flaeche); }
-  .kal-eintrag.frist b { color: var(--akzent-text); }
+  .kal-eintrag.ist-frist { background: var(--akzent-flaeche); }
+  .kal-eintrag.ist-frist b { color: var(--akzent-text); }
   .kal-panels { display: grid; gap: 16px; margin-top: 32px; }
   @media (min-width: 900px) { .kal-panels { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .kal-panel { padding: 18px 20px; border: 1px solid var(--linie); border-radius: var(--r-l); }
@@ -436,7 +473,28 @@
   .testzeile a:hover { text-decoration: none; }
   .testzeile .ort { display: block; color: var(--text-3); font-size: 0.8125rem; font-weight: 400; }
   .testzeile .wann { justify-self: end; }
-  .aufgabentext { max-height: 60vh; margin: 12px 0 0; padding: 16px 18px; overflow: auto; border-radius: var(--r-l); background: var(--bg-2); white-space: pre-wrap; overflow-wrap: anywhere; font: 400 0.9375rem/1.6 var(--sans); overscroll-behavior: contain; }
+  .aufgabentext { margin: 12px 0 0; padding: 16px 18px; overflow-x: auto; border-radius: var(--r-l); background: var(--bg-2); white-space: pre-wrap; overflow-wrap: break-word; font: 400 1rem/1.65 var(--sans); }
+  .aufgabentext math { font-size: 1.1em; }
+  .aufgabentext .nw { white-space: nowrap; }
+  .eingabe { display: inline-block; min-width: 4.5em; min-height: 1.6em; margin: 0 2px; padding: 0 6px; border: 1.5px solid var(--linie-2); border-radius: 6px; background: var(--bg); vertical-align: middle; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.5; }
+  .hinweise { margin: -12px 0 20px; }
+  .hinweise .aufgabentext { font-size: 0.875rem; }
+  .frage-karte { padding: 20px; border: 1px solid var(--linie); border-radius: var(--r-l); scroll-margin-top: 16px; }
+  .fragen-nav { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; }
+  .fragen-nav button { position: relative; min-width: 40px; min-height: 40px; padding: 0 10px; border: 1px solid var(--linie-2); border-radius: var(--r); background: var(--bg); color: var(--text-2); font: 650 0.9375rem/1 var(--sans); font-variant-numeric: tabular-nums; cursor: pointer; }
+  @media (hover: hover) { .fragen-nav button:hover { background: var(--bg-2); } }
+  .fragen-nav button[aria-current] { border-color: var(--akzent); background: var(--akzent); color: var(--auf-akzent); }
+  .fragen-nav button.geloest::after { content: ""; position: absolute; top: -4px; right: -4px; width: 12px; height: 12px; border: 2px solid var(--bg); border-radius: 50%; background: var(--ok); }
+  .frage-kopf { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; }
+  .frage-kopf h2 { margin: 0; font-size: 1.25rem; }
+  .frage-kopf h2:focus { outline: none; }
+  .loeser-teil { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--linie); }
+  .loeser-teil h3 { margin: 0 0 4px; font: 650 1rem/1.3 var(--sans); }
+  .loeser-teil .rueck-kopf { margin-top: 24px; }
+  .loeser-teil .aufgabe { margin-top: 14px; padding: 0; border: 0; }
+  .schritte-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--linie); }
+  .schritte-nav .pfeil { background: currentColor; }
+  .schritte-nav .pfeil.links { transform: scaleX(-1); }
 
   /* Anleitung: Lesen */
   .anleitung { max-width: 760px; }
@@ -461,8 +519,8 @@
     .testzeile .wann { justify-self: start; margin-top: 4px; }
     .frist { grid-template-columns: auto minmax(0, 1fr); }
     .frist .pille { grid-column: 2; justify-self: start; margin-top: 2px; }
-    .aufgabentext { max-height: none; }  /* am Handy kein Scrollen im Scrollen */
-    .schritt, .aufgabe { padding: 16px; }
+    .schritt, .aufgabe, .frage-karte { padding: 16px; }
+    .aufgabentext { padding: 14px; }
   }
 </style>
 </head>
@@ -501,18 +559,27 @@
         </div>
       </header>
       <div class="heute-raster">
-        <section aria-labelledby="n-kopf" id="naechstes">
-          <div class="block-kopf"><h2 id="n-kopf">Als Nächstes</h2><p class="meta">Fristen der nächsten zwei Wochen</p></div>
-          <ul class="liste-rahmen" id="fristen"></ul>
-        </section>
-        <section aria-labelledby="f-kopf" class="h-faecher">
-          <div class="block-kopf"><h2 id="f-kopf">Fächer</h2><p class="meta">Antippen für die Wochenausgabe</p></div>
-          <div class="liste-rahmen" id="ressorts"></div>
-        </section>
-        <section aria-labelledby="t-kopf" class="h-termine">
-          <div class="block-kopf"><h2 id="t-kopf">Termine</h2><a href="#/kalender" class="meta">Ganzer Kalender</a></div>
-          <div class="termine-feld" id="tage"></div>
-        </section>
+        <div class="heute-spalte">
+          <section aria-labelledby="f-kopf" class="h-faecher">
+            <div class="block-kopf"><h2 id="f-kopf">Fächer</h2><p class="meta">Antippen für die Wochenausgabe</p></div>
+            <div id="ressorts"></div>
+          </section>
+          <section aria-labelledby="c-kopf" class="h-chat">
+            <div class="block-kopf"><h2 id="c-kopf"><span class="glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3.5l1.9 5.1 5.1 1.9-5.1 1.9L12 17.5l-1.9-5.1L5 10.5l5.1-1.9z"/><path d="M18.5 15.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg></span>Frag den Lernhelfer</h2>
+              <p class="meta">Kennt Stundenplan, Fristen, Tests und alle Ausgaben</p></div>
+            <div class="assistent" id="assistent"></div>
+          </section>
+        </div>
+        <div class="heute-spalte">
+          <section aria-labelledby="n-kopf" id="naechstes">
+            <div class="block-kopf"><h2 id="n-kopf">Als Nächstes</h2><p class="meta">Fristen der nächsten zwei Wochen</p></div>
+            <ul class="liste-rahmen" id="fristen"></ul>
+          </section>
+          <section aria-labelledby="t-kopf" class="h-woche">
+            <div class="block-kopf"><h2 id="t-kopf">Diese Woche</h2><a href="#/kalender" class="meta">Ganzer Kalender</a></div>
+            <div class="woche-feld" id="tage"></div>
+          </section>
+        </div>
       </div>
       <p class="abgleich" id="stand"></p>
       <p class="abgleich nur-schmal" data-kosten></p>
@@ -613,7 +680,7 @@
           <li><b>Lexikon:</b> die wichtigsten Begriffe als Karteikarten zum Abfragen.</li>
           <li><b>Fragen zur Ausgabe:</b> ein kurzer Chat, der nur die Unterlagen dieses Fachs kennt.</li>
         </ul>
-        <p>Dazu kommen die Seite <b>Heute</b> mit allen Terminen und Fristen der nächsten zwei Wochen, ein Kalender, der deine Fristen auch ins iPad übernimmt, und ein Überblick über alle Onlinetests. Was in den Unterlagen nicht steht, erfindet der Lernhelfer nicht, sondern sagt es.</p>
+        <p>Dazu kommen die Seite <b>Heute</b> mit deinen Fristen, der Woche und einem Chat für alle Fragen rund ums Studium, ein Kalender mit deinem Stundenplan, der Fristen auch ins iPad übernimmt, und ein Überblick über alle Onlinetests. Was in den Unterlagen nicht steht, erfindet der Lernhelfer nicht, sondern sagt es.</p>
 
         <h2 id="a-brauchst">Was du brauchst</h2>
         <ul>
@@ -665,10 +732,11 @@
 
         <h2 id="a-termine">Termine und Kalender</h2>
         <ul>
-          <li><b>Heute</b> zeigt alle Termine der nächsten zwei Wochen. Fristen (Abgaben, Tests) stehen oben unter „Als Nächstes“ und lassen sich abhaken.</li>
-          <li>Der <b>Kalender</b> zeigt Woche für Woche alles auf einmal.</li>
-          <li><b>Ins iPad übernehmen:</b> Im Kalender auf „Neue Termine übernehmen“ tippen, die Datei öffnen und „Alle hinzufügen“ wählen. Das iPad erinnert dann einen Tag und zwei Stunden vor jeder Frist, auch wenn der Lernhelfer zu ist.</li>
-          <li><b>Eigene Kalender:</b> Den Stundenplan aus LFU:online kannst du als .ics-Datei herunterladen und im Kalender mit „ICS-Datei hinzufügen“ hochladen. Er erscheint dann auf allen Geräten.</li>
+          <li><b>Stundenplan:</b> Vorlesungen und Proseminare kommen nur aus LFU:online. Dort pro Lehrveranstaltung die .ics-Datei herunterladen und im Kalender mit „ICS-Datei hinzufügen“ hochladen. Sie erscheinen dann auf allen Geräten, mit dem Thema der Einheit aus der Wochenausgabe.</li>
+          <li><b>Fristen</b> (Abgaben, Onlinetests) kommen aus den Wochenausgaben. Auf <b>Heute</b> stehen sie unter „Als Nächstes“ und lassen sich abhaken; daneben steht die Woche, ein Tag zum Antippen.</li>
+          <li>Der <b>Kalender</b> zeigt Montag bis Freitag. Was zur selben Zeit stattfindet, steht nebeneinander; Fristen vom Wochenende stehen beim Freitag.</li>
+          <li><b>Ins iPad übernehmen:</b> Im Kalender auf „Neue Fristen übernehmen“ tippen, die Datei öffnen und „Alle hinzufügen“ wählen. Das iPad erinnert dann einen Tag und zwei Stunden vor jeder Frist, auch wenn der Lernhelfer zu ist.</li>
+          <li><b>Frag den Lernhelfer</b> auf Heute kennt Stundenplan, Fristen, Onlinetests und alle Wochenausgaben: zum Beispiel wo das PS ist, was als Nächstes ansteht oder wie du eine Abgabe angehst.</li>
         </ul>
 
         <h2 id="a-tests">Onlinetests</h2>
@@ -677,7 +745,7 @@
           <p><b>So liest der PC Tests:</b> Läuft ein bewerteter Test, öffnet der PC ihn genau einmal, liest die Fragen und tippt dann auf „Test unterbrechen“ und „Ok“. Antworten werden nie eingetragen, gespeichert oder abgeschickt, und „Test beenden“ wird nie gedrückt. Ein Schutz im Browser blockiert diese Knöpfe zusätzlich. Dein Versuch bleibt also voll erhalten. Tests, die noch nicht begonnen haben, öffnet der PC nie.</p>
         </div>
         <p>Abgelaufene Tests zeigen deine Antworten und die Lösung von OLAT, Selbsttests sind zum Üben da. Beides nimmt die Wochenausgabe für die Übungsaufgaben.</p>
-        <p><b>Der Löser</b> rechnet bei jedem Test alle Fragen vor, mit dem Ergebnis so, wie es in OLAT eingetragen wird, und dem Rechenweg zum Aufklappen. Gedacht ist er zum Vergleichen: erst selbst lösen, dann mit dem Löser prüfen, dann selbst in OLAT eintragen. Der Löser schreibt nichts nach OLAT. Ob KI bei einem Test erlaubt ist, legt jede Lehrveranstaltung selbst fest, meist im Syllabus.</p>
+        <p><b>Der Löser</b> zeigt die Fragen eines Tests einzeln, mit Formeln wie in OLAT. Bei jeder Frage „Lösen lassen“ tippen: Du bekommst das Ergebnis so, wie es in OLAT eingetragen wird, und den Rechenweg zum Aufklappen. Bei „Rückfrage“ fragst du nach, was unklar ist. Mit „Weiter“ und „Zurück“ gehst du durch die Fragen; Lösungen und Rückfragen bleiben gespeichert. Gedacht ist er zum Vergleichen: erst selbst lösen, dann mit dem Löser prüfen, dann selbst in OLAT eintragen. Der Löser schreibt nichts nach OLAT. Ob KI bei einem Test erlaubt ist, legt jede Lehrveranstaltung selbst fest, meist im Syllabus.</p>
         <p>Löser und <a href="#/wordpower">Word Power</a> (Englisch-Hausaufgaben) haben ein Passwort aus vier Wörtern. Du bekommst es von der Person, die dir den Lernhelfer gezeigt hat. Groß- und Kleinschreibung und Leerzeichen sind egal.</p>
 
         <h2 id="a-pc">Der Abgleich am PC</h2>
@@ -742,7 +810,7 @@ const MODELLE = {
   'MiMo V2.6 Pro': { model: 'xiaomi/mimo-v2.6-pro', reasoning: { enabled: true } },
   'GPT-6.1 Sol · xhigh': { model: 'openai/gpt-6.1-sol', reasoning: { effort: 'xhigh' } },
 };
-const ORDNUNG = ['BWL', 'VWL', 'Mathematik', 'Englisch'];
+const ORDNUNG = ['Mathematik', 'VWL', 'BWL', 'Englisch'];
 const FRISTEN = new Set(['Abgabe', 'Test']);
 
 const heute = new Date();
@@ -834,6 +902,16 @@ const markdown = (knoten, s, inline) => {
   knoten.innerHTML = DOMPurify.sanitize(html);
   return knoten;
 };
+const liesJson = k => { try { return JSON.parse(merk(k) || 'null'); } catch { return null; } };
+const GLYPHEN = {  // eigene Zeichen je Fach, 24er-Raster wie die Symbole der Leiste
+  Mathematik: '<path d="M4 4v16h16"/><path d="M7 15.5c2.2-.4 2.6-7.5 5.2-7.5 2.4 0 2.8 5.6 6.3 6"/>',
+  VWL: '<path d="M4 4v16h16"/><path d="M7.5 7.5l10 9M7.5 16.5l10-9"/>',
+  BWL: '<rect x="4" y="8" width="16" height="11" rx="2"/><path d="M9 8V6.5A1.5 1.5 0 0 1 10.5 5h3A1.5 1.5 0 0 1 15 6.5V8M4 13.5h16"/>',
+  Englisch: '<path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h7A2.5 2.5 0 0 1 16 6.5v3a2.5 2.5 0 0 1-2.5 2.5H9.5L6.5 14.5V12A2.5 2.5 0 0 1 4 9.5z"/><path d="M19 9.5a1.5 1.5 0 0 1 1 1.4v3.6a2 2 0 0 1-2 2v2.5l-3-2.5h-3a2 2 0 0 1-2-2"/>',
+};
+const glyph = f => { const s = el('span', { class: 'glyph', 'aria-hidden': 'true' }); s.innerHTML = `<svg viewBox="0 0 24 24">${GLYPHEN[f] || '<path d="M6 4h12v16H6zM9 8.5h6M9 12h6"/>'}</svg>`; return s; };
+const wochenMontag = n => { const w = (heute.getDay() + 6) % 7; return new Date(heute.getFullYear(), heute.getMonth(), heute.getDate() - w + 7 * (n + (w > 4))); };  // Sa/So: schon die nächste Woche
+const nachZeit = (a, b) => (a.datum + (a.zeit || '')).localeCompare(b.datum + (b.zeit || ''));
 const geld = x => `${x.toLocaleString('de-AT', { minimumFractionDigits: 2, maximumFractionDigits: x < 0.1 ? 3 : 2 })}\u00a0$`;
 const MONAT = heute.toLocaleDateString('de-AT', { month: 'long' });
 const tageBis = datum => Math.round((Date.parse(datum) - Date.parse(HEUTE)) / 864e5);
@@ -974,14 +1052,12 @@ const fristPille = (t, naechste) => el('span', { class: `pille${tageBis(t.datum)
 function fachZeile(f) {
   const r = R[f], a = aktuell(f);
   const blick = a && abschnitt(a, 'auf einen blick').split('\n').find(z => /^\s*[-*]\s/.test(z));
-  return el('article', { class: 'fach', 'aria-busy': r.druckt ? 'true' : null },
-    el('div', {},
-      el('h3', {}, el('a', { href: `#/${encodeURIComponent(f)}` }, f)),
-      a ? [el('p', { class: 'schlagzeile' }, a.schlagzeile || 'Ausgabe ohne Schlagzeile'),
-        blick && el('p', { class: 'anriss' }, blick.replace(/^\s*[-*]\s+/, '').replace(/[*_`]/g, '').replace(/\\\(|\\\)/g, '')),
-        el('p', { class: 'meta' }, `Ausgabe vom ${kurz(a.datum)}, ${a.begriffe.length} Begriffe`)]
-        : el('p', { class: 'anriss' }, 'Noch keine Ausgabe. Antippen und erstellen.')),
-    el('span', { class: 'pfeil', 'aria-hidden': 'true' }),
+  return el('article', { class: 'fach', 'data-fach': f, 'aria-busy': r.druckt ? 'true' : null },
+    el('div', { class: 'fach-kopf' }, glyph(f), el('h3', {}, el('a', { href: `#/${encodeURIComponent(f)}` }, f)), el('span', { class: 'pfeil', 'aria-hidden': 'true' })),
+    el('div', { class: 'fach-text' }, a ? [el('p', { class: 'schlagzeile' }, a.schlagzeile || 'Ausgabe ohne Schlagzeile'),
+      blick && el('p', { class: 'anriss' }, blick.replace(/^\s*[-*]\s+/, '').replace(/[*_`]/g, '').replace(/\\\(|\\\)/g, ''))]
+      : el('p', { class: 'anriss' }, 'Noch keine Ausgabe. Antippen und erstellen.')),
+    a && el('p', { class: 'meta' }, `Ausgabe vom ${kurz(a.datum)}, ${a.begriffe.length} Begriffe`),
     r.druckt && presse(),
     r.fehler && el('p', { class: 'fehlertext' }, r.fehler));
 }
@@ -997,7 +1073,7 @@ function titelblatt() {
     : [el('div', { class: 'willkommen' }, el('h3', {}, 'Gleich kommen deine Fächer'),  // vor dem ersten Abgleich gibt es noch keine Fächer
       el('p', { class: 'klein' }, 'Sobald der PC zum ersten Mal mit OLAT abgeglichen hat, steht hier jedes Fach mit seiner Wochenausgabe. Das PC-Programm gibt es unter Einrichten bei Schritt 3.'),
       el('div', { class: 'knopfreihe' }, el('a', { class: 'knopf voll', href: '#/einstellungen' }, 'Zum Einrichten'), el('a', { class: 'knopf', href: '#/anleitung' }, 'Anleitung')))]);
-  $('ressorts').classList.toggle('liste-rahmen', faecher.length > 0);
+  $('ressorts').classList.toggle('faecher-raster', faecher.length > 0);
   const abhaken = t => el('label', { class: 'haken' }, el('input', { type: 'checkbox', checked: !!merk(fristSchluessel(t)), 'aria-label': `${t.fach} ${t.titel || t.art} erledigt`,
     onchange: e => { merk(fristSchluessel(t), e.target.checked ? '1' : null); titelblatt(); } }));
   const fristen = termine.filter(t => FRISTEN.has(t.art)), sichtbar = ALLE_FRISTEN ? fristen : offen.slice(0, 3);
@@ -1010,28 +1086,67 @@ function titelblatt() {
     merk(fristSchluessel(t)) ? el('span', { class: 'pille' }, 'erledigt') : fristPille(t, t === naechste))),
     (ALLE_FRISTEN || fristen.length > sichtbar.length) && el('li', {}, el('button', { class: 'mehr', type: 'button', 'aria-expanded': String(ALLE_FRISTEN),
       onclick: () => { ALLE_FRISTEN = !ALLE_FRISTEN; titelblatt(); } }, ALLE_FRISTEN ? 'Nur die nächsten offenen zeigen' : `Alle ${fristen.length} Fristen zeigen, auch erledigte`)));
-  const tage = new Map();
-  for (const t of termine) tage.set(t.datum, [...(tage.get(t.datum) || []), t]);
-  $('tage').replaceChildren(...(termine.length ? [...tage].map(([d, liste]) => el('ul', { class: 'tag' },
-    el('h3', {}, `${datum(d, { weekday: 'long', day: 'numeric', month: 'long' })}, ${faellig(tageBis(d))}`),
-    liste.map(t => {
-      const frist = FRISTEN.has(t.art), fertig = frist && merk(fristSchluessel(t));
-      return el('li', { class: `termin${fertig ? ' erledigt' : ''}` },
-        el('span', { class: 'zeit' }, t.zeit || '–'),
-        el('button', { class: 'was', type: 'button', onclick: () => meldung(t, t === naechste) }, el('b', {}, `${t.fach} ${t.code || t.art}`), t.titel || '', t.ort && el('span', { class: 'ort' }, t.ort)),
-        frist && el('span', { class: `pille${fertig ? '' : ' akzent'}` }, fertig ? 'erledigt' : 'Frist'));
-    }),
-  )) : [el('p', { class: 'leer', style: 'padding-bottom: 8px' }, Object.values(R).some(r => r.ausgaben.length) ? 'Keine Termine in den nächsten zwei Wochen gefunden.' : 'Sobald Ausgaben erstellt sind, stehen hier alle Termine und Fristen.')]));
+  wocheZeigen();
+  $('assistent').replaceChildren(assistent());
 }
+let WAHL = null;  // in „Diese Woche“ gewählter Tag
+function wocheZeigen() {
+  const montag = wochenMontag(0), alle = kalenderTermine().sort(nachZeit);
+  const tage = Array.from({ length: 5 }, (_, i) => iso(new Date(montag.getFullYear(), montag.getMonth(), montag.getDate() + i)));
+  WAHL = tage.includes(WAHL) ? WAHL : tage.includes(HEUTE) ? HEUTE : tage[0];
+  $('t-kopf').textContent = tage.includes(HEUTE) ? 'Diese Woche' : 'Nächste Woche';
+  const am = d => alle.filter(t => t.datum === d), liste = am(WAHL);
+  $('tage').replaceChildren(
+    el('div', { class: 'tagleiste', role: 'group', 'aria-label': 'Tag wählen' }, tage.map(d => el('button', { type: 'button', class: `tagknopf${d === HEUTE ? ' heute' : ''}`, 'aria-pressed': String(d === WAHL),
+      onclick: () => { WAHL = d; wocheZeigen(); $('tage').querySelector('[aria-pressed="true"]').focus(); } },
+      el('span', { class: 'wt' }, datum(d, { weekday: 'short' }).replace('.', '')),
+      el('span', { class: 'tg' }, datum(d, { day: 'numeric' })),
+      el('span', { class: 'punkte', 'aria-hidden': 'true' }, am(d).slice(0, 5).map(t => el('i', { 'data-fach': t.fach }))),
+      el('span', { class: 'sr' }, `, ${am(d).length} Termine`)))),
+    el('h3', { class: 'tag-titel' }, datum(WAHL, { weekday: 'long', day: 'numeric', month: 'long' }), tageBis(WAHL) >= 0 && tageBis(WAHL) <= 1 ? `, ${faellig(tageBis(WAHL))}` : ''),
+    liste.length ? el('ul', { class: 'tag' }, liste.map(t => {
+      const frist = FRISTEN.has(t.art), fertig = frist && merk(fristSchluessel(t));
+      return el('li', { class: `termin${fertig ? ' erledigt' : ''}`, 'data-fach': t.fach },
+        el('span', { class: 'zeit' }, t.zeit || '–'),
+        el('button', { class: 'was', type: 'button', onclick: () => meldung(t, false) }, el('b', {}, `${t.fach} ${t.code || t.art}`), t.titel || '', t.ort && el('span', { class: 'ort' }, t.ort)),
+        frist && el('span', { class: `pille${fertig ? '' : ' akzent'}` }, fertig ? 'erledigt' : 'Frist'));
+    }))
+      : el('p', { class: 'leer' }, KAL == null ? 'Lade den Stundenplan …' : KAL.length ? 'An diesem Tag ist nichts.' : 'Noch kein Stundenplan: im Kalender die .ics-Datei aus LFU:online hinzufügen.'));
+}
+
+// Frag den Lernhelfer: kennt Stundenplan, Fristen, Onlinetests und die aktuelle Ausgabe jedes Fachs
+async function assistentKontext() {
+  TESTS ??= JSON.parse(await gh('onlinetests.json').catch(() => null) || '[]');
+  const zeile = t => [`${kurz(t.datum)} ${t.zeit ? t.zeit + (t.ende ? '–' + t.ende : '') : 'ganztägig'}`, `${t.fach} ${t.code || t.art}${FRISTEN.has(t.art) ? ` (Frist${merk(fristSchluessel(t)) ? ', erledigt' : ''})` : ''}`,
+    t.titel, t.ort, t.lv && `LV: ${t.lv}`].filter(Boolean).join(' | ');
+  const plan = kalenderTermine().filter(t => tageBis(t.datum) >= -7 && tageBis(t.datum) <= 21).sort(nachZeit).map(zeile);
+  const tests = TESTS.map(t => [t.fach, t.titel, teststand(t).text, t.von && `ab ${zeitpunkt(t.von)}`, punkte(t)].filter(Boolean).join(' | '));
+  return `Du bist der persönliche Studienassistent einer Person im 1. Semester Wirtschaftswissenschaften an der Universität Innsbruck (Fächer: ${Object.keys(R).join(', ')}). Heute ist ${TAG}, ${UHR} Uhr.
+Du hilfst bei allem rund ums Studium: wann und wo welche Lehrveranstaltung ist, was als Nächstes zu tun ist, wie man eine Hausaufgabe oder Abgabe angeht, wie man sich auf Tests vorbereitet und wie man effizient lernt und arbeitet.
+Fakten wie Räume, Zeiten, Fristen, Themen und Regeln nimmst du nur aus den Daten unten: dem Stundenplan aus LFU:online, den Fristen und Onlinetests aus OLAT und der aktuellen Wochenausgabe jedes Fachs (mit Stammdaten aus dem Syllabus). Steht etwas nicht darin, sag das ehrlich, statt zu raten. Für Lern- und Arbeitstipps nutzt du dein Wissen, aber immer bezogen auf die konkreten Termine und Aufgaben.
+Antworte knapp und konkret auf Deutsch, mit Wochentag, Datum, Uhrzeit und Raum, wo es passt. Bei Fragen nach dem nächsten Schritt: nach Frist und Aufwand ordnen und 1–3 konkrete Schritte nennen. Formeln in LaTeX zwischen \\( und \\).
+
+=== STUNDENPLAN UND FRISTEN (letzte Woche bis in drei Wochen) ===
+${plan.join('\n') || '(kein Stundenplan hinterlegt)'}
+
+=== ONLINETESTS ===
+${tests.join('\n') || '(keine)'}
+
+` + Object.keys(R).filter(aktuell).map(f => `=== WOCHENAUSGABE ${f} vom ${aktuell(f).datum} ===\n${aktuell(f).roh}`).join('\n\n');
+}
+const assistent = () => chat('chat:assistent', assistentKontext, {
+  platzhalter: 'z. B. Wo ist morgen mein PS?', loeschen: 'Den ganzen Verlauf mit dem Lernhelfer löschen?',
+  vorschlaege: ['Wann und wo ist meine nächste Lehrveranstaltung?', 'Was ist mein nächster Schritt?', 'Wie gehe ich die nächste Abgabe am besten an?', 'Wie plane ich diese Woche effizient?'] });
 function meldung(t, naechste) {
   const d = $('meldung'), frist = FRISTEN.has(t.art);
   const wann = [datum(t.datum, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }), t.zeit && `${t.zeit}${t.ende ? '–' + t.ende : ''} Uhr`].filter(Boolean).join(', ');
   d.replaceChildren(el('div', { class: 'innen' },
     el('div', { class: 'chips' }, el('span', { class: 'pille' }, t.fach), (t.code || t.art) && el('span', { class: 'pille' }, t.code || t.art), frist && fristPille(t, naechste)),
-    el('h2', { id: 'm-titel' }, t.titel || t.art),
+    el('h2', { id: 'm-titel' }, terminTitel(t)),
     el('dl', {},
       el('dt', {}, 'Wann'), el('dd', {}, `${wann}, ${faellig(tageBis(t.datum))}`),
       t.ort && [el('dt', {}, 'Wo'), el('dd', {}, t.ort)],
+      t.lv && [el('dt', {}, 'LV'), el('dd', {}, t.lv)],
       el('dt', {}, 'Art'), el('dd', {}, frist ? `${t.art} mit Frist` : t.art)),
     t.info ? markdown(el('p', { class: 'info' }), t.info, true)
       : el('p', { class: 'klein' }, 'Die Ausgabe zu diesem Fach beschreibt die nächsten Einheiten genauer. Ab der nächsten Ausgabe stehen die Details auch hier.'),
@@ -1099,31 +1214,52 @@ function uebungen(text) {
   }));
 }
 
-// Fragen zur Ausgabe: kurzer Chat, der nur die Ausgabe und die OLAT-Unterlagen des Fachs kennt
-const CHATS = {};  // Fach|Datum → { verlauf, laeuft, hinweis }; bleibt beim Neuzeichnen erhalten
-function fragen(f, a) {
-  const schluessel = `chat:${f}:${a.datum}`;
-  const c = CHATS[schluessel] ??= { verlauf: (() => { try { return JSON.parse(merk(schluessel) || '[]'); } catch { return []; } })(), laeuft: false, hinweis: '' };
-  const feld = el('textarea', { id: 'frage', name: 'frage', rows: 3, placeholder: 'z. B. Wie komme ich bei der Elastizität auf die Formel …', enterkeyhint: 'send',
+// Kurzer Chat: der Verlauf bleibt auf dem Gerät, kontext() liefert, was die KI wissen soll
+const CHATS = {};  // Schlüssel → { verlauf, laeuft, hinweis, entwurf }; bleibt beim Neuzeichnen erhalten
+let chatNr = 0;
+function chat(schluessel, kontext, { platzhalter, einstellung, vorschlaege = [], loeschen = 'Alle Fragen und Antworten hier löschen?' } = {}) {
+  const c = CHATS[schluessel] ??= { verlauf: liesJson(schluessel) || [], laeuft: false, hinweis: '', entwurf: '' };
+  const id = 'frage-' + ++chatNr, ort0 = location.hash;
+  const feld = el('textarea', { id, name: 'frage', rows: 3, placeholder: platzhalter, enterkeyhint: 'send', oninput: e => { c.entwurf = e.target.value; },
     onkeydown: e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); stelle(); } } });
+  feld.value = c.entwurf;
   const box = el('div', { class: 'fragen' });
   const zeige = () => box.replaceChildren(
     el('div', { class: 'verlauf', 'aria-live': 'polite', hidden: !c.verlauf.length }, c.verlauf.map(m => m.role === 'user'
       ? el('p', { class: 'frage' }, el('span', { class: 'sr' }, 'Deine Frage: '), m.content)
       : el('div', { class: 'antwort' }, el('span', { class: 'sr' }, 'Antwort: '), markdown(el('div', { class: 'text' }), m.content)))),
+    !c.verlauf.length && !c.laeuft && vorschlaege.length > 0 && el('div', { class: 'vorschlaege' },
+      vorschlaege.map(v => el('button', { class: 'vorschlag', type: 'button', onclick: () => { feld.value = v; stelle(); } }, v))),
     el('form', { class: 'frageform', onsubmit: e => { e.preventDefault(); stelle(); } },
-      el('label', { for: 'frage', class: 'sr' }, 'Deine Frage'), feld,
+      el('label', { for: id, class: 'sr' }, 'Deine Frage'), feld,
       el('div', { class: 'knopfreihe' },
         c.laeuft ? el('p', { class: 'presse' }, 'Antwort kommt …') : el('button', { class: 'knopf voll' }, 'Frage stellen'),
-        c.verlauf.length > 0 && !c.laeuft && el('button', { class: 'knopf', type: 'button', onclick: () => { if (!confirm('Alle Fragen und Antworten zu dieser Ausgabe löschen?')) return; c.verlauf = []; c.hinweis = ''; merk(schluessel, null); zeige(); } }, 'Verlauf löschen'),
+        c.verlauf.length > 0 && !c.laeuft && el('button', { class: 'knopf', type: 'button', onclick: () => { if (!confirm(loeschen)) return; c.verlauf = []; c.hinweis = ''; merk(schluessel, null); zeige(); } }, 'Verlauf löschen'),
         c.hinweis && el('span', { class: 'meta' }, c.hinweis))));
   async function stelle() {
     const q = feld.value.trim();
     if (!q || c.laeuft) return;
-    c.verlauf.push({ role: 'user', content: q }); c.laeuft = true; c.hinweis = ''; zeige();
+    c.verlauf.push({ role: 'user', content: q }); c.laeuft = true; c.hinweis = ''; c.entwurf = ''; feld.value = ''; zeige();
     try {
-      const quellen = await quelle(f);
-      const kontext = `Du beantwortest Fragen von Studierenden zum Fach ${f} (1. Semester Wirtschaftswissenschaften, Universität Innsbruck). Heute ist ${TAG}.
+      const m = MODELLE[$('modell').value];  // Rückfragen: mittleres Nachdenken reicht und ist schneller als beim Erstellen
+      const j = await anfrage(einstellung || { ...m, reasoning: m.reasoning?.effort ? { effort: 'medium' } : m.reasoning }, [{ role: 'system', content: await kontext() }, ...c.verlauf]);
+      c.verlauf.push({ role: 'assistant', content: j.choices[0].message.content || 'Keine Antwort erhalten.' });
+      merk(schluessel, JSON.stringify(c.verlauf));
+      c.hinweis = `Antwort für ${geld(j.usage?.cost || 0)}`;
+    } catch (err) {
+      c.verlauf.pop(); c.hinweis = err.message; c.entwurf = q; feld.value = q;
+    }
+    c.laeuft = false;
+    if (box.isConnected) zeige(); else if (location.hash === ort0) zeichne();
+    kosten();
+  }
+  zeige();
+  return box;
+}
+// Fragen zur Ausgabe: kennt nur die Ausgabe und die OLAT-Unterlagen des Fachs
+const fragen = (f, a) => chat(`chat:${f}:${a.datum}`, async () => {
+  const quellen = await quelle(f);
+  return `Du beantwortest Fragen von Studierenden zum Fach ${f} (1. Semester Wirtschaftswissenschaften, Universität Innsbruck). Heute ist ${TAG}.
 Stütze dich nur auf die Wochenausgabe und die OLAT-Unterlagen unten. Steht etwas nicht darin, sag das ehrlich.
 Antworte knapp und verständlich auf Deutsch. Formeln in LaTeX zwischen \\( und \\), abgesetzt zwischen \\[ und \\].
 Aufgaben eines noch laufenden bewerteten Onlinetests rechnest du nicht mit den Originalzahlen vor, sondern erklärst den Weg an einem Beispiel mit anderen Zahlen.
@@ -1132,21 +1268,7 @@ Aufgaben eines noch laufenden bewerteten Onlinetests rechnest du nicht mit den O
 ${a.roh}
 
 ` + quellen.dateien.map(d => `=== ${d.art.toUpperCase()}: ${d.datei} ===\n${d.text.slice(0, 60000)}`).join('\n\n');
-      const m = MODELLE[$('modell').value];  // schneller als beim Drucken: mittleres Nachdenken reicht für Rückfragen
-      const j = await anfrage({ ...m, reasoning: m.reasoning?.effort ? { effort: 'medium' } : m.reasoning }, [{ role: 'system', content: kontext }, ...c.verlauf]);
-      c.verlauf.push({ role: 'assistant', content: j.choices[0].message.content || 'Keine Antwort erhalten.' });
-      merk(schluessel, JSON.stringify(c.verlauf));
-      c.hinweis = `Antwort für ${geld(j.usage?.cost || 0)}`;
-    } catch (err) {
-      c.verlauf.pop(); c.hinweis = err.message; feld.value = q;
-    }
-    c.laeuft = false;
-    if (box.isConnected) zeige(); else if (document.body.dataset.ansicht === 'ausgabe') zeichne();
-    kosten();
-  }
-  zeige();
-  return box;
-}
+}, { platzhalter: 'z. B. Wie komme ich bei der Elastizität auf die Formel …', loeschen: 'Alle Fragen und Antworten zu dieser Ausgabe löschen?' });
 
 let SPION = null;  // markiert beim Scrollen den sichtbaren Teil in der Sprungleiste
 async function ausgabeZeigen(f, tag) {
@@ -1177,8 +1299,8 @@ async function ausgabeZeigen(f, tag) {
   sektion.replaceChildren(...[
     el('a', { class: 'zurueck nur-schmal', href: '#/' }, 'Heute'),
     el('header', { class: 'ausgabe-kopf' },
-      el('div', {},
-        el('h1', {}, f),
+      el('div', { 'data-fach': f },
+        el('div', { class: 'titel-zeile' }, glyph(f), el('h1', {}, f)),
         a.schlagzeile && el('p', { class: 'schlagzeile' }, a.schlagzeile),
         el('p', { class: 'unterzeile' }, el('span', {}, `Ausgabe vom ${datum(tag, { weekday: 'long', day: 'numeric', month: 'long' })}`),
           a.meta && el('span', {}, a.meta.split(' · ')[0]), a.preis && el('span', {}, `Kosten ${geld(a.preis)}`))),
@@ -1213,6 +1335,16 @@ async function ausgabeZeigen(f, tag) {
 /* ---------- Kalender ---------- */
 let woche = 0, KAL = null;  // KAL: [{ name, sha, termine }] aus kalender/*.ics im Daten-Repo
 const alleTermine = () => Object.keys(R).flatMap(f => (aktuell(f)?.termine || []).map(t => ({ ...t, fach: f })));
+// Lehrveranstaltungen nur aus den Kalenderdateien; aus den Ausgaben kommen die Fristen (Abgaben, Tests) und das Thema der Einheit
+function kalenderTermine() {
+  const aus = alleTermine();
+  return [...(KAL || []).flatMap(k => k.termine).map(t => {
+    const a = aus.find(a => a.fach === t.fach && a.datum === t.datum && a.art === t.art);
+    return a ? { ...t, titel: a.titel || t.titel, code: a.code || t.code, info: a.info } : t;
+  }), ...aus.filter(t => FRISTEN.has(t.art))];
+}
+const LV_FACH = [[/mathemati/i, 'Mathematik'], [/volkswirtschaft/i, 'VWL'], [/betriebswirtschaft/i, 'BWL'], [/englisch|english/i, 'Englisch']];
+const terminTitel = t => t.titel || { VO: 'Vorlesung', PS: 'Proseminar', UE: 'Übung' }[t.art] || t.lv || t.art;
 const zwei = n => String(n).padStart(2, '0');
 const uhr = d => `${zwei(d.getHours())}:${zwei(d.getMinutes())}`;
 
@@ -1247,9 +1379,12 @@ function icsLesen(text, name) {
               if (d >= start.d && d <= bis && tage.length < max) tage.push(d);
             }
         }
+        // „VO Grundlagen der Volkswirtschaft (LV 432002-0 26W)“ → VWL, VO; den Titel liefert später die Ausgabe (Thema der Einheit)
+        const lv = klar(e.SUMMARY).replace(/\s*\(LV [^)]*\)\s*$/, '') || 'Termin', art = lv.match(/^(VO|PS|UE|VU|SE|KS|AG)\b/)?.[1];
+        const fach = LV_FACH.find(([r]) => r.test(lv))?.[1];
         for (const d of tage.filter(d => !ex.has(+d)))
           aus.push({ datum: iso(d), zeit: start.ganz ? null : uhr(d), ende: !start.ganz && dauer ? uhr(new Date(+d + dauer)) : null,
-            titel: klar(e.SUMMARY) || 'Termin', ort: klar(e.LOCATION) || null, info: klar(e.DESCRIPTION) || null, fach: name, art: 'Termin', code: '' });
+            titel: fach && art ? null : lv, ort: klar(e.LOCATION) || null, info: null, lv, fach: fach || name, art: art || 'Termin', code: art || '' });
       }
       e = null; continue;
     }
@@ -1316,52 +1451,68 @@ function icsExport(termine) {
   document.body.append(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 60000);
   termine.forEach(t => merk('ics:' + terminId(t), '1'));
-  status(`${termine.length} Termine als Kalenderdatei geladen. Auf dem iPad die Datei öffnen und „Alle hinzufügen“ tippen.`);
+  status(`${termine.length} Fristen als Kalenderdatei geladen. Auf dem iPad die Datei öffnen und „Alle hinzufügen“ tippen.`);
   kalenderZeigen();
 }
 
+// Termine, die sich zeitlich überschneiden, stehen in einer Zeile nebeneinander; ganztägige für sich
+function nebeneinander(liste) {
+  const min = (d, z) => Date.parse(d) / 6e4 + +z.slice(0, 2) * 60 + +z.slice(3, 5);
+  const zeilen = [];
+  let bis = -Infinity;
+  for (const t of liste) {
+    const mitZeit = z => /^\d{2}:\d{2}/.test(z || ''), von = mitZeit(t.zeit) && min(t.datum, t.zeit), ende = mitZeit(t.ende) ? min(t.datum, t.ende) : von + 30;
+    if (mitZeit(t.zeit) && von < bis) { zeilen.at(-1).push(t); bis = Math.max(bis, ende); }
+    else { zeilen.push([t]); bis = mitZeit(t.zeit) ? ende : -Infinity; }
+  }
+  return zeilen;
+}
 function kalenderZeigen() {
   const s = $('kalender');
-  const montag = new Date(heute.getFullYear(), heute.getMonth(), heute.getDate() - (heute.getDay() + 6) % 7 + 7 * woche);
-  const tage = Array.from({ length: 7 }, (_, i) => new Date(montag.getFullYear(), montag.getMonth(), montag.getDate() + i));
-  const alle = [...alleTermine(), ...(KAL || []).flatMap(k => k.termine)];
-  const kuenftig = alleTermine().filter(t => tageBis(t.datum) >= 0);
+  const montag = wochenMontag(woche);
+  const tage = Array.from({ length: 5 }, (_, i) => new Date(montag.getFullYear(), montag.getMonth(), montag.getDate() + i));
+  const alle = kalenderTermine().sort(nachZeit);
+  const kuenftig = alleTermine().filter(t => FRISTEN.has(t.art) && tageBis(t.datum) >= 0);
   const neue = kuenftig.filter(t => !merk('ics:' + terminId(t)));
-  const eintrag = t => el('button', { class: `kal-eintrag${FRISTEN.has(t.art) ? ' frist' : ''}`, type: 'button', onclick: () => meldung(t, false) },
-    el('span', { class: 'zeit' }, t.zeit ? `${t.zeit}${t.ende ? '–' + t.ende : ''}` : 'ganztägig'),
-    el('span', { class: 'kal-titel' }, t.titel || t.art),
+  const eintrag = (t, tag) => el('button', { class: `kal-eintrag${FRISTEN.has(t.art) ? ' ist-frist' : ''}`, 'data-fach': t.fach, type: 'button', onclick: () => meldung(t, false) },
+    el('span', { class: 'zeit' }, t.datum !== tag ? `${datum(t.datum, { weekday: 'short' })} ` : '', t.zeit ? `${t.zeit}${t.ende ? '–' + t.ende : ''}` : 'ganztägig'),
+    el('span', { class: 'kal-titel' }, terminTitel(t)),
     el('b', {}, `${t.fach}${t.code ? ' ' + t.code : ''}${FRISTEN.has(t.art) ? ', Frist' : ''}`),
     t.ort && el('span', { class: 'meta' }, t.ort));
   s.replaceChildren(
     el('header', { class: 'seitenkopf' },
       el('div', {}, el('h1', {}, 'Kalender'),
-        el('p', { class: 'unterzeile' }, el('span', {}, `Kalenderwoche ${kw(montag)}`), el('span', {}, `${montag.toLocaleDateString('de-AT', { day: 'numeric', month: 'long' })} bis ${tage[6].toLocaleDateString('de-AT', { day: 'numeric', month: 'long', year: 'numeric' })}`))),
+        el('p', { class: 'unterzeile' }, el('span', {}, `Kalenderwoche ${kw(montag)}`), el('span', {}, `${montag.toLocaleDateString('de-AT', { day: 'numeric', month: 'long' })} bis ${tage[4].toLocaleDateString('de-AT', { day: 'numeric', month: 'long', year: 'numeric' })}`))),
       el('div', { class: 'kal-nav' },
         el('button', { class: 'knopf', type: 'button', onclick: () => { woche--; kalenderZeigen(); } }, 'Woche zurück'),
-        el('button', { class: 'knopf', type: 'button', disabled: woche === 0, onclick: () => { woche = 0; kalenderZeigen(); } }, 'Heute'),
+        el('button', { class: 'knopf', type: 'button', disabled: woche === 0, onclick: () => { woche = 0; kalenderZeigen(); } }, 'Diese Woche'),
         el('button', { class: 'knopf', type: 'button', onclick: () => { woche++; kalenderZeigen(); } }, 'Woche vor'))),
-    el('div', { class: 'woche' }, tage.map(d => {
-      const liste = alle.filter(t => t.datum === iso(d)).sort((a, b) => (a.zeit || '').localeCompare(b.zeit || ''));
+    el('div', { class: 'woche' }, tage.map((d, i) => {
+      // Freitag nimmt Fristen vom Wochenende mit, damit keine verloren geht
+      const liste = alle.filter(t => t.datum === iso(d) || (i === 4 && FRISTEN.has(t.art) && [1, 2].includes(tageBis(t.datum) - tageBis(iso(d)))));
       return el('section', { class: `kal-tag${iso(d) === HEUTE ? ' heute' : ''}${liste.length ? '' : ' ohne'}`, 'aria-label': datum(iso(d), { weekday: 'long', day: 'numeric', month: 'long' }) },
         el('h2', {}, d.toLocaleDateString('de-AT', { weekday: 'short', day: '2-digit', month: '2-digit' }), iso(d) === HEUTE ? ', heute' : ''),
-        liste.map(eintrag));
+        nebeneinander(liste).map(z => z.length > 1 ? el('div', { class: 'kal-block' }, z.map(t => eintrag(t, iso(d)))) : eintrag(z[0], iso(d))));
     })),
     el('div', { class: 'kal-panels' },
       el('div', { class: 'kal-panel' },
         el('h2', {}, 'In den iPad-Kalender'),
-        el('p', { class: 'klein' }, 'Lädt alle kommenden Termine und Fristen aus den Ausgaben als Kalenderdatei. Auf dem iPad öffnen und „Alle hinzufügen“ tippen. Fristen erinnern dann einen Tag und zwei Stunden vorher, auch wenn die App zu ist.'),
+        el('p', { class: 'klein' }, 'Lädt alle kommenden Fristen (Abgaben und Tests) aus den Ausgaben als Kalenderdatei. Auf dem iPad öffnen und „Alle hinzufügen“ tippen. Sie erinnern dann einen Tag und zwei Stunden vorher, auch wenn die App zu ist.'),
         el('div', { class: 'knopfreihe' },
-          el('button', { class: 'knopf voll', type: 'button', disabled: !neue.length, onclick: () => icsExport(neue) }, neue.length ? `${neue.length} neue Termine übernehmen` : 'Alle Termine übernommen'),
+          el('button', { class: 'knopf voll', type: 'button', disabled: !neue.length, onclick: () => icsExport(neue) }, neue.length ? `${neue.length} neue Fristen übernehmen` : 'Alle Fristen übernommen'),
           kuenftig.length > neue.length && el('button', { class: 'knopf', type: 'button', onclick: () => icsExport(kuenftig) }, 'Alle noch einmal'))),
       el('div', { class: 'kal-panel' },
         el('h2', {}, 'Eigene Kalender (.ics)'),
-        el('p', { class: 'klein' }, 'Zum Beispiel der Stundenplan aus LFU:online. Die Datei liegt im privaten Daten-Repo und erscheint so auf allen Geräten im Kalender oben.'),
+        el('p', { class: 'klein' }, 'Der Stundenplan aus LFU:online, eine Datei pro Lehrveranstaltung. Vorlesungen und Proseminare kommen nur von hier; die Ausgaben ergänzen das Thema der Einheit. Die Dateien liegen im privaten Daten-Repo und erscheinen so auf allen Geräten.'),
         KAL == null ? el('p', { class: 'meta' }, 'Lade Kalender …') : el('ul', { class: 'kal-liste' }, KAL.map(k => el('li', {},
-          el('span', {}, `${k.name}, ${k.termine.length} Termine`),
+          el('span', {}, `${k.termine[0]?.lv || k.name}, ${k.termine.length} Termine`),
           el('button', { class: 'knopf', type: 'button', onclick: () => kalenderLoeschen(k) }, 'Entfernen')))),
         el('div', { class: 'knopfreihe' }, el('label', { class: 'knopf' }, 'ICS-Datei hinzufügen',
           el('input', { type: 'file', accept: '.ics,text/calendar', multiple: true, class: 'sr', onchange: e => kalenderHochladen([...e.target.files]) }))))));
   if (!KAL) kalenderLaden().then(() => document.body.dataset.ansicht === 'kalender' && kalenderZeigen()).catch(e => { KAL = []; status(e.message, true); });
+}
+function kalenderNachladen() {  // beim Start: Heute braucht den Stundenplan für „Diese Woche“ und den Chat
+  kalenderLaden().catch(() => { KAL = []; }).then(() => { if (document.body.dataset.ansicht === 'titelblatt') wocheZeigen(); });
 }
 
 /* ---------- Geschützte Bereiche (Word Power, Löser) ---------- */
@@ -1520,7 +1671,7 @@ if (wpVideo()) wpNachschlagen();
 // onlinetests.json schreibt der PC (holen.py): Zeitraum, Punkte, Versuche und die gelesenen Fragen jedes Tests.
 const LOESER = MODELLE['MiMo V2.6 Pro'];
 let TESTS = null, LOESER_PROMPT = null;  // der Prompt ist entschlüsselt bis zum Neuladen
-const LOESUNGEN = {};  // Test → { laeuft, hinweis, fehler } während des Lösens
+const LOESUNGEN = {};  // Test#Frage → { laeuft, hinweis, fehler } während des Lösens
 const testId = t => `${t.fach}|${t.titel}`;
 const zeitpunkt = d => new Date(d).toLocaleString('de-AT', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 const punkte = t => t.punkte != null && `${String(t.punkte).replace('.', ',')} ${t.punkte === 1 ? 'Punkt' : 'Punkte'}`;
@@ -1572,21 +1723,79 @@ function testUebersicht() {
     !TESTS.length && el('p', { class: 'leer' }, 'Noch keine Tests. Der PC liest sie beim nächsten Abgleich aus OLAT.'),
   ].filter(Boolean));
 }
+// OLAT-Text: Formeln stehen ohne Begrenzer darin (f(x)= 6x^{3} \cdot e^{5x}). Wörter mit LaTeX-Zeichen werden mit ihren
+// Nachbarn (Zahlen, Operatoren, einzelne Variablen) zur Formel; „[]“ wird ein Kästchen wie in OLAT, „[47.0]“ eins mit Antwort.
+const formel = (f, block) => katex.renderToString(f, { displayMode: block, output: 'mathml', throwOnError: false }).replace(/<annotation[\s\S]*?<\/annotation>/, '');
+function olatText(knoten, s) {
+  if (!window.katex || !window.DOMPurify) { knoten.textContent = s; return knoten; }
+  const fs = [], merke = (f, block) => `\uE000${fs.push(formel(f, block)) - 1}\uE001`;
+  s = (s || '').replace(/\\begin\{(eqnarray\*?|align\*?|aligned|gather\*?|equation\*?|array)\}[\s\S]*?\\end\{\1\}|\\\[([\s\S]+?)\\\]|\$\$([\s\S]+?)\$\$/g,
+    (m, umgebung, b1, b2) => merke((b1 ?? b2 ?? m).replace(/\\begin\{eqnarray\*?\}/g, '\\begin{array}{rcl}').replace(/\\end\{eqnarray\*?\}/g, '\\end{array}'), true));
+  s = s.replace(/\\\(([\s\S]+?)\\\)/g, (_, f) => merke(f, false));
+  const stark = w => !/:\/\/|www\./.test(w) && /\\[a-zA-Z]+|\^|_\{|[a-zA-Z0-9)]_[a-zA-Z0-9](?![a-zA-Z])|=/.test(w);
+  const schwach = w => !/^[a-zA-Z]\.$/.test(w) && /^[-+*/=<>()'|0-9.,a-zA-Z]+$/.test(w) && (w.match(/[a-zA-Z]/g) || []).length <= (/[^a-zA-Z]/.test(w) ? 3 : 1);
+  const esc = x => x.replace(/[&<>"]/g, c => `&#${c.charCodeAt(0)};`)
+    .replace(/\[(-?[\d.,]*)\]/g, (_, w) => `<span class="eingabe">${w}</span>`);
+  const html = s.split('\n').map(zeile => {
+    const t = zeile.split(/(\s+)/), raus = [];  // Wörter auf geraden Plätzen, Abstände dazwischen
+    for (let i = 0; i < t.length; i += 2) {
+      let j = i;
+      while (j < t.length && t[j] && (stark(t[j]) || schwach(t[j]))) j += 2;
+      if (j > i && t.slice(i, j).some((w, k) => k % 2 === 0 && stark(w))) {
+        const f = t.slice(i, j - 1).join(''), satz = f.match(/[.,;:!?]+$/)?.[0] || '';
+        raus.push(`<span class="nw">${merke(f.slice(0, f.length - satz.length).replace(/(\d) ([a-zA-Z])/g, '$1\\,$2'), false)}${esc(satz)}</span>`, t[j - 1] || '');  // 9539 m^3; Satzzeichen bleibt an der Formel
+        i = j - 2;
+      } else raus.push(esc(t[i]), t[i + 1] || '');
+    }
+    return raus.join('');
+  }).join('\n').replace(/\uE000(\d+)\uE001/g, (_, i) => fs[i]);
+  knoten.innerHTML = DOMPurify.sanitize(html);
+  return knoten;
+}
+// „Frage N“, dann „Nicht beantwortet“, „Max. 1 Punkt“ und die Nummer: das wird zum Kopf, der Rest ist die Aufgabe
+function fragenListe(t) {
+  const text = t.fragen || (t.ergebnis ? t.startseite : '');
+  if (!text) return [];
+  const teile = text.split(/^Frage (\d+)[ \t]*$/m);
+  if (teile.length < 3) return [{ nr: null, text: text.trim() }];
+  const liste = [];
+  for (let i = 1; i < teile.length; i += 2) {
+    const zeilen = teile[i + 1].split('\n');
+    let max = null;
+    while (zeilen.length && /^\s*(Nicht beantwortet|Beantwortet|Max\. [\d.,]+ Punkte?|\d+)?\s*$/.test(zeilen[0])) { const z = zeilen.shift(); max ??= z.match(/Max\. ([\d.,]+)/)?.[1] ?? null; }
+    liste.push({ nr: +teile[i], max, text: zeilen.join('\n').replace(/^[ \t]+$/gm, '').replace(/\n{3,}/g, '\n\n').trim() });
+  }
+  return liste;
+}
+function geloest(t, q) {
+  const id = testId(t), neu = liesJson(`loeser:${id}#${q.nr ?? 'alle'}`);
+  if (neu) return neu;
+  const alt = liesJson('loeser:' + id);  // früher: alle Fragen eines Tests in einem Text
+  if (!alt || q.nr == null) return alt;
+  const block = ('\n' + alt.text).split(/\n### /).find(b => new RegExp(`^Frage ${q.nr}\\b`).test(b));
+  return block ? { ...alt, text: '### ' + block } : null;
+}
 function loesungZeigen(text) {
   // Jede Frage: „### Frage N · Titel“, Aufgabe und Ergebnis, „#### Rechenweg“ zum Aufklappen
-  return el('div', { class: 'aufgaben einspaltig' }, ('\n' + text).split(/\n### /).slice(1).map(s => {
+  const bloecke = ('\n' + text).split(/\n### /).slice(1);
+  return el('div', { class: 'aufgaben einspaltig' }, bloecke.map(s => {
     const [kopf, ...rest] = s.split('\n');
     const [oben, weg] = rest.join('\n').split(/^#### Rechenweg\s*$/m);
-    return el('article', { class: 'aufgabe' }, el('h3', {}, kopf.trim()), markdown(el('div', { class: 'text' }), oben),
+    return el('article', { class: 'aufgabe' }, el('h3', {}, bloecke.length > 1 ? kopf.trim() : kopf.replace(/^Frage \d+\s*·\s*/, '').trim()), markdown(el('div', { class: 'text' }), oben),
       weg && el('details', { class: 'loesung' },
         el('summary', { class: 'knopf' }, el('span', { class: 'zu' }, 'Rechenweg zeigen'), el('span', { class: 'auf' }, 'Rechenweg verbergen')),
         markdown(el('div', { class: 'text' }), weg)));
   }));
 }
 function testZeigen(t) {
-  const st = teststand(t), id = testId(t), L = LOESUNGEN[id] ??= { laeuft: false, hinweis: '', fehler: '' };
-  const fertigGeloest = (() => { try { return JSON.parse(merk('loeser:' + id) || 'null'); } catch { return null; } })();
-  const aufgabe = t.fragen || (t.ergebnis ? t.startseite : null);
+  const st = teststand(t), id = testId(t), fragen = fragenListe(t);
+  const n = Math.min(Math.max(+merk('loeser-pos:' + id) || 0, 0), Math.max(fragen.length - 1, 0)), q = fragen[n];
+  const k = q && `${id}#${q.nr ?? 'alle'}`, L = q && (LOESUNGEN[k] ??= { laeuft: false, hinweis: '', fehler: '' }), g = q && geloest(t, q);
+  const geh = i => {
+    merk('loeser-pos:' + id, String(i)); testZeigen(t);
+    if ($('frage-karte').getBoundingClientRect().top < 0) $('frage-karte').scrollIntoView({ block: 'start' });
+    $('frage-titel').focus({ preventScroll: true });
+  };
   const sperre = el('form', { class: 'sperre', onsubmit: async e => {
     e.preventDefault();
     const hinweis = e.target.querySelector('.klein');
@@ -1597,46 +1806,70 @@ function testZeigen(t) {
     el('label', {}, 'Passwort', el('input', { name: 'pw', type: 'password', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', placeholder: 'Vier Wörter …', required: true })),
     el('div', {}, el('button', { class: 'knopf voll' }, 'Öffnen')),
     el('p', { class: 'klein', role: 'status' }, 'Das Passwort aus vier Wörtern bekommst du von der Person, die dir den Lernhelfer gezeigt hat.'));
-  const knopfText = !fertigGeloest ? 'Lösen lassen' : fertigGeloest.original === false ? 'Mit den Originalzahlen lösen' : 'Neu lösen';
+  const ueber = q?.nr == null ? (t.ergebnis ? 'Test mit Lösung' : 'Aufgabenstellung') : `Frage ${q.nr}`;
   $('onlinetests').replaceChildren(...[
     el('a', { class: 'zurueck', href: '#/onlinetests' }, 'Alle Onlinetests'),
     el('header', { class: 'ausgabe-kopf' }, el('h1', {}, t.titel),
       el('p', { class: 'unterzeile' }, [t.fach, st.text, punkte(t), st.gruppe === 'bald' && t.bis && `bis ${zeitpunkt(t.bis)}`].filter(Boolean).map(x => el('span', {}, x)))),
-    el('section', { class: 'schritt', 'aria-labelledby': 'tz-aufgabe' },
-      el('h2', { id: 'tz-aufgabe' }, 'Aufgabenstellung'),
-      aufgabe ? [el('p', { class: 'klein' }, t.ergebnis ? 'So zeigt OLAT den Test nach Ablauf: deine Antworten in [eckigen Klammern], danach die Lösung.' : 'So wie OLAT die Fragen zeigt. Eingabefelder stehen als [ ], Formeln als LaTeX.'),
-        el('div', { class: 'aufgabentext', tabindex: '0' }, aufgabe)]
-        : el('p', { class: 'leer' }, st.gruppe === 'bald' ? 'Der Test hat noch nicht begonnen. Die Fragen liest der PC, sobald er offen ist.'
-          : st.gruppe === 'offen' ? 'Die Fragen liest der PC beim nächsten Abgleich (höchstens alle 12 Stunden).' : 'Zu diesem Test zeigt OLAT keine Fragen.')),
-    el('section', { class: 'schritt', 'aria-labelledby': 'tz-loeser' },
-      el('h2', { id: 'tz-loeser' }, 'Löser'),
-      !LOESER_PROMPT ? sperre : [
-        el('p', { class: 'klein' }, st.gruppe === 'offen'
-          ? 'Erst selbst rechnen, dann vergleichen: MiMo V2.6 Pro rechnet jede Frage mit Nachdenken vor, mit dem Ergebnis so, wie es in OLAT eingetragen würde, und dem Rechenweg zum Aufklappen. Eintragen tust du selbst, der Löser schreibt nichts nach OLAT.'
-          : 'MiMo V2.6 Pro rechnet jede Frage mit Nachdenken vor: das Ergebnis so, wie es in OLAT eingetragen würde, und den Rechenweg zum Aufklappen.'),
+    t.fragen && t.startseite && el('details', { class: 'quellen hinweise' }, el('summary', {}, 'Hinweise der Startseite: Rundung und Eingabe'),
+      olatText(el('div', { class: 'aufgabentext' }), t.startseite)),
+    !q ? el('p', { class: 'leer' }, st.gruppe === 'bald' ? 'Der Test hat noch nicht begonnen. Die Fragen liest der PC, sobald er offen ist.'
+      : st.gruppe === 'offen' ? 'Die Fragen liest der PC beim nächsten Abgleich (höchstens alle 12 Stunden).' : 'Zu diesem Test zeigt OLAT keine Fragen.')
+    : el('section', { class: 'frage-karte', id: 'frage-karte', 'aria-labelledby': 'frage-titel' },
+      fragen.length > 1 && el('nav', { class: 'fragen-nav', 'aria-label': 'Fragen' }, fragen.map((x, i) => {
+        const fertig = !!geloest(t, x);
+        return el('button', { type: 'button', class: fertig ? 'geloest' : null, 'aria-current': i === n ? 'step' : null, 'aria-label': `Frage ${x.nr}${fertig ? ', gelöst' : ''}`, onclick: () => geh(i) }, String(x.nr));
+      })),
+      el('div', { class: 'frage-kopf' },
+        el('h2', { id: 'frage-titel', tabindex: '-1' }, ueber, fragen.length > 1 && el('span', { class: 'meta' }, ` von ${fragen.length}`)),
+        q.max && el('span', { class: 'pille' }, `Max. ${q.max} ${q.max === '1' ? 'Punkt' : 'Punkte'}`)),
+      q.nr == null && t.ergebnis && el('p', { class: 'klein' }, 'So zeigt OLAT den Test nach Ablauf: deine Antworten in Kästchen, danach die Lösung.'),
+      olatText(el('div', { class: 'aufgabentext' }), q.text),
+      el('div', { class: 'loeser-teil' }, ...(!LOESER_PROMPT ? [el('h3', {}, 'Löser'), sperre] : [
+        el('h3', {}, 'Lösung'),
+        !g && !L.laeuft && el('p', { class: 'klein' }, `MiMo V2.6 Pro rechnet ${q.nr == null ? 'alle Fragen' : 'die Frage'} mit Nachdenken vor: das Ergebnis so, wie es in OLAT eingetragen würde, und den Rechenweg zum Aufklappen. Eintragen tust du selbst, der Löser schreibt nichts nach OLAT.`),
         el('div', { class: 'knopfreihe' },
-          L.laeuft ? el('div', { class: 'presse', id: 'lo-status', role: 'status' }, L.hinweis)
-            : el('button', { class: 'knopf voll', type: 'button', disabled: !aufgabe, onclick: () => loesen(t) }, knopfText),
-          fertigGeloest && !L.laeuft && el('span', { class: 'meta' }, `Gelöst ${zeitpunkt(fertigGeloest.zeit)}, ${geld(fertigGeloest.preis || 0)}`)),
+          L.laeuft ? el('p', { class: 'presse', id: 'lo-status', 'data-k': k, role: 'status' }, L.hinweis)
+            : el('button', { class: `knopf${g ? '' : ' voll'}`, type: 'button', onclick: () => loesen(t, q) }, g ? 'Neu lösen' : 'Lösen lassen'),
+          g && !L.laeuft && el('span', { class: 'meta' }, `Gelöst ${zeitpunkt(g.zeit)}, ${geld(g.preis || 0)}`)),
         L.fehler && el('p', { class: 'fehlertext' }, L.fehler),
-        fertigGeloest && loesungZeigen(fertigGeloest.text)]),
+        g && loesungZeigen(g.text),
+        el('h3', { class: 'rueck-kopf' }, 'Rückfrage'),
+        chat(`loeser-chat:${k}`, () => rueckKontext(t, q), { platzhalter: 'z. B. Warum wird hier abgeleitet und nicht integriert?', einstellung: LOESER, loeschen: 'Alle Rückfragen zu dieser Frage löschen?' })])),
+      fragen.length > 1 && el('div', { class: 'schritte-nav' },
+        el('button', { class: 'knopf', type: 'button', disabled: n === 0, onclick: () => geh(n - 1) }, el('span', { class: 'pfeil links', 'aria-hidden': 'true' }), 'Zurück'),
+        el('span', { class: 'meta' }, `${n + 1} von ${fragen.length}`),
+        el('button', { class: 'knopf', type: 'button', disabled: n === fragen.length - 1, onclick: () => geh(n + 1) }, 'Weiter', el('span', { class: 'pfeil', 'aria-hidden': 'true' })))),
   ].filter(Boolean));
 }
-async function loesen(t) {
-  const id = testId(t), L = LOESUNGEN[id];
+const rueckKontext = (t, q) => `Du erklärst eine Aufgabe aus dem OLAT-Test „${t.titel}“ im Fach ${t.fach} (1. Semester Wirtschaftswissenschaften, Universität Innsbruck). Beantworte Rückfragen knapp, verständlich und auf Deutsch. Rechne nach, wenn danach gefragt wird; ist an der Lösung unten etwas falsch, sag es klar und rechne richtig. Im Aufgabentext stehen Formeln als LaTeX ohne Begrenzer und Eingabefelder als []. Formeln in deinen Antworten in LaTeX zwischen \\( und \\), abgesetzt zwischen \\[ und \\].
+
+=== STARTSEITE ===
+${t.startseite || '(keine)'}
+
+=== ${q.nr == null ? 'FRAGEN' : 'FRAGE ' + q.nr} ===
+${q.text}
+
+=== LÖSUNG ===
+${geloest(t, q)?.text || '(noch nicht gelöst)'}`;
+async function loesen(t, q) {
+  const id = testId(t), k = `${id}#${q.nr ?? 'alle'}`, L = LOESUNGEN[k];
   const hier = () => document.body.dataset.ansicht === 'onlinetests' && decodeURIComponent(location.hash).endsWith(id);
-  const sag = text => { L.hinweis = text; const s = $('lo-status'); if (s && hier()) s.textContent = text; };
+  const sag = text => { L.hinweis = text; const s = $('lo-status'); if (s?.dataset.k === k) s.textContent = text; };
   Object.assign(L, { laeuft: true, fehler: '', hinweis: 'Denkt nach …' });
   if (hier()) testZeigen(t);
   await wach(true);
   try {
-    const auftragText = `Löse alle Fragen mit den Originalzahlen.\n\nFach: ${t.fach}\nTest: ${t.titel}\n\n=== STARTSEITE ===\n${t.startseite || '(keine)'}\n\n=== FRAGEN ===\n${t.fragen || '(stehen auf der Startseite)'}`;
+    const kopf = `Fach: ${t.fach}\nTest: ${t.titel}\n\n=== STARTSEITE ===\n${t.startseite || '(keine)'}\n\n`;
+    const auftragText = q.nr == null ? `Löse alle Fragen mit den Originalzahlen.\n\n${kopf}=== FRAGEN ===\n${q.text}`
+      : `Löse nur Frage ${q.nr} mit den Originalzahlen, in der verlangten Form.\n\n${kopf}=== FRAGE ${q.nr} ===\n${q.text}`;
     const { text, preis } = await strom({ ...LOESER, messages: [{ role: 'system', content: LOESER_PROMPT }, { role: 'user', content: auftragText }] },
-      x => sag(`Schreibt … Frage ${Math.max(1, (x.match(/^### /gm) || []).length)}`), () => sag('Denkt nach …'));
-    merk('loeser:' + id, JSON.stringify({ text, preis, zeit: new Date().toISOString() }));
+      x => sag(`Schreibt … ${x.split(/\s+/).length} Wörter`), () => sag('Denkt nach …'));
+    merk('loeser:' + k, JSON.stringify({ text, preis, zeit: new Date().toISOString() }));
   } catch (e) { L.fehler = wpWarum(e); }
   L.laeuft = false;
-  wach(false); kosten();
+  if (!Object.values(LOESUNGEN).some(x => x.laeuft)) wach(false);
+  kosten();
   if (hier()) testZeigen(t);
 }
 
@@ -1844,7 +2077,7 @@ async function zeichne() {
   document.querySelectorAll('.mit-daten').forEach(a => { a.hidden = !fertig(); });
   document.querySelectorAll('a[data-ansicht]').forEach(a => a.dataset.ansicht === neu ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
   $('nav-faecher').replaceChildren(...Object.keys(R).map(f => el('a', { href: `#/${encodeURIComponent(f)}`, 'aria-current': neu === 'ausgabe' && teil === f ? 'page' : null },
-    el('span', { class: 'punkt', 'aria-hidden': 'true' }), f, R[f].druckt && el('span', { class: 'laeuft', role: 'img', 'aria-label': 'wird erstellt' }))));
+    el('span', { class: 'punkt', 'data-fach': f, 'aria-hidden': 'true' }), f, R[f].druckt && el('span', { class: 'laeuft', role: 'img', 'aria-label': 'wird erstellt' }))));
   $('nav-faecher-kopf').hidden = !fertig() || !Object.keys(R).length;
   const namen = { kalender: 'Kalender', wordpower: 'Word Power', onlinetests: 'Onlinetests', anleitung: 'Anleitung', einstellungen: 'Einrichten' };
   document.title = neu === 'titelblatt' ? 'Lernhelfer' : `${neu === 'ausgabe' ? teil : namen[neu]} – Lernhelfer`;
@@ -1877,6 +2110,7 @@ async function start() {
   kosten();
   if (!fertig()) return;
   status('Lade die Ausgaben …');
+  kalenderNachladen();
   try { await laden(); status(''); } catch (e) { status(e.message, true); }
   await zeichne();
   await abgleichHolen();
