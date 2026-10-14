@@ -293,7 +293,7 @@ Gleicher Aufbau wie Word Power: Ausgabe-Kopf, dann nummerierte Schritte (1 KI-Gu
 Überblick wie die Kurstabelle: Gruppen „Jetzt offen“, „Demnächst“, „Zum Üben“, „Erledigt und vorbei“ als Rubriken, Zeilen mit Fach-Etikett, Titel, Meta-Zeile und Frist rechts in Tabellenziffern. Nur der offene Test mit der nächsten Frist liegt auf Bordeaux. Die Einzelansicht zeigt die Aufgabenstellung als Blatt auf `--papier-tief` (Source Serif, Zeilenumbrüche wie in OLAT) und darunter den Löser: Passwortfeld, danach Fragen einspaltig im Stil der Übungsaufgaben mit „Rechenweg zeigen“.
 
 ### Anleitung
-Lesemodus: Ausgabe-Kopf, Inhaltsverzeichnis in zwei Spalten, Kapitel mit 3px-Linie und Archivo-900-Überschrift, Fließtext in Source Serif bei max 68ch, Hinweis-Kasten mit 6px-Tintenrand links auf `--papier-tief`, Hilfe als Frage-Antwort-Liste.
+Lesemodus: Ausgabe-Kopf, Inhaltsverzeichnis in zwei Spalten, Kapitel mit 3px-Linie und Archivo-900-Überschrift, Fließtext in Source Serif bei max 68ch, Hinweis-Kasten auf `--papier-tief` zwischen 3px-Linie oben und 1.5px-Linie unten (kein Seitenbalken), Hilfe als Frage-Antwort-Liste.
 
 ## Do's and Don'ts
 
