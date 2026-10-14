@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; font-src 'self'; connect-src https://openrouter.ai https://api.github.com https://www.youtube.com; img-src data: https://i.ytimg.com; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; font-src 'self'; connect-src 'self' https://openrouter.ai https://api.github.com https://www.youtube.com; img-src data: https://i.ytimg.com; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Lernhelfer">
@@ -417,7 +417,7 @@
       <a href="#/" id="nach-titel" hidden class="zurueck"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M11 3L5 9l6 6" fill="none" stroke="currentColor" stroke-width="2.2"/></svg>Titelblatt</a>
       <a href="#/kalender" class="mit-daten">Kalender</a>
       <a href="#/onlinetests" class="mit-daten">Onlinetests</a>
-      <a href="#/wordpower" id="nav-wp" hidden>Word Power</a>
+      <a href="#/wordpower" class="mit-daten">Word Power</a>
       <a href="#/anleitung">Anleitung</a>
       <a href="#/einstellungen">Einrichten</a>
     </nav>
@@ -609,6 +609,8 @@
           <p><b>So liest der PC Tests:</b> Läuft ein bewerteter Test, öffnet der PC ihn genau einmal, liest die Fragen und tippt dann auf „Test unterbrechen“ und „Ok“. Antworten werden nie eingetragen, gespeichert oder abgeschickt, und „Test beenden“ wird nie gedrückt. Ein Schutz im Browser blockiert diese Knöpfe zusätzlich. Dein Versuch bleibt also voll erhalten. Tests, die noch nicht begonnen haben, öffnet der PC nie.</p>
         </div>
         <p>Abgelaufene Tests zeigen deine Antworten und die Lösung von OLAT, Selbsttests sind zum Üben da. Beides nimmt die Wochenausgabe für die Übungsaufgaben.</p>
+        <p><b>Der Löser</b> rechnet bei jedem Test alle Fragen vor, mit dem Ergebnis so, wie es in OLAT eingetragen wird, und dem Rechenweg zum Aufklappen. Gedacht ist er zum Vergleichen: erst selbst lösen, dann mit dem Löser prüfen, dann selbst in OLAT eintragen. Der Löser schreibt nichts nach OLAT. Ob KI bei einem Test erlaubt ist, legt jede Lehrveranstaltung selbst fest, meist im Syllabus.</p>
+        <p>Löser und <a href="#/wordpower">Word Power</a> (Englisch-Hausaufgaben) haben ein Passwort aus vier Wörtern. Du bekommst es von der Person, die dir den Lernhelfer gezeigt hat. Groß- und Kleinschreibung und Leerzeichen sind egal.</p>
 
         <h2 id="a-pc">Der Abgleich am PC</h2>
         <ul>
@@ -769,7 +771,7 @@ const status = (text, fehler) => { $('status').textContent = text || ''; $('stat
 let cfg = JSON.parse(merk('cfg') || 'null');  // { openrouter, github, repo }; beim Einrichten Schritt für Schritt gefüllt
 const fertig = () => !!(cfg?.openrouter && cfg?.github && cfg?.repo);
 const R = {};  // Fach → { ausgaben: [{datum, sha}], cache: {datum: Ausgabe}, quelle, druckt, fehler }
-let GESCHUETZT = new Set(), ABGLEICH = null, GUTHABEN = null;  // Dateien in geschuetzt/, abgleich.json vom PC, Restguthaben
+let ABGLEICH = null, GUTHABEN = null;  // abgleich.json vom PC, Restguthaben
 
 async function gh(pfad, { method = 'GET', body, roh = true } = {}) {
   const r = await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${pfad.split('/').map(encodeURIComponent).join('/')}`, {
@@ -1093,7 +1095,7 @@ async function ausgabeZeigen(f, tag) {
       el('p', { class: 'datumszeile' }, el('span', {}, `Ausgabe vom ${datum(tag, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`),
         el('span', { class: 'neben' }, a.meta.split(' · ')[0] || ''), a.preis && el('span', {}, `Preis ${geld(a.preis)}`)),
       a.schlagzeile && el('p', { class: 'schlagzeile' }, a.schlagzeile),
-      f === 'Englisch' && GESCHUETZT.has('wordpower.json') && el('p', {}, el('a', { class: 'knopf', href: '#/wordpower' }, 'Word Power · Hausaufgaben-Werkstatt'))),
+      f === 'Englisch' && el('p', {}, el('a', { class: 'knopf', href: '#/wordpower' }, 'Word Power · Hausaufgaben-Werkstatt'))),
     r.druckt && presse(f),
     r.fehler && el('p', { class: 'fehlertext' }, r.fehler),
     rubrik(el('p', {}, 'Diese Woche'), a.quellen.length ? `Aus den Unterlagen: ${[...new Set(a.quellen.map(q => q.split('/').pop().replace(/\.\w+$/, '').replace(/_/g, ' ')))].join(' · ')}` : 'Aus den Folien und PS-Unterlagen der letzten Einheit'),
@@ -1272,13 +1274,13 @@ function kalenderZeigen() {
 }
 
 /* ---------- Geschützte Bereiche (Word Power, Löser) ---------- */
-// Ihre Prompts liegen verschlüsselt im privaten Daten-Repo (geschuetzt/<bereich>.json, erstellt mit verschluesseln.mjs);
-// ohne Passwort gibt es nichts zu entschlüsseln, ohne die Datei gibt es den Bereich nicht. Entsperrt bleibt er bis zum Neuladen.
+// Ihre Prompts liegen verschlüsselt neben der App (geschuetzt/<bereich>.json, erstellt mit verschluesseln.mjs), damit alle sie
+// haben; ohne Passwort gibt es nichts zu entschlüsseln. Groß/klein, Leer- und Satzzeichen zählen nicht. Entsperrt bis zum Neuladen.
 async function entsperren(bereich, pin) {
-  const roh = await gh(`geschuetzt/${bereich}.json`);
-  if (!roh) throw new Error('Dieser Bereich ist in deinem Speicher nicht eingerichtet.');
-  const j = JSON.parse(roh), b = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
-  const basis = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin), 'PBKDF2', false, ['deriveKey']);
+  const antwort = await fetch(`geschuetzt/${bereich}.json`);
+  if (!antwort.ok) throw new Error('Dieser Bereich ist gerade nicht erreichbar. Später nochmal versuchen.');
+  const j = await antwort.json(), b = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const basis = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin.toLowerCase().replace(/[^a-zäöüß]/g, '')), 'PBKDF2', false, ['deriveKey']);
   const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b(j.salt), iterations: j.iter, hash: 'SHA-256' }, basis, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
   try { return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b(j.iv) }, key, b(j.daten)))); }
   catch { throw new Error('Falsches Passwort.'); }
@@ -1432,13 +1434,12 @@ const testId = t => `${t.fach}|${t.titel}`;
 const zeitpunkt = d => new Date(d).toLocaleString('de-AT', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 const punkte = t => t.punkte != null && `${String(t.punkte).replace('.', ',')} ${t.punkte === 1 ? 'Punkt' : 'Punkte'}`;
 function teststand(t) {
-  // original: ob der Löser die Originalaufgaben rechnen darf. Bei laufenden bewerteten Tests nur Zwillingsaufgaben.
   const jetzt = Date.now(), von = t.von ? Date.parse(t.von) : null, bis = t.bis ? Date.parse(t.bis) : null;
-  if (t.art === 'selbsttest' || t.uebung) return { gruppe: 'uebung', text: t.art === 'selbsttest' ? 'Selbsttest' : 'zählt nicht für die Note', original: true };
-  if (t.ergebnis || t.verbleibend === 0) return { gruppe: 'fertig', text: 'Erledigt', original: true };
-  if (von && jetzt < von) return { gruppe: 'bald', text: `ab ${zeitpunkt(von)}`, original: false };
-  if (bis && jetzt >= bis) return { gruppe: 'fertig', text: 'Vorbei', original: true };
-  return { gruppe: 'offen', text: bis ? `offen bis ${zeitpunkt(bis)}` : 'offen', original: false, bis };
+  if (t.art === 'selbsttest' || t.uebung) return { gruppe: 'uebung', text: t.art === 'selbsttest' ? 'Selbsttest' : 'zählt nicht für die Note' };
+  if (t.ergebnis || t.verbleibend === 0) return { gruppe: 'fertig', text: 'Erledigt' };
+  if (von && jetzt < von) return { gruppe: 'bald', text: `ab ${zeitpunkt(von)}` };
+  if (bis && jetzt >= bis) return { gruppe: 'fertig', text: 'Vorbei' };
+  return { gruppe: 'offen', text: bis ? `offen bis ${zeitpunkt(bis)}` : 'offen', bis };
 }
 async function onlinetestsZeigen(id) {
   if (!TESTS) {
@@ -1503,7 +1504,7 @@ function testZeigen(t) {
     el('label', {}, 'Passwort', el('input', { name: 'pw', type: 'password', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', required: true })),
     el('div', {}, el('button', { class: 'knopf voll' }, 'Öffnen')),
     el('p', { class: 'klein', role: 'status' }, 'Der Löser ist mit einem Passwort geschützt.'));
-  const knopfText = !fertigGeloest ? 'Lösen lassen' : st.original && !fertigGeloest.original ? 'Jetzt mit den Originalzahlen lösen' : 'Neu lösen';
+  const knopfText = !fertigGeloest ? 'Lösen lassen' : fertigGeloest.original === false ? 'Mit den Originalzahlen lösen' : 'Neu lösen';
   $('onlinetests').replaceChildren(...[
     el('p', {}, el('a', { class: 'zurueck', href: '#/onlinetests' }, 'Alle Onlinetests')),
     el('header', { class: 'ausgabe-kopf' }, el('h1', {}, t.titel),
@@ -1514,34 +1515,32 @@ function testZeigen(t) {
         el('div', { class: 'aufgabentext', tabindex: '0' }, aufgabe)]
         : el('p', { class: 'leer' }, st.gruppe === 'bald' ? 'Der Test hat noch nicht begonnen. Die Fragen liest der PC, sobald er offen ist.'
           : st.gruppe === 'offen' ? 'Die Fragen liest der PC beim nächsten Abgleich (höchstens alle 12 Stunden).' : 'Zu diesem Test zeigt OLAT keine Fragen.')),
-    GESCHUETZT.has('onlinetest.json') && el('section', { class: 'schritt', 'aria-labelledby': 'tz-loeser' },
+    el('section', { class: 'schritt', 'aria-labelledby': 'tz-loeser' },
       el('h2', { id: 'tz-loeser' }, 'Löser'),
       !LOESER_PROMPT ? sperre : [
-        el('p', { class: 'klein' }, st.original
-          ? 'MiMo V2.6 Pro rechnet jede Frage mit Nachdenken vor: das Ergebnis so, wie es in OLAT eingetragen würde, und den Rechenweg zum Aufklappen. In OLAT trägt der Löser nichts ein.'
-          : 'Der Test läuft noch und zählt für die Note. Fragen mit Punkten rechnet der Löser deshalb an einer Zwillingsaufgabe mit anderen Zahlen vor; den Weg wendest du auf deine Zahlen an. Fragen ohne Punkte löst er direkt. Nach dem Ende des Zeitraums gibt es die Originale.'),
+        el('p', { class: 'klein' }, st.gruppe === 'offen'
+          ? 'Erst selbst rechnen, dann vergleichen: MiMo V2.6 Pro rechnet jede Frage mit Nachdenken vor, mit dem Ergebnis so, wie es in OLAT eingetragen würde, und dem Rechenweg zum Aufklappen. Eintragen tust du selbst, der Löser schreibt nichts nach OLAT.'
+          : 'MiMo V2.6 Pro rechnet jede Frage mit Nachdenken vor: das Ergebnis so, wie es in OLAT eingetragen würde, und den Rechenweg zum Aufklappen.'),
         el('div', { class: 'knopfreihe' },
           L.laeuft ? el('div', { class: 'presse', id: 'lo-status', role: 'status' }, L.hinweis)
             : el('button', { class: 'knopf voll', type: 'button', disabled: !aufgabe, onclick: () => loesen(t) }, knopfText),
-          fertigGeloest && !L.laeuft && el('span', { class: 'meta' }, `${fertigGeloest.original ? 'Originalaufgaben' : 'Zwillingsaufgaben'} · ${zeitpunkt(fertigGeloest.zeit)} · ${geld(fertigGeloest.preis || 0)}`)),
+          fertigGeloest && !L.laeuft && el('span', { class: 'meta' }, `Gelöst ${zeitpunkt(fertigGeloest.zeit)} · ${geld(fertigGeloest.preis || 0)}`)),
         L.fehler && el('p', { class: 'fehlertext' }, L.fehler),
         fertigGeloest && loesungZeigen(fertigGeloest.text)]),
   ].filter(Boolean));
 }
 async function loesen(t) {
-  const id = testId(t), st = teststand(t), L = LOESUNGEN[id];
+  const id = testId(t), L = LOESUNGEN[id];
   const hier = () => document.body.dataset.ansicht === 'onlinetests' && decodeURIComponent(location.hash).endsWith(id);
   const sag = text => { L.hinweis = text; const s = $('lo-status'); if (s && hier()) s.textContent = text; };
   Object.assign(L, { laeuft: true, fehler: '', hinweis: 'Denkt nach …' });
   if (hier()) testZeigen(t);
   await wach(true);
   try {
-    const auftragText = (st.original ? 'Löse alle Fragen mit den Originalzahlen.'
-      : 'Dieser Test läuft noch und zählt für die Note. Für jede Frage mit Punkten (im Kopf der Frage „Max. … Punkt“ größer als 0) verlangt die Aufgabenstellung eine Zwillingsaufgabe: gleicher Aufgabentyp, andere Zahlen. Fragen mit „Max. 0 Punkt“ oder ausdrücklich unbewertete Fragen löst du mit den Originalzahlen.')
-      + `\n\nFach: ${t.fach}\nTest: ${t.titel}\n\n=== STARTSEITE ===\n${t.startseite || '(keine)'}\n\n=== FRAGEN ===\n${t.fragen || '(stehen auf der Startseite)'}`;
+    const auftragText = `Löse alle Fragen mit den Originalzahlen.\n\nFach: ${t.fach}\nTest: ${t.titel}\n\n=== STARTSEITE ===\n${t.startseite || '(keine)'}\n\n=== FRAGEN ===\n${t.fragen || '(stehen auf der Startseite)'}`;
     const { text, preis } = await strom({ ...LOESER, messages: [{ role: 'system', content: LOESER_PROMPT }, { role: 'user', content: auftragText }] },
       x => sag(`Schreibt … Frage ${Math.max(1, (x.match(/^### /gm) || []).length)}`), () => sag('Denkt nach …'));
-    merk('loeser:' + id, JSON.stringify({ text, preis, zeit: new Date().toISOString(), original: st.original }));
+    merk('loeser:' + id, JSON.stringify({ text, preis, zeit: new Date().toISOString() }));
   } catch (e) { L.fehler = wpWarum(e); }
   L.laeuft = false;
   wach(false); kosten();
@@ -1748,7 +1747,6 @@ async function zeichne() {
   for (const id of ['titelblatt', 'ausgabe', 'einstellungen', 'kalender', 'wordpower', 'onlinetests', 'anleitung']) $(id).hidden = id !== neu;
   document.body.dataset.ansicht = neu;
   document.querySelectorAll('.mit-daten').forEach(a => { a.hidden = !fertig(); });
-  $('nav-wp').hidden = !GESCHUETZT.has('wordpower.json');
   $('druck').hidden = neu !== 'titelblatt';
   $('nach-titel').hidden = neu === 'titelblatt';
   $('modell-name').textContent = $('modell').value;
@@ -1777,9 +1775,7 @@ async function start() {
   kosten();
   if (!fertig()) return;
   status('Lade die Ausgaben …');
-  const geschuetzt = gh('geschuetzt', { roh: false }).then(l => { GESCHUETZT = new Set((l || []).map(d => d.name)); }).catch(() => {});
   try { await laden(); status(''); } catch (e) { status(e.message, true); }
-  await geschuetzt;
   await zeichne();
   await abgleichHolen();
 }
