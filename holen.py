@@ -1,26 +1,36 @@
-"""Holt neue Unterlagen aus OLAT und lädt ihren Text ins private Daten-Repo (Ordner daten/).
+"""Holt neue Unterlagen aus OLAT und lädt ihren Text ins private Daten-Repo (über die GitHub-API, ohne git).
 
-Start: holen.bat  (oder: python holen.py [Fach ...]; --auto = stündlicher Lauf aus der Aufgabenplanung)
+Einrichten: in der App „PC einrichten“ (lädt Python, dieses Skript und die Aufgabenplanung nach %LOCALAPPDATA%\\Lernhelfer).
+Start von Hand: python holen.py [Fach ...]; --auto = Lauf aus der Aufgabenplanung (alle 30 Minuten), --kurse = nur Kurse suchen.
 Ist die OLAT-Sitzung abgelaufen, öffnet sich Chrome: dort selbst einloggen (SSO + Authenticator).
 
 Tests: Laufende Onlinetests werden einmal angesehen und danach mit „Test unterbrechen“ + „Ok“ verlassen,
 Selbsttests genauso. Nach Ablauf stehen Fragen und Lösung auf der Startseite. Ein Wächter im Browser lässt
 nur Lesen und genau den jeweils nächsten erlaubten Schritt durch – nie Speichern, Beenden oder Abbrechen, siehe erlaubt().
 """
+import base64
+import hashlib
 import html
 import json
 import logging
+import os
 import re
-import subprocess
 import sys
 import zipfile
 from datetime import datetime, timedelta
 from pathlib import Path
-from urllib.parse import parse_qs, unquote, urljoin, urlparse
+from urllib.error import HTTPError
+from urllib.parse import parse_qs, quote, unquote, urljoin, urlparse
+from urllib.request import Request, urlopen
 
 BASIS = Path(__file__).parent
-MATERIAL, DATEN = BASIS / "material", BASIS / "daten"
-KURSE = json.loads((BASIS / "kurse.json").read_text("utf-8"))
+MATERIAL = BASIS / "material"
+KURSDATEI = BASIS / "kurse.json"  # fehlt sie, sucht der erste Abgleich die Kurse selbst (kurse_finden)
+KURSE = json.loads(KURSDATEI.read_text("utf-8")) if KURSDATEI.exists() else None
+ZUGANG = BASIS / "zugang.json"  # {"repo": "name/lernhelfer-daten", "token": "github_pat_…"}, schreibt das Einrichten
+STAND = BASIS / ".stand.json"  # letzter Abgleich, hochgeladene Dateiversionen, wann das Login-Fenster zuletzt kam
+APP = "https://xeonsimp.github.io/lernhelfer/"
+API = os.environ.get("LH_API", "https://api.github.com")  # der Prüfstand setzt hier eine Attrappe ein
 SITZUNG = BASIS / ".olat-sitzung.json"
 PROFIL = BASIS / ".olat-chrome"  # eigenes Chrome-Profil nur fürs OLAT-Login
 KANAL = "chrome" if any(Path(p, r"Google\Chrome\Application\chrome.exe").exists() for p in
@@ -66,16 +76,17 @@ def fach_json(fach):
             dateien.append({"datei": f"{q['name']}/{f.name}", "art": q["art"], "text": t})
     for f in sorted((MATERIAL / fach / TESTS).glob("*.txt"), key=lambda f: natur(f.name)):
         dateien.append({"datei": f"{TESTS}/{f.name}", "art": "test", "text": f.read_text("utf-8")})
-    return {"stand": datetime.now().strftime("%d.%m.%Y %H:%M"), "dateien": dateien}
+    return {"dateien": dateien}  # ohne Zeitstempel: unveränderte Fächer werden nicht neu hochgeladen
 
 
 class Abgelaufen(Exception):
     pass
 
 
-def olat_login(p, sichtbar=True):
+def olat_login(p, sichtbar=True, fenster_auf=lambda: None):
     """Erst unsichtbar mit gespeicherter Sitzung. Ist die abgelaufen, öffnet sich Chrome mit eigenem Lernhelfer-Profil
-    zum Einloggen (SSO + Authenticator); dort gespeicherte Passwörter füllt Chrome beim nächsten Mal selbst aus."""
+    zum Einloggen (SSO + Authenticator); dort gespeicherte Passwörter füllt Chrome beim nächsten Mal selbst aus.
+    Wartet höchstens 10 Minuten (Playwright-TimeoutError)."""
     browser = p.chromium.launch(channel=KANAL, headless=True)
     for versuch in (1, 2):
         ctx = browser.new_context(storage_state=SITZUNG if SITZUNG.exists() else None, accept_downloads=True)
@@ -87,6 +98,7 @@ def olat_login(p, sichtbar=True):
         if versuch == 2 or not sichtbar:
             browser.close()
             raise Abgelaufen
+        fenster_auf()
         fenster = p.chromium.launch_persistent_context(PROFIL, channel=KANAL, headless=False,
                                                        ignore_default_args=["--enable-automation", "--disable-extensions"])
         seite = fenster.pages[0] if fenster.pages else fenster.new_page()
@@ -95,6 +107,77 @@ def olat_login(p, sichtbar=True):
         seite.get_by_text("Eingeloggt als").wait_for(timeout=600_000)
         fenster.storage_state(path=SITZUNG)
         fenster.close()
+
+
+FACHNAMEN = {"BWL": r"betriebswirt", "VWL": r"volkswirt", "Mathematik": r"mathemati", "Statistik": r"statisti",
+             "Englisch": r"englisch|english", "Recht": r"recht", "Rechnungswesen": r"rechnungswesen|buchhalt",
+             "Wirtschaftsinformatik": r"wirtschaftsinformatik"}
+NICHT_LADEN = re.compile(r"video|aufzeichnung|livestream|einstieg", re.I)  # Dokument-Knoten ohne Text
+
+
+def semester(jetzt):
+    """Semesterkürzel wie in den LFU-Kurstiteln: Oktober 2026 bis Februar 2027 = 2026W, März bis September = S."""
+    return f"{jetzt.year}S" if 3 <= jetzt.month <= 8 else f"{jetzt.year - (jetzt.month <= 2)}W"
+
+
+def kursfach(titel, jetzt):
+    """Fach zu einem Kurstitel aus „Meine Kurse“, None = nicht abgleichen (anderes Semester, kein Fach erkennbar)."""
+    code = re.match(r"(\d{4}[WS])\d+\s+", titel)
+    if code and code.group(1) != semester(jetzt):
+        return None
+    for fach, muster in FACHNAMEN.items():
+        if re.search(muster, titel, re.I):
+            return fach
+    rest = re.sub(r"^\d{4}[WS]\d+\s+(?:[A-Z]{2}\s+)?", "", titel) if code else ""
+    return " ".join(rest.split()[:3]).rstrip(":-–") or None  # ponytail: unbekanntes Fach heißt nach den ersten Wörtern
+
+
+def kursart(kurs, knoten_titel):
+    if re.search(r"syllabus|general information|organisator|faq", knoten_titel, re.I):
+        return "syllabus"
+    return "ps" if re.match(r"(\d{4}[WS]\d+\s+)?PS\b", kurs) or re.search(r"\bPS\b|proseminar|aufgabe", knoten_titel, re.I) else "folien"
+
+
+def kurse_finden(page, jetzt=None):
+    """Baut kurse.json aus „Meine Kurse → Aktiv“: Ordner (eine Unterordner-Ebene), Dokumente und Seiten oben im Kurs.
+    Klausurarchiv, Foren, Abgaben, Videos und Tests (die liest tests()) bleiben draußen."""
+    jetzt = jetzt or datetime.now()
+    page.goto(OLAT + "/auth/MyCoursesSite/0/My/0")
+    page.wait_for_load_state("networkidle")
+    kurse = page.evaluate(r"""() => [...new Map([...document.querySelectorAll('#o_main_center_content_inner a[href*="RepositoryEntry/"]')]
+      .filter(a => a.innerText.trim() && a.innerText.trim() !== 'Öffnen')
+      .map(a => [a.href.match(/RepositoryEntry\/(\d+)/)[1], a.innerText.trim()])).entries()]""")
+    neu = {}
+    for kurs, titel in kurse:
+        fach = kursfach(titel, jetzt)
+        if not fach:
+            continue
+        typ = (re.match(r"\d{4}[WS]\d+\s+([A-Z]{2})\b", titel) or [None, ""])[1]
+        alle = knoten(page, kurs)
+        wurzel = alle[0]["titel"] if alle else None
+        for k in alle:
+            if k["eltern"] in ("Klausurarchiv", "Abgaben") or not k["titel"]:
+                continue
+            url = f"{kurs}/CourseNode/{k['id']}"
+            if k["icon"] == "o_bc_icon":
+                page.goto(f"{OLAT}/auth/RepositoryEntry/{url}")
+                page.wait_for_load_state("networkidle")
+                unter = [t.strip() for t in page.locator("#o_main_center_content_inner .o_folder_card:has(.o_filetype_folder) .o_folder_card_title").all_inner_texts()]
+                eintraege = [(k["titel"], url)] + [(f"{k['titel']} {u}", f"{url}/path%3D~~{quote(u)}/0") for u in unter]
+            elif (k["icon"] is None and not NICHT_LADEN.search(k["titel"])) or (k["icon"] == "o_sp_icon" and k["eltern"] == wurzel):
+                eintraege = [(k["titel"], url)]
+            else:
+                continue
+            for name, adresse in eintraege:
+                neu.setdefault(fach, []).append({"name": re.sub(r'[\\/:*?"<>|]', "-", f"{typ} {name}".strip()),  # wird Ordnername
+                                                 "art": kursart(titel, name), "url": adresse})
+    for fach, liste in neu.items():  # gleiche Namen (z. B. zweimal „Syllabus“) bekommen eine Nummer
+        gesehen = {}
+        for q in liste:
+            gesehen[q["name"]] = gesehen.get(q["name"], 0) + 1
+            if gesehen[q["name"]] > 1:
+                q["name"] += f" {gesehen[q['name']]}"
+    return neu
 
 
 def oeffne(page, url):
@@ -249,11 +332,47 @@ def test_lesen(page, frei, startknopf):
         frei.clear()
 
 
-def laeuft(page, seite):
-    """Bewerteter Test ist gerade bearbeitbar: Startknopf aktiv, Versuch übrig, kein Zeitlimit pro Versuch."""
+def zeitraum(seite):
+    """(von, bis) aus „Verfügbarkeit: 15.10.2026, 16:30 bis 19.10.2026, 18:00“ bzw. „Bis …“ / „Ab …“; fehlt = None."""
+    zeile = (re.search(r"Verfügbarkeit:([^\n]*)", seite.split("Informationen")[-1]) or [None, ""])[1]
+    d = [datetime.strptime(f"{t}, {u}", "%d.%m.%Y, %H:%M") for t, u in re.findall(r"(\d\d\.\d\d\.\d{4}), (\d\d:\d\d)", zeile)]
+    if len(d) == 1:
+        return (None, d[0]) if zeile.strip().lower().startswith("bis") else (d[0], None)
+    return (d[0], d[1]) if len(d) == 2 else (None, None)
+
+
+def laeuft(page, seite, jetzt=None):
+    """Bewerteter Test ist gerade bearbeitbar: Zeitraum hat begonnen, Startknopf da, Versuch übrig, kein Zeitlimit pro Versuch."""
     info = seite.split("Informationen")[-1]
-    return page.locator("a.o_sel_start_qti21assessment").count() == 1 and "Dies sind Ihre Testresultate" not in seite \
+    von, bis = zeitraum(seite)
+    jetzt = jetzt or datetime.now()
+    return (von is None or von <= jetzt) and (bis is None or jetzt < bis) \
+        and page.locator("a.o_sel_start_qti21assessment").count() == 1 and "Dies sind Ihre Testresultate" not in seite \
         and re.search(r"Verbleibend: [1-9]", info) and not re.search(r"zeit|dauer|minute", info, re.I)
+
+
+def testliste(fach):
+    """Alle Tests eines Fachs für den Onlinetest-Überblick der App: Zeitraum, Punkte, Versuche, Fragen.
+    Den Stand (läuft, vorbei, erledigt) rechnet die App selbst aus der Uhrzeit."""
+    ordner, aus = MATERIAL / fach / TESTS, []
+    for f in sorted(ordner.glob("*.txt"), key=lambda f: natur(f.name)):
+        if f.stem.endswith(" – Fragen"):
+            continue
+        t, fragen = f.read_text("utf-8"), ordner / f"{f.stem} – Fragen.txt"
+        if t.startswith("Selbsttest „"):  # Selbsttest-Baustein: die Datei enthält schon die Fragen
+            aus.append({"fach": fach, "titel": f.stem, "art": "selbsttest", "fragen": t})
+            continue
+        info = t.split("Informationen")[-1]
+        von, bis = zeitraum(t)
+        zahl = lambda muster: (m := re.search(muster, info)) and float(m.group(1).replace(",", "."))
+        aus.append({"fach": fach, "titel": f.stem, "art": "test", "startseite": t,
+                    "fragen": fragen.read_text("utf-8") if fragen.exists() else None,
+                    "von": von and von.isoformat(timespec="minutes"), "bis": bis and bis.isoformat(timespec="minutes"),
+                    "punkte": zahl(r"Max\. Punktzahl: ([\d.,]+)"), "verbleibend": zahl(r"Verbleibend: (\d+)"),
+                    "ergebnis": "Dies sind Ihre Testresultate" in t,
+                    "uebung": bool(re.search(r"nicht relevant für die Leistungsbeurteilung|ohne Notendruck|nur zur Übung", t)
+                                   or "Selbsttest" in f.stem)})
+    return aus
 
 
 def tests(browser, fach):
@@ -306,49 +425,106 @@ def tests(browser, fach):
     return neu
 
 
-def git(*args):
-    return subprocess.run(["git", "-C", str(DATEN), *args], check=True, capture_output=True, text=True).stdout
+def api(methode, pfad, body=None):
+    """GitHub-API mit dem Token aus zugang.json (darf nur das eigene Daten-Repo lesen und schreiben)."""
+    z = json.loads(ZUGANG.read_text("utf-8"))
+    anfrage = Request(f"{API}/repos/{z['repo']}/contents/{quote(pfad)}", method=methode, data=body and json.dumps(body).encode(),
+                      headers={"Authorization": "Bearer " + z["token"], "Accept": "application/vnd.github+json", "User-Agent": "Lernhelfer"})
+    with urlopen(anfrage, timeout=120) as r:
+        return json.loads(r.read())
+
+
+def hochladen(stand, pfad, daten):
+    """Eine Datei ins Daten-Repo; unverändert seit dem letzten Hochladen = nichts tun (Git-Prüfsumme lokal gerechnet)."""
+    shas = stand.setdefault("sha", {})
+    if shas.get(pfad) == hashlib.sha1(b"blob %d\0" % len(daten) + daten).hexdigest():
+        return
+    for versuch in (1, 2):
+        body = {"message": f"OLAT-Abgleich {datetime.now():%d.%m.%Y %H:%M}: {pfad}", "content": base64.b64encode(daten).decode()}
+        if shas.get(pfad):
+            body["sha"] = shas[pfad]
+        try:
+            shas[pfad] = api("PUT", pfad, body)["content"]["sha"]
+            return
+        except HTTPError as e:  # 409/422: Datei gibt es schon in anderer Fassung (erster Lauf, anderes Gerät) → aktuelle holen
+            if e.code not in (409, 422) or versuch == 2:
+                raise
+            try:
+                shas[pfad] = api("GET", pfad)["sha"]
+            except HTTPError as e2:
+                if e2.code != 404:
+                    raise
+                shas.pop(pfad, None)
+
+
+def aktualisieren():
+    """Installierte Kopien holen sich neue Fassungen von holen.py selbst (gilt ab dem nächsten Lauf); die Entwicklungskopie nicht."""
+    if (BASIS / ".git").exists():
+        return
+    try:
+        neu = urlopen(APP + "holen.py", timeout=30).read()
+        compile(neu, "holen.py", "exec")
+        if neu != Path(__file__).read_bytes():
+            Path(__file__).write_bytes(neu)
+            print("holen.py aktualisiert.")
+    except Exception as e:
+        print("Aktualisierung übersprungen:", e)
 
 
 if __name__ == "__main__":
-    from playwright.sync_api import sync_playwright
+    from playwright.sync_api import TimeoutError as Zeitueberschreitung, sync_playwright
 
-    auto = "--auto" in sys.argv  # stündlich aus der Aufgabenplanung: ohne Fenster, Ausgaben ins Log
-    faecher = [a for a in sys.argv[1:] if not a.startswith("--")] or list(KURSE)
+    auto = "--auto" in sys.argv  # aus der Aufgabenplanung: ohne Konsole, Ausgaben ins Log
     if auto:
         sys.stdout = sys.stderr = open(BASIS / "holen.log", "a", encoding="utf-8", buffering=1)
         print(f"--- {datetime.now():%d.%m.%Y %H:%M}")
-    git("pull", "--rebase", "--quiet")  # Lernseiten, die das iPad inzwischen gespeichert hat
-    ABGLEICH = DATEN / "abgleich.json"  # zeigt die App: wann zuletzt abgeglichen, ob der PC neu einloggen muss
-    alt = json.loads(ABGLEICH.read_text("utf-8")) if ABGLEICH.exists() else {}
+    stand = json.loads(STAND.read_text("utf-8")) if STAND.exists() else {}
+    alt = stand.get("abgleich", {})
+    jetzt = datetime.now()
 
-    def melde(ok, text):
-        ABGLEICH.write_text(json.dumps({"zeit": datetime.now().isoformat(timespec="minutes"), "ok": ok, "text": text},
-                                       ensure_ascii=False), "utf-8")
-        git("add", "-A")
-        if git("status", "--porcelain"):
-            git("commit", "--quiet", "-m", f"OLAT-Abruf {datetime.now():%d.%m.%Y %H:%M}")
-            git("push", "--quiet")
+    def melde(ok, text, dateien=()):
+        stand["abgleich"] = {"zeit": datetime.now().isoformat(timespec="minutes"), "ok": ok, "text": text}
+        try:
+            for pfad, inhalt in [*dateien, ("abgleich.json", stand["abgleich"])]:
+                hochladen(stand, pfad, json.dumps(inhalt, ensure_ascii=False).encode())
+        finally:
+            STAND.write_text(json.dumps(stand, ensure_ascii=False), "utf-8")
 
     with sync_playwright() as p:
+        # Login-Fenster aus der Aufgabenplanung höchstens alle 8 Stunden (z. B. morgens nach dem Einschalten), sonst nervt es
+        def fenster_auf():
+            stand["fenster"] = datetime.now().isoformat(timespec="minutes")
+            STAND.write_text(json.dumps(stand, ensure_ascii=False), "utf-8")
         try:
-            browser, ctx, page = olat_login(p, sichtbar=not auto)
-        except Abgelaufen:
-            print("OLAT-Anmeldung abgelaufen.")
-            if alt.get("ok") is not False:
-                melde(False, "OLAT-Anmeldung am PC abgelaufen – dort holen.bat starten und einloggen.")
-            sys.exit()
+            browser, ctx, page = olat_login(p, sichtbar=not auto or jetzt - datetime.fromisoformat(stand.get("fenster", "2000-01-01")) > timedelta(hours=8),
+                                            fenster_auf=fenster_auf)
+        except (Abgelaufen, Zeitueberschreitung) as e:
+            print("OLAT-Anmeldung abgelaufen.", type(e).__name__)
+            if alt.get("ok") is not False and ZUGANG.exists():
+                melde(False, "OLAT-Anmeldung am PC abgelaufen – am PC „Lernhelfer OLAT“ auf dem Desktop doppelklicken und einloggen.")
+            sys.exit(0 if auto else 1)
         ctx.storage_state(path=SITZUNG)  # jeder Aufruf hält die OLAT-Sitzung wach
-        if auto and alt.get("ok") and datetime.now() - datetime.fromisoformat(alt["zeit"]) < timedelta(hours=12):
+        if auto and alt.get("ok") and jetzt - datetime.fromisoformat(alt["zeit"]) < timedelta(hours=12):
             print("OLAT-Sitzung aktiv, nur wach gehalten.")
             browser.close()
             sys.exit()  # ponytail: voller Abgleich höchstens alle 12 Stunden, dazwischen nur wach halten
+        # Selbst gefundene Kurse jedes Semester neu suchen; eine von Hand gepflegte kurse.json bleibt, wie sie ist
+        if KURSE is None or "--kurse" in sys.argv or stand.get("kurse_semester", semester(jetzt)) != semester(jetzt):
+            KURSE = kurse_finden(page, jetzt)
+            KURSDATEI.write_text(json.dumps(KURSE, ensure_ascii=False, indent=2), "utf-8")
+            stand["kurse_semester"] = semester(jetzt)
+            print("Gefundene Kurse:", *(f"  {f}: {', '.join(q['name'] for q in l)}" for f, l in KURSE.items()), sep="\n")
+            if "--kurse" in sys.argv:
+                STAND.write_text(json.dumps(stand, ensure_ascii=False), "utf-8")
+                sys.exit()
+        if auto:
+            aktualisieren()
+        faecher = [a for a in sys.argv[1:] if not a.startswith("--")] or list(KURSE)
         neu = [n for f in faecher for n in sync(ctx, page, f)]
         ctx.storage_state(path=SITZUNG)
         neu += [n for f in faecher for n in tests(browser, f)]
         browser.close()
-    (DATEN / "faecher").mkdir(parents=True, exist_ok=True)
-    for f in faecher:
-        (DATEN / "faecher" / f"{f}.json").write_text(json.dumps(fach_json(f), ensure_ascii=False), "utf-8")
-    melde(True, f"{len(neu)} neue Unterlagen" if neu else "Nichts Neues in OLAT")
+    tests_alle = [t for f in KURSE for t in testliste(f)]
+    melde(True, f"{len(neu)} neue Unterlagen" if neu else "Nichts Neues in OLAT",
+          [(f"faecher/{f}.json", fach_json(f)) for f in faecher] + [("onlinetests.json", tests_alle)])
     print("\n".join(neu) or "Nichts Neues in OLAT.", "\nFertig – auf dem iPad die App neu laden.", sep="\n")

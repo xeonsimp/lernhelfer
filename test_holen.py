@@ -1,6 +1,7 @@
 import tempfile
 import zipfile
 from pathlib import Path
+from urllib.error import HTTPError
 
 import holen
 
@@ -63,6 +64,57 @@ def test():
     assert erlaubt("POST", "https://lms.uibk.ac.at/auth/22:1:1110563449:2:1/", "cid=link_0&_csrf=x", ok)
     assert not erlaubt("POST", "https://lms.uibk.ac.at/auth/22:1:1110563450:2:1/", "cid=link_1&_csrf=x", ok)  # Abbrechen
     assert not erlaubt("POST", "https://lms.uibk.ac.at/auth/22:1:1110563451:2:1/", "cid=link_0&_csrf=x", ok)  # anderer Dialog
+
+    # Zeitraum von der Startseite; vor Beginn wird ein Test nie gestartet, auch wenn OLAT einen Startknopf zeigt
+    d = holen.datetime
+    assert holen.zeitraum("Informationen\n\nVerfügbarkeit: 15.10.2026, 16:30 bis 19.10.2026, 18:00 (wird automatisch eingezogen)") \
+        == (d(2026, 10, 15, 16, 30), d(2026, 10, 19, 18, 0))
+    assert holen.zeitraum("Informationen\nVerfügbarkeit: Bis 19.10.2026, 08:00 (wird automatisch eingezogen)") == (None, d(2026, 10, 19, 8, 0))
+    assert holen.zeitraum("Informationen\nMax. Lösungsversuche: 100 | Verbleibend: 100") == (None, None)
+
+    class Seite:  # genau ein Startknopf
+        locator = lambda self, sel: type("L", (), {"count": lambda s: 1})()
+    vwl2 = "Informationen\n\nMax. Punktzahl: 3 Punkte\n\nVerfügbarkeit: 15.10.2026, 16:30 bis 19.10.2026, 18:00\n\nMax. Lösungsversuche: 1 | Verbleibend: 1\n\nTest starten"
+    assert not holen.laeuft(Seite(), vwl2, d(2026, 10, 14, 19, 0))  # beginnt erst morgen
+    assert holen.laeuft(Seite(), vwl2, d(2026, 10, 16, 9, 0))
+    assert not holen.laeuft(Seite(), vwl2, d(2026, 10, 19, 18, 0))  # vorbei
+
+    # Kurse finden: Fach aus dem Titel, nur aktuelles Semester
+    jetzt = d(2026, 10, 14)
+    assert holen.semester(jetzt) == "2026W" and holen.semester(d(2027, 2, 1)) == "2026W" and holen.semester(d(2027, 3, 1)) == "2027S"
+    for titel, fach in [("2026W432001 VO Grundlagen der Volkswirtschaft", "VWL"), ("2026W436307 PS Einführung in die Betriebswirtschaft", "BWL"),
+                        ("2026W433302 UE Wirtschaftssprachliche Lehrveranstaltung: Wirtschaftsenglisch 1: Communication In Bu", "Englisch"),
+                        ("Mathematik", "Mathematik"), ("Tech Labs - Informatik in der Praxis", None),
+                        ("2025W432001 VO Grundlagen der Volkswirtschaft", None), ("2026W400100 VU Einführung in die Soziologie", "Einführung in die")]:
+        assert holen.kursfach(titel, jetzt) == fach, titel
+    assert holen.kursart("2026W436307 PS Einführung", "Folien") == "ps" and holen.kursart("Mathematik", "Ressourcen VO") == "folien"
+    assert holen.kursart("Mathematik", "Syllabus") == "syllabus" and holen.kursart("Mathematik", "Ressourcen PS") == "ps"
+
+    # Hochladen: unverändert = keine Anfrage; veraltete Prüfsumme (409) → aktuelle holen, nochmal
+    anfragen, antworten = [], [HTTPError("u", 409, "", {}, None), {"sha": "alt2"}, {"content": {"sha": "neu"}}]
+    def api(methode, pfad, body=None):
+        anfragen.append((methode, body and body.get("sha")))
+        a = antworten.pop(0)
+        if isinstance(a, Exception):
+            raise a
+        return a
+    holen.api, stand = api, {"sha": {"x.json": "alt"}}
+    holen.hochladen(stand, "x.json", b"{}")
+    assert anfragen == [("PUT", "alt"), ("GET", None), ("PUT", "alt2")] and stand["sha"]["x.json"] == "neu"
+    stand["sha"]["x.json"] = holen.hashlib.sha1(b"blob 2\0{}").hexdigest()
+    holen.hochladen(stand, "x.json", b"{}")
+    assert len(anfragen) == 3  # gleiche Datei: nichts hochgeladen
+
+    # Testliste für den Onlinetest-Überblick der App
+    with tempfile.TemporaryDirectory() as t:
+        holen.MATERIAL = Path(t)
+        (Path(t) / "M/Tests").mkdir(parents=True)
+        (Path(t) / "M/Tests/Onlinetest 2.txt").write_text("OLAT-Test „Onlinetest 2“ – Startseite\n\n" + vwl2, "utf-8")
+        (Path(t) / "M/Tests/Onlinetest 2 – Fragen.txt").write_text("Frage 1\nMax. 1 Punkt", "utf-8")
+        (Path(t) / "M/Tests/Thema 1.txt").write_text("Selbsttest „Thema 1“ (anonyme, unbewertete Übung)\n\nFrage 1", "utf-8")
+        ot, th = holen.testliste("M")
+        assert (ot["von"], ot["bis"], ot["punkte"], ot["verbleibend"], ot["ergebnis"], ot["uebung"]) == ("2026-10-15T16:30", "2026-10-19T18:00", 3, 1, False, False)
+        assert ot["fragen"] == "Frage 1\nMax. 1 Punkt" and th["art"] == "selbsttest" and th["fragen"].startswith("Selbsttest")
     print("ok")
 
 
