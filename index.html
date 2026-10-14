@@ -385,6 +385,9 @@
   .stamm h3 { margin: 0 0 6px; font: 650 0.9375rem/1.3 var(--sans); }
   .stamm .text { font: 400 0.875rem/1.5 var(--sans); font-variant-numeric: tabular-nums; }
   .stamm .text ul { padding-left: 1em; }
+  .nachtrag { margin-top: 24px; }
+  .nachtrag h3 { margin: 0; font: 650 1rem/1.3 var(--sans); }
+  .nachtrag-tag { max-width: 26rem; margin-top: 12px; }
   .archiv ol { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
   .archiv a { display: inline-flex; align-items: center; min-height: 36px; padding: 6px 14px; border: 1px solid var(--linie); border-radius: 999px; color: var(--text-2); font-weight: 600; font-size: 0.875rem; font-variant-numeric: tabular-nums; }
   @media (hover: hover) { .archiv a:hover { background: var(--bg-2); text-decoration: none; } }
@@ -821,8 +824,8 @@ const HEUTE = iso(heute);
 const TAG = heute.toLocaleDateString('de-AT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 const UHR = heute.toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit' });
 
-const auftrag = (fach, tag) => `Du bist Tutor:in für Studierende im 1. Semester Wirtschaftswissenschaften an der Universität Innsbruck.
-Heute ist ${tag}, ${UHR} Uhr (${HEUTE}). Fach: ${fach}.
+const auftrag = (fach, tag, d = HEUTE) => `Du bist Tutor:in für Studierende im 1. Semester Wirtschaftswissenschaften an der Universität Innsbruck.
+${d === HEUTE ? `Heute ist ${tag}, ${UHR} Uhr (${HEUTE})` : `Dies ist eine nachträgliche Ausgabe zum Stichtag ${datum(d, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} abends (${d}). Schreib sie so, als wäre heute dieser Tag: die letzte Einheit ist die bis zu diesem Tag, „als Nächstes“ heißt nach diesem Tag. Unterlagen, Tests und Folien, die erst danach dazukamen, ignorierst du`}. Fach: ${fach}.
 Unten stehen ALLE Unterlagen, die in OLAT für dieses Fach liegen: Vorlesungsfolien, Proseminar-Unterlagen, Syllabus und Tests (TEST). Bei den Tests sind das die Startseiten der Onlinetests mit Thema, Bearbeitungszeitraum und Bewertung, nach Ablauf auch mit den Fragen, der eigenen Antwort in [eckigen Klammern] und der Lösung; die Fragen laufender Onlinetests, gelesen während der Bearbeitungszeit, mit „Max. … Punkt“ im Kopf jeder Frage; und die Fragen der unbewerteten Selbsttests.
 
 Schritt 1 (nur für dich, nicht ausgeben): Bestimme mit dem Terminplan im Syllabus und dem heutigen Datum, welche Vorlesungs- und PS-Einheit zuletzt stattgefunden hat, welche Unterlagen dazu gehören und welche Einheiten, Abgaben und Tests als Nächstes kommen. Unterlagen, die dafür nicht relevant sind, ignorierst du.
@@ -1017,21 +1020,22 @@ async function ausgabe(f, tag) {
 const aktuell = f => R[f]?.ausgaben[0] && R[f].cache[R[f].ausgaben[0].datum];
 async function quelle(f) { return R[f].quelle ??= JSON.parse(await gh(`faecher/${f}.json`)); }
 
-async function drucke(f) {
+async function drucke(f, d = HEUTE) {  // d: Stichtag, für nachträgliche Ausgaben früherer Einheiten
   const r = R[f];
   if (r.druckt) return;
   r.druckt = true; r.fehler = ''; zeichne();
   try {
     const q = await quelle(f);
-    const prompt = [auftrag(f, TAG), ...q.dateien.map(d => `=== ${d.art.toUpperCase()}: ${d.datei} ===\n${d.text.slice(0, 60000)}`)].join('\n\n');
+    const prompt = [auftrag(f, TAG, d), ...q.dateien.map(d => `=== ${d.art.toUpperCase()}: ${d.datei} ===\n${d.text.slice(0, 60000)}`)].join('\n\n');
     const modell = $('modell').value;
     const antwortKI = await openrouter(modell, prompt);
     const preis = antwortKI.kosten != null ? ` · Kosten ${antwortKI.kosten} $` : '';
-    const text = `*${antwortKI.xhigh ? modell.replace('MAX thinking', 'xhigh (MAX abgeschnitten)') : modell} · ${datum(HEUTE, { day: '2-digit', month: '2-digit', year: 'numeric' })}${preis}*\n\n` + antwortKI.text;
-    const alt = r.ausgaben.find(a => a.datum === HEUTE);
-    const antwort = await nacheinander(() => gh(`lernseiten/${f}/${HEUTE}.md`, { method: 'PUT', roh: false, body: { message: `Ausgabe ${f} ${HEUTE}`, content: base64(text), sha: alt?.sha } }));
-    r.ausgaben = [{ datum: HEUTE, sha: antwort.content.sha }, ...r.ausgaben.filter(a => a.datum !== HEUTE)];
-    r.cache[HEUTE] = zerlege(text, HEUTE);
+    const text = `*${antwortKI.xhigh ? modell.replace('MAX thinking', 'xhigh (MAX abgeschnitten)') : modell} · ${datum(d, { day: '2-digit', month: '2-digit', year: 'numeric' })}${preis}*\n\n` + antwortKI.text;
+    const alt = r.ausgaben.find(a => a.datum === d);
+    const antwort = await nacheinander(() => gh(`lernseiten/${f}/${d}.md`, { method: 'PUT', roh: false, body: { message: `Ausgabe ${f} ${d}`, content: base64(text), sha: alt?.sha } }));
+    r.ausgaben = [{ datum: d, sha: antwort.content.sha }, ...r.ausgaben.filter(a => a.datum !== d)].sort((a, b) => b.datum.localeCompare(a.datum));
+    r.cache[d] = zerlege(text, d);
+    if (d !== HEUTE) location.hash = `#/${encodeURIComponent(f)}/${d}`;
   } catch (e) {
     r.fehler = e.message;
   } finally {
@@ -1272,6 +1276,18 @@ ${a.roh}
 ` + quellen.dateien.map(d => `=== ${d.art.toUpperCase()}: ${d.datei} ===\n${d.text.slice(0, 60000)}`).join('\n\n');
 }, { platzhalter: 'z. B. Wie komme ich bei der Elastizität auf die Formel …', loeschen: 'Alle Fragen und Antworten zu dieser Ausgabe löschen?' });
 
+// Frühere Vorlesungen nacharbeiten: Ausgabe zum Stichtag einer vergangenen VO (aus dem Stundenplan) oder einem Wunschtag
+function nachtrag(f) {
+  const r = R[f], da = new Set(r.ausgaben.map(x => x.datum));
+  const vos = [...new Set((KAL || []).flatMap(k => k.termine).filter(t => t.fach === f && t.art === 'VO' && t.datum < HEUTE && !da.has(t.datum)).map(t => t.datum))].sort().reverse();
+  const feld = el('input', { type: 'date', name: 'stichtag', max: HEUTE, 'aria-label': 'Anderer Tag' });
+  return el('div', { class: 'nachtrag' },
+    el('h3', {}, 'Frühere Vorlesung nacharbeiten'),
+    el('p', { class: 'klein' }, 'Erstellt eine Ausgabe mit Stand dieses Tages: Zusammenfassung dieser Einheit, Übungen, Begriffe. Dauert ein bis drei Minuten.'),
+    r.druckt ? presse() : [
+      vos.length > 0 && el('div', { class: 'knopfreihe' }, vos.map(d => el('button', { class: 'knopf', type: 'button', onclick: () => drucke(f, d) }, `VO ${kurz(d)}`))),
+      el('form', { class: 'zeile nachtrag-tag', onsubmit: e => { e.preventDefault(); if (feld.value && feld.value <= HEUTE) drucke(f, feld.value); } }, feld, el('button', { class: 'knopf' }, 'Für diesen Tag erstellen'))]);
+}
 let SPION = null;  // markiert beim Scrollen den sichtbaren Teil in der Sprungleiste
 async function ausgabeZeigen(f, tag) {
   const r = R[f];
@@ -1327,7 +1343,8 @@ async function ausgabeZeigen(f, tag) {
         return el('div', { class: 'stamm' }, el('h3', {}, kopf.trim()), markdown(el('div', { class: 'text' }), rest.join('\n')));
       }))),
     teil('teil-archiv', 'Frühere Ausgaben', null, el('div', { class: 'archiv' },
-      el('ol', {}, r.ausgaben.map(x => el('li', {}, el('a', { href: `#/${encodeURIComponent(f)}/${x.datum}`, 'aria-current': x.datum === tag ? 'page' : null }, datum(x.datum, { day: '2-digit', month: '2-digit', year: 'numeric' }))))))),
+      el('ol', {}, r.ausgaben.map(x => el('li', {}, el('a', { href: `#/${encodeURIComponent(f)}/${x.datum}`, 'aria-current': x.datum === tag ? 'page' : null }, datum(x.datum, { day: '2-digit', month: '2-digit', year: 'numeric' }))))),
+      nachtrag(f))),
   ].filter(Boolean));
   SPION = new IntersectionObserver(eintraege => eintraege.forEach(e => e.isIntersecting && leiste.querySelectorAll('button').forEach(b =>
     b.dataset.ziel === e.target.id ? b.setAttribute('aria-current', 'true') : b.removeAttribute('aria-current'))), { rootMargin: '-15% 0px -75% 0px' });
@@ -1514,7 +1531,7 @@ function kalenderZeigen() {
   if (!KAL) kalenderLaden().then(() => document.body.dataset.ansicht === 'kalender' && kalenderZeigen()).catch(e => { KAL = []; status(e.message, true); });
 }
 function kalenderNachladen() {  // beim Start: Heute braucht den Stundenplan für „Diese Woche“ und den Chat
-  kalenderLaden().catch(() => { KAL = []; }).then(() => { if (document.body.dataset.ansicht === 'titelblatt') wocheZeigen(); });
+  kalenderLaden().catch(() => { KAL = []; }).then(() => { if (document.body.dataset.ansicht === 'titelblatt') wocheZeigen(); else if (document.body.dataset.ansicht === 'ausgabe') zeichne(); });
 }
 
 /* ---------- Geschützte Bereiche (Word Power, Löser) ---------- */
@@ -2120,7 +2137,7 @@ async function start() {
 
 window.onhashchange = zeichne;
 $('modell').onchange = () => { merk('modell', $('modell').value); $('modell-name').textContent = $('modell').value; };
-$('alle').onclick = () => Promise.all(Object.keys(R).map(drucke));
+$('alle').onclick = () => Promise.all(Object.keys(R).map(f => drucke(f)));
 $('abmelden').onclick = () => {
   if (!confirm('Schlüssel und Zugang von diesem Gerät löschen? Deine Unterlagen und Ausgaben bleiben im Speicher.')) return;
   merk('cfg', null); cfg = null; GUTHABEN = null; ABGLEICH = null;
