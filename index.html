@@ -3035,7 +3035,9 @@ async function ghVerbinden(token) {
   if (!repo.private) throw new Error(`„${repo.full_name}“ ist öffentlich. Folien dürfen nicht öffentlich liegen: auf GitHub im Repo unter Settings ganz unten „Change visibility“ → Private, dann nochmal verbinden.`);
   speichereCfg({ github: token, repo: repo.full_name });
 }
-function pcDatei(z = cfg) {  // Startdatei mit Zugang; das eigentliche Einrichten lädt sie frisch von hier (einrichten.ps1). Server: z.api
+function pcDatei(z) {  // Startdatei mit Zugang; das eigentliche Einrichten lädt sie frisch von hier (einrichten.ps1). Server: z.api
+  if (!z?.repo) z = cfg;  // als Klick-Handler kommt das Klick-Ereignis an, nicht der Zugang
+  if (!z?.repo || !z?.github) return status('Erst Schritt 1 und 2 abschließen, dann das PC-Programm laden.', true);
   const skriptUrl = new URL('einrichten.ps1', location.href).href;
   speichern(['@echo off', 'chcp 65001 >nul', 'title Lernhelfer einrichten', `set "LH_REPO=${z.repo}"`, `set "LH_TOKEN=${z.github}"`, `set "LH_API=${z.api || ''}"`,
     `powershell -NoProfile -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol='Tls12'; iex ([Text.Encoding]::UTF8.GetString((New-Object Net.WebClient).DownloadData('${skriptUrl}')))"`,

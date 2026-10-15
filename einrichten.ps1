@@ -14,7 +14,7 @@ $OhneBom = New-Object Text.UTF8Encoding $false
 function Schritt($nr, $text) { Write-Host ''; Write-Host " $nr/5  $text" -ForegroundColor Cyan }
 
 try {
-  if (-not $env:LH_REPO -or -not $env:LH_TOKEN) { throw 'Bitte die Datei „Lernhelfer-PC-einrichten.cmd“ aus der App starten (Einrichten → PC).' }
+  if (-not $env:LH_REPO -or -not $env:LH_TOKEN -or $env:LH_REPO -eq 'undefined' -or $env:LH_TOKEN -eq 'undefined') { throw 'Bitte die Datei „Lernhelfer-PC-einrichten.cmd“ aus der App starten (Einrichten → PC).' }
   Write-Host ''
   Write-Host ' LERNHELFER · OLAT-Abgleich einrichten' -ForegroundColor Yellow
   Write-Host ' Dauert beim ersten Mal 5 bis 15 Minuten. Fenster bitte offen lassen.'
