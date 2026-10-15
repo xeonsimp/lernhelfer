@@ -27,7 +27,7 @@ BASIS = Path(__file__).parent
 MATERIAL = BASIS / "material"
 KURSDATEI = BASIS / "kurse.json"  # fehlt sie, sucht der erste Abgleich die Kurse selbst (kurse_finden)
 KURSE = json.loads(KURSDATEI.read_text("utf-8")) if KURSDATEI.exists() else None
-ZUGANG = BASIS / "zugang.json"  # {"repo": "name/lernhelfer-daten", "token": "github_pat_…"}, schreibt das Einrichten
+ZUGANG = BASIS / "zugang.json"  # {"repo": "name/lernhelfer-daten", "token": "github_pat_…", "api": Lernhelfer-Server oder null}, schreibt das Einrichten
 STAND = BASIS / ".stand.json"  # letzter Abgleich, hochgeladene Dateiversionen, wann das Login-Fenster zuletzt kam
 APP = "https://xeonsimp.github.io/lernhelfer/"
 API = os.environ.get("LH_API", "https://api.github.com")  # der Prüfstand setzt hier eine Attrappe ein
@@ -427,7 +427,7 @@ def tests(browser, fach):
 def api(methode, pfad, body=None):
     """GitHub-API mit dem Token aus zugang.json (darf nur das eigene Daten-Repo lesen und schreiben)."""
     z = json.loads(ZUGANG.read_text("utf-8"))
-    anfrage = Request(f"{API}/repos/{z['repo']}/contents/{quote(pfad)}", method=methode, data=body and json.dumps(body).encode(),
+    anfrage = Request(f"{z.get('api') or API}/repos/{z['repo']}/contents/{quote(pfad)}", method=methode, data=body and json.dumps(body).encode(),
                       headers={"Authorization": "Bearer " + z["token"], "Accept": "application/vnd.github+json", "User-Agent": "Lernhelfer"})
     with urlopen(anfrage, timeout=120) as r:
         return json.loads(r.read())

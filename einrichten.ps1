@@ -1,5 +1,5 @@
 # Richtet den OLAT-Abgleich auf einem Windows-PC ein. Gestartet von „Lernhelfer-PC-einrichten.cmd“ aus der App,
-# die LH_REPO und LH_TOKEN setzt. Braucht keine Administratorrechte; alles landet in %LOCALAPPDATA%\Lernhelfer.
+# die LH_REPO und LH_TOKEN setzt (beim Lernhelfer-Server auch LH_API). Braucht keine Administratorrechte; alles landet in %LOCALAPPDATA%\Lernhelfer.
 # Nochmal starten = aktualisieren (Python und Kurse bleiben, holen.py und Zugang werden erneuert).
 $ErrorActionPreference = 'Stop'
 $ProgressPreference = 'SilentlyContinue'  # sonst lädt Invoke-WebRequest in Windows PowerShell quälend langsam
@@ -44,7 +44,7 @@ try {
 
   Schritt 3 'Lernhelfer-Abgleich laden und verbinden'
   Invoke-WebRequest -UseBasicParsing ($App + 'holen.py') -OutFile (Join-Path $LH 'holen.py')
-  [IO.File]::WriteAllText((Join-Path $LH 'zugang.json'), (@{ repo = $env:LH_REPO; token = $env:LH_TOKEN } | ConvertTo-Json), $OhneBom)
+  [IO.File]::WriteAllText((Join-Path $LH 'zugang.json'), (@{ repo = $env:LH_REPO; token = $env:LH_TOKEN; api = $env:LH_API } | ConvertTo-Json), $OhneBom)
   # Doppelklick-Datei für den Abgleich von Hand (neu einloggen, sofort abgleichen), dazu eine Verknüpfung auf dem Desktop
   [IO.File]::WriteAllText((Join-Path $LH 'Abgleich starten.cmd'), "@echo off`r`ncd /d `"%~dp0`"`r`ntitle Lernhelfer OLAT-Abgleich`r`npython\python.exe holen.py %*`r`necho.`r`npause`r`n", $OhneBom)
   if (-not $env:LH_ORT) {

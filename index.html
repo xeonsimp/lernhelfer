@@ -126,7 +126,7 @@
   @media (hover: hover) { .knopf:disabled:hover { background: var(--bg); } .knopf.voll:disabled:hover { background: var(--akzent); } }
   @media (pointer: coarse) { .knopf { min-height: 44px; } }
   .knopfreihe { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 14px; }
-  input:not([type="checkbox"], [type="file"]), textarea, select { display: block; width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid var(--linie-2); border-radius: var(--r);
+  input:not([type="checkbox"], [type="file"], [type="radio"]), textarea, select { display: block; width: 100%; min-height: 44px; padding: 10px 12px; border: 1px solid var(--linie-2); border-radius: var(--r);
     background: var(--bg); color: var(--text); font: 400 1rem/1.4 var(--sans); transition: border-color 0.15s; }
   textarea { resize: vertical; line-height: 1.5; }
   :is(input, textarea, select):focus-visible { outline: 2px solid var(--akzent); outline-offset: -1px; border-color: var(--akzent); }
@@ -611,6 +611,61 @@
   .vt-spieler video { width: 100%; max-height: 40vh; border-radius: var(--r-s); background: #000; }
   .vt-spieler .knopf { justify-self: end; min-height: 34px; }
   details.quellen .vt-nochmal { max-width: 640px; }
+
+  /* Server-Version (eigene Domain): Konten und Tarife statt eigener Schlüssel. Was nur in einer Version gilt, ist markiert. */
+  [data-server] .nur-eigen, html:not([data-server]) .nur-server { display: none !important; }
+  .navi a[data-marke]::after { content: attr(data-marke); margin-left: auto; padding: 1px 7px; border-radius: 999px; background: var(--bg-3); color: var(--text-3); font: 650 0.6875rem/1.4 var(--sans); }
+  .sperrkarte { display: grid; justify-items: start; gap: 8px; max-width: 600px; margin-top: 16px; padding: 22px; border: 1px solid var(--linie); border-radius: var(--r-l); background: var(--bg-2); }
+  .sperrkarte h2, .sperrkarte h3 { margin: 0; font: 650 1.1875rem/1.3 var(--sans); }
+  .sperrkarte .klein, .sperrkarte .fehlertext { margin: 0; }
+  .sperrkarte .knopfreihe { margin-top: 6px; }
+  .sperrkarte.klein { padding: 16px 18px; }
+  .sperrkarte.klein h3 { font-size: 1rem; }
+  .assistent > .sperrkarte { max-width: none; margin: 0; padding: 4px 2px; border: 0; background: none; }  /* steht schon in einem Kasten */
+  .tarife { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-top: 24px; }
+  .tarif { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 22px 18px 18px; border: 1px solid var(--linie); border-radius: var(--r-l); background: var(--bg); }
+  .tarif.empfohlen { border-color: var(--akzent); box-shadow: 0 0 0 1px var(--akzent); }
+  .tarif.gewaehlt { background: var(--akzent-flaeche); }
+  .tarif h3 { margin: 0; font: 700 1.125rem/1.2 var(--sans); }
+  .tarif .preis { margin: 0; font: 750 1.75rem/1 var(--sans); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+  .tarif .preis small { color: var(--text-3); font-size: 0.8125rem; font-weight: 550; letter-spacing: 0; }
+  .tarif ul { display: grid; gap: 8px; margin: 2px 0 0; padding: 0; list-style: none; color: var(--text-2); font-size: 0.875rem; line-height: 1.45; }
+  .tarif li { position: relative; padding-left: 22px; }
+  .tarif li::before { content: ""; position: absolute; left: 0; top: 2px; width: 15px; height: 15px; background: var(--ok); -webkit-mask: var(--haken) center / contain no-repeat; mask: var(--haken) center / contain no-repeat; }
+  .tarif li.plus { padding-left: 0; color: var(--text); font-weight: 600; }
+  .tarif li.plus::before { display: none; }
+  .tarif > .knopf, .tarif > .meta:last-child { margin-top: auto; }
+  .tarif .marke-oben { position: absolute; top: -11px; left: 16px; }
+  .zahlung dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 16px; margin: 12px 0 0; padding: 14px 16px; border-radius: var(--r); background: var(--bg-2); font-variant-numeric: tabular-nums; }
+  .zahlung dt { color: var(--text-3); font-size: 0.875rem; font-weight: 600; }
+  .zahlung dd { margin: 0; font-weight: 650; overflow-wrap: anywhere; -webkit-user-select: all; user-select: all; }
+  .laufzeit { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; padding: 0; border: 0; }
+  .laufzeit label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px; border: 1px solid var(--linie-2); border-radius: var(--r); font-weight: 600; cursor: pointer; }
+  .laufzeit input { accent-color: var(--akzent); }
+  .laufzeit label:has(input:checked) { border-color: var(--akzent); background: var(--akzent-flaeche); color: var(--akzent-text); }
+  .laufzeit label:has(input:focus-visible) { outline: 2px solid var(--akzent); outline-offset: 2px; }
+  .zustimmung { display: flex; align-items: flex-start; gap: 10px; margin-top: 14px; color: var(--text-2); font-size: 0.875rem; font-weight: 400; line-height: 1.5; }
+  .zustimmung input { flex: none; width: 18px; height: 18px; margin: 2px 0 0; accent-color: var(--akzent); }
+  .kontingent { height: 6px; margin: 10px 0 4px; border-radius: 3px; background: var(--bg-3); overflow: hidden; }
+  .kontingent span { display: block; height: 100%; border-radius: 3px; background: var(--akzent); }
+  .einladen { display: flex; gap: 8px; margin-top: 12px; }
+  .einladen input { flex: 1; min-width: 0; }
+  .konto-formulare { display: grid; gap: 16px; }
+  .konto-formulare .schritt:first-child { margin-top: 0; }
+  @media (min-width: 900px) { .konto-formulare { grid-template-columns: 1fr 1fr; align-items: start; } }
+  .rechtszeile { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 28px; }
+  .tarifseite .warum { max-width: 680px; margin-top: 36px; }
+  .admin { max-width: 1180px; }
+  .admin h2 { margin: 28px 0 10px; font: 650 1.125rem/1.3 var(--sans); }
+  .tabelle-rahmen { overflow-x: auto; border: 1px solid var(--linie); border-radius: var(--r-l); }
+  .tabelle { width: 100%; border-collapse: collapse; font-size: 0.875rem; font-variant-numeric: tabular-nums; }
+  .tabelle th, .tabelle td { padding: 8px 12px; border-bottom: 1px solid var(--linie); text-align: left; vertical-align: middle; }
+  .tabelle tr:last-child td { border-bottom: 0; }
+  .tabelle th { color: var(--text-3); font-weight: 600; white-space: nowrap; }
+  .tabelle .knopfreihe { flex-wrap: nowrap; margin: 0; }
+  .admin-setzen { display: flex; align-items: center; gap: 6px; }
+  .admin-setzen select { width: auto; min-width: 7.5em; }
+  .admin-setzen input { width: 5.5em; }
 </style>
 </head>
 <body>
@@ -628,6 +683,8 @@
       <a href="#/onlinetests" data-ansicht="onlinetests" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4.5" width="14" height="16" rx="2.5"/><path d="M9.5 3.5h5M9 12.5l2 2 4-4"/></svg>Onlinetests</a>
       <a href="#/wordpower" data-ansicht="wordpower" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a1 1 0 0 1 1 1v9.5a1 1 0 0 1-1 1h-8L7 20v-3.5H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg><span translate="no">Word Power</span></a>
       <a href="#/vortrag" data-ansicht="vortrag" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5M8.5 20.5h7"/></svg>Vortrag</a>
+      <a href="#/upgrade" data-ansicht="upgrade" class="nur-server mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>Tarife</a>
+      <a href="#/admin" data-ansicht="admin" class="nur-server" id="nav-admin" hidden><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l7 3v5c0 4.4-3 7.8-7 9-4-1.2-7-4.6-7-9v-5z"/><path d="M9 12l2 2 4-4"/></svg>Verwaltung</a>
       <hr>
       <a href="#/anleitung" data-ansicht="anleitung"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10.5 5 8.3 4.5 4 4.5v14c4.3 0 6.5.5 8 2 1.5-1.5 3.7-2 8-2v-14c-4.3 0-6.5.5-8 2zM12 6.5v14"/></svg>Anleitung</a>
       <a href="#/einstellungen" data-ansicht="einstellungen"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>Einrichten</a>
@@ -686,7 +743,7 @@
         <p class="schlagzeile">Vom YouTube-Talk zum Hausaufgaben-Entwurf</p>
         <p class="meta">Englisch, Communication in Business</p>
       </header>
-      <form id="wp-sperre" class="sperre">
+      <form id="wp-sperre" class="sperre nur-eigen">
         <label>Passwort <input id="wp-pin" name="passwort" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Passwort" required></label>
         <div><button class="knopf voll">Öffnen</button></div>
         <p class="klein" id="wp-sperre-text" role="status">Das Passwort bekommst du von der Person, die dir den Lernhelfer gezeigt hat.</p>
@@ -707,7 +764,7 @@
           <label class="feld">Transkript <textarea id="wp-out" name="transkript" spellcheck="false" placeholder="Hier erscheint das Transkript. Du kannst auch eins einfügen."></textarea></label>
           <div class="knopfreihe"><button id="wp-dl" class="knopf" type="button" disabled>Als .txt herunterladen</button></div>
         </section>
-        <section class="schritt" aria-labelledby="wp-s2">
+        <section class="schritt" aria-labelledby="wp-s2" id="wp-schritt2">
           <h2 id="wp-s2"><span class="nr">2</span> Hausaufgabe</h2>
           <p class="klein">Word Power Journal, Talk-Skript, Cue Card, Lernstrategien und Progress-Tabelle aus dem Transkript. Mit Stichpunkten kommt ein Reflection-Entwurf dazu.</p>
           <label class="feld"><span>Stichpunkte für die Reflection <span class="opt">optional</span></span>
@@ -717,26 +774,35 @@
           <div id="wp-blatt" class="blatt-wp text" hidden></div>
           <div class="knopfreihe">
             <button id="wp-hwdl" class="knopf" type="button" disabled>Als .html herunterladen (öffnet in Word)</button>
-            <button id="wp-zu" class="knopf" type="button">Wieder sperren</button>
+            <button id="wp-zu" class="knopf nur-eigen" type="button">Wieder sperren</button>
           </div>
         </section>
+        <div id="wp-gesperrt" hidden></div>
       </div>
     </section>
 
     <section id="onlinetests" hidden class="werkstatt"></section>
 
+    <section id="gesperrt" hidden class="werkstatt"></section>
+
+    <section id="upgrade" hidden class="werkstatt tarifseite"></section>
+
+    <section id="admin" hidden class="admin"></section>
+
+    <section id="recht" hidden class="werkstatt anleitung"></section>
+
     <section id="einstellungen" hidden class="werkstatt einrichten">
       <header class="ausgabe-kopf">
-        <h1>Einrichten</h1>
+        <h1 id="ei-titel">Einrichten</h1>
         <p class="schlagzeile" id="ei-schlagzeile">Drei Verbindungen, dann kommt alles von selbst.</p>
-        <p class="meta">Etwa 15 Minuten, am besten am Windows-PC. Jeder Schritt steht ausführlich in der <a href="#/anleitung">Anleitung</a>.</p>
+        <p class="meta nur-eigen">Etwa 15 Minuten, am besten am Windows-PC. Jeder Schritt steht ausführlich in der <a href="#/anleitung">Anleitung</a>.</p>
       </header>
       <div id="ei-schritte"></div>
       <section class="schritt" aria-labelledby="ei-einst">
         <h2 id="ei-einst">Einstellungen</h2>
         <label class="feld">Modell für neue Ausgaben <select id="modell" name="modell"></select></label>
-        <p class="klein">GPT-6 Luna schreibt am gründlichsten, MiMo ist am schnellsten und günstigsten. Eine Ausgabe kostet meist 1 bis 8 Cent.</p>
-        <div id="abmelden-teil">
+        <p class="klein">GPT-6 Luna schreibt am gründlichsten, MiMo ist am schnellsten und günstigsten.<span class="nur-eigen"> Eine Ausgabe kostet meist 1 bis 8 Cent.</span></p>
+        <div id="abmelden-teil" class="nur-eigen">
           <div class="knopfreihe"><button class="knopf" type="button" id="abmelden">Zugang von diesem Gerät löschen</button></div>
           <p class="klein">Schlüssel und Zugang liegen nur in diesem Browser auf diesem Gerät. Löschen betrifft deine Unterlagen nicht.</p>
         </div>
@@ -751,14 +817,15 @@
       </header>
       <ol class="inhalt">
         <li><a href="#a-was">Was der Lernhelfer macht</a></li>
-        <li><a href="#a-brauchst">Was du brauchst</a></li>
-        <li><a href="#a-einrichten">Einrichten in vier Schritten</a></li>
+        <li class="nur-eigen"><a href="#a-brauchst">Was du brauchst</a></li>
+        <li class="nur-eigen"><a href="#a-einrichten">Einrichten in vier Schritten</a></li>
+        <li class="nur-server"><a href="#a-konto">Konto und Tarife</a></li>
         <li><a href="#a-woche">Jede Woche</a></li>
         <li><a href="#a-termine">Termine und Kalender</a></li>
         <li><a href="#a-tests">Onlinetests</a></li>
         <li><a href="#a-vortrag">Vortrag analysieren</a></li>
         <li><a href="#a-pc">Der Abgleich am PC</a></li>
-        <li><a href="#a-kosten">Kosten</a></li>
+        <li class="nur-eigen"><a href="#a-kosten">Kosten</a></li>
         <li><a href="#a-sicher">Datenschutz und Sicherheit</a></li>
         <li><a href="#a-hilfe">Wenn etwas nicht geht</a></li>
       </ol>
@@ -775,6 +842,19 @@
         </ul>
         <p>Dazu kommen die Seite <b>Heute</b> mit deinen Fristen, der Woche und einem Chat für alle Fragen rund ums Studium, ein Kalender mit deinem Stundenplan, der Fristen auch ins iPad übernimmt, und ein Überblick über alle Onlinetests. Was in den Unterlagen nicht steht, erfindet der Lernhelfer nicht, sondern sagt es.</p>
 
+        <div class="nur-server">
+        <h2 id="a-konto">Konto und Tarife</h2>
+        <ul>
+          <li><b>Konto:</b> Unter <a href="#/einstellungen">Konto</a> mit E-Mail und Passwort registrieren und die Adresse über den Link in der Mail bestätigen. Base ist kostenlos und bleibt es.</li>
+          <li><b>OLAT-Abgleich:</b> Unter Konto das PC-Programm laden und am Windows-PC öffnen, siehe <a href="#a-pc">Der Abgleich am PC</a>. Danach kommen deine Unterlagen von selbst.</li>
+          <li><b>Base</b> bringt die Wochenausgabe für jedes Fach und den Überblick über die Onlinetests. <b>Pro</b> dazu Kalender, Word-Power-Transkript und Vortragsanalyse, <b>Ultra</b> zusätzlich alle Fragen an die KI, den Löser und den Hausaufgaben-Entwurf.</li>
+          <li><b>Ausprobieren:</b> Einmal pro Konto gibt es 24 Stunden Ultra gratis, ohne Zahlungsdaten.</li>
+          <li><b>Bezahlen:</b> Unter <a href="#/upgrade">Tarife</a> wählen und per Überweisung oder PayPal mit dem angezeigten Verwendungszweck zahlen. Kein Abo: Nach der Laufzeit geht es von selbst mit Base weiter.</li>
+          <li><b>Freunde einladen:</b> Mit deinem Link unter Konto zahlen Freunde im ersten Monat weniger, und du bekommst denselben Rabatt, sobald sie zahlen.</li>
+        </ul>
+        </div>
+
+        <div class="nur-eigen">
         <h2 id="a-brauchst">Was du brauchst</h2>
         <ul>
           <li><b>Einen Windows-PC</b> (oder Windows-Laptop). Er holt die Unterlagen aus OLAT, weil der OLAT-Login den Authenticator braucht. Für Mac gibt es das noch nicht.</li>
@@ -814,6 +894,7 @@
           <li>Mit der Kamera des iPads auf den Code halten und den Link öffnen. Das iPad ist fertig eingerichtet.</li>
           <li>Tipp: In Safari auf Teilen und „Zum Home-Bildschirm“ tippen, dann startet der Lernhelfer wie eine App. Fragt er dort noch einmal nach dem Einrichten (das iPad trennt den Home-Bildschirm vom Browser), tippe auf „Mit Kamera verbinden“ und scanne den Code noch einmal.</li>
         </ol>
+        </div>
 
         <h2 id="a-woche">Jede Woche</h2>
         <ol>
@@ -821,7 +902,7 @@
           <li>Sind neue Folien da (der PC holt sie von selbst), tippe auf <b>Neu erstellen</b>. Die Ausgabe ist nach zwei bis vier Minuten fertig, der Fortschritt läuft mit. Die App muss dabei offen bleiben, der Bildschirm bleibt von selbst an. Mit „Alle Fächer neu erstellen“ geht es für alle Fächer auf einmal.</li>
           <li>Lesen, Übungsaufgaben erst selbst rechnen und dann aufdecken, Begriffe im Lexikon abfragen. Was unklar bleibt, bei „Fragen“ stellen. Die Leiste oben in der Ausgabe springt zu jedem Teil.</li>
         </ol>
-        <p>Ältere Ausgaben bleiben unter „Frühere Ausgaben“ erhalten. Welches Modell schreibt, stellst du unter Einrichten ein.</p>
+        <p>Ältere Ausgaben bleiben unter „Frühere Ausgaben“ erhalten. Welches Modell schreibt, stellst du unter <span class="nur-eigen">Einrichten</span><span class="nur-server">Konto</span> ein.</p>
 
         <h2 id="a-termine">Termine und Kalender</h2>
         <ul>
@@ -838,8 +919,9 @@
           <p><b>So liest der PC Tests:</b> Läuft ein bewerteter Test, öffnet der PC ihn genau einmal, liest die Fragen und tippt dann auf „Test unterbrechen“ und „Ok“. Antworten werden nie eingetragen, gespeichert oder abgeschickt, und „Test beenden“ wird nie gedrückt. Ein Schutz im Browser blockiert diese Knöpfe zusätzlich. Dein Versuch bleibt also voll erhalten. Tests, die noch nicht begonnen haben, öffnet der PC nie.</p>
         </div>
         <p>Abgelaufene Tests zeigen deine Antworten und die Lösung von OLAT, Selbsttests sind zum Üben da. Beides nimmt die Wochenausgabe für die Übungsaufgaben.</p>
-        <p><b>Der Löser</b> zeigt die Fragen eines Tests einzeln, mit Formeln wie in OLAT. Bei jeder Frage „Lösen lassen“ tippen: Du bekommst das Ergebnis so, wie es in OLAT eingetragen wird, und den Rechenweg zum Aufklappen. Bei „Rückfrage“ fragst du nach, was unklar ist. Mit „Weiter“ und „Zurück“ gehst du durch die Fragen; Lösungen und Rückfragen bleiben gespeichert. Gedacht ist er zum Vergleichen: erst selbst lösen, dann mit dem Löser prüfen, dann selbst in OLAT eintragen. Der Löser schreibt nichts nach OLAT. Ob KI bei einem Test erlaubt ist, legt jede Lehrveranstaltung selbst fest, meist im Syllabus.</p>
-        <p>Löser und <a href="#/wordpower">Word Power</a> (Englisch-Hausaufgaben) haben ein Passwort. Du bekommst es von der Person, die dir den Lernhelfer gezeigt hat. Groß- und Kleinschreibung ist egal.</p>
+        <p class="nur-server"><b>Der Löser</b> (Ultra) zeigt die Fragen eines Tests einzeln, mit Formeln wie in OLAT, und rechnet sie mit Rechenweg zum Aufklappen vor. Selbsttests, Aufgaben ohne Punkte und vorbei Tests rechnet er mit den Originalzahlen. Bei einem laufenden Test, der für die Note zählt, rechnet er eine gleichartige Aufgabe mit anderen Zahlen vor: Den Weg lernst du daran, die Originalaufgabe rechnest du selbst. Der Löser schreibt nichts nach OLAT.</p>
+        <p class="nur-eigen"><b>Der Löser</b> zeigt die Fragen eines Tests einzeln, mit Formeln wie in OLAT. Bei jeder Frage „Lösen lassen“ tippen: Du bekommst das Ergebnis so, wie es in OLAT eingetragen wird, und den Rechenweg zum Aufklappen. Bei „Rückfrage“ fragst du nach, was unklar ist. Mit „Weiter“ und „Zurück“ gehst du durch die Fragen; Lösungen und Rückfragen bleiben gespeichert. Gedacht ist er zum Vergleichen: erst selbst lösen, dann mit dem Löser prüfen, dann selbst in OLAT eintragen. Der Löser schreibt nichts nach OLAT. Ob KI bei einem Test erlaubt ist, legt jede Lehrveranstaltung selbst fest, meist im Syllabus.</p>
+        <p class="nur-eigen">Löser und <a href="#/wordpower">Word Power</a> (Englisch-Hausaufgaben) haben ein Passwort. Du bekommst es von der Person, die dir den Lernhelfer gezeigt hat. Groß- und Kleinschreibung ist egal.</p>
 
         <h2 id="a-vortrag">Vortrag analysieren</h2>
         <p>Unter <a href="#/vortrag">Vortrag</a> bekommst du Rückmeldung zu einer Präsentation, etwa vor dem PS oder für Englisch. Video oder Tonaufnahme wählen, optional Anlass und Vorgaben dazuschreiben (Zeitvorgabe, Bewertungskriterien), auf „Analysieren“ tippen. Nach etwa 2 bis 5 Minuten bekommst du:</p>
@@ -861,6 +943,7 @@
           <li>Entfernen: In der Windows-Aufgabenplanung die Aufgabe „Lernhelfer OLAT-Abgleich“ löschen, dann den Ordner <code>%LOCALAPPDATA%\Lernhelfer</code> und die Desktop-Verknüpfung.</li>
         </ul>
 
+        <div class="nur-eigen">
         <h2 id="a-kosten">Kosten</h2>
         <p>Der Lernhelfer selbst ist kostenlos, GitHub auch. Bezahlt wird nur die KI über dein OpenRouter-Guthaben, und zwar genau das, was du verbrauchst:</p>
         <ul>
@@ -870,12 +953,15 @@
           <li>Ein ganzes Semester mit vier Fächern und einer Ausgabe pro Woche: etwa 2 bis 5 $.</li>
         </ul>
         <p>Links unten in der Seitenleiste (am Handy unten auf der Seite Heute) stehen die Kosten des Monats und dein Restguthaben. Ist das Guthaben leer, entsteht nichts mehr, bis du nachlädst. Mehr als dein Guthaben kann nie abgebucht werden.</p>
+        </div>
 
         <h2 id="a-sicher">Datenschutz und Sicherheit</h2>
         <ul>
-          <li>Dein KI-Schlüssel und dein Speicher-Schlüssel liegen nur im Browser deiner Geräte. Sie gehen an niemanden außer OpenRouter und GitHub.</li>
-          <li>Deine Unterlagen liegen in <b>deinem</b> privaten Speicher. Niemand sonst, auch nicht die Person, die den Lernhelfer gebaut hat, kommt daran.</li>
-          <li>Der Speicher muss <b>privat</b> bleiben: Folien sind urheberrechtlich geschützt und dürfen nicht öffentlich werden. Der Lernhelfer prüft das beim Verbinden.</li>
+          <li class="nur-server">Deine Unterlagen, Ausgaben und Vorträge liegen auf dem Lernhelfer-Server in der EU, getrennt nach Konto. Andere Nutzer:innen kommen nie daran. Der Betreiber könnte technisch hineinsehen, tut es aber nur, wenn du um Hilfe bittest. Alles Weitere steht in der <a href="#/recht">Datenschutzerklärung</a>.</li>
+          <li class="nur-server">Für Antworten gehen die nötigen Texte über OpenRouter an das jeweilige KI-Modell. Dein Passwort ist nur verschlüsselt gespeichert.</li>
+          <li class="nur-eigen">Dein KI-Schlüssel und dein Speicher-Schlüssel liegen nur im Browser deiner Geräte. Sie gehen an niemanden außer OpenRouter und GitHub.</li>
+          <li class="nur-eigen">Deine Unterlagen liegen in <b>deinem</b> privaten Speicher. Niemand sonst, auch nicht die Person, die den Lernhelfer gebaut hat, kommt daran.</li>
+          <li class="nur-eigen">Der Speicher muss <b>privat</b> bleiben: Folien sind urheberrechtlich geschützt und dürfen nicht öffentlich werden. Der Lernhelfer prüft das beim Verbinden.</li>
           <li>Dein OLAT-Passwort sieht der Lernhelfer nie. Du loggst dich selbst in Chrome ein; gespeichert wird nur die Sitzung, auf deinem PC.</li>
           <li>Halte dich bei Abgaben und Tests an die Regeln deiner Lehrveranstaltungen zur Nutzung von KI; sie stehen im Syllabus und damit auch in den Stammdaten jeder Ausgabe.</li>
         </ul>
@@ -884,12 +970,14 @@
         <dl>
           <dt>Unten auf der Seite Heute steht „OLAT-Anmeldung am PC abgelaufen“.</dt>
           <dd>Am PC auf dem Desktop <b>Lernhelfer OLAT</b> doppelklicken und im Chrome-Fenster einloggen.</dd>
-          <dt>„GitHub antwortet 401“ oder „Schlüssel abgelaufen“.</dt>
-          <dd>Der Speicher-Schlüssel gilt ein Jahr. Unter Einrichten bei Schritt 2 einen neuen erzeugen und einfügen, dann bei Schritt 3 das PC-Programm noch einmal laden und öffnen. Danach die anderen Geräte mit dem QR-Code neu verbinden.</dd>
-          <dt>„OpenRouter: Insufficient credits“.</dt>
-          <dd>Das Guthaben ist leer. Unter Einrichten auf „Guthaben aufladen“ tippen.</dd>
-          <dt>Das iPad fragt plötzlich wieder nach dem Einrichten.</dt>
-          <dd>Safari löscht gespeicherte Daten von Seiten, die du länger nicht geöffnet hast. Am PC unter Einrichten den QR-Code zeigen und noch einmal scannen. Deine Ausgaben sind nicht weg, sie liegen im Speicher.</dd>
+          <dt class="nur-server">„Dein KI-Kontingent für diesen Monat ist aufgebraucht“.</dt>
+          <dd class="nur-server">Jeder Tarif hat ein KI-Kontingent pro Monat. Am Monatsersten geht es weiter, mit einem größeren Tarif sofort.</dd>
+          <dt class="nur-eigen">„GitHub antwortet 401“ oder „Schlüssel abgelaufen“.</dt>
+          <dd class="nur-eigen">Der Speicher-Schlüssel gilt ein Jahr. Unter Einrichten bei Schritt 2 einen neuen erzeugen und einfügen, dann bei Schritt 3 das PC-Programm noch einmal laden und öffnen. Danach die anderen Geräte mit dem QR-Code neu verbinden.</dd>
+          <dt class="nur-eigen">„OpenRouter: Insufficient credits“.</dt>
+          <dd class="nur-eigen">Das Guthaben ist leer. Unter Einrichten auf „Guthaben aufladen“ tippen.</dd>
+          <dt class="nur-eigen">Das iPad fragt plötzlich wieder nach dem Einrichten.</dt>
+          <dd class="nur-eigen">Safari löscht gespeicherte Daten von Seiten, die du länger nicht geöffnet hast. Am PC unter Einrichten den QR-Code zeigen und noch einmal scannen. Deine Ausgaben sind nicht weg, sie liegen im Speicher.</dd>
           <dt>Ein Fach fehlt oder ist zu viel.</dt>
           <dd>Der Lernhelfer nimmt die Kurse des aktuellen Semesters aus OLAT unter „Meine Kurse“ → „Aktiv“. Ein Kurs, der dort nicht steht, fehlt auch hier.</dd>
           <dt>Eine Ausgabe wurde abgeschnitten oder klingt falsch.</dt>
@@ -1029,17 +1117,30 @@ const kw = d => { const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.g
 const base64 = s => btoa(Array.from(new TextEncoder().encode(s), b => String.fromCharCode(b)).join(''));
 const status = (text, fehler) => { $('status').textContent = text || ''; $('status').classList.toggle('fehler', !!fehler); };
 
+// Server-Version (eigene Domain, der Server setzt data-server): Konto statt eigener Schlüssel; Speicher und KI laufen über den Server
+const SERVER = document.documentElement.hasAttribute('data-server');
+let ICH = null, TARIFE = null;  // Konto (/api/ich) und Tarife (/api/tarife)
+async function api(pfad, body) {
+  const r = await fetch('api/' + pfad, body === undefined ? { cache: 'no-store' } : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw Object.assign(new Error(j.error?.message || `Der Server antwortet ${r.status}. Bitte gleich nochmal.`), { status: r.status });
+  return j;
+}
+const darf = f => !SERVER || !!(ICH && TARIFE && TARIFE.tarife[ICH.tarif].rang >= TARIFE.funktionen[f]);
+
 let cfg = JSON.parse(merk('cfg') || 'null');  // { openrouter, github, repo }; beim Einrichten Schritt für Schritt gefüllt
-const fertig = () => !!(cfg?.openrouter && cfg?.github && cfg?.repo);
+const fertig = () => SERVER ? !!ICH : !!(cfg?.openrouter && cfg?.github && cfg?.repo);
 const R = {};  // Fach → { ausgaben: [{datum, sha}], cache: {datum: Ausgabe}, quelle, druckt, fehler }
 let ABGLEICH = null, GUTHABEN = null;  // abgleich.json vom PC, Restguthaben
 
-async function gh(pfad, { method = 'GET', body, roh = true } = {}) {
-  const r = await fetch(`https://api.github.com/repos/${cfg.repo}/contents/${pfad.split('/').map(encodeURIComponent).join('/')}`, {
+async function gh(pfad, { method = 'GET', body, roh = true } = {}) {  // Server: derselbe Aufbau wie bei GitHub, nur unter api/gh
+  const ziel = pfad.split('/').map(encodeURIComponent).join('/');
+  const r = await fetch(SERVER ? `api/gh/repos/lernhelfer/konto/contents/${ziel}` : `https://api.github.com/repos/${cfg.repo}/contents/${ziel}`, {
     method, body: body && JSON.stringify(body), cache: 'no-store',
-    headers: { Authorization: 'Bearer ' + cfg.github, Accept: roh ? 'application/vnd.github.raw+json' : 'application/vnd.github+json' },
+    headers: { ...!SERVER && { Authorization: 'Bearer ' + cfg.github }, Accept: roh ? 'application/vnd.github.raw+json' : 'application/vnd.github+json' },
   });
   if (r.status === 404 && method === 'GET') return null;
+  if (SERVER && !r.ok) { const j = await r.json().catch(() => ({})); throw new Error(r.status === 401 ? 'Bitte neu anmelden.' : j.error?.message || `Der Server antwortet ${r.status}.`); }
   if (r.status === 401) throw new Error('GitHub kennt den Speicher-Schlüssel nicht mehr (nach einem Jahr läuft er ab). Unter Einrichten bei Schritt 2 einen neuen einfügen.');
   if (r.status === 403) throw new Error('Der Speicher-Schlüssel darf das nicht. Beim Erzeugen „Contents: Read and write“ und das Repo lernhelfer-daten wählen.');
   if (!r.ok) throw new Error(`GitHub antwortet ${r.status}. Unter Einrichten Schritt 2 prüfen.`);
@@ -1048,17 +1149,18 @@ async function gh(pfad, { method = 'GET', body, roh = true } = {}) {
 let kette = Promise.resolve();  // GitHub verträgt keine gleichzeitigen Commits auf denselben Branch
 const nacheinander = fn => { const p = kette.then(fn); kette = p.catch(() => {}); return p; };
 
+// KI: direkt bei OpenRouter mit eigenem Schlüssel, oder über den Server; feature sagt dem Server, wofür (Tarif und Abrechnung)
+const KI = SERVER ? 'api/ki' : 'https://openrouter.ai/api/v1/chat/completions';
+const kiKopf = () => SERVER ? { 'Content-Type': 'application/json' } : { Authorization: 'Bearer ' + cfg.openrouter, 'Content-Type': 'application/json', 'X-Title': 'OLAT Lernhelfer' };
+const kiBody = ({ feature, ...rest }) => SERVER ? { feature, ...rest } : rest;
 async function anfrage(einstellung, messages) {
-  const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: { Authorization: 'Bearer ' + cfg.openrouter, 'Content-Type': 'application/json', 'X-Title': 'OLAT Lernhelfer' },
-    body: JSON.stringify({ ...einstellung, messages }),
-  });
+  const r = await fetch(KI, { method: 'POST', headers: kiKopf(), body: JSON.stringify({ ...kiBody(einstellung), messages }) });
   const j = await r.json().catch(() => ({}));
-  if (!r.ok || j.error) throw new Error('OpenRouter: ' + (j.error?.message || r.status));
+  if (!r.ok || j.error) throw new Error((SERVER ? '' : 'OpenRouter: ') + (j.error?.message || r.status));
   return j;
 }
 async function kosten() {
+  if (SERVER) { ICH = await api('ich').catch(() => ICH); return kontoZeile(); }
   if (!cfg?.openrouter) return;
   const hol = p => fetch('https://openrouter.ai/api/v1/' + p, { headers: { Authorization: 'Bearer ' + cfg.openrouter }, cache: 'no-store' })
     .then(r => r.ok ? r.json() : null).catch(() => null);
@@ -1119,7 +1221,7 @@ async function drucke(f, d = HEUTE) {  // d: Stichtag, für nachträgliche Ausga
     const q = await quelle(f);
     const prompt = [auftrag(f, TAG, d), ...q.dateien.map(d => `=== ${d.art.toUpperCase()}: ${d.datei} ===\n${d.text.slice(0, 60000)}`)].join('\n\n');
     const modell = $('modell').value;
-    const antwortKI = await strom({ ...MODELLE[modell], messages: [{ role: 'user', content: prompt }] }, x => {
+    const antwortKI = await strom({ ...MODELLE[modell], feature: 'ausgabe', messages: [{ role: 'user', content: prompt }] }, x => {
       const teile = x.match(/^## .+/gm) || [];
       r.hinweis = /```json/.test(x) ? 'Schreibt Termine und Begriffe …' : teile.length ? `Schreibt „${teile.at(-1).slice(3).trim()}“ (${teile.length} von 6) …` : 'Schreibt …';
     }, () => { r.hinweis = 'Denkt nach …'; });
@@ -1181,8 +1283,8 @@ function titelblatt() {
   const faecher = Object.keys(R);
   $('ressorts').replaceChildren(...faecher.length ? faecher.map(fachZeile)
     : [el('div', { class: 'willkommen' }, el('h3', {}, 'Gleich kommen deine Fächer'),  // vor dem ersten Abgleich gibt es noch keine Fächer
-      el('p', { class: 'klein' }, 'Sobald der PC zum ersten Mal mit OLAT abgeglichen hat, steht hier jedes Fach mit seiner Wochenausgabe. Das PC-Programm gibt es unter Einrichten bei Schritt 3.'),
-      el('div', { class: 'knopfreihe' }, el('a', { class: 'knopf voll', href: '#/einstellungen' }, 'Zum Einrichten'), el('a', { class: 'knopf', href: '#/anleitung' }, 'Anleitung')))]);
+      el('p', { class: 'klein' }, `Sobald der PC zum ersten Mal mit OLAT abgeglichen hat, steht hier jedes Fach mit seiner Wochenausgabe. Das PC-Programm gibt es unter ${SERVER ? 'Konto' : 'Einrichten bei Schritt 3'}.`),
+      el('div', { class: 'knopfreihe' }, el('a', { class: 'knopf voll', href: '#/einstellungen' }, SERVER ? 'Zum Konto' : 'Zum Einrichten'), el('a', { class: 'knopf', href: '#/anleitung' }, 'Anleitung')))]);
   $('ressorts').classList.toggle('faecher-raster', faecher.length > 0);
   const abhaken = t => el('label', { class: 'haken' }, el('input', { type: 'checkbox', checked: !!merk(fristSchluessel(t)), 'aria-label': `${t.fach} ${t.titel || t.art} erledigt`,
     onchange: e => { merk(fristSchluessel(t), e.target.checked ? '1' : null); titelblatt(); } }));
@@ -1334,6 +1436,7 @@ function uebungen(text) {
 const CHATS = {};  // Schlüssel → { verlauf, laeuft, hinweis, entwurf }; bleibt beim Neuzeichnen erhalten
 let chatNr = 0;
 function chat(schluessel, kontext, { platzhalter, einstellung, vorschlaege = [], loeschen = 'Alle Fragen und Antworten hier löschen?' } = {}) {
+  if (!darf('chat')) return sperrkarte('chat', true);
   const c = CHATS[schluessel] ??= { verlauf: liesJson(schluessel) || [], laeuft: false, hinweis: '', entwurf: '' };
   const id = 'frage-' + ++chatNr, ort0 = location.hash;
   const feld = el('textarea', { id, name: 'frage', rows: 3, placeholder: platzhalter, enterkeyhint: 'send', oninput: e => { c.entwurf = e.target.value; },
@@ -1358,10 +1461,10 @@ function chat(schluessel, kontext, { platzhalter, einstellung, vorschlaege = [],
     c.verlauf.push({ role: 'user', content: q }); c.laeuft = true; c.hinweis = ''; c.entwurf = ''; feld.value = ''; zeige();
     try {
       const m = MODELLE[$('modell').value];  // Rückfragen: mittleres Nachdenken reicht und ist schneller als beim Erstellen
-      const j = await anfrage(einstellung || { ...m, reasoning: m.reasoning?.effort ? { effort: 'medium' } : m.reasoning }, [{ role: 'system', content: await kontext() }, ...c.verlauf]);
+      const j = await anfrage({ feature: 'chat', ...einstellung || { ...m, reasoning: m.reasoning?.effort ? { effort: 'medium' } : m.reasoning } }, [{ role: 'system', content: await kontext() }, ...c.verlauf]);
       c.verlauf.push({ role: 'assistant', content: j.choices[0].message.content || 'Keine Antwort erhalten.' });
       merk(schluessel, JSON.stringify(c.verlauf));
-      c.hinweis = `Antwort für ${geld(j.usage?.cost || 0)}`;
+      c.hinweis = SERVER ? '' : `Antwort für ${geld(j.usage?.cost || 0)}`;
     } catch (err) {
       c.verlauf.pop(); c.hinweis = err.message; c.entwurf = q; feld.value = q;
     }
@@ -1431,7 +1534,7 @@ async function ausgabeZeigen(f, tag) {
         el('div', { class: 'titel-zeile' }, glyph(f), el('h1', {}, f)),
         a.schlagzeile && el('p', { class: 'schlagzeile' }, a.schlagzeile),
         el('p', { class: 'unterzeile' }, el('span', {}, `Ausgabe vom ${datum(tag, { weekday: 'long', day: 'numeric', month: 'long' })}`),
-          a.meta && el('span', {}, a.meta.split(' · ')[0]), a.preis && el('span', {}, `Kosten ${geld(a.preis)}`))),
+          a.meta && el('span', {}, a.meta.split(' · ')[0]), !SERVER && a.preis && el('span', {}, `Kosten ${geld(a.preis)}`))),
       el('div', { class: 'kopf-aktionen' },
         f === 'Englisch' && el('a', { class: 'knopf', href: '#/wordpower' }, el('span', { translate: 'no' }, 'Word Power')),
         !r.druckt && el('button', { class: 'knopf voll', type: 'button', onclick: () => drucke(f) }, 'Neu erstellen'))),
@@ -1681,7 +1784,15 @@ const WP_DOC_CSS = ':root{color-scheme:light}html{background:#fdfbf6}'
   + 'th,td{border:1px solid #cfc7b5;padding:.5em .7em;text-align:left;vertical-align:top}th{background:#f1ede3}';
 let WP = null, wpTitel = merk('wp.title') || '', wpDoc = merk('wp.doc') || '';
 
+let WP_LAEDT = false;
 function wordpower() {
+  if (SERVER && !WP && !WP_LAEDT && darf('wp-transkript')) {  // Server: Prompts mit dem Tarif statt mit Passwort
+    WP_LAEDT = true;
+    api('geschuetzt/wordpower').then(j => { WP = j; }, e => status(e.message, true)).finally(() => { WP_LAEDT = false; if (WP && document.body.dataset.ansicht === 'wordpower') wordpower(); });
+  }
+  const text = darf('wp-text');
+  $('wp-schritt2').hidden = !text; $('wp-gesperrt').hidden = text;
+  if (!text && !$('wp-gesperrt').firstChild) $('wp-gesperrt').replaceChildren(sperrkarte('wp-text'));
   $('wp-sperre').hidden = !!WP; $('wp-werk').hidden = !WP;
   $('wp-dl').disabled = !$('wp-out').value.trim();
 }
@@ -1719,11 +1830,8 @@ async function strom(body, beiText, beimDenken) {
   const halt = new AbortController();
   let wache = setTimeout(() => halt.abort(), STILLE), puffer = '', text = '', preis = 0, ende = null;
   try {
-    const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST', body: JSON.stringify({ ...body, stream: true, usage: { include: true } }), signal: halt.signal,
-      headers: { Authorization: 'Bearer ' + cfg.openrouter, 'Content-Type': 'application/json', 'X-Title': 'OLAT Lernhelfer' },
-    });
-    if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error('OpenRouter ' + r.status + ': ' + (j.error?.message || r.statusText)); }
+    const r = await fetch(KI, { method: 'POST', body: JSON.stringify({ ...kiBody(body), stream: true, usage: { include: true } }), signal: halt.signal, headers: kiKopf() });
+    if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error((SERVER ? '' : 'OpenRouter ' + r.status + ': ') + (j.error?.message || r.statusText)); }
     const leser = r.body.pipeThrough(new TextDecoderStream()).getReader();
     for (;;) {
       const { value, done } = await leser.read();
@@ -1777,7 +1885,7 @@ $('wp-tform').onsubmit = async e => {
   await wpBeschaeftigt($('wp-go'), true);
   wpNachschlagen(); wpSag(st, 'Gemini sieht sich das Video an …', 'presse');
   try {
-    const { text, preis } = await strom({ model: WP_TRANSKRIPT, provider: { only: ['google-ai-studio'] }, reasoning: { effort: 'low' },
+    const { text, preis } = await strom({ model: WP_TRANSKRIPT, feature: 'wp-transkript', provider: { only: ['google-ai-studio'] }, reasoning: { effort: 'low' },
       messages: [{ role: 'user', content: [{ type: 'text', text: WP.transcribe }, { type: 'video_url', video_url: { url: v } }] }] },
       t => {
         const o = $('wp-out'), marken = t.match(/\d\d:\d\d:\d\d/g);
@@ -1785,7 +1893,7 @@ $('wp-tform').onsubmit = async e => {
         wpSag(st, 'Transkribiere …' + (marken ? ' bei ' + marken.pop().replace(/^00:/, '') : ''), 'presse');
       });
     $('wp-out').value = text; merk('wp.out', text);
-    wpSag(st, `Fertig · Kosten ${geld(preis)}`);
+    wpSag(st, SERVER ? 'Fertig' : `Fertig · Kosten ${geld(preis)}`);
   } catch (err) {
     merk('wp.out', $('wp-out').value);  // Teiltranskript behalten
     wpSag(st, wpWarum(err), 'fehlertext');
@@ -1800,12 +1908,12 @@ $('wp-hwgo').onclick = async () => {
   const nachricht = `Talk: ${wpTitel}\nLink: ${wpVideo() || $('wp-url').value.trim()}\n\nTranscript:\n${$('wp-out').value}\n\n`
     + (notizen.trim() ? `Student's notes for the reflection:\n${notizen}` : 'No notes given: skip section 7.');
   try {
-    const { text, preis } = await strom({ model: WP_MODELL, reasoning: { effort: 'medium' }, messages: [
+    const { text, preis } = await strom({ model: WP_MODELL, feature: 'wp-text', reasoning: { effort: 'medium' }, messages: [
       { role: 'system', content: WP.homework }, { role: 'user', content: nachricht }] },
       t => wpSag(st, 'Schreibt … ' + t.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(Boolean).length + ' Wörter', 'presse'),
       () => wpSag(st, 'Denkt nach …', 'presse'));
     wpDoc = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Word Power</title><style>${WP_DOC_CSS}</style></head><body>${text}</body></html>`;
-    merk('wp.doc', wpDoc); wpZeigen(); wpSag(st, `Fertig · Kosten ${geld(preis)}`);
+    merk('wp.doc', wpDoc); wpZeigen(); wpSag(st, SERVER ? 'Fertig' : `Fertig · Kosten ${geld(preis)}`);
   } catch (err) { wpSag(st, wpWarum(err), 'fehlertext'); }
   wpBeschaeftigt($('wp-hwgo'), false); kosten();
 };
@@ -2006,7 +2114,7 @@ async function vtHoeren(teile, job, dauer) {
   const fertig = await Promise.all(teile.map(async (t, i) => {
     const ton = t.youtube ? { type: 'video_url', video_url: { url: t.youtube } } : { type: 'input_audio', input_audio: { data: await blobBase64(t.blob), format: t.format } };
     const teil = teile.length > 1 ? `\n\nDas ist Teil ${i + 1} von ${teile.length} einer längeren Aufnahme. Die Zeitstempel zählen ab dem Anfang dieses Teils. Ist am Anfang oder Ende ein Wort abgeschnitten, schreib es mit -.` : '';
-    const { text, preis } = await strom({ model: VT_HOEREN, provider: { only: ['google-ai-studio'] }, reasoning: { effort: 'low' },
+    const { text, preis } = await strom({ model: VT_HOEREN, feature: 'vortrag', provider: { only: ['google-ai-studio'] }, reasoning: { effort: 'low' },
       messages: [{ role: 'user', content: [{ type: 'text', text: VT_TRANSKRIPT + teil }, ton] }] },
       x => {
         const z = vtZeilen(x);
@@ -2030,7 +2138,7 @@ ${bilder.length ? `Dazu ${bilder.length} Standbilder aus dem Video, gleichmäßi
 
 === TRANSKRIPT ===
 ${vtText(v)}`;
-  const { text: antwort, preis } = await strom({ ...VT_DENKEN, response_format: { type: 'json_object' }, messages: [{ role: 'system', content: VT_ANALYSE },
+  const { text: antwort, preis } = await strom({ ...VT_DENKEN, feature: 'vortrag', response_format: { type: 'json_object' }, messages: [{ role: 'system', content: VT_ANALYSE },
     { role: 'user', content: [{ type: 'text', text }, ...bilder.flatMap(b => [{ type: 'text', text: `Standbild bei ${mmss(b.t)}:` }, { type: 'image_url', image_url: { url: b.url } }])] }] },
     x => { job.hinweis = `Schreibt die Bewertung … ${(x.match(/"zeit"/g) || []).length} Befunde`; }, () => { job.hinweis = 'Analysiert … denkt nach'; });
   let a;
@@ -2156,7 +2264,7 @@ function vtFormular() {
     el('label', { class: 'feld' }, el('span', {}, 'Anlass und Vorgaben ', opt('optional')),
       el('textarea', { name: 'kontext', rows: 3, placeholder: 'z. B. Englisch-Präsentation im PS, 5 Minuten, Thema Marketing-Mix. Bewertet werden Aufbau, Sprache und Auftreten.' })),
     el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll' }, 'Analysieren'),
-      el('span', { class: 'meta' }, 'Dauert 2 bis 5 Minuten. Kosten: etwa 1 Cent pro Minute Vortrag plus ein paar Cent für die Analyse.')));
+      el('span', { class: 'meta' }, 'Dauert 2 bis 5 Minuten.' + (SERVER ? '' : ' Kosten: etwa 1 Cent pro Minute Vortrag plus ein paar Cent für die Analyse.'))));
 }
 function vtUebersicht() {
   const liste = Object.values(VT.alle).sort((a, b) => b.id.localeCompare(a.id)), fehler = VT.fehler && !VT.alle[VT.fehler.id] && VT.fehler.text;
@@ -2188,7 +2296,7 @@ function vtSeite(v) {
     el('div', {}, el('div', { class: 'titel-zeile' }, glyph('Vortrag'), el('h1', {}, v.titel)),
       a?.thema && el('p', { class: 'schlagzeile' }, a.thema),
       el('p', { class: 'unterzeile' }, el('span', {}, datum(v.datum, { weekday: 'long', day: 'numeric', month: 'long' })), el('span', {}, `${mmss(v.dauer)} min`),
-        a?.sprache && el('span', {}, a.sprache), v.kosten > 0 && el('span', {}, `Kosten ${geld(v.kosten)}`))),
+        a?.sprache && el('span', {}, a.sprache), !SERVER && v.kosten > 0 && el('span', {}, `Kosten ${geld(v.kosten)}`))),
     el('div', { class: 'kopf-aktionen' },
       datei ? el('button', { class: 'knopf', type: 'button', onclick: () => vtSpielen(v.id, 0) }, 'Abspielen')
         : yt ? el('a', { class: 'knopf', href: yt, target: '_blank', rel: 'noopener' }, 'Auf YouTube')
@@ -2272,7 +2380,7 @@ function vtTranskript(v, z, a, zeit) {
 /* ---------- Onlinetests: Überblick für alle, Löser nur mit Passwort ---------- */
 // onlinetests.json schreibt der PC (holen.py): Zeitraum, Punkte, Versuche und die gelesenen Fragen jedes Tests.
 const LOESER = MODELLE['MiMo V2.6 Pro'];
-let TESTS = null, LOESER_PROMPT = null;  // der Prompt ist entschlüsselt bis zum Neuladen
+let TESTS = null, LOESER_PROMPT = null, LOESER_LADEN = null;  // der Prompt ist entschlüsselt bis zum Neuladen (Server: mit dem Tarif geladen)
 const LOESUNGEN = {};  // Test#Frage → { laeuft, hinweis, fehler } während des Lösens
 const testId = t => `${t.fach}|${t.titel}`;
 const zeitpunkt = d => new Date(d).toLocaleString('de-AT', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
@@ -2389,8 +2497,13 @@ function loesungZeigen(text) {
         markdown(el('div', { class: 'text' }), weg)));
   }));
 }
+// Server-Version: Läuft ein bewerteter Test, rechnet der Löser eine gleichartige Aufgabe mit anderen Zahlen statt der Originalaufgabe,
+// wie Ausgaben und Chats auch. Wer den Löser bezahlt, kauft Lernhilfe, keine Antworten für eine laufende Prüfung (§ 116a UG).
+const variante = (t, q) => SERVER && teststand(t).gruppe === 'offen' && Number(String(q.max ?? '1').replace(',', '.')) > 0;
 function testZeigen(t) {
   const st = teststand(t), id = testId(t), fragen = fragenListe(t);
+  if (SERVER && darf('loeser') && !LOESER_PROMPT) LOESER_LADEN ??= api('geschuetzt/onlinetest').then(j => { LOESER_PROMPT = j.system; },
+    e => { LOESER_LADEN = null; status(e.message, true); }).then(() => { if (document.body.dataset.ansicht === 'onlinetests' && LOESER_PROMPT) zeichne(); });
   const n = Math.min(Math.max(+merk('loeser-pos:' + id) || 0, 0), Math.max(fragen.length - 1, 0)), q = fragen[n];
   const k = q && `${id}#${q.nr ?? 'alle'}`, L = q && (LOESUNGEN[k] ??= { laeuft: false, hinweis: '', fehler: '' }), g = q && geloest(t, q);
   const geh = i => {
@@ -2427,13 +2540,16 @@ function testZeigen(t) {
         q.max && el('span', { class: 'pille' }, `Max. ${q.max} ${q.max === '1' ? 'Punkt' : 'Punkte'}`)),
       q.nr == null && t.ergebnis && el('p', { class: 'klein' }, 'So zeigt OLAT den Test nach Ablauf: deine Antworten in Kästchen, danach die Lösung.'),
       olatText(el('div', { class: 'aufgabentext' }), q.text),
-      el('div', { class: 'loeser-teil' }, ...(!LOESER_PROMPT ? [el('h3', {}, 'Löser'), sperre] : [
+      el('div', { class: 'loeser-teil' }, ...(!darf('loeser') ? [el('h3', {}, 'Löser'), sperrkarte('loeser', true)]
+        : !LOESER_PROMPT ? [el('h3', {}, 'Löser'), SERVER ? el('p', { class: 'meta' }, 'Lade den Löser …') : sperre] : [
         el('h3', {}, 'Lösung'),
-        !g && !L.laeuft && el('p', { class: 'klein' }, `MiMo V2.6 Pro rechnet ${q.nr == null ? 'alle Fragen' : 'die Frage'} mit Nachdenken vor: das Ergebnis so, wie es in OLAT eingetragen würde, und den Rechenweg zum Aufklappen. Eintragen tust du selbst, der Löser schreibt nichts nach OLAT.`),
+        !g && !L.laeuft && el('p', { class: 'klein' }, variante(t, q)
+          ? 'Dieser Test läuft und zählt für die Note. Der Löser rechnet darum eine gleichartige Aufgabe mit anderen Zahlen vor, mit Rechenweg zum Aufklappen. Die Originalaufgabe rechnest du daran selbst.'
+          : `MiMo V2.6 Pro rechnet ${q.nr == null ? 'alle Fragen' : 'die Frage'} mit Nachdenken vor: das Ergebnis so, wie es in OLAT eingetragen würde, und den Rechenweg zum Aufklappen. Eintragen tust du selbst, der Löser schreibt nichts nach OLAT.`),
         el('div', { class: 'knopfreihe' },
           L.laeuft ? el('p', { class: 'presse', id: 'lo-status', 'data-k': k, role: 'status' }, L.hinweis)
             : el('button', { class: `knopf${g ? '' : ' voll'}`, type: 'button', onclick: () => loesen(t, q) }, g ? 'Neu lösen' : 'Lösen lassen'),
-          g && !L.laeuft && el('span', { class: 'meta' }, `Gelöst ${zeitpunkt(g.zeit)}, ${geld(g.preis || 0)}`)),
+          g && !L.laeuft && el('span', { class: 'meta' }, `Gelöst ${zeitpunkt(g.zeit)}${SERVER ? '' : ', ' + geld(g.preis || 0)}`)),
         L.fehler && el('p', { class: 'fehlertext' }, L.fehler),
         g && loesungZeigen(g.text),
         el('h3', { class: 'rueck-kopf' }, 'Rückfrage'),
@@ -2444,7 +2560,7 @@ function testZeigen(t) {
         el('button', { class: 'knopf', type: 'button', disabled: n === fragen.length - 1, onclick: () => geh(n + 1) }, 'Weiter', el('span', { class: 'pfeil', 'aria-hidden': 'true' })))),
   ].filter(Boolean));
 }
-const rueckKontext = (t, q) => `Du erklärst eine Aufgabe aus dem OLAT-Test „${t.titel}“ im Fach ${t.fach} (1. Semester Wirtschaftswissenschaften, Universität Innsbruck). Beantworte Rückfragen knapp, verständlich und auf Deutsch. Rechne nach, wenn danach gefragt wird; ist an der Lösung unten etwas falsch, sag es klar und rechne richtig. Im Aufgabentext stehen Formeln als LaTeX ohne Begrenzer und Eingabefelder als []. Formeln in deinen Antworten in LaTeX zwischen \\( und \\), abgesetzt zwischen \\[ und \\].
+const rueckKontext = (t, q) => `Du erklärst eine Aufgabe aus dem OLAT-Test „${t.titel}“ im Fach ${t.fach} (1. Semester Wirtschaftswissenschaften, Universität Innsbruck). Beantworte Rückfragen knapp, verständlich und auf Deutsch. Rechne nach, wenn danach gefragt wird; ist an der Lösung unten etwas falsch, sag es klar und rechne richtig.${variante(t, q) ? ' Dieser Test läuft gerade und wird bewertet: Die Originalaufgabe rechnest du nie mit den Originalzahlen vor und nennst kein Ergebnis dafür, sondern erklärst den Weg an Beispielen mit anderen Zahlen.' : ''} Im Aufgabentext stehen Formeln als LaTeX ohne Begrenzer und Eingabefelder als []. Formeln in deinen Antworten in LaTeX zwischen \\( und \\), abgesetzt zwischen \\[ und \\].
 
 === STARTSEITE ===
 ${t.startseite || '(keine)'}
@@ -2463,9 +2579,10 @@ async function loesen(t, q) {
   await wach(true);
   try {
     const kopf = `Fach: ${t.fach}\nTest: ${t.titel}\n\n=== STARTSEITE ===\n${t.startseite || '(keine)'}\n\n`;
-    const auftragText = q.nr == null ? `Löse alle Fragen mit den Originalzahlen.\n\n${kopf}=== FRAGEN ===\n${q.text}`
+    const auftragText = variante(t, q) ? `Dieser Test läuft gerade und wird bewertet. Rechne die Originalaufgabe nicht vor und nenne kein Ergebnis dafür. Bilde stattdessen zu ${q.nr == null ? 'jeder Frage' : `Frage ${q.nr}`} eine gleichartige Übungsaufgabe mit anderen Zahlen, stell sie vollständig vor und löse sie in der verlangten Form, damit die Person den Weg lernt und die Originalaufgabe selbst rechnet.\n\n${kopf}=== ${q.nr == null ? 'FRAGEN' : 'FRAGE ' + q.nr} ===\n${q.text}`
+      : q.nr == null ? `Löse alle Fragen mit den Originalzahlen.\n\n${kopf}=== FRAGEN ===\n${q.text}`
       : `Löse nur Frage ${q.nr} mit den Originalzahlen, in der verlangten Form.\n\n${kopf}=== FRAGE ${q.nr} ===\n${q.text}`;
-    const { text, preis } = await strom({ ...LOESER, messages: [{ role: 'system', content: LOESER_PROMPT }, { role: 'user', content: auftragText }] },
+    const { text, preis } = await strom({ ...LOESER, feature: 'loeser', messages: [{ role: 'system', content: LOESER_PROMPT }, { role: 'user', content: auftragText }] },
       x => sag(`Schreibt … ${x.split(/\s+/).length} Wörter`), () => sag('Denkt nach …'));
     merk('loeser:' + k, JSON.stringify({ text, preis, zeit: new Date().toISOString() }));
   } catch (e) { L.fehler = wpWarum(e); }
@@ -2565,9 +2682,9 @@ async function ghVerbinden(token) {
   if (!repo.private) throw new Error(`„${repo.full_name}“ ist öffentlich. Folien dürfen nicht öffentlich liegen: auf GitHub im Repo unter Settings ganz unten „Change visibility“ → Private, dann nochmal verbinden.`);
   speichereCfg({ github: token, repo: repo.full_name });
 }
-function pcDatei() {  // Startdatei mit Zugang; das eigentliche Einrichten lädt sie frisch von hier (einrichten.ps1)
+function pcDatei(z = cfg) {  // Startdatei mit Zugang; das eigentliche Einrichten lädt sie frisch von hier (einrichten.ps1). Server: z.api
   const skriptUrl = new URL('einrichten.ps1', location.href).href;
-  speichern(['@echo off', 'chcp 65001 >nul', 'title Lernhelfer einrichten', `set "LH_REPO=${cfg.repo}"`, `set "LH_TOKEN=${cfg.github}"`,
+  speichern(['@echo off', 'chcp 65001 >nul', 'title Lernhelfer einrichten', `set "LH_REPO=${z.repo}"`, `set "LH_TOKEN=${z.github}"`, `set "LH_API=${z.api || ''}"`,
     `powershell -NoProfile -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol='Tls12'; iex ([Text.Encoding]::UTF8.GetString((New-Object Net.WebClient).DownloadData('${skriptUrl}')))"`,
     'if errorlevel 1 (echo. & echo Etwas hat nicht geklappt. Die Meldung oben und die Anleitung helfen weiter. & pause & exit /b 1)',
     'echo.', 'echo Diese Datei loescht sich jetzt selbst, weil dein Speicher-Schluessel darin steht.', 'pause', '(goto) 2>nul & del "%~f0"', ''].join('\r\n'),
@@ -2578,7 +2695,7 @@ async function abgleichHolen() {  // abgleich.json schreibt der PC: wann zuletzt
   const anders = JSON.stringify(neu) !== JSON.stringify(ABGLEICH);
   ABGLEICH = neu;
   const wann = ABGLEICH && new Date(ABGLEICH.zeit).toLocaleString('de-AT', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
-  $('stand').textContent = !ABGLEICH ? 'Noch kein OLAT-Abgleich. Das PC-Programm gibt es unter Einrichten bei Schritt 3.'
+  $('stand').textContent = !ABGLEICH ? `Noch kein OLAT-Abgleich. Das PC-Programm gibt es unter ${SERVER ? 'Konto' : 'Einrichten bei Schritt 3'}.`
     : ABGLEICH.ok ? `OLAT-Abgleich ${wann}: ${ABGLEICH.text}. Der PC gleicht von selbst ab, solange er läuft.`
     : `${ABGLEICH.text} (seit ${wann})`;
   $('stand').classList.toggle('warnung', ABGLEICH?.ok === false);
@@ -2587,6 +2704,7 @@ async function abgleichHolen() {  // abgleich.json schreibt der PC: wann zuletzt
   if (document.body.dataset.ansicht === 'einstellungen') einrichtenZeigen();
 }
 function einrichtenZeigen() {
+  if (SERVER) return kontoZeigen();
   const offenOR = !cfg?.openrouter, offenGH = !(cfg?.github && cfg?.repo);
   $('ei-schlagzeile').textContent = !fertig() ? 'Drei Verbindungen, dann kommt alles von selbst.'
     : Object.keys(R).length ? 'Alles verbunden.' : 'Fast fertig: Jetzt holt der PC deine Unterlagen.';
@@ -2664,25 +2782,344 @@ function einrichtenZeigen() {
   if (KAMERA && $('kamera')) { $('kamera').srcObject = KAMERA; $('kamera').play().catch(() => {}); }
 }
 
+/* ---------- Server-Version: Konto, Tarife, Sperren mit Gratis-Test, Verwaltung, Recht ---------- */
+const SPERREN = { kalender: 'kalender', wordpower: 'wp-transkript', vortrag: 'vortrag' };  // Ansicht → Funktion, die sie braucht
+const SPERRE = {  // was ein Tarif bringt, je Funktion in einem Satz
+  kalender: ['Der Kalender', 'Stundenplan aus LFU:online und alle Fristen auf einen Blick, mit einem Tipp ins iPad übernommen.'],
+  'wp-transkript': ['Word Power', 'Gemini schreibt jeden YouTube-Talk für die Englisch-Hausaufgabe mit Zeitstempeln mit.'],
+  vortrag: ['Vortrag analysieren', 'Note, Tipps und jeder Fehler mit Zeitstempel: Rückmeldung zu deiner Präsentation, bevor sie zählt.'],
+  chat: ['Fragen an die KI', 'Rückfragen zu jeder Ausgabe, jedem Vortrag und jeder Aufgabe, und „Frag den Lernhelfer“ zu Terminen, Fristen und nächsten Schritten.'],
+  loeser: ['Der Löser', 'Rechnet Aufgaben Schritt für Schritt vor, mit Rechenweg zum Aufklappen und Rückfragen.'],
+  'wp-text': ['Der Hausaufgaben-Entwurf', 'Aus dem Transkript wird ein Entwurf fürs Word Power Journal, mit Talk-Skript, Cue Card und Reflection.'],
+};
+const stufeName = f => TARIFE?.funktionen[f] === 1 ? 'Pro' : 'Ultra';
+function sperrkarte(f, klein) {
+  const name = stufeName(f), [was, nutzen] = SPERRE[f];
+  return el('div', { class: `sperrkarte${klein ? ' klein' : ''}` },
+    el('span', { class: 'pille akzent' }, `Ab ${name}`),
+    el(klein ? 'h3' : 'h2', {}, `${was} gehört zu ${name}`),
+    el('p', { class: 'klein' }, nutzen),
+    el('div', { class: 'knopfreihe' },
+      ICH?.testFrei && el('button', { class: 'knopf voll', type: 'button', onclick: testStarten }, '24 Stunden Ultra gratis testen'),
+      el('a', { class: `knopf${ICH?.testFrei ? '' : ' voll'}`, href: '#/upgrade' }, ICH?.testFrei ? 'Tarife ansehen' : `${name} freischalten`)),
+    ICH?.testFrei && el('p', { class: 'meta' }, 'Einmal pro Konto, ohne Zahlungsdaten. Danach geht es von selbst mit Base weiter.'));
+}
+async function testStarten(e) {
+  const knopf = e.currentTarget, ort = knopf.closest('.knopfreihe');
+  knopf.disabled = true;
+  try {
+    ICH = await api('test', {});
+    WP = null; LOESER_PROMPT = null; LOESER_LADEN = null;  // die Prompts gibt es jetzt vollständig
+    status('Ultra ist für 24 Stunden freigeschaltet. Viel Spaß beim Ausprobieren!');
+    kontoZeile(); zeichne();
+  } catch (err) {
+    knopf.disabled = false;
+    ort.parentElement.querySelector(':scope > .fehlertext')?.remove();
+    ort.after(el('p', { class: 'fehlertext', role: 'alert' }, err.message));
+  }
+}
+function kontoZeile() {  // statt Guthaben: Tarif und wie viel vom KI-Kontingent des Monats genutzt ist
+  if (!SERVER) return;
+  for (const k of document.querySelectorAll('[data-kosten]'))
+    k.replaceChildren(...!ICH || !TARIFE ? [] : [
+      el('span', {}, ICH.test ? `Ultra-Test bis ${zeitpunkt(ICH.bis)}` : TARIFE.tarife[ICH.tarif].name + (ICH.bis ? ` bis ${new Date(ICH.bis).toLocaleDateString('de-AT')}` : '')),
+      el('span', {}, `KI-Kontingent ${ICH.genutzt} % genutzt`),
+      (ICH.tarif === 'base' || ICH.test) && el('a', { href: '#/upgrade' }, 'Mehr freischalten')].filter(Boolean));
+}
+function neuLaden(hinweis) {  // nach An- und Abmelden: alles frisch, damit nichts vom vorigen Konto stehen bleibt
+  try { if (hinweis) sessionStorage.setItem('hinweis', hinweis); } catch {}
+  history.replaceState(null, '', location.pathname + '#/');
+  location.reload();
+}
+let PW_TOKEN = null, HINWEIS = '';  // aus dem Mail-Link #passwort=…; Hinweis bleibt nach dem Laden stehen
+async function kontoStart() {
+  const ref = new URLSearchParams(location.search).get('ref');  // Einladungslink ?ref=CODE: bis zum Registrieren merken
+  if (ref) { merk('ref', ref.trim().toUpperCase()); history.replaceState(null, '', location.pathname + location.hash); }
+  try {
+    [TARIFE, ICH] = await Promise.all([api('tarife'), api('ich').catch(e => { if (e.status === 401) return null; throw e; })]);
+  } catch (e) { status(e.message, true); }
+  const m = location.hash.match(/^#(bestaetigen|passwort)=([\w-]+)$/);
+  if (m) {
+    history.replaceState(null, '', location.pathname + (m[1] === 'passwort' ? '#/einstellungen' : '#/'));
+    if (m[1] === 'passwort') PW_TOKEN = m[2];
+    else try { await api('bestaetigen', { token: m[2] }); if (ICH) ICH = await api('ich'); status(HINWEIS = 'Danke, deine E-Mail-Adresse ist bestätigt.'); } catch (e) { status(e.message, true); }
+  }
+  let hinweis = null;
+  try { hinweis = sessionStorage.getItem('hinweis'); sessionStorage.removeItem('hinweis'); } catch {}
+  if (hinweis) status(HINWEIS = hinweis);
+}
+// Formular fürs Konto: Fehler und Erfolg stehen direkt darunter; aktion gibt optional einen Erfolgstext zurück
+function kontoForm(titel, felder, knopf, aktion, zusatz) {
+  const meldungP = el('p', { role: 'status', class: 'klein', hidden: true });
+  return el('form', { class: 'schritt', novalidate: true, onsubmit: async e => {
+    e.preventDefault();
+    const k = e.target.querySelector('button.voll');
+    k.disabled = true; meldungP.hidden = true;
+    try {
+      const text = await aktion(Object.fromEntries(new FormData(e.target)));
+      if (text) Object.assign(meldungP, { className: 'klein', textContent: text, hidden: false });
+    } catch (err) { Object.assign(meldungP, { className: 'fehlertext', textContent: err.message, hidden: false }); }
+    k.disabled = false;
+  } }, el('h2', {}, titel), felder, zusatz, el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll' }, knopf)), meldungP);
+}
+const kontoFeld = (name, label, typ, extra = {}) => el('label', { class: 'feld' }, label,
+  el('input', { name, type: typ, required: true, autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false', ...extra }));
+async function kopieren(e, text) {
+  try { await navigator.clipboard.writeText(text); e.currentTarget.textContent = 'Kopiert'; } catch { status('Kopieren ging nicht. Bitte markieren und kopieren.', true); }
+}
+async function pcLaden(e) {
+  const knopf = e.currentTarget;
+  knopf.disabled = true;
+  try { const p = await api('pc', {}); pcDatei({ repo: p.repo, github: p.token, api: p.api }); ICH.pc = true; }
+  catch (err) { status(err.message, true); }
+  knopf.disabled = false;
+}
+function kontoZeigen() {
+  $('ei-titel').textContent = 'Konto';
+  const einst = $('ei-einst').closest('section');
+  einst.hidden = !ICH;
+  $('k-recht')?.remove();
+  const recht = el('p', { class: 'rechtszeile meta', id: 'k-recht' }, el('a', { href: '#/upgrade' }, 'Tarife'), el('a', { href: '#/recht' }, 'Impressum, Datenschutz und AGB'),
+    ICH?.admin && el('a', { href: '#/admin' }, 'Verwaltung'));
+  if (PW_TOKEN) {
+    $('ei-schlagzeile').textContent = 'Neues Passwort setzen.';
+    return $('ei-schritte').replaceChildren(kontoForm('Neues Passwort', [kontoFeld('passwort', 'Neues Passwort, mindestens 10 Zeichen', 'password', { autocomplete: 'new-password', minlength: 10 })],
+      'Speichern', async d => { await api('passwort-neu', { token: PW_TOKEN, passwort: d.passwort }); PW_TOKEN = null; neuLaden('Neues Passwort gespeichert. Du bist angemeldet.'); }));
+  }
+  einst.after(recht);  // Impressum ganz unten, nach den Einstellungen
+  if (!ICH) {
+    $('ei-schlagzeile').textContent = 'Anmelden oder kostenlos ein Konto erstellen.';
+    const p = TARIFE?.tarife;
+    return $('ei-schritte').replaceChildren(
+      el('div', { class: 'konto-formulare' },
+        kontoForm('Konto erstellen', [
+          kontoFeld('email', 'E-Mail', 'email', { autocomplete: 'email', inputmode: 'email' }),
+          kontoFeld('passwort', 'Passwort, mindestens 10 Zeichen', 'password', { autocomplete: 'new-password', minlength: 10 }),
+          el('label', { class: 'feld' }, el('span', {}, 'Freundescode ', el('span', { class: 'opt' }, 'optional')),
+            el('input', { name: 'code', type: 'text', autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', value: merk('ref') || '' })),
+          el('label', { class: 'zustimmung' }, el('input', { type: 'checkbox', name: 'agb', required: true }),
+            el('span', {}, 'Ich habe die ', el('a', { href: '#/recht' }, 'AGB und die Datenschutzerklärung'), ' gelesen.'))],
+          'Kostenlos registrieren', async d => {
+            await api('registrieren', { email: d.email, passwort: d.passwort, code: d.code, agb: !!d.agb });
+            merk('ref', null);
+            neuLaden('Willkommen! Wir haben dir eine Mail geschickt: Bestätige darin deine Adresse, dann kannst du Ultra 24 Stunden gratis testen.');
+          }, el('p', { class: 'klein' }, merk('ref') && p ? `Mit dem Freundescode zahlst du im ersten Monat ${p.pro.rabatt} % weniger bei Pro und ${p.ultra.rabatt} % weniger bei Ultra.`
+            : 'Base ist kostenlos und bleibt es: jede Woche eine Ausgabe pro Fach aus deinen OLAT-Unterlagen.')),
+        el('div', {},
+          kontoForm('Anmelden', [kontoFeld('email', 'E-Mail', 'email', { autocomplete: 'username', inputmode: 'email' }),
+            kontoFeld('passwort', 'Passwort', 'password', { autocomplete: 'current-password' })],
+            'Anmelden', async d => { await api('anmelden', d); neuLaden(); }),
+          kontoForm('Passwort vergessen?', [kontoFeld('email', 'E-Mail', 'email', { autocomplete: 'username', inputmode: 'email' })],
+            'Link schicken', async d => { await api('passwort-vergessen', d); return 'Gibt es ein Konto mit dieser Adresse, ist jetzt eine Mail mit einem Link unterwegs. Er gilt eine Stunde.'; }))));
+  }
+  const T = TARIFE.tarife, einladung = `${location.origin}${location.pathname}?ref=${ICH.code}`;
+  const wann = ABGLEICH && new Date(ABGLEICH.zeit).toLocaleString('de-AT', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+  $('ei-schlagzeile').textContent = `Angemeldet als ${ICH.email}`;
+  $('ei-schritte').replaceChildren(...[
+    !ICH.bestaetigt && el('section', { class: 'schritt', 'aria-labelledby': 'k-mail' }, el('h2', { id: 'k-mail' }, 'E-Mail bestätigen'),
+      el('p', { class: 'klein' }, `Wir haben dir einen Link an ${ICH.email} geschickt. Danach gibt es den Gratis-Test und Mails zu deinem Tarif.`),
+      el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf', type: 'button', onclick: async e => {
+        const k = e.currentTarget; k.disabled = true;
+        try { await api('bestaetigung-senden', {}); k.textContent = 'Gesendet, schau ins Postfach'; } catch (err) { status(err.message, true); k.disabled = false; }
+      } }, 'Mail nochmal senden'))),
+    el('section', { class: 'schritt', 'aria-labelledby': 'k-tarif' }, el('h2', { id: 'k-tarif' }, 'Dein Tarif'),
+      el('p', { class: `stand${ICH.tarif === 'base' ? '' : ' ok'}` }, ICH.test ? `Ultra-Test bis ${zeitpunkt(ICH.bis)}`
+        : T[ICH.tarif].name + (ICH.bis ? ` bis ${new Date(ICH.bis).toLocaleDateString('de-AT')}` : ', kostenlos')),
+      el('div', { class: 'kontingent', role: 'img', 'aria-label': `KI-Kontingent zu ${ICH.genutzt} Prozent genutzt` }, el('span', { style: `width: ${ICH.genutzt}%` })),
+      el('p', { class: 'meta' }, `KI-Kontingent ${ICH.test ? 'des Tests' : 'diesen Monat'}: ${ICH.genutzt} % genutzt`),
+      ICH.bestellung && el('p', { class: 'klein' }, ICH.bestellung.status === 'gemeldet' ? 'Deine Zahlung wird geprüft. Sobald sie da ist, wird freigeschaltet und du bekommst eine Mail.'
+        : [`Offene Bestellung ${ICH.bestellung.zweck}: `, el('a', { href: '#/upgrade' }, 'Zahlungsdaten ansehen')]),
+      el('div', { class: 'knopfreihe' },
+        el('a', { class: `knopf${ICH.tarif === 'base' ? ' voll' : ''}`, href: '#/upgrade' }, ICH.tarif === 'base' || ICH.test ? 'Tarife ansehen' : 'Verlängern oder wechseln'),
+        ICH.testFrei && el('button', { class: 'knopf', type: 'button', onclick: testStarten }, '24 Stunden Ultra gratis testen'))),
+    el('section', { class: 'schritt', 'aria-labelledby': 'k-freunde' }, el('h2', { id: 'k-freunde' }, 'Freunde einladen'),
+      el('p', { class: 'klein' }, `Wer sich mit deinem Link anmeldet, zahlt im ersten Monat ${T.pro.rabatt} % weniger bei Pro und ${T.ultra.rabatt} % weniger bei Ultra. Sobald die Person zum ersten Mal zahlt, bekommst du denselben Rabatt auf deinen nächsten Monat. Für jede Person einmal, ohne Obergrenze.`),
+      el('div', { class: 'einladen' },
+        el('input', { readonly: true, value: einladung, 'aria-label': 'Dein Einladungslink', onfocus: e => e.target.select() }),
+        el('button', { class: 'knopf voll', type: 'button', onclick: e => navigator.share
+          ? navigator.share({ title: 'Lernhelfer', text: `Jede Woche das Wichtigste aus OLAT. Mit meinem Link sparst du im ersten Monat bis zu ${T.ultra.rabatt} %:`, url: einladung }).catch(() => {})
+          : kopieren(e, einladung) }, navigator.share ? 'Teilen' : 'Kopieren')),
+      el('p', { class: 'meta' }, `Dein Code ${ICH.code} · ${ICH.freunde} ${ICH.freunde === 1 ? 'Person' : 'Personen'} angemeldet · ${ICH.gutscheine} ${ICH.gutscheine === 1 ? 'Rabatt' : 'Rabatte'} offen`)),
+    ICH.api && el('section', { class: 'schritt', 'aria-labelledby': 'k-api' }, el('h2', { id: 'k-api' }, 'Dein API-Schlüssel'),
+      el('p', { class: 'klein' }, 'Für eigene Projekte über OpenRouter, mit rund 10 € Guthaben pro Monat (setzt sich am Monatsersten zurück). Behandle ihn wie ein Passwort.'),
+      el('div', { class: 'einladen' }, el('input', { readonly: true, type: 'password', value: ICH.api, 'aria-label': 'API-Schlüssel', onfocus: e => { e.target.type = 'text'; e.target.select(); }, onblur: e => { e.target.type = 'password'; } }),
+        el('button', { class: 'knopf', type: 'button', onclick: e => kopieren(e, ICH.api) }, 'Kopieren'))),
+    el('section', { class: 'schritt', 'aria-labelledby': 'k-pc' }, el('h2', { id: 'k-pc' }, 'OLAT-Abgleich am PC'),
+      el('p', { class: `stand${ABGLEICH?.ok ? ' ok' : ''}${ABGLEICH?.ok === false ? ' warnung' : ''}` }, !ABGLEICH ? 'Noch kein Abgleich' : ABGLEICH.ok ? `Letzter Abgleich ${wann}: ${ABGLEICH.text}` : ABGLEICH.text),
+      el('p', { class: 'klein' }, 'Ein kleines Programm auf deinem Windows-PC holt neue Folien und Tests aus OLAT, solange der PC an ist. Den OLAT-Login mit Authenticator machst du selbst im Chrome-Fenster.'),
+      WINDOWS ? [
+        el('div', { class: 'knopfreihe' }, el('button', { class: `knopf${ABGLEICH ? '' : ' voll'}`, type: 'button', onclick: pcLaden }, ICH.pc ? 'PC-Programm neu laden' : 'PC-Programm herunterladen')),
+        el('ol', { class: 'schritte klein' },
+          el('li', {}, 'Fragt Chrome, ob du die Datei behalten willst: „Behalten“.'),
+          el('li', {}, 'Datei öffnen. Zeigt Windows „Der Computer wurde durch Windows geschützt“: „Weitere Informationen“, dann „Trotzdem ausführen“.'),
+          el('li', {}, 'Im Chrome-Fenster bei OLAT einloggen und warten, bis im schwarzen Fenster „Fertig“ steht. Das dauert beim ersten Mal 5 bis 15 Minuten.'))]
+        : el('p', { class: 'klein' }, `Das geht nur an einem Windows-PC: dort ${location.host} öffnen, anmelden und hier das PC-Programm laden. Für Mac gibt es den Abgleich noch nicht.`)),
+    el('section', { class: 'schritt', 'aria-labelledby': 'k-weg' }, el('h2', { id: 'k-weg' }, 'Abmelden'),
+      el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf', type: 'button', onclick: async () => {
+        await api('abmelden', {}).catch(() => {});
+        try { localStorage.clear(); } catch {}  // Chats und Entwürfe gehören zum Konto, nicht zum Gerät
+        neuLaden('Abgemeldet.');
+      } }, 'Abmelden')),
+      el('details', {}, el('summary', {}, 'Konto löschen'),
+        kontoForm('Konto endgültig löschen', [el('p', { class: 'klein' }, 'Löscht dein Konto mit allen Ausgaben, Vorträgen und Kalendern. Das lässt sich nicht rückgängig machen. Ein laufender Tarif verfällt.'),
+          kontoFeld('passwort', 'Dein Passwort zur Bestätigung', 'password', { autocomplete: 'current-password' })],
+          'Konto löschen', async d => { await api('konto-loeschen', d); try { localStorage.clear(); } catch {} neuLaden('Dein Konto ist gelöscht.'); }))),
+  ].filter(Boolean));
+}
+
+const UP = { wahl: null, monate: 1 };
+const PLAN = {  // was jeder Tarif dazubringt
+  base: ['Wochenausgabe für jedes Fach: Zusammenfassung, Übungen, Begriffe, Termine', 'OLAT-Abgleich am PC', 'Onlinetests im Überblick'],
+  pro: ['Kalender mit Stundenplan und allen Fristen, mit Übernahme ins iPad', 'Word Power: YouTube-Talks transkribieren', 'Vortrag analysieren: Note, Tipps und Fehler mit Zeitstempel'],
+  ultra: ['Fragen an die KI zu jeder Ausgabe, jedem Vortrag und jeder Aufgabe', 'Frag den Lernhelfer: Termine, Fristen, nächste Schritte', 'Löser mit Rechenweg und Rückfragen', 'Word Power: Hausaufgaben-Entwurf aus dem Transkript'],
+  ultraplus: ['Eigener OpenRouter-Schlüssel mit rund 10 € KI-Guthaben pro Monat, für eigene Projekte'],
+};
+const DAZU = { pro: 'Alles aus Base, dazu:', ultra: 'Alles aus Pro, dazu:', ultraplus: 'Alles aus Ultra, dazu:' };
+const euro = c => (c / 100).toLocaleString('de-AT', { style: 'currency', currency: 'EUR' });
+function upgradeZeigen() {
+  if (!TARIFE) return $('upgrade').replaceChildren(el('p', { class: 'fehlertext' }, 'Die Tarife ließen sich nicht laden. Bist du online?'));
+  const T = TARIFE.tarife, z = TARIFE.zahlung, b = ICH?.bestellung, mitRabatt = !!ICH && (ICH.erstrabatt || ICH.gutscheine > 0);
+  const rabatt = t => mitRabatt ? Math.round((T[t].rabattAuf ?? T[t].preis) * T[t].rabatt / 100) : 0;
+  const tun = (pfad, body) => async e => { e.currentTarget.disabled = true; try { ICH = await api(pfad, body); } catch (err) { status(err.message, true); } upgradeZeigen(); kontoZeile(); };
+  const karte = t => {
+    const aktuell = ICH?.tarif === t && !ICH.test;
+    return el('article', { class: `tarif${t === 'ultra' ? ' empfohlen' : ''}${UP.wahl === t ? ' gewaehlt' : ''}`, 'aria-labelledby': 'tarif-' + t },
+      t === 'ultra' && el('span', { class: 'pille akzent marke-oben' }, 'Empfohlen'),
+      el('h3', { id: 'tarif-' + t }, T[t].name),
+      el('p', { class: 'preis' }, T[t].preis ? euro(T[t].preis) : '€ 0', el('small', {}, T[t].preis ? ' pro Monat' : ' für immer')),
+      rabatt(t) > 0 && el('p', { class: 'meta' }, `Erster Monat ${euro(T[t].preis - rabatt(t))} mit ${ICH.erstrabatt ? 'Freundes-Rabatt' : 'deinem Gutschein'}`),
+      el('ul', {}, DAZU[t] && el('li', { class: 'plus' }, DAZU[t]), PLAN[t].map(x => el('li', {}, x))),
+      t === 'base' ? el('p', { class: 'meta' }, aktuell || ICH?.tarif === 'base' ? 'Dein Tarif' : 'Gilt immer dann, wenn kein anderer läuft.')
+        : !ICH ? el('a', { class: `knopf${t === 'ultra' ? ' voll' : ''}`, href: '#/einstellungen' }, 'Konto erstellen')
+        : el('button', { class: `knopf${t === 'ultra' ? ' voll' : ''}`, type: 'button', disabled: b?.status === 'gemeldet', 'aria-pressed': String(UP.wahl === t),
+          onclick: () => { UP.wahl = t; upgradeZeigen(); $('bestellen').scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); } },
+          aktuell ? 'Verlängern' : `${T[t].name} wählen`));
+  };
+  const zuZahlen = el('b');
+  const preisZeigen = () => { zuZahlen.textContent = euro(T[UP.wahl].preis * UP.monate - rabatt(UP.wahl)); };
+  const fehler = el('p', { class: 'fehlertext', role: 'alert', hidden: true });
+  const bestellen = UP.wahl && ICH && b?.status !== 'gemeldet' && el('form', { class: 'schritt', id: 'bestellen', 'aria-labelledby': 'b-kopf', onsubmit: async e => {
+    e.preventDefault();
+    if (!e.target.elements.sofort.checked) { fehler.textContent = 'Bitte bestätige den Start gleich nach der Zahlung.'; fehler.hidden = false; return; }
+    e.target.querySelector('button.voll').disabled = true;
+    try { ICH = await api('bestellen', { tarif: UP.wahl, monate: UP.monate, sofort: true }); UP.wahl = null; upgradeZeigen(); kontoZeile(); $('zahlung').scrollIntoView({ block: 'start' }); $('z-kopf').focus({ preventScroll: true }); }
+    catch (err) { fehler.textContent = err.message; fehler.hidden = false; e.target.querySelector('button.voll').disabled = false; }
+  } },
+    el('h2', { id: 'b-kopf' }, `${T[UP.wahl].name} bestellen`),
+    el('fieldset', { class: 'laufzeit' }, el('legend', { class: 'sr' }, 'Laufzeit'),
+      TARIFE.monate.map(m => el('label', {}, el('input', { type: 'radio', name: 'monate', value: m, checked: UP.monate === m, onchange: () => { UP.monate = m; preisZeigen(); } }), `${m} ${m === 1 ? 'Monat' : 'Monate'}`))),
+    el('p', { class: 'klein' }, 'Zu zahlen: ', zuZahlen, rabatt(UP.wahl) > 0 && ` (${euro(rabatt(UP.wahl))} Rabatt auf einen Monat schon abgezogen)`,
+      '. Einmal im Voraus, kein Abo: Danach geht es von selbst mit Base weiter, nichts verlängert sich automatisch.'),
+    el('label', { class: 'zustimmung' }, el('input', { type: 'checkbox', name: 'sofort', onchange: () => { fehler.hidden = true; } }),
+      el('span', {}, 'Der Tarif soll gleich nach Zahlungseingang starten. Mir ist bekannt, dass ich dann für die schon genutzte Zeit zahle und mein Widerrufsrecht mit vollständiger Erfüllung erlischt.')),
+    el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll' }, 'Zahlungspflichtig bestellen'),
+      el('button', { class: 'knopf', type: 'button', onclick: () => { UP.wahl = null; upgradeZeigen(); } }, 'Abbrechen')),
+    fehler);
+  if (bestellen) preisZeigen();
+  const zahlung = b && el('section', { class: 'schritt zahlung', id: 'zahlung', 'aria-labelledby': 'z-kopf' },
+    el('h2', { id: 'z-kopf', tabindex: '-1' }, b.status === 'gemeldet' ? 'Zahlung wird geprüft' : 'So bezahlst du'),
+    b.status === 'gemeldet' ? el('p', { class: 'klein' }, `Danke! Sobald ${euro(b.betrag)} mit dem Verwendungszweck ${b.zweck} angekommen sind, wird ${T[b.tarif].name} freigeschaltet und du bekommst eine Mail. Überweisungen brauchen meist einen Werktag.`)
+      : [el('p', { class: 'klein' }, `${T[b.tarif].name}, ${b.monate} ${b.monate === 1 ? 'Monat' : 'Monate'}. Bitte genau diesen Betrag mit dem Verwendungszweck überweisen, sonst lässt sich die Zahlung nicht zuordnen.`),
+        el('dl', {}, el('dt', {}, 'Betrag'), el('dd', {}, euro(b.betrag)), el('dt', {}, 'Verwendungszweck'), el('dd', {}, b.zweck),
+          z.iban && [el('dt', {}, 'Empfänger'), el('dd', {}, z.empfaenger), el('dt', {}, 'IBAN'), el('dd', {}, z.iban)], z.bic && [el('dt', {}, 'BIC'), el('dd', {}, z.bic)]),
+        z.paypal && el('p', { class: 'klein' }, `Oder per PayPal an ${z.paypal}, mit ${b.zweck} als Nachricht.`),
+        el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll', type: 'button', onclick: tun('gemeldet', {}) }, 'Ich habe bezahlt'),
+          el('button', { class: 'knopf', type: 'button', onclick: e => confirm('Bestellung zurückziehen?') && tun('storno', {})(e) }, 'Bestellung zurückziehen'))]);
+  $('upgrade').replaceChildren(...[
+    el('header', { class: 'ausgabe-kopf' }, el('h1', {}, 'Tarife'),
+      el('p', { class: 'schlagzeile' }, 'Base bleibt kostenlos. Pro und Ultra schalten frei, was dir in der Woche am meisten Zeit spart.'),
+      ICH && el('p', { class: 'meta' }, `Dein Tarif: ${ICH.test ? `Ultra-Test bis ${zeitpunkt(ICH.bis)}` : T[ICH.tarif].name + (ICH.bis ? ` bis ${new Date(ICH.bis).toLocaleDateString('de-AT')}` : '')}`)),
+    zahlung,
+    ICH?.testFrei && el('section', { class: 'sperrkarte', 'aria-labelledby': 'u-test' }, el('h2', { id: 'u-test' }, 'Erst ausprobieren?'),
+      el('p', { class: 'klein' }, '24 Stunden lang alles aus Ultra, einmal pro Konto, ohne Zahlungsdaten. Danach geht es von selbst mit Base weiter.'),
+      el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll', type: 'button', onclick: testStarten }, '24 Stunden Ultra gratis testen'))),
+    el('div', { class: 'tarife' }, Object.keys(T).map(karte)),
+    bestellen,
+    el('section', { class: 'text warum', 'aria-labelledby': 'u-warum' },
+      el('h2', { id: 'u-warum' }, 'Warum kostet das etwas, und wofür zahle ich?'),
+      el('p', {}, 'Ich studiere selbst im ersten Semester Wirtschaftswissenschaften in Innsbruck und habe den Lernhelfer in vielen Stunden neben dem Studium gebaut. Base bleibt dauerhaft kostenlos.'),
+      el('p', {}, 'Jede Zusammenfassung, jedes Transkript und jede Antwort läuft über bezahlte KI-Modelle. Dazu kommen der Server, die Domain, die Mails und viele Testläufe beim Entwickeln, die ebenfalls KI-Kosten verursacht haben.'),
+      el('p', {}, 'Mit Pro oder Ultra zahlst du deine eigenen KI-Kosten und hilfst, dass ich Entwicklungszeit, Testläufe und Server mindestens wieder hereinbekomme.'),
+      el('ul', {}, el('li', {}, 'Kein Abo, nichts zu kündigen: Du zahlst im Voraus für die Monate, die du willst.'),
+        el('li', {}, 'Deine Ausgaben und Vorträge bleiben bei jedem Tarif erhalten, auch wenn er endet.'),
+        el('li', {}, 'Jeder Tarif hat ein KI-Kontingent pro Monat, damit die Kosten planbar bleiben. Im Alltag reicht es weit.'))),
+    el('section', { class: 'sperrkarte', 'aria-labelledby': 'u-freunde' }, el('h2', { id: 'u-freunde' }, 'Zusammen günstiger'),
+      el('p', { class: 'klein' }, `Lade Freunde mit deinem Link ein: Sie zahlen im ersten Monat ${T.pro.rabatt} % weniger bei Pro und ${T.ultra.rabatt} % weniger bei Ultra, und sobald sie zahlen, bekommst du denselben Rabatt auf deinen nächsten Monat.`),
+      el('div', { class: 'knopfreihe' }, el('a', { class: 'knopf', href: '#/einstellungen' }, ICH ? 'Zu deinem Einladungslink' : 'Konto erstellen'))),
+    el('p', { class: 'rechtszeile meta' }, el('a', { href: '#/recht' }, 'Impressum, Datenschutz und AGB')),
+  ].filter(Boolean));
+}
+
+async function adminZeigen() {
+  const s = $('admin');
+  if (!ICH?.admin) return s.replaceChildren(el('p', { class: 'leer' }, 'Nur für die Verwaltung.'));
+  let d;
+  try { d = await api('admin'); } catch (e) { return s.replaceChildren(el('p', { class: 'fehlertext' }, e.message)); }
+  const T = TARIFE.tarife, tag = x => x ? new Date(x).toLocaleDateString('de-AT') : '–', jetzt = Date.now();
+  const tun = (pfad, body) => async e => {
+    e.currentTarget.disabled = true;
+    try { const r = await api(pfad, body); if (r.warnung) alert('Freigeschaltet, aber: ' + r.warnung); } catch (err) { alert(err.message); }
+    adminZeigen();
+  };
+  const tabelle = (kopf, zeilen) => el('div', { class: 'tabelle-rahmen' }, el('table', { class: 'tabelle' },
+    el('thead', {}, el('tr', {}, kopf.map(k => el('th', {}, k)))), el('tbody', {}, zeilen.map(z => el('tr', {}, z.map(x => el('td', {}, x)))))));
+  const setzen = k => el('form', { class: 'admin-setzen', onsubmit: e => { e.preventDefault(); const f = e.target.elements; tun('admin/tarif', { konto: k.id, tarif: f.tarif.value, tage: +f.tage.value })({ currentTarget: f.knopf }); } },
+    el('select', { name: 'tarif', 'aria-label': 'Tarif' }, Object.keys(T).map(t => el('option', { value: t }, T[t].name))),
+    el('input', { name: 'tage', type: 'number', min: 0, value: 30, 'aria-label': 'Tage' }), el('button', { class: 'knopf', name: 'knopf' }, 'Setzen'));
+  const offen = d.bestellungen.filter(b => b.status !== 'bezahlt'), bezahlt = d.bestellungen.filter(b => b.status === 'bezahlt');
+  const betrag = b => euro(b.betrag) + (b.rabatt ? ` (−${euro(b.rabatt)})` : '');
+  s.replaceChildren(
+    el('header', { class: 'ausgabe-kopf' }, el('h1', {}, 'Verwaltung'),
+      el('p', { class: 'unterzeile' }, el('span', {}, `Einnahmen im ${MONAT}: ${euro(d.monat.einnahmen)}`), el('span', {}, `KI-Kosten im ${MONAT}: ${geld(d.monat.kiUsd)}`), el('span', {}, `${d.konten.length} Konten`))),
+    el('h2', {}, 'Offene Zahlungen'),
+    offen.length ? tabelle(['Zweck', 'Konto', 'Tarif', 'Betrag', 'Stand', ''], offen.map(b => [b.zweck, b.email, `${T[b.tarif].name}, ${b.monate} Mon.`, betrag(b),
+      b.status === 'gemeldet' ? `bezahlt gemeldet ${tag(b.gemeldet)}` : `offen seit ${tag(b.erstellt)}`,
+      el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll', type: 'button', onclick: tun('admin/bezahlt', { id: b.id }) }, 'Geld ist da'),
+        el('button', { class: 'knopf', type: 'button', onclick: e => confirm(`${b.zweck} stornieren?`) && tun('admin/storno', { id: b.id })(e) }, 'Storno'))]))
+      : el('p', { class: 'leer' }, 'Keine. Geht eine Zahlung ein, erst hier „Geld ist da“ tippen, dann ist der Tarif sofort frei.'),
+    el('h2', {}, 'Bezahlt in den letzten 60 Tagen'),
+    bezahlt.length ? tabelle(['Zweck', 'Konto', 'Tarif', 'Betrag', 'Am'], bezahlt.map(b => [b.zweck, b.email, `${T[b.tarif].name}, ${b.monate} Mon.`, betrag(b), tag(b.bezahlt)]))
+      : el('p', { class: 'leer' }, 'Noch nichts.'),
+    el('h2', {}, 'Konten'),
+    tabelle(['E-Mail', 'Tarif', 'Bis', `KI im ${MONAT}`, 'Geworben von', 'Tarif von Hand'], d.konten.map(k => [
+      k.email + (k.bestaetigt ? '' : ' (unbestätigt)'), k.tarif && k.bis > jetzt ? T[k.tarif].name : k.test_bis > jetzt ? 'Ultra-Test' : 'Base',
+      k.tarif && k.bis > jetzt ? tag(k.bis) : k.test_bis > jetzt ? zeitpunkt(k.test_bis) : '–', geld(k.usd), k.werber || '–', setzen(k)])));
+}
+async function rechtZeigen() {
+  const s = $('recht');
+  s.replaceChildren(el('header', { class: 'ausgabe-kopf' }, el('h1', {}, 'Impressum, Datenschutz und AGB')), el('p', { class: 'meta' }, 'Lade …'));
+  const { text } = await api('recht').catch(() => ({ text: '' }));
+  s.lastChild.replaceWith(text ? markdown(el('div', { class: 'text' }), text) : el('p', { class: 'leer' }, 'Noch nicht hinterlegt.'));
+}
+
 /* ---------- Ansichten ---------- */
 let ansicht = '', ort = null;
 async function zeichne() {
-  const v = verbindungLesen(location.hash);  // QR-Code bzw. Verbindungslink von einem anderen Gerät
+  const v = !SERVER && verbindungLesen(location.hash);  // QR-Code bzw. Verbindungslink von einem anderen Gerät
   if (v) { await verbinden(v); return 'verbunden'; }
   const anker = location.hash.match(/^#(a-[\w-]+)$/)?.[1];  // Sprungmarken in der Anleitung
   const [teil, tag] = anker ? ['anleitung'] : location.hash.replace(/^#\/?/, '').split('/').map(decodeURIComponent);
-  const neu = teil === 'anleitung' ? 'anleitung' : !fertig() || teil === 'einstellungen' ? 'einstellungen'
-    : ['kalender', 'wordpower', 'onlinetests', 'vortrag'].includes(teil) ? teil : R[teil] ? 'ausgabe' : 'titelblatt';
+  const offen = SERVER && ['recht', 'upgrade'].includes(teil);  // Preise und Impressum auch ohne Konto
+  let neu = teil === 'anleitung' ? 'anleitung' : offen ? teil : !fertig() || teil === 'einstellungen' ? 'einstellungen'
+    : ['kalender', 'wordpower', 'onlinetests', 'vortrag', ...SERVER ? ['admin'] : []].includes(teil) ? teil : R[teil] ? 'ausgabe' : 'titelblatt';
+  if (SPERREN[neu] && !darf(SPERREN[neu])) neu = 'gesperrt';  // Server: Funktion ohne passenden Tarif
   if ($('meldung').open) $('meldung').close();
-  for (const id of ['titelblatt', 'ausgabe', 'einstellungen', 'kalender', 'wordpower', 'onlinetests', 'vortrag', 'anleitung']) $(id).hidden = id !== neu;
+  for (const id of ['titelblatt', 'ausgabe', 'einstellungen', 'kalender', 'wordpower', 'onlinetests', 'vortrag', 'anleitung', 'gesperrt', 'upgrade', 'admin', 'recht']) $(id).hidden = id !== neu;
   document.body.dataset.ansicht = neu;
   document.querySelectorAll('.mit-daten').forEach(a => { a.hidden = !fertig(); });
-  document.querySelectorAll('a[data-ansicht]').forEach(a => a.dataset.ansicht === neu ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
+  $('nav-admin').hidden = !ICH?.admin;
+  const hier = neu === 'gesperrt' ? teil : neu;
+  document.querySelectorAll('a[data-ansicht]').forEach(a => {
+    a.dataset.ansicht === hier ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current');
+    const f = SPERREN[a.dataset.ansicht];
+    if (SERVER && ICH && f && !darf(f) && a.closest('.navi')) a.dataset.marke = stufeName(f); else delete a.dataset.marke;
+  });
   $('nav-faecher').replaceChildren(...Object.keys(R).map(f => el('a', { href: `#/${encodeURIComponent(f)}`, 'aria-current': neu === 'ausgabe' && teil === f ? 'page' : null },
     el('span', { class: 'punkt', 'data-fach': f, 'aria-hidden': 'true' }), f, R[f].druckt && el('span', { class: 'laeuft', role: 'img', 'aria-label': 'wird erstellt' }))));
   $('nav-faecher-kopf').hidden = !fertig() || !Object.keys(R).length;
-  const namen = { kalender: 'Kalender', wordpower: 'Word Power', onlinetests: 'Onlinetests', vortrag: 'Vortrag', anleitung: 'Anleitung', einstellungen: 'Einrichten' };
-  document.title = neu === 'titelblatt' ? 'Lernhelfer' : `${neu === 'ausgabe' ? teil : namen[neu]} – Lernhelfer`;
+  const namen = { kalender: 'Kalender', wordpower: 'Word Power', onlinetests: 'Onlinetests', vortrag: 'Vortrag', anleitung: 'Anleitung', einstellungen: SERVER ? 'Konto' : 'Einrichten',
+    upgrade: 'Tarife', admin: 'Verwaltung', recht: 'Impressum, Datenschutz und AGB' };
+  document.title = neu === 'titelblatt' ? 'Lernhelfer' : `${neu === 'ausgabe' ? teil : namen[hier]} – Lernhelfer`;
   $('modell-name').textContent = $('modell').value;
   $('alle').disabled = Object.values(R).some(r => r.druckt) || !Object.keys(R).length;
   if (neu !== 'einstellungen') kameraZu();
@@ -2695,32 +3132,37 @@ async function zeichne() {
   else if (neu === 'wordpower') wordpower();
   else if (neu === 'onlinetests') await onlinetestsZeigen(tag);
   else if (neu === 'vortrag') await vortragZeigen(tag);
-  if (neu !== 'vortrag' && $('vt-spieler') && !$('vt-spieler').hidden) { $('vt-spieler').querySelector('video').pause(); $('vt-spieler').hidden = true; }
+  else if (neu === 'gesperrt') $('gesperrt').replaceChildren(el('header', { class: 'ausgabe-kopf' }, el('h1', {}, namen[teil])), sperrkarte(SPERREN[teil]));
+  else if (neu === 'upgrade') upgradeZeigen();
+  else if (neu === 'admin') await adminZeigen();
+  else if (neu === 'recht') await rechtZeigen();
   else if (neu === 'titelblatt') titelblatt();
+  if (neu !== 'vortrag' && $('vt-spieler') && !$('vt-spieler').hidden) { $('vt-spieler').querySelector('video').pause(); $('vt-spieler').hidden = true; }
   const woanders = location.hash !== ort;  // Seitenwechsel, nicht nur neu gezeichnet
   if (woanders && ort != null) $('inhalt').focus({ preventScroll: true });
   if (anker) $(anker)?.scrollIntoView();
   else if (woanders) scrollTo(0, 0);
   ort = location.hash;
-  if (neu !== ansicht) { ansicht = neu; if (fertig() && Object.keys(R).length) status(''); }
+  if (neu !== ansicht) { ansicht = neu; if (fertig() && Object.keys(R).length) { status(HINWEIS); HINWEIS = ''; } }
 }
 
 async function start() {
   $('datumszeile').textContent = `${heute.toLocaleDateString('de-AT', { weekday: 'short', day: 'numeric', month: 'long' })}, KW ${kw(heute)}`;
   if (!$('modell').options.length) Object.keys(MODELLE).forEach(m => $('modell').add(new Option(m, m)));
   if (MODELLE[merk('modell')]) $('modell').value = merk('modell');
-  await orZurueck();  // zurück vom OpenRouter-Login (?code=…)
+  if (SERVER) await kontoStart(); else await orZurueck();  // Server: Konto und Tarife; sonst zurück vom OpenRouter-Login (?code=…)
   if (await zeichne() === 'verbunden') return;
   kosten();
   if (!fertig()) return;
   status('Lade die Ausgaben …');
   kalenderNachladen();
-  try { await laden(); status(''); } catch (e) { status(e.message, true); }
+  try { await laden(); status(HINWEIS); HINWEIS = ''; } catch (e) { status(e.message, true); }
   await zeichne();
   await abgleichHolen();
 }
 
-window.onhashchange = zeichne;
+window.onhashchange = () => SERVER && /^#(bestaetigen|passwort)=/.test(location.hash) ? kontoStart().then(zeichne) : zeichne();  // Mail-Link bei offener App
+if (SERVER) for (const a of document.querySelectorAll('a[data-ansicht="einstellungen"]')) a.lastChild.textContent = 'Konto';
 $('modell').onchange = () => { merk('modell', $('modell').value); $('modell-name').textContent = $('modell').value; };
 $('alle').onclick = () => Promise.all(Object.keys(R).map(f => drucke(f)));
 $('abmelden').onclick = () => {
