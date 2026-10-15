@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; font-src 'self'; connect-src 'self' https://openrouter.ai https://api.github.com https://www.youtube.com; img-src data: https://i.ytimg.com; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; font-src 'self'; connect-src 'self' https://openrouter.ai https://api.github.com https://www.youtube.com; img-src data: https://i.ytimg.com; media-src blob:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Lernhelfer">
@@ -529,6 +529,88 @@
     .schritt, .aufgabe, .frage-karte { padding: 16px; }
     .aufgabentext { padding: 14px; }
   }
+
+  /* Vortrag: Note, Kennzahlen, Tipps, Befunde mit Zeitstempel, Transkript. Kategorien tragen eine Farbe nur zum Wiedererkennen. */
+  .vortrag { max-width: 980px; }
+  [data-art="grammatik"] { --k: var(--fehler); } [data-art="wortwahl"] { --k: var(--f-mathe); } [data-art="logik"] { --k: var(--f-bwl); }
+  [data-art="irrefuehrend"] { --k: var(--f-vwl); } [data-art="leer"] { --k: var(--text-3); } [data-art="struktur"] { --k: var(--text-2); } [data-art="fuellwort"] { --k: var(--f-englisch); }
+  .vt-wahl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 12px; }
+  .vt-wahl input:focus-visible + label, .kopf-aktionen input:focus-visible + label { outline: 2px solid var(--akzent); outline-offset: 2px; }
+  .vt-kopf { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px 24px; }
+  .vt-gesamt { display: grid; gap: 18px 36px; padding: 22px; border: 1px solid var(--linie); border-radius: var(--r-l); }
+  @media (min-width: 900px) { .vt-gesamt { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); align-items: start; } }
+  .vt-links { display: grid; gap: 18px; }
+  .vt-note { display: flex; align-items: center; gap: 14px; }
+  .vt-note b { display: block; font-size: 1.125rem; }
+  .vt-note-zahl { display: grid; place-items: center; width: 64px; height: 64px; flex: none; border-radius: 16px; background: var(--bg-3); color: var(--text); font: 750 2rem/1 var(--sans); font-variant-numeric: tabular-nums; }
+  .vt-note-zahl:is([data-note="1"], [data-note="2"]) { background: var(--ok-flaeche); color: var(--ok); }
+  .vt-note-zahl[data-note="4"] { background: var(--warn-flaeche); color: var(--warn); }
+  .vt-note-zahl[data-note="5"] { background: var(--fehler-flaeche); color: var(--fehler); }
+  .vt-urteil { margin: 0; font: 400 1.0625rem/1.6 var(--serif); text-wrap: pretty; }
+  .vt-kriterien { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+  .vt-k-kopf { display: flex; justify-content: space-between; gap: 12px; font-weight: 600; font-size: 0.875rem; }
+  .vt-k-kopf b { font-variant-numeric: tabular-nums; }
+  .vt-balken { height: 6px; margin: 6px 0 4px; border-radius: 3px; background: var(--bg-3); overflow: hidden; }
+  .vt-balken span { display: block; height: 100%; border-radius: 3px; background: var(--text-2); }
+  .vt-zahlen { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 16px; }
+  .vt-zahl { display: grid; align-content: start; gap: 2px; padding: 14px 16px; border: 1px solid var(--linie); border-radius: var(--r-l); }
+  .vt-zahl b { font: 700 1.5rem/1.15 var(--sans); font-variant-numeric: tabular-nums; }
+  .vt-zahl > span:not(.meta) { color: var(--text-2); font-size: 0.875rem; font-weight: 550; }
+  .vt-tipps { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; counter-reset: tipp; }
+  .vt-tipps li { position: relative; padding: 16px 18px 16px 58px; border: 1px solid var(--linie); border-radius: var(--r-l); counter-increment: tipp; }
+  .vt-tipps li::before { content: counter(tipp); position: absolute; left: 18px; top: 15px; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: var(--bg-3); font-weight: 700; font-size: 0.875rem; }
+  .vt-tipps h3 { margin: 2px 0 4px; font: 650 1rem/1.35 var(--sans); }
+  .vt-tipps p { margin: 4px 0 0; color: var(--text-2); }
+  .vt-uebung b { color: var(--text); }
+  .vt-staerken { margin: 0; padding-left: 1.2em; font: 400 1rem/1.55 var(--serif); }
+  .vt-staerken li { margin-bottom: 6px; }
+  .vt-verlauf { padding: 14px 14px 8px; border: 1px solid var(--linie); border-radius: var(--r-l); }
+  .vt-saeulen { display: flex; align-items: flex-end; gap: 2px; height: 72px; }
+  .vt-saeulen span { flex: 1; min-height: 2px; border-radius: 2px 2px 0 0; background: var(--linie-2); }
+  .vt-spur { position: relative; height: 20px; margin-top: 6px; border-top: 1px solid var(--linie); }
+  .vt-spur span { position: absolute; top: 5px; width: 3px; height: 12px; margin-left: -1px; border-radius: 2px; background: var(--k); }
+  .vt-achse { display: flex; justify-content: space-between; margin-top: 4px; }
+  .vt-filterreihe { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .vt-filter { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 6px 12px; border: 1px solid var(--linie-2); border-radius: 999px; background: var(--bg); color: var(--text-2); font-weight: 600; font-size: 0.875rem; cursor: pointer; }
+  .vt-filter::before { content: ""; width: 8px; height: 8px; border-radius: 3px; background: var(--k); }
+  .vt-filter[data-art="alle"]::before { display: none; }
+  .vt-filter span { color: var(--text-3); font-variant-numeric: tabular-nums; }
+  .vt-filter[aria-pressed="true"] { border-color: var(--akzent); background: var(--akzent-flaeche); color: var(--akzent-text); }
+  .vt-filter[aria-pressed="true"] span { color: inherit; }
+  .vt-befunde { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+  .vt-befund { padding: 14px 16px; border: 1px solid var(--linie); border-radius: var(--r-l); }
+  .vt-b-kopf { display: flex; align-items: center; gap: 10px; }
+  .vt-art { display: inline-flex; align-items: center; gap: 6px; color: var(--text-2); font-weight: 600; font-size: 0.8125rem; }
+  .vt-art::before { content: ""; width: 8px; height: 8px; border-radius: 3px; background: var(--k); }
+  .vt-befund p { margin: 6px 0 0; }
+  .vt-zitat { font: italic 400 1.0625rem/1.5 var(--serif); }
+  .vt-besser { color: var(--text-2); }
+  .vt-besser b { color: var(--ok); }
+  .vt-zeit { display: inline-grid; place-items: center; min-width: 52px; min-height: 30px; padding: 3px 8px; border: 1px solid var(--linie-2); border-radius: var(--r-s); background: var(--bg);
+    color: var(--akzent-text); font: 600 0.8125rem/1.2 var(--sans); font-variant-numeric: tabular-nums; cursor: pointer; }
+  @media (hover: hover) { .vt-zeit:hover { background: var(--bg-2); text-decoration: none; } }
+  @media (pointer: coarse) { .vt-zeit { min-height: 36px; } }
+  .vt-woerter { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .vt-woerter li { display: inline-flex; gap: 8px; padding: 5px 12px; border-radius: 999px; background: var(--bg-2); }
+  .vt-woerter b { font-variant-numeric: tabular-nums; }
+  .vt-transkript { margin: 0; padding: 0; list-style: none; }
+  .vt-transkript li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 8px 6px; border-radius: var(--r-s); }
+  .vt-transkript li + li { border-top: 1px solid var(--linie); }
+  .vt-transkript p { margin: 3px 0 0; font: 400 1rem/1.6 var(--serif); }
+  .vt-aeh { padding: 0 2px; border-radius: 3px; background: color-mix(in srgb, var(--f-englisch) 16%, transparent); color: inherit; }
+  .vt-klammer { color: var(--text-3); font: 400 0.875em var(--sans); }
+  .vt-zeichen { display: flex; gap: 3px; padding-top: 11px; }
+  .vt-transkript li.vt-luecke { display: block; padding: 10px 12px; background: var(--warn-flaeche); color: var(--warn); font-size: 0.875rem; font-weight: 550; }
+  .vt-zeichen i { width: 8px; height: 8px; border-radius: 3px; background: var(--k); }
+  .vt-transkript li.blitz { animation: blitz 1.8s ease-out; }
+  @keyframes blitz { from { background: var(--akzent-flaeche); } to { background: transparent; } }
+  @media (prefers-reduced-motion: reduce) { .vt-transkript li.blitz { animation: none; outline: 2px solid var(--akzent); } }
+  .vt-spieler { position: fixed; right: max(16px, env(safe-area-inset-right)); bottom: calc(var(--tabs) + env(safe-area-inset-bottom) + 16px); z-index: 30; display: grid; gap: 8px;
+    width: min(400px, calc(100vw - 32px)); padding: 8px; border: 1px solid var(--linie); border-radius: var(--r-l); background: var(--bg); box-shadow: var(--schatten-gross); }
+  @media (min-width: 900px) { .vt-spieler { bottom: 16px; } }
+  .vt-spieler video { width: 100%; max-height: 40vh; border-radius: var(--r-s); background: #000; }
+  .vt-spieler .knopf { justify-self: end; min-height: 34px; }
+  details.quellen .vt-nochmal { max-width: 640px; }
 </style>
 </head>
 <body>
@@ -545,6 +627,7 @@
       <a href="#/kalender" data-ansicht="kalender" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Kalender</a>
       <a href="#/onlinetests" data-ansicht="onlinetests" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4.5" width="14" height="16" rx="2.5"/><path d="M9.5 3.5h5M9 12.5l2 2 4-4"/></svg>Onlinetests</a>
       <a href="#/wordpower" data-ansicht="wordpower" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a1 1 0 0 1 1 1v9.5a1 1 0 0 1-1 1h-8L7 20v-3.5H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg><span translate="no">Word Power</span></a>
+      <a href="#/vortrag" data-ansicht="vortrag" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5M8.5 20.5h7"/></svg>Vortrag</a>
       <hr>
       <a href="#/anleitung" data-ansicht="anleitung"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10.5 5 8.3 4.5 4 4.5v14c4.3 0 6.5.5 8 2 1.5-1.5 3.7-2 8-2v-14c-4.3 0-6.5.5-8 2zM12 6.5v14"/></svg>Anleitung</a>
       <a href="#/einstellungen" data-ansicht="einstellungen"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>Einrichten</a>
@@ -594,6 +677,8 @@
     <section id="ausgabe" hidden></section>
 
     <section id="kalender" hidden class="kalender"></section>
+
+    <section id="vortrag" hidden class="vortrag"></section>
 
     <section id="wordpower" hidden class="werkstatt">
       <header class="ausgabe-kopf">
@@ -671,6 +756,7 @@
         <li><a href="#a-woche">Jede Woche</a></li>
         <li><a href="#a-termine">Termine und Kalender</a></li>
         <li><a href="#a-tests">Onlinetests</a></li>
+        <li><a href="#a-vortrag">Vortrag analysieren</a></li>
         <li><a href="#a-pc">Der Abgleich am PC</a></li>
         <li><a href="#a-kosten">Kosten</a></li>
         <li><a href="#a-sicher">Datenschutz und Sicherheit</a></li>
@@ -755,6 +841,17 @@
         <p><b>Der Löser</b> zeigt die Fragen eines Tests einzeln, mit Formeln wie in OLAT. Bei jeder Frage „Lösen lassen“ tippen: Du bekommst das Ergebnis so, wie es in OLAT eingetragen wird, und den Rechenweg zum Aufklappen. Bei „Rückfrage“ fragst du nach, was unklar ist. Mit „Weiter“ und „Zurück“ gehst du durch die Fragen; Lösungen und Rückfragen bleiben gespeichert. Gedacht ist er zum Vergleichen: erst selbst lösen, dann mit dem Löser prüfen, dann selbst in OLAT eintragen. Der Löser schreibt nichts nach OLAT. Ob KI bei einem Test erlaubt ist, legt jede Lehrveranstaltung selbst fest, meist im Syllabus.</p>
         <p>Löser und <a href="#/wordpower">Word Power</a> (Englisch-Hausaufgaben) haben ein Passwort. Du bekommst es von der Person, die dir den Lernhelfer gezeigt hat. Groß- und Kleinschreibung ist egal.</p>
 
+        <h2 id="a-vortrag">Vortrag analysieren</h2>
+        <p>Unter <a href="#/vortrag">Vortrag</a> bekommst du Rückmeldung zu einer Präsentation, etwa vor dem PS oder für Englisch. Video oder Tonaufnahme wählen, optional Anlass und Vorgaben dazuschreiben (Zeitvorgabe, Bewertungskriterien), auf „Analysieren“ tippen. Nach etwa 2 bis 5 Minuten bekommst du:</p>
+        <ul>
+          <li><b>Note und Gesamteindruck</b>, dazu Punkte für Aufbau, Inhalt und Argumentation, Sprachrichtigkeit, Wortwahl, Sprechfluss, Einstieg und Schluss und, bei Videos, Auftreten und Folien.</li>
+          <li><b>Die wichtigsten Tipps</b>, jeweils mit einer Übung für die nächste Probe.</li>
+          <li><b>Kennzahlen:</b> Sprechtempo, wie oft äh und ähm, Füllwörter, lange Pausen.</li>
+          <li><b>Befunde mit Zeitstempel:</b> Grammatik, Wortwahl, leere Wörter, Logikfehler, irreführende Formulierungen und Brüche im Aufbau, jeweils mit Zitat, Erklärung und besserer Formulierung. Ein Tipp auf die Zeit spielt das Video an dieser Stelle ab.</li>
+          <li><b>Das Transkript</b> Wort für Wort, mit jedem äh, und Rückfragen an den Coach.</li>
+        </ul>
+        <p>Das Video bleibt auf deinem Gerät; an die KI gehen nur die Tonspur und ein paar Standbilder. YouTube-Links gehen nur bei öffentlichen Videos, weil Googles KI nicht gelistete Videos nicht öffnen kann. Ein Video vom iPad oder Handy wählst du deshalb am besten direkt als Datei. Transkript und Analyse liegen in deinem privaten Speicher und sind auf allen Geräten da.</p>
+
         <h2 id="a-pc">Der Abgleich am PC</h2>
         <ul>
           <li>Solange der PC an ist, hält er alle 30 Minuten die OLAT-Anmeldung wach und holt höchstens alle 12 Stunden neue Unterlagen. Unten auf der Seite Heute steht, wann zuletzt abgeglichen wurde.</li>
@@ -769,6 +866,7 @@
         <ul>
           <li>Eine Wochenausgabe: meist 1 bis 8 Cent.</li>
           <li>Eine Frage zur Ausgabe: unter 1 Cent.</li>
+          <li>Ein Vortrag: etwa 1 Cent pro Minute fürs Transkript und ein paar Cent für die Analyse.</li>
           <li>Ein ganzes Semester mit vier Fächern und einer Ausgabe pro Woche: etwa 2 bis 5 $.</li>
         </ul>
         <p>Links unten in der Seitenleiste (am Handy unten auf der Seite Heute) stehen die Kosten des Monats und dein Restguthaben. Ist das Guthaben leer, entsteht nichts mehr, bis du nachlädst. Mehr als dein Guthaben kann nie abgebucht werden.</p>
@@ -807,6 +905,7 @@
   <a href="#/" data-ansicht="titelblatt" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5L12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z"/></svg>Heute</a>
   <a href="#/kalender" data-ansicht="kalender" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Kalender</a>
   <a href="#/onlinetests" data-ansicht="onlinetests" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4.5" width="14" height="16" rx="2.5"/><path d="M9.5 3.5h5M9 12.5l2 2 4-4"/></svg>Tests</a>
+  <a href="#/vortrag" data-ansicht="vortrag" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5M8.5 20.5h7"/></svg>Vortrag</a>
   <a href="#/anleitung" data-ansicht="anleitung"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10.5 5 8.3 4.5 4 4.5v14c4.3 0 6.5.5 8 2 1.5-1.5 3.7-2 8-2v-14c-4.3 0-6.5.5-8 2zM12 6.5v14"/></svg>Anleitung</a>
   <a href="#/einstellungen" data-ansicht="einstellungen"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>Einrichten</a>
 </nav>
@@ -914,6 +1013,7 @@ const GLYPHEN = {  // eigene Zeichen je Fach, 24er-Raster wie die Symbole der Le
   Mathematik: '<path d="M4 4v16h16"/><path d="M7 15.5c2.2-.4 2.6-7.5 5.2-7.5 2.4 0 2.8 5.6 6.3 6"/>',
   VWL: '<path d="M4 4v16h16"/><path d="M7.5 7.5l10 9M7.5 16.5l10-9"/>',
   BWL: '<rect x="4" y="8" width="16" height="11" rx="2"/><path d="M9 8V6.5A1.5 1.5 0 0 1 10.5 5h3A1.5 1.5 0 0 1 15 6.5V8M4 13.5h16"/>',
+  Vortrag: '<rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5M8.5 20.5h7"/>',
   Englisch: '<path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h7A2.5 2.5 0 0 1 16 6.5v3a2.5 2.5 0 0 1-2.5 2.5H9.5L6.5 14.5V12A2.5 2.5 0 0 1 4 9.5z"/><path d="M19 9.5a1.5 1.5 0 0 1 1 1.4v3.6a2 2 0 0 1-2 2v2.5l-3-2.5h-3a2 2 0 0 1-2-2"/>',
 };
 const glyph = f => { const s = el('span', { class: 'glyph', 'aria-hidden': 'true' }); s.innerHTML = `<svg viewBox="0 0 24 24">${GLYPHEN[f] || '<path d="M6 4h12v16H6zM9 8.5h6M9 12h6"/>'}</svg>`; return s; };
@@ -1047,14 +1147,14 @@ function kommende() {
 }
 // Fortschritt beim Erstellen: Schritt (für Screenreader) und mitlaufende Zeit (nur sichtbar, sonst würde jede Sekunde vorgelesen)
 const minuten = ms => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}`;
-function presse(f) {
-  return el('p', { class: 'presse', 'data-presse': f }, el('span', { role: 'status' }, R[f].hinweis), ' ',
-    el('span', { class: 'uhr', 'aria-hidden': 'true' }, minuten(Date.now() - R[f].start)), el('span', { class: 'klein' }, ' · App offen lassen, der Bildschirm bleibt an.'));
+function presse(f, r = R[f]) {  // f: Fach oder 'vortrag', r: was läuft ({ hinweis, start })
+  return el('p', { class: 'presse', 'data-presse': f }, el('span', { role: 'status' }, r.hinweis), ' ',
+    el('span', { class: 'uhr', 'aria-hidden': 'true' }, minuten(Date.now() - r.start)), el('span', { class: 'klein' }, ' · App offen lassen, der Bildschirm bleibt an.'));
 }
-function presseZeigen(f) {
+function presseZeigen(f, r = R[f]) {
   for (const p of document.querySelectorAll(`[data-presse="${CSS.escape(f)}"]`)) {
-    if (p.firstChild.textContent !== R[f].hinweis) p.firstChild.textContent = R[f].hinweis;
-    p.querySelector('.uhr').textContent = minuten(Date.now() - R[f].start);
+    if (p.firstChild.textContent !== r.hinweis) p.firstChild.textContent = r.hinweis;
+    p.querySelector('.uhr').textContent = minuten(Date.now() - r.start);
   }
 }
 let ALLE_FRISTEN = false;
@@ -1596,10 +1696,9 @@ function speichern(text, name, typ) {
   document.body.append(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 10000);
 }
-function wpVideo() {  // youtu.be, shorts, live, embed, watch → eine Form, die Gemini sicher versteht
-  const m = $('wp-url').value.match(/(?:[?&]v=|youtu\.be\/|\/shorts\/|\/live\/|\/embed\/)([\w-]{11})/);
-  return m && 'https://www.youtube.com/watch?v=' + m[1];
-}
+// youtu.be, shorts, live, embed, watch → eine Form, die Gemini sicher versteht
+const ytLink = s => { const m = String(s).match(/(?:[?&]v=|youtu\.be\/|\/shorts\/|\/live\/|\/embed\/)([\w-]{11})/); return m && 'https://www.youtube.com/watch?v=' + m[1]; };
+const wpVideo = () => ytLink($('wp-url').value);
 async function wpNachschlagen() {  // Titel und Vorschaubild über YouTube oEmbed
   const v = wpVideo();
   if (!v) { $('wp-talk').hidden = true; return; }
@@ -1712,6 +1811,463 @@ $('wp-hwgo').onclick = async () => {
 };
 wpZeigen();
 if (wpVideo()) wpNachschlagen();
+
+/* ---------- Vortrag: Video oder Aufnahme → wortgetreues Transkript → Analyse mit Note, Befunden und Tipps ---------- */
+// Transkript: Gemini hört am genauesten hin und lässt jedes äh stehen. Nur Google nimmt Ton und YouTube-Links, aber höchstens
+// 20 MB pro Anfrage und nur öffentliche Videos. Darum schneidet die App die Tonspur selbst aus der Datei und schickt sie in Teilen.
+const VT_HOEREN = 'google/gemini-4-argon';
+const VT_DENKEN = { model: 'openai/gpt-6-luna', reasoning: { effort: 'high' } };
+const VT_TRANSKRIPT = `Transkribiere diese Aufnahme eines Vortrags wortwörtlich in der gesprochenen Sprache. Nichts glätten oder verbessern:
+- jedes äh, ähm, hm, uh, um, er genau dort, wo es gesprochen wird
+- Füllwörter (also, halt, sozusagen, like, you know, basically …), Wiederholungen, Selbstkorrekturen und abgebrochene Wörter (mit -) stehen lassen
+- Grammatikfehler und falsche Wörter NICHT korrigieren, auch kleine nicht (etwa „the company have“, „for themself“, „die Zahlen zeigt“)
+- Pausen ab 2 Sekunden als [Pause 3 s], Unverständliches als [unverständlich], Lachen, Husten, Applaus usw. in eckigen Klammern
+Eine Zeile pro Satz oder Sinnabschnitt, jede Zeile beginnt mit dem Zeitstempel ihres Anfangs: [m:ss] Text
+Sprechen mehrere Personen, schreib nach dem Zeitstempel S1:, S2: usw.
+Gib nur das Transkript aus, ohne Einleitung und ohne Codeblock.`;
+const VT_ANALYSE = `Du bist Sprech- und Präsentationscoach für Studierende der Wirtschaftswissenschaften an der Universität Innsbruck. Du bekommst das wortgetreue Transkript eines Vortrags mit Zeitstempeln [m:ss], inklusive aller äh und ähm, Wiederholungen, Abbrüche und Fehler, dazu Kennzahlen, die die App gezählt hat, Anlass und Vorgaben, soweit angegeben, und manchmal Standbilder aus dem Video.
+
+Analysiere gründlich, ehrlich und konkret, wie ein strenger, aber wohlwollender Coach. Antworte ausschließlich mit einem JSON-Objekt in genau diesem Aufbau:
+{"sprache": "Sprache des Vortrags, z. B. Englisch",
+ "thema": "worum es geht, ein Satz",
+ "note": österreichische Schulnote als Zahl 1 bis 5 (1 Sehr gut, 2 Gut, 3 Befriedigend, 4 Genügend, 5 Nicht genügend),
+ "punkte": 0 bis 100,
+ "urteil": "Gesamteindruck in drei bis vier Sätzen",
+ "kriterien": [{"name": "…", "punkte": 0 bis 10, "kommentar": "ein bis zwei Sätze mit Beleg"}],
+ "staerken": ["konkrete Stärke, mit Zeitstempel, wo möglich"],
+ "tipps": [{"titel": "kurze Handlungsanweisung", "warum": "ein bis zwei Sätze mit Beleg aus dem Vortrag", "uebung": "konkrete Übung für die nächste Probe"}],
+ "fuellwoerter": [{"wort": "like", "anzahl": 4}],
+ "befunde": [{"zeit": "m:ss", "art": "grammatik", "zitat": "…", "problem": "…", "besser": "…"}]}
+
+kriterien: genau diese sechs, in dieser Reihenfolge: Aufbau und roter Faden; Inhalt und Argumentation; Sprachrichtigkeit; Wortwahl und Ausdruck; Sprechfluss und Tempo; Einstieg und Schluss. Nur wenn Standbilder dabei sind, als siebtes: Auftreten und Folien (Haltung, Blickkontakt und Gestik, soweit auf Standbildern erkennbar; Lesbarkeit und Textmenge der Folien).
+
+tipps: drei bis fünf, das Wichtigste zuerst. Nur Tipps, die sich aus diesem Vortrag ergeben, keine allgemeinen Ratschläge.
+
+fuellwoerter: Wörter und Floskeln, die hier als Füller dienen (etwa also, halt, eben, sozusagen, quasi, irgendwie, eigentlich, ja, genau, okay, like, you know, basically, actually, so, I mean, kind of), mit Anzahl. Nur zählen, wo sie wirklich Füller sind. Laute wie äh, ähm, uh und um zählt die App selbst; die gehören nicht hierher.
+
+befunde: Jede einzelne Stelle als eigener Eintrag, nichts zusammenfassen. art ist genau einer dieser Werte:
+- grammatik: Grammatik-, Kongruenz-, Zeitform-, Präpositions-, Wortstellungs- und Satzbaufehler
+- wortwahl: falsches, unpassendes oder zu umgangssprachliches Wort, falscher Fachbegriff, Germanismus im Englischen oder Anglizismus im Deutschen
+- leer: Wörter oder Sätze ohne Inhalt, Floskeln, Wiederholungen, die nichts hinzufügen, unnötige Abschwächungen (ich denke mal, eigentlich, sort of)
+- logik: Fehlschluss oder fachlicher Fehler (Korrelation als Ursache, Zirkelschluss, unzulässige Verallgemeinerung, falsches Dilemma, Widerspruch, falsche Definition)
+- irrefuehrend: Formulierung, die mehr behauptet als belegt, übertreibt, mehrdeutig oder missverständlich ist; Zahlen ohne Bezugsgröße
+- struktur: fehlende Überleitung, Gedankensprung, abrupter Schluss, fehlende Gliederung
+- fuellwort: Stelle, an der sich äh und Füllwörter so häufen, dass der Satz darunter leidet
+zeit: Zeitstempel der Zeile, in der die Stelle steht. zitat: wörtlich aus dem Transkript, nur der betroffene Teil. problem: auf Deutsch, was genau falsch oder schwach ist. besser: verbesserte Formulierung in der Sprache des Vortrags.
+
+Alle Erklärungen auf Deutsch, Zitate und Verbesserungen in der Sprache des Vortrags. Bewerte gemessen an einem Vortrag im ersten Studienjahr und berücksichtige Anlass und Vorgaben, etwa eine Zeitvorgabe. Erfinde nichts: Was nicht im Transkript oder auf den Standbildern ist, bewertest du nicht. Offensichtlich falsch gehörte Wörter der Spracherkennung sind keine Fehler des Vortrags.`;
+const VT_ARTEN = { grammatik: 'Grammatik', wortwahl: 'Wortwahl', logik: 'Logik', irrefuehrend: 'Irreführend', leer: 'Leere Wörter', struktur: 'Aufbau', fuellwort: 'Füllwörter' };
+const VT_NOTEN = ['', 'Sehr gut', 'Gut', 'Befriedigend', 'Genügend', 'Nicht genügend'];
+const VT_AEH = { de: /(?<!\p{L})(?:äh+m*|öh+m*|ehm+|hm+)(?!\p{L})/giu, en: /(?<!\p{L})(?:uh+m*|um+|erm*|ah+|hmm+)(?!\p{L})/giu };
+const VT = { alle: {}, sha: {}, geladen: false, job: null, fehler: null, dateien: {}, urls: {}, bilder: {}, filter: 'alle', form: null };
+const mmss = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+const vtSek = z => String(z || '').split(':').map(Number).reduce((a, b) => a * 60 + b, 0) || 0;
+const komma = x => x.toLocaleString('de-AT', { maximumFractionDigits: 1 });
+const blobBase64 = b => new Promise((ok, nein) => { const r = new FileReader(); r.onload = () => ok(r.result.slice(r.result.indexOf(',') + 1)); r.onerror = () => nein(r.error); r.readAsDataURL(b); });
+const ytTitel = url => fetch('https://www.youtube.com/oembed?format=json&url=' + encodeURIComponent(url)).then(r => r.ok ? r.json() : null).then(j => j?.title || null).catch(() => null);
+
+// MP4, MOV, M4A: die AAC-Tonspur direkt aus der Datei schneiden (nur Kopf und Tonstücke lesen, das Video nie laden)
+// und als ADTS in Teile von höchstens 5 Minuten und 9 MB legen. Ein 4-GB-Video vom iPad kostet so nur ein paar MB.
+async function aacTeile(datei) {
+  const lies = async (von, n) => new Uint8Array(await datei.slice(von, von + n).arrayBuffer());
+  const typ = (u, p) => String.fromCharCode(u[p], u[p + 1], u[p + 2], u[p + 3]);
+  let moov = null;
+  for (let pos = 0; pos + 8 <= datei.size;) {  // oberste Ebene; bei iPhone-Videos steht moov oft am Ende
+    const k = await lies(pos, 16), dv = new DataView(k.buffer);
+    let groesse = dv.getUint32(0), kopf = 8;
+    if (groesse === 1) { groesse = Number(dv.getBigUint64(8)); kopf = 16; } else if (groesse === 0) groesse = datei.size - pos;
+    if (groesse < kopf) return null;
+    if (typ(k, 4) === 'moov') { moov = await lies(pos + kopf, groesse - kopf); break; }
+    pos += groesse;
+  }
+  if (!moov) return null;
+  const dv = new DataView(moov.buffer);
+  const kaesten = (von, bis) => {
+    const r = [];
+    for (let p = von; p + 8 <= bis;) { const g = dv.getUint32(p); if (g < 8 || p + g > bis) break; r.push({ typ: typ(moov, p + 4), von: p + 8, bis: p + g }); p += g; }
+    return r;
+  };
+  const kind = (k, t) => k && kaesten(k.von, k.bis).find(x => x.typ === t);
+  const zahl = (k, o) => dv.getUint32(k.von + o);
+  for (const trak of kaesten(0, moov.length).filter(k => k.typ === 'trak')) {
+    const mdia = kind(trak, 'mdia'), hdlr = kind(mdia, 'hdlr');
+    if (!hdlr || typ(moov, hdlr.von + 8) !== 'soun') continue;
+    const mdhd = kind(mdia, 'mdhd'), takt = zahl(mdhd, moov[mdhd.von] === 1 ? 20 : 12);
+    const stbl = kind(kind(mdia, 'minf'), 'stbl'), eintrag = kind(stbl, 'stsd').von + 8;
+    if (typ(moov, eintrag + 4) !== 'mp4a') return null;  // anderer Ton-Codec: das macht der Ausweichweg
+    // AudioSpecificConfig aus esds; je nach QuickTime-Version liegt esds tiefer, darum einfach suchen
+    let p = -1;
+    for (let i = eintrag + 8, ende = eintrag + dv.getUint32(eintrag); i < ende - 4; i++) if (typ(moov, i) === 'esds') { p = i + 8; break; }
+    if (p < 0) return null;
+    const deskriptor = () => { const tag = moov[p++]; let b; do b = moov[p++]; while (b & 0x80); return tag; };
+    let tag = deskriptor();
+    if (tag === 3) { p += 2; const f = moov[p++]; if (f & 0x80) p += 2; if (f & 0x40) p += 1 + moov[p]; if (f & 0x20) p += 2; tag = deskriptor(); }
+    if (tag === 4) { p += 13; tag = deskriptor(); }
+    if (tag !== 5) return null;
+    const aot = moov[p] >> 3, fi = (moov[p] & 7) << 1 | moov[p + 1] >> 7, kanaele = (moov[p + 1] >> 3 & 15) || 2;
+    if (!(aot >= 1 && aot <= 5 || aot === 29) || fi > 12) return null;
+    const profil = (aot === 5 || aot === 29 ? 2 : aot) - 1;  // HE-AAC: der LC-Kern reicht zum Verstehen
+    const stsz = kind(stbl, 'stsz'), fest = zahl(stsz, 4), anzahl = zahl(stsz, 8), groesse = i => fest || zahl(stsz, 12 + 4 * i);
+    const stsc = kind(stbl, 'stsc'), stco = kind(stbl, 'stco'), co64 = kind(stbl, 'co64'), stts = kind(stbl, 'stts');
+    const chunkPos = i => stco ? zahl(stco, 8 + 4 * i) : Number(dv.getBigUint64(co64.von + 8 + 8 * i));
+    const zeiten = new Float64Array(anzahl + 1);
+    for (let e = 0, i = 0, t = 0; e < zahl(stts, 4); e++) {
+      const n = zahl(stts, 8 + 8 * e), d = zahl(stts, 12 + 8 * e);
+      for (let j = 0; j < n && i < anzahl; j++, t += d) zeiten[i++] = t / takt;
+      zeiten[anzahl] = (t + 0) / takt;
+    }
+    const stuecke = [];  // je Chunk: Position und welche Tonstücke hintereinander drinliegen
+    for (let c = 0, e = 0, s = 0, n = zahl(stco || co64, 4); c < n && s < anzahl; c++) {
+      while (e + 1 < zahl(stsc, 4) && zahl(stsc, 8 + 12 * (e + 1)) - 1 <= c) e++;
+      const k = Math.min(zahl(stsc, 12 + 12 * e), anzahl - s);
+      stuecke.push({ pos: chunkPos(c), erstes: s, n: k }); s += k;
+    }
+    const teile = [];
+    let teil = null;
+    for (let k = 0; k < stuecke.length; k += 64) {  // 64 Lesezugriffe gleichzeitig
+      const daten = await Promise.all(stuecke.slice(k, k + 64).map(c => { let n = 0; for (let i = c.erstes; i < c.erstes + c.n; i++) n += groesse(i); return lies(c.pos, n); }));
+      daten.forEach((u, j) => {
+        const c = stuecke[k + j];
+        for (let i = c.erstes, o = 0; i < c.erstes + c.n; i++) {
+          const g = groesse(i), n = g + 7;
+          if (!teil || zeiten[i] - teil.start >= 300 || teil.bytes + n > 9e6) teile.push(teil = { start: zeiten[i], stuecke: [], bytes: 0 });
+          teil.stuecke.push(new Uint8Array([0xff, 0xf1, profil << 6 | fi << 2 | kanaele >> 2, (kanaele & 3) << 6 | n >> 11, n >> 3 & 255, (n & 7) << 5 | 31, 0xfc]), u.subarray(o, o + g));
+          teil.bytes += n; o += g;
+        }
+      });
+    }
+    if (!teile.length) return null;
+    return { dauer: zeiten[anzahl], teile: teile.map(t => ({ start: t.start, blob: new Blob(t.stuecke), format: 'aac' })) };
+  }
+  return null;
+}
+// Ausweichweg für alles andere (MP3, WAV, WebM …): ganz dekodieren, auf 16 kHz mono rechnen, als WAV in 5-Minuten-Teilen
+async function wavTeile(datei) {
+  if (datei.size > 500e6) throw new Error('Aus dieser Datei kann die App den Ton nicht direkt lesen, und für den Umweg ist sie zu groß. Bitte als MP4 oder MOV speichern oder nur den Ton als M4A oder MP3 wählen.');
+  let ton;
+  try { ton = await new OfflineAudioContext(1, 1, 16000).decodeAudioData(await datei.arrayBuffer()); }
+  catch { throw new Error('Diese Datei kann der Browser nicht abspielen. Bitte ein Video als MP4 oder MOV oder eine Aufnahme als M4A, MP3 oder WAV wählen.'); }
+  const rate = 16000, ctx = new OfflineAudioContext(1, Math.ceil(ton.duration * rate), rate), q = ctx.createBufferSource();
+  q.buffer = ton; q.connect(ctx.destination); q.start();
+  const pcm = (await ctx.startRendering()).getChannelData(0), teile = [];
+  for (let von = 0; von < pcm.length; von += 300 * rate) {
+    const n = Math.min(300 * rate, pcm.length - von), b = new DataView(new ArrayBuffer(44 + 2 * n));
+    const s = (o, t) => [...t].forEach((c, i) => b.setUint8(o + i, c.charCodeAt(0)));
+    s(0, 'RIFF'); b.setUint32(4, 36 + 2 * n, true); s(8, 'WAVEfmt '); b.setUint32(16, 16, true); b.setUint16(20, 1, true); b.setUint16(22, 1, true);
+    b.setUint32(24, rate, true); b.setUint32(28, 2 * rate, true); b.setUint16(32, 2, true); b.setUint16(34, 16, true); s(36, 'data'); b.setUint32(40, 2 * n, true);
+    for (let i = 0; i < n; i++) b.setInt16(44 + 2 * i, Math.max(-1, Math.min(1, pcm[von + i])) * 32767, true);
+    teile.push({ start: von / rate, blob: new Blob([b]), format: 'wav' });
+  }
+  return { dauer: ton.duration, teile };
+}
+// Standbilder für Auftreten und Folien: alle 30 Sekunden eins, höchstens 24, längste Seite 640 px
+async function vtStandbilder(datei, dauer) {
+  if (!dauer || !(datei.type.startsWith('video/') || /\.(mp4|mov|m4v|webm)$/i.test(datei.name))) return [];
+  const url = URL.createObjectURL(datei), v = el('video', { muted: true, playsinline: true, preload: 'auto' });
+  v.muted = true; v.src = url;
+  try {
+    await new Promise((ok, nein) => { v.onloadeddata = ok; v.onerror = nein; setTimeout(nein, 20000); });
+    await v.play().catch(() => {}); v.pause();  // das iPad malt sonst schwarze Bilder
+    if (!v.videoWidth) return [];
+    const n = Math.max(4, Math.min(24, Math.round(dauer / 30))), mass = Math.min(1, 640 / Math.max(v.videoWidth, v.videoHeight));
+    const c = el('canvas', { width: Math.round(v.videoWidth * mass), height: Math.round(v.videoHeight * mass) }), bilder = [];
+    for (let i = 0; i < n; i++) {
+      const t = (i + 0.5) * dauer / n;
+      await new Promise(ok => { v.onseeked = ok; setTimeout(ok, 8000); v.currentTime = t; });
+      c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+      bilder.push({ t, url: c.toDataURL('image/jpeg', 0.6) });
+    }
+    return bilder;
+  } catch { return []; } finally { v.removeAttribute('src'); v.load(); URL.revokeObjectURL(url); }
+}
+// „[m:ss] Text“ → Zeilen mit Sekunden. Schreibt das Modell das Transkript zweimal (erst beim Nachdenken, dann richtig),
+// springen die Zeitstempel zurück; dann gilt der längste Durchgang.
+function vtZeilen(text, start = 0) {
+  const zeilen = text.split(/(?=\[(?:\d+:)?\d+:\d\d\])/).map(t => t.match(/^\[(?:(\d+):)?(\d+):(\d\d)\]\s*([\s\S]*)$/)).filter(m => m && m[4].trim())
+    .map(m => ({ t: start + (+m[1] || 0) * 3600 + +m[2] * 60 + +m[3], s: m[4].replace(/\s+/g, ' ').trim() }));
+  const laeufe = [[]];
+  zeilen.forEach((z, i) => { if (i && z.t < zeilen[i - 1].t - 30) laeufe.push([]); laeufe.at(-1).push(z); });
+  return laeufe.reduce((a, b) => b.length >= a.length ? b : a);
+}
+function vtZahlen(v) {
+  const text = v.zeilen.map(z => z.s).join('\n');
+  const sp = (text.match(/\b(the|and|is|to|of|that)\b/gi)?.length || 0) > (text.match(/\b(der|die|das|und|ist|nicht)\b/gi)?.length || 0) ? 'en' : 'de';
+  const rein = text.replace(/\[[^\]]*\]/g, ' '), aeh = rein.match(VT_AEH[sp]) || [], min = Math.max(v.dauer, 1) / 60;
+  const woerter = rein.split(/\s+/).filter(w => /[\p{L}\d]/u.test(w)).length - aeh.length;
+  const laute = {};
+  for (const a of aeh) { const w = a.toLowerCase().replace(/(.)\1+/g, '$1'); laute[w] = (laute[w] || 0) + 1; }
+  const proMinute = Array.from({ length: Math.max(1, Math.ceil(v.dauer / 60)) }, () => 0);
+  for (const z of v.zeilen) proMinute[Math.min(proMinute.length - 1, Math.floor(z.t / 60))] += (z.s.match(VT_AEH[sp]) || []).length;
+  const pausen = [...text.matchAll(/\[Pause (\d+(?:[.,]\d+)?)\s*s\]/gi)].map(m => parseFloat(m[1].replace(',', '.')));
+  return { sp, woerter, tempo: Math.round(woerter / min), aeh: aeh.length, aehMin: aeh.length / min, laute, proMinute, pausen };
+}
+async function vtHoeren(teile, job, dauer) {
+  const stand = teile.map(() => 0);
+  const fertig = await Promise.all(teile.map(async (t, i) => {
+    const ton = t.youtube ? { type: 'video_url', video_url: { url: t.youtube } } : { type: 'input_audio', input_audio: { data: await blobBase64(t.blob), format: t.format } };
+    const teil = teile.length > 1 ? `\n\nDas ist Teil ${i + 1} von ${teile.length} einer längeren Aufnahme. Die Zeitstempel zählen ab dem Anfang dieses Teils. Ist am Anfang oder Ende ein Wort abgeschnitten, schreib es mit -.` : '';
+    const { text, preis } = await strom({ model: VT_HOEREN, provider: { only: ['google-ai-studio'] }, reasoning: { effort: 'low' },
+      messages: [{ role: 'user', content: [{ type: 'text', text: VT_TRANSKRIPT + teil }, ton] }] },
+      x => {
+        const z = vtZeilen(x);
+        if (!z.length) return;
+        stand[i] = z.at(-1).t;
+        job.hinweis = `Transkribiert … ${mmss(stand.reduce((a, b) => a + b, 0))}${dauer ? ' von ' + mmss(dauer) : ''}${teile.length > 1 ? `, ${teile.length} Teile gleichzeitig` : ''}`;
+      });
+    return { zeilen: vtZeilen(text, t.start), preis };
+  }));
+  return { zeilen: fertig.flatMap(f => f.zeilen), preis: fertig.reduce((a, f) => a + f.preis, 0) };
+}
+const vtText = v => v.zeilen.map(l => `[${mmss(l.t)}] ${l.s}`).join('\n');
+async function vtAnalysieren(v, job) {
+  const z = vtZahlen(v), datei = VT.dateien[v.id];
+  if (!VT.bilder[v.id]?.length && datei) { job.hinweis = 'Holt Standbilder aus dem Video …'; VT.bilder[v.id] = await vtStandbilder(datei, v.dauer); }
+  const bilder = VT.bilder[v.id] || [];
+  job.hinweis = 'Analysiert … liest das Transkript';
+  const text = `Anlass und Vorgaben: ${v.kontext || 'nicht angegeben'}
+Kennzahlen der App: Dauer ${mmss(v.dauer)} · ${z.woerter} Wörter · ${z.tempo} Wörter pro Minute · ${z.aeh} äh-Laute (${komma(z.aehMin)} pro Minute) · ${z.pausen.length} Pausen ab 2 Sekunden
+${bilder.length ? `Dazu ${bilder.length} Standbilder aus dem Video, gleichmäßig verteilt.` : 'Keine Standbilder: das Kriterium Auftreten und Folien entfällt.'}
+
+=== TRANSKRIPT ===
+${vtText(v)}`;
+  const { text: antwort, preis } = await strom({ ...VT_DENKEN, response_format: { type: 'json_object' }, messages: [{ role: 'system', content: VT_ANALYSE },
+    { role: 'user', content: [{ type: 'text', text }, ...bilder.flatMap(b => [{ type: 'text', text: `Standbild bei ${mmss(b.t)}:` }, { type: 'image_url', image_url: { url: b.url } }])] }] },
+    x => { job.hinweis = `Schreibt die Bewertung … ${(x.match(/"zeit"/g) || []).length} Befunde`; }, () => { job.hinweis = 'Analysiert … denkt nach'; });
+  let a;
+  try { a = JSON.parse(antwort.slice(antwort.indexOf('{'), antwort.lastIndexOf('}') + 1)); }
+  catch { throw new Error('Die Analyse kam unvollständig an. Bitte noch einmal bewerten lassen.'); }
+  const liste = x => Array.isArray(x) ? x.filter(Boolean) : [];
+  v.analyse = { ...a, note: Math.min(5, Math.max(1, Math.round(+a.note) || 3)), kriterien: liste(a.kriterien), staerken: liste(a.staerken), tipps: liste(a.tipps),
+    fuellwoerter: liste(a.fuellwoerter).filter(f => f.wort && f.anzahl > 0), befunde: liste(a.befunde).filter(b => b.zitat).sort((x, y) => vtSek(x.zeit) - vtSek(y.zeit)) };
+  v.bilder = bilder.length; v.kosten = (v.kosten || 0) + preis; v.bewertet = new Date().toISOString();
+}
+async function vtSpeichern(v) {
+  const r = await nacheinander(() => gh(`vortraege/${v.id}.json`, { method: 'PUT', roh: false, body: { message: `Vortrag: ${v.titel}`, content: base64(JSON.stringify(v)), sha: VT.sha[v.id] } }));
+  VT.sha[v.id] = r.content.sha; VT.alle[v.id] = v;
+}
+async function vtLaden() {
+  const liste = ((await gh('vortraege', { roh: false })) || []).filter(d => d.name.endsWith('.json'));
+  await Promise.all(liste.map(async d => {
+    const id = d.name.slice(0, -5);
+    VT.sha[id] = d.sha;
+    VT.alle[id] ??= JSON.parse(await gh(`vortraege/${d.name}`) || 'null');
+    if (!VT.alle[id]) delete VT.alle[id];
+  }));
+  VT.geladen = true;
+}
+const vtNeuZeichnen = () => { if (document.body.dataset.ansicht === 'vortrag') zeichne(); };
+async function vtLauf(id, arbeit) {  // immer nur eine Analyse auf einmal, mit Fortschritt, Uhr und wachem Bildschirm
+  if (VT.job) return;
+  const job = VT.job = { id, hinweis: 'Startet …', start: Date.now(), fehler: '' };
+  VT.fehler = null;
+  const uhr = setInterval(() => presseZeigen('vortrag', job), 1000);
+  vtNeuZeichnen(); await wach(true);
+  try { await arbeit(job); } catch (e) { job.fehler = wpWarum(e); }
+  clearInterval(uhr); wach(false); kosten();
+  VT.fehler = job.fehler ? { id, text: job.fehler } : null;
+  VT.job = null;
+  if (VT.alle[id] && location.hash !== `#/vortrag/${id}`) location.hash = `#/vortrag/${id}`; else vtNeuZeichnen();
+}
+function vtStart(form) {
+  const f = form.elements, datei = f.datei.files[0], yt = !datei && ytLink(f.youtube.value);
+  if (!datei && !yt) { VT.fehler = { id: null, text: f.youtube.value.trim() ? 'Das sieht nicht nach einem YouTube-Link aus.' : 'Wähl zuerst ein Video oder eine Aufnahme.' }; return vtNeuZeichnen(); }
+  const id = `${HEUTE}-${Date.now().toString(36)}`;
+  const v = { id, titel: f.titel.value.trim() || (datei ? datei.name.replace(/\.[^.]+$/, '') : 'YouTube-Video'), datum: HEUTE,
+    quelle: datei ? { art: 'datei', name: datei.name } : { art: 'youtube', url: yt }, kontext: f.kontext.value.trim(), dauer: 0, zeilen: [], analyse: null, kosten: 0 };
+  if (datei) VT.dateien[id] = datei;
+  vtLauf(id, async job => {
+    let teile = [{ start: 0, youtube: yt }];
+    if (datei) {
+      job.hinweis = 'Liest die Tonspur …';
+      const ton = await aacTeile(datei).catch(() => null) || await wavTeile(datei);
+      teile = ton.teile; v.dauer = ton.dauer;
+    } else if (!f.titel.value.trim()) v.titel = await ytTitel(yt) || v.titel;
+    job.hinweis = 'Transkribiert …';
+    let r;
+    try { r = await vtHoeren(teile, job, v.dauer); }
+    catch (e) { throw yt ? new Error(`Google konnte das Video nicht öffnen (${e.message}). Nicht gelistete und private Videos gehen nicht: stell es kurz auf Öffentlich oder wähl die Datei direkt.`) : e; }
+    v.zeilen = r.zeilen; v.kosten = r.preis;
+    if (!v.zeilen.length) throw new Error('In der Aufnahme war keine Sprache zu erkennen.');
+    v.dauer ||= v.zeilen.at(-1).t + 3;  // YouTube: die Länge kennt erst das Transkript
+    job.hinweis = 'Speichert das Transkript …';
+    await vtSpeichern(v);
+    form.reset(); form.querySelector('.vt-datei-name').textContent = 'Keine Datei gewählt';
+    await vtAnalysieren(v, job);
+    job.hinweis = 'Speichert die Analyse …';
+    await vtSpeichern(v);
+  });
+}
+const vtBewerten = (v, kontext) => vtLauf(v.id, async job => { v.kontext = kontext; await vtAnalysieren(v, job); job.hinweis = 'Speichert die Analyse …'; await vtSpeichern(v); });
+async function vtLoeschen(v) {
+  if (!confirm(`„${v.titel}“ mit Transkript und Analyse löschen?`)) return;
+  try {
+    await nacheinander(() => gh(`vortraege/${v.id}.json`, { method: 'DELETE', roh: false, body: { message: `Vortrag gelöscht: ${v.titel}`, sha: VT.sha[v.id] } }));
+    delete VT.alle[v.id]; delete VT.sha[v.id]; delete CHATS[`vortrag-chat:${v.id}`]; merk(`vortrag-chat:${v.id}`, null);
+    location.hash = '#/vortrag';
+  } catch (e) { status(e.message, true); }
+}
+// Schwebender Spieler: springt zur Stelle, ohne dass man den Platz in der Liste verliert
+function vtSpielen(id, t) {
+  let box = $('vt-spieler');
+  if (!box) {
+    box = el('div', { id: 'vt-spieler', class: 'vt-spieler' }, el('video', { controls: true, playsinline: true }),
+      el('button', { type: 'button', class: 'knopf', onclick: () => { box.querySelector('video').pause(); box.hidden = true; } }, 'Schließen'));
+    document.body.append(box);
+  }
+  const video = box.querySelector('video'), url = VT.urls[id] ??= URL.createObjectURL(VT.dateien[id]);
+  if (video.src !== url) video.src = url;
+  box.hidden = false;
+  const los = () => { video.currentTime = t; video.play().catch(() => {}); };
+  if (video.readyState < 1) video.addEventListener('loadedmetadata', los, { once: true }); else los();
+}
+const vtKontext = v => `Du bist Präsentationscoach. Beantworte Rückfragen zu diesem Vortrag und seiner Analyse knapp, konkret und auf Deutsch; Formulierungsvorschläge in der Sprache des Vortrags. Stütze dich auf Transkript und Analyse.
+
+Anlass und Vorgaben: ${v.kontext || 'nicht angegeben'}
+
+=== ANALYSE ===
+${JSON.stringify(v.analyse)}
+
+=== TRANSKRIPT ===
+${vtText(v)}`;
+
+async function vortragZeigen(id) {
+  const s = $('vortrag');
+  if (!VT.geladen) {
+    s.replaceChildren(el('p', { class: 'leer' }, 'Lade deine Vorträge …'));
+    try { await vtLaden(); } catch (e) { s.replaceChildren(el('p', { class: 'fehlertext' }, e.message)); return; }
+    if (document.body.dataset.ansicht !== 'vortrag') return;
+  }
+  const v = id && VT.alle[id];
+  s.replaceChildren(...(v ? vtSeite(v) : vtUebersicht()).flat().filter(Boolean));
+  if (v) document.title = `${v.titel} – Lernhelfer`;
+}
+function vtFormular() {
+  if (VT.form) return VT.form;
+  const name = el('span', { class: 'meta vt-datei-name' }, 'Keine Datei gewählt');
+  const datei = el('input', { type: 'file', name: 'datei', id: 'vt-datei', class: 'sr', accept: 'video/*,audio/*,.mov,.mp4,.m4a,.mp3,.wav',
+    onchange: e => { const d = e.target.files[0]; name.textContent = d ? `${d.name} · ${Math.max(1, Math.round(d.size / 1e6)).toLocaleString('de-AT')} MB` : 'Keine Datei gewählt'; } });
+  const opt = text => el('span', { class: 'opt' }, text);
+  return VT.form = el('form', { class: 'vt-form', novalidate: true, onsubmit: e => { e.preventDefault(); vtStart(e.target); } },
+    el('div', { class: 'vt-wahl' }, datei, el('label', { for: 'vt-datei', class: 'knopf' }, 'Video oder Aufnahme wählen'), name),
+    el('p', { class: 'klein' }, 'Das Video bleibt auf deinem Gerät. An die KI gehen nur die Tonspur und ein paar Standbilder für Auftreten und Folien.'),
+    el('label', { class: 'feld' }, el('span', {}, 'Oder YouTube-Link ', opt('nur öffentliche Videos')),
+      el('input', { name: 'youtube', type: 'url', inputmode: 'url', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', placeholder: 'https://www.youtube.com/watch?v=…' })),
+    el('label', { class: 'feld' }, el('span', {}, 'Titel ', opt('optional')), el('input', { name: 'titel', type: 'text', autocomplete: 'off', placeholder: 'z. B. Marketing-Präsentation im PS' })),
+    el('label', { class: 'feld' }, el('span', {}, 'Anlass und Vorgaben ', opt('optional')),
+      el('textarea', { name: 'kontext', rows: 3, placeholder: 'z. B. Englisch-Präsentation im PS, 5 Minuten, Thema Marketing-Mix. Bewertet werden Aufbau, Sprache und Auftreten.' })),
+    el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll' }, 'Analysieren'),
+      el('span', { class: 'meta' }, 'Dauert 2 bis 5 Minuten. Kosten: etwa 1 Cent pro Minute Vortrag plus ein paar Cent für die Analyse.')));
+}
+function vtUebersicht() {
+  const liste = Object.values(VT.alle).sort((a, b) => b.id.localeCompare(a.id)), fehler = VT.fehler && !VT.alle[VT.fehler.id] && VT.fehler.text;
+  return [
+    el('header', { class: 'ausgabe-kopf' }, el('div', { class: 'titel-zeile' }, glyph('Vortrag'), el('h1', {}, 'Vortrag')),
+      el('p', { class: 'schlagzeile' }, 'Rückmeldung zu deiner Präsentation: Transkript mit jedem äh, Fehler mit Zeitstempel, Note und die wichtigsten Tipps.')),
+    el('section', { class: 'schritt vt-neu', 'aria-labelledby': 'vt-neu-k' }, el('h2', { id: 'vt-neu-k' }, 'Neuen Vortrag analysieren'),
+      VT.job ? presse('vortrag', VT.job) : vtFormular(), fehler && el('p', { class: 'fehlertext' }, fehler)),
+    el('section', { class: 'block' }, el('h2', {}, 'Bisherige Analysen'),
+      liste.length ? el('ul', { class: 'testzeilen' }, liste.map(v => el('li', { class: 'testzeile' }, el('b', {}, kurz(v.datum)),
+        el('div', {}, el('a', { href: `#/vortrag/${v.id}` }, v.titel), el('span', { class: 'ort' }, [mmss(v.dauer) + ' min', v.analyse?.sprache].filter(Boolean).join(' · '))),
+        el('span', { class: 'wann' }, v.analyse ? el('span', { class: 'pille' }, `Note ${v.analyse.note}`) : el('span', { class: 'pille warn' }, 'ohne Analyse')))))
+        : el('p', { class: 'leer' }, 'Noch keine. Die erste erscheint hier.'))];
+}
+function vtSeite(v) {
+  const a = v.analyse, z = vtZahlen(v), job = VT.job?.id === v.id && VT.job, fehler = VT.fehler?.id === v.id && VT.fehler.text;
+  const yt = v.quelle?.art === 'youtube' && v.quelle.url, datei = VT.dateien[v.id];
+  const springe = t => {
+    if (datei) return vtSpielen(v.id, t);
+    const zeile = [...document.querySelectorAll('.vt-transkript li')].findLast(li => +li.dataset.t <= t + 0.5);
+    if (!zeile) return;
+    zeile.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    zeile.classList.remove('blitz'); void zeile.offsetWidth; zeile.classList.add('blitz');
+  };
+  const zeit = t => yt ? el('a', { class: 'vt-zeit', href: `${yt}&t=${Math.floor(t)}s`, target: '_blank', rel: 'noopener', title: 'Auf YouTube an dieser Stelle' }, mmss(t))
+    : el('button', { type: 'button', class: 'vt-zeit', title: datei ? 'An dieser Stelle abspielen' : 'Im Transkript zeigen', onclick: () => springe(t) }, mmss(t));
+  const verbinden = el('input', { type: 'file', id: 'vt-wieder', class: 'sr', accept: 'video/*,audio/*', onchange: e => { if (e.target.files[0]) { VT.dateien[v.id] = e.target.files[0]; delete VT.urls[v.id]; delete VT.bilder[v.id]; zeichne(); } } });
+  const kopf = el('header', { class: 'ausgabe-kopf vt-kopf' },
+    el('div', {}, el('div', { class: 'titel-zeile' }, glyph('Vortrag'), el('h1', {}, v.titel)),
+      a?.thema && el('p', { class: 'schlagzeile' }, a.thema),
+      el('p', { class: 'unterzeile' }, el('span', {}, datum(v.datum, { weekday: 'long', day: 'numeric', month: 'long' })), el('span', {}, `${mmss(v.dauer)} min`),
+        a?.sprache && el('span', {}, a.sprache), v.kosten > 0 && el('span', {}, `Kosten ${geld(v.kosten)}`))),
+    el('div', { class: 'kopf-aktionen' },
+      datei ? el('button', { class: 'knopf', type: 'button', onclick: () => vtSpielen(v.id, 0) }, 'Abspielen')
+        : yt ? el('a', { class: 'knopf', href: yt, target: '_blank', rel: 'noopener' }, 'Auf YouTube')
+        : [verbinden, el('label', { for: 'vt-wieder', class: 'knopf', title: 'Dieselbe Datei noch einmal wählen, dann springen die Zeitstempel ins Video' }, 'Video verbinden')],
+      el('button', { class: 'knopf', type: 'button', disabled: !!VT.job, onclick: () => vtLoeschen(v) }, 'Löschen')));
+  const nochmal = el('form', { class: 'vt-nochmal', onsubmit: e => { e.preventDefault(); vtBewerten(v, e.target.elements.kontext.value.trim()); } },
+    el('label', { class: 'feld' }, el('span', {}, 'Anlass und Vorgaben ', el('span', { class: 'opt' }, 'optional')), el('textarea', { name: 'kontext', rows: 3 }, v.kontext || '')),
+    el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll', disabled: !!VT.job }, a ? 'Neu bewerten' : 'Analyse starten'),
+      el('span', { class: 'meta' }, a ? 'Das Transkript bleibt, nur die Bewertung wird neu geschrieben.' : 'Das Transkript ist gespeichert; die Bewertung fehlt noch.')));
+  if (!a) return [el('a', { class: 'zurueck', href: '#/vortrag' }, 'Alle Vorträge'), kopf, job && presse('vortrag', job), fehler && el('p', { class: 'fehlertext' }, fehler),
+    !job && el('section', { class: 'schritt' }, el('h2', {}, 'Bewertung'), nochmal), vtTranskript(v, z, null, zeit)];
+
+  const zahl = (wert, name, hinweis) => el('div', { class: 'vt-zahl' }, el('b', {}, wert), el('span', {}, name), hinweis && el('span', { class: 'meta' }, hinweis));
+  const [tMin, tMax] = z.sp === 'en' ? [120, 160] : [100, 140];
+  const fw = [...Object.entries(z.laute).map(([wort, anzahl]) => ({ wort, anzahl })), ...a.fuellwoerter].sort((x, y) => y.anzahl - x.anzahl);
+  const fwSumme = a.fuellwoerter.reduce((s, f) => s + (+f.anzahl || 0), 0);
+  const zaehle = art => a.befunde.filter(b => b.art === art).length;
+  const max = Math.max(1, ...z.proMinute), spitze = z.proMinute.indexOf(Math.max(...z.proMinute));
+  if (VT.filter !== 'alle' && !zaehle(VT.filter)) VT.filter = 'alle';
+  const befundListe = el('ol', { class: 'vt-befunde' });
+  const filter = ['alle', ...Object.keys(VT_ARTEN).filter(zaehle)].map(k => el('button', { type: 'button', class: 'vt-filter', 'data-art': k, 'aria-pressed': String(VT.filter === k),
+    onclick: () => { VT.filter = k; zeigeBefunde(); } }, k === 'alle' ? 'Alle' : VT_ARTEN[k], el('span', {}, String(k === 'alle' ? a.befunde.length : zaehle(k)))));
+  const zeigeBefunde = () => {
+    befundListe.replaceChildren(...a.befunde.filter(b => VT.filter === 'alle' || b.art === VT.filter).map(b => el('li', { class: 'vt-befund', 'data-art': b.art },
+      el('div', { class: 'vt-b-kopf' }, zeit(vtSek(b.zeit)), el('span', { class: 'vt-art' }, VT_ARTEN[b.art] || b.art)),
+      el('p', { class: 'vt-zitat' }, `„${b.zitat}“`), b.problem && el('p', {}, b.problem),
+      b.besser && el('p', { class: 'vt-besser' }, el('b', {}, 'Besser: '), b.besser))));
+    filter.forEach(k => k.setAttribute('aria-pressed', String(k.dataset.art === VT.filter)));
+  };
+  zeigeBefunde();
+  return [
+    el('a', { class: 'zurueck', href: '#/vortrag' }, 'Alle Vorträge'), kopf,
+    job && presse('vortrag', job), fehler && el('p', { class: 'fehlertext' }, fehler),
+    el('section', { class: 'vt-gesamt', 'aria-label': 'Gesamtbewertung' },
+      el('div', { class: 'vt-links' }, el('div', { class: 'vt-note' }, el('span', { class: 'vt-note-zahl', 'data-note': a.note }, a.note),
+        el('div', {}, el('b', {}, VT_NOTEN[a.note]), el('span', { class: 'meta' }, `${a.punkte} von 100 Punkten`))), el('p', { class: 'vt-urteil' }, a.urteil)),
+      el('ul', { class: 'vt-kriterien' }, a.kriterien.map(k => el('li', {},
+        el('div', { class: 'vt-k-kopf' }, el('span', {}, k.name), el('b', {}, `${k.punkte}/10`)),
+        el('div', { class: 'vt-balken', 'aria-hidden': 'true' }, el('span', { style: `width:${Math.max(0, Math.min(10, +k.punkte || 0)) * 10}%` })),
+        el('p', { class: 'meta' }, k.kommentar))))),
+    el('section', { class: 'vt-zahlen', 'aria-label': 'Kennzahlen' },
+      zahl(mmss(v.dauer), 'Dauer', null),
+      zahl(z.tempo, 'Wörter pro Minute', z.tempo < tMin ? 'eher langsam' : z.tempo > tMax ? 'eher schnell' : 'angenehmes Tempo'),
+      zahl(z.aeh, z.sp === 'en' ? 'uh und um' : 'äh und ähm', `${komma(z.aehMin)} pro Minute`),
+      zahl(fwSumme, 'Füllwörter', a.fuellwoerter[0] && `am häufigsten „${a.fuellwoerter.slice().sort((x, y) => y.anzahl - x.anzahl)[0].wort}“`),
+      zahl(z.pausen.length, 'Pausen ab 2 s', z.pausen.length ? `längste ${komma(Math.max(...z.pausen))} s` : null),
+      zahl(a.befunde.length, 'Befunde', `${zaehle('grammatik')} Grammatik, ${zaehle('logik') + zaehle('irrefuehrend')} Logik`)),
+    a.tipps.length > 0 && el('section', { class: 'block' }, el('h2', {}, 'Die wichtigsten Tipps'),
+      el('ol', { class: 'vt-tipps' }, a.tipps.map(t => el('li', {}, el('h3', {}, t.titel), el('p', {}, t.warum), t.uebung && el('p', { class: 'vt-uebung' }, el('b', {}, 'Übung: '), t.uebung))))),
+    a.staerken.length > 0 && el('section', { class: 'block' }, el('h2', {}, 'Das war gut'), el('ul', { class: 'vt-staerken' }, a.staerken.map(s => el('li', {}, s)))),
+    el('section', { class: 'block' }, el('div', { class: 'block-kopf' }, el('h2', {}, 'Verlauf'), el('p', { class: 'meta' }, `Balken: ${z.sp === 'en' ? 'uh und um' : 'äh und ähm'} pro Minute · Striche: Befunde`)),
+      el('p', { class: 'sr' }, z.aeh ? `Die meisten ${z.sp === 'en' ? 'uh und um' : 'äh'} in Minute ${spitze + 1}: ${z.proMinute[spitze]}.` : 'Keine äh-Laute.'),
+      el('div', { class: 'vt-verlauf', 'aria-hidden': 'true' },
+        el('div', { class: 'vt-saeulen' }, z.proMinute.map(x => el('span', { style: `height:${Math.round(x / max * 100)}%` }))),
+        el('div', { class: 'vt-spur' }, a.befunde.map(b => el('span', { 'data-art': b.art, style: `left:${Math.min(100, vtSek(b.zeit) / Math.max(v.dauer, 1) * 100).toFixed(2)}%` })))),
+      el('div', { class: 'vt-achse meta', 'aria-hidden': 'true' }, el('span', {}, '0:00'), el('span', {}, mmss(v.dauer)))),
+    el('section', { class: 'block' }, el('h2', {}, 'Befunde'),
+      a.befunde.length ? [el('div', { class: 'vt-filterreihe', role: 'group', 'aria-label': 'Befunde filtern' }, filter), befundListe] : el('p', { class: 'leer' }, 'Keine Befunde.')),
+    fw.length > 0 && el('section', { class: 'block' }, el('h2', {}, 'Füllwörter und Laute'), el('ul', { class: 'vt-woerter' }, fw.map(f => el('li', {}, el('span', {}, f.wort), el('b', {}, `${f.anzahl}×`))))),
+    vtTranskript(v, z, a, zeit),
+    el('section', { class: 'block' }, el('h2', {}, 'Rückfragen an den Coach'),
+      chat(`vortrag-chat:${v.id}`, () => vtKontext(v), { platzhalter: 'z. B. Wie formuliere ich den Einstieg stärker?', einstellung: { ...VT_DENKEN, reasoning: { effort: 'medium' } },
+        vorschlaege: ['Schreib mir einen stärkeren Einstieg.', 'Wie baue ich den Vortrag besser auf?', 'Welche Sätze sollte ich vor der nächsten Probe umformulieren?'] })),
+    el('details', { class: 'quellen' }, el('summary', {}, 'Neu bewerten'), nochmal)];
+}
+function vtTranskript(v, z, a, zeit) {
+  const marken = new Map();
+  for (const b of a?.befunde || []) { const i = v.zeilen.findLastIndex(l => l.t <= vtSek(b.zeit) + 0.5); if (i >= 0) marken.set(i, [...new Set([...(marken.get(i) || []), b.art])]); }
+  const laut = new RegExp(`${VT_AEH[z.sp].source}|\\[[^\\]]*\\]`, 'giu');
+  const markiert = s => { const t = []; let rest = 0; for (const m of s.matchAll(laut)) { t.push(s.slice(rest, m.index), el(m[0][0] === '[' ? 'span' : 'mark', { class: m[0][0] === '[' ? 'vt-klammer' : 'vt-aeh' }, m[0])); rest = m.index + m[0].length; } t.push(s.slice(rest)); return t; };
+  return el('section', { class: 'block' },
+    el('div', { class: 'block-kopf' }, el('h2', {}, 'Transkript'), el('button', { class: 'knopf', type: 'button', onclick: () => speichern(vtText(v), `${v.titel}.txt`, 'text/plain;charset=utf-8') }, 'Als .txt laden')),
+    el('ol', { class: 'vt-transkript' }, v.zeilen.flatMap((l, i) => {
+      const weiter = v.zeilen[i + 1]?.t ?? v.dauer;  // über 45 s ohne neue Zeile: still, oder die Spracherkennung hat etwas ausgelassen
+      return [el('li', { 'data-t': l.t }, zeit(l.t), el('p', {}, markiert(l.s)),
+        marken.has(i) && el('span', { class: 'vt-zeichen' }, el('span', { class: 'sr' }, 'Befunde: ' + marken.get(i).map(x => VT_ARTEN[x] || x).join(', ')), marken.get(i).map(x => el('i', { 'data-art': x })))),
+        weiter - l.t > 45 && el('li', { class: 'vt-luecke' }, `Bis ${mmss(weiter)} steht hier kein Text. Entweder war es still, oder die Spracherkennung hat etwas ausgelassen; im Video nachhören.`)];
+    }).filter(Boolean)));
+}
 
 /* ---------- Onlinetests: Überblick für alle, Löser nur mit Passwort ---------- */
 // onlinetests.json schreibt der PC (holen.py): Zeitraum, Punkte, Versuche und die gelesenen Fragen jedes Tests.
@@ -2116,16 +2672,16 @@ async function zeichne() {
   const anker = location.hash.match(/^#(a-[\w-]+)$/)?.[1];  // Sprungmarken in der Anleitung
   const [teil, tag] = anker ? ['anleitung'] : location.hash.replace(/^#\/?/, '').split('/').map(decodeURIComponent);
   const neu = teil === 'anleitung' ? 'anleitung' : !fertig() || teil === 'einstellungen' ? 'einstellungen'
-    : ['kalender', 'wordpower', 'onlinetests'].includes(teil) ? teil : R[teil] ? 'ausgabe' : 'titelblatt';
+    : ['kalender', 'wordpower', 'onlinetests', 'vortrag'].includes(teil) ? teil : R[teil] ? 'ausgabe' : 'titelblatt';
   if ($('meldung').open) $('meldung').close();
-  for (const id of ['titelblatt', 'ausgabe', 'einstellungen', 'kalender', 'wordpower', 'onlinetests', 'anleitung']) $(id).hidden = id !== neu;
+  for (const id of ['titelblatt', 'ausgabe', 'einstellungen', 'kalender', 'wordpower', 'onlinetests', 'vortrag', 'anleitung']) $(id).hidden = id !== neu;
   document.body.dataset.ansicht = neu;
   document.querySelectorAll('.mit-daten').forEach(a => { a.hidden = !fertig(); });
   document.querySelectorAll('a[data-ansicht]').forEach(a => a.dataset.ansicht === neu ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current'));
   $('nav-faecher').replaceChildren(...Object.keys(R).map(f => el('a', { href: `#/${encodeURIComponent(f)}`, 'aria-current': neu === 'ausgabe' && teil === f ? 'page' : null },
     el('span', { class: 'punkt', 'data-fach': f, 'aria-hidden': 'true' }), f, R[f].druckt && el('span', { class: 'laeuft', role: 'img', 'aria-label': 'wird erstellt' }))));
   $('nav-faecher-kopf').hidden = !fertig() || !Object.keys(R).length;
-  const namen = { kalender: 'Kalender', wordpower: 'Word Power', onlinetests: 'Onlinetests', anleitung: 'Anleitung', einstellungen: 'Einrichten' };
+  const namen = { kalender: 'Kalender', wordpower: 'Word Power', onlinetests: 'Onlinetests', vortrag: 'Vortrag', anleitung: 'Anleitung', einstellungen: 'Einrichten' };
   document.title = neu === 'titelblatt' ? 'Lernhelfer' : `${neu === 'ausgabe' ? teil : namen[neu]} – Lernhelfer`;
   $('modell-name').textContent = $('modell').value;
   $('alle').disabled = Object.values(R).some(r => r.druckt) || !Object.keys(R).length;
@@ -2138,6 +2694,8 @@ async function zeichne() {
   } else if (neu === 'kalender') kalenderZeigen();
   else if (neu === 'wordpower') wordpower();
   else if (neu === 'onlinetests') await onlinetestsZeigen(tag);
+  else if (neu === 'vortrag') await vortragZeigen(tag);
+  if (neu !== 'vortrag' && $('vt-spieler') && !$('vt-spieler').hidden) { $('vt-spieler').querySelector('video').pause(); $('vt-spieler').hidden = true; }
   else if (neu === 'titelblatt') titelblatt();
   const woanders = location.hash !== ort;  // Seitenwechsel, nicht nur neu gezeichnet
   if (woanders && ort != null) $('inhalt').focus({ preventScroll: true });
