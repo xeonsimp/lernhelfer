@@ -160,6 +160,8 @@
   .presse { position: relative; display: block; padding-bottom: 12px; overflow: hidden; color: var(--text-2); font-size: 0.875rem; font-weight: 600; }
   .presse::before, .presse::after { content: ""; position: absolute; left: 0; bottom: 0; height: 3px; border-radius: 3px; }
   .presse::before { right: 0; background: var(--bg-3); }
+  .presse .uhr { font-variant-numeric: tabular-nums; }
+  .presse .klein { font-weight: 400; }
   .presse::after { width: 40%; background: var(--akzent); animation: laden 1.3s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
   @keyframes laden { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
   @media (prefers-reduced-motion: reduce) { .presse::after { width: 100%; opacity: 0.35; animation: none; } .navi .laeuft { animation: none; } }
@@ -730,7 +732,7 @@
         <h2 id="a-woche">Jede Woche</h2>
         <ol>
           <li>Unter <b>Heute</b> (oder links in der Seitenleiste) ein Fach antippen.</li>
-          <li>Sind neue Folien da (der PC holt sie von selbst), tippe auf <b>Neu erstellen</b>. Die Ausgabe ist nach ein bis drei Minuten fertig. Die App muss dabei offen bleiben. Mit „Alle Fächer neu erstellen“ geht es für alle Fächer auf einmal.</li>
+          <li>Sind neue Folien da (der PC holt sie von selbst), tippe auf <b>Neu erstellen</b>. Die Ausgabe ist nach zwei bis vier Minuten fertig, der Fortschritt läuft mit. Die App muss dabei offen bleiben, der Bildschirm bleibt von selbst an. Mit „Alle Fächer neu erstellen“ geht es für alle Fächer auf einmal.</li>
           <li>Lesen, Übungsaufgaben erst selbst rechnen und dann aufdecken, Begriffe im Lexikon abfragen. Was unklar bleibt, bei „Fragen“ stellen. Die Leiste oben in der Ausgabe springt zu jedem Teil.</li>
         </ol>
         <p>Ältere Ausgaben bleiben unter „Frühere Ausgaben“ erhalten. Welches Modell schreibt, stellst du unter Einrichten ein.</p>
@@ -811,7 +813,7 @@
 <dialog class="meldung" id="meldung" aria-labelledby="m-titel"></dialog>
 <script>
 const MODELLE = {
-  'GPT-6 Luna · MAX thinking': { model: 'openai/gpt-6-luna', reasoning: { effort: 'max' } },
+  'GPT-6 Luna · xhigh': { model: 'openai/gpt-6-luna', reasoning: { effort: 'xhigh' } },  // MAX brauchte 9–18 min, xhigh gut 3
   'MiMo V2.6 Pro': { model: 'xiaomi/mimo-v2.6-pro', reasoning: { enabled: true } },
   'GPT-6.1 Sol · xhigh': { model: 'openai/gpt-6.1-sol', reasoning: { effort: 'xhigh' } },
 };
@@ -956,19 +958,6 @@ async function anfrage(einstellung, messages) {
   if (!r.ok || j.error) throw new Error('OpenRouter: ' + (j.error?.message || r.status));
   return j;
 }
-async function openrouter(modell, prompt) {
-  const frage = einstellung => anfrage(einstellung, [{ role: 'user', content: prompt }]);
-  let j = await frage(MODELLE[modell]), kosten = j.usage?.cost || 0, xhigh = false;
-  // MAX thinking kann das ganze Ausgabelimit (128k Token) mit Nachdenken aufbrauchen; dann einmal mit xhigh nachdrucken
-  if (j.choices[0].finish_reason === 'length' && MODELLE[modell].reasoning?.effort === 'max') {
-    status('Die Ausgabe war zu lang für MAX thinking und wird mit xhigh neu gesetzt …');
-    j = await frage({ ...MODELLE[modell], reasoning: { effort: 'xhigh' } });
-    kosten += j.usage?.cost || 0; xhigh = true;
-    status('');
-  }
-  if (j.choices[0].finish_reason === 'length') throw new Error('Die Ausgabe wurde abgeschnitten, weil das Modell zu lange nachgedacht hat. Bitte noch einmal erstellen.');
-  return { text: j.choices[0].message.content, kosten, xhigh };
-}
 async function kosten() {
   if (!cfg?.openrouter) return;
   const hol = p => fetch('https://openrouter.ai/api/v1/' + p, { headers: { Authorization: 'Bearer ' + cfg.openrouter }, cache: 'no-store' })
@@ -1023,22 +1012,28 @@ async function quelle(f) { return R[f].quelle ??= JSON.parse(await gh(`faecher/$
 async function drucke(f, d = HEUTE) {  // d: Stichtag, für nachträgliche Ausgaben früherer Einheiten
   const r = R[f];
   if (r.druckt) return;
-  r.druckt = true; r.fehler = ''; zeichne();
+  Object.assign(r, { druckt: true, fehler: '', hinweis: 'Liest die Unterlagen …', start: Date.now() }); zeichne();
+  const uhr = setInterval(() => presseZeigen(f), 1000);
+  await wach(true);
   try {
     const q = await quelle(f);
     const prompt = [auftrag(f, TAG, d), ...q.dateien.map(d => `=== ${d.art.toUpperCase()}: ${d.datei} ===\n${d.text.slice(0, 60000)}`)].join('\n\n');
     const modell = $('modell').value;
-    const antwortKI = await openrouter(modell, prompt);
-    const preis = antwortKI.kosten != null ? ` · Kosten ${antwortKI.kosten} $` : '';
-    const text = `*${antwortKI.xhigh ? modell.replace('MAX thinking', 'xhigh (MAX abgeschnitten)') : modell} · ${datum(d, { day: '2-digit', month: '2-digit', year: 'numeric' })}${preis}*\n\n` + antwortKI.text;
+    const antwortKI = await strom({ ...MODELLE[modell], messages: [{ role: 'user', content: prompt }] }, x => {
+      const teile = x.match(/^## .+/gm) || [];
+      r.hinweis = /```json/.test(x) ? 'Schreibt Termine und Begriffe …' : teile.length ? `Schreibt „${teile.at(-1).slice(3).trim()}“ (${teile.length} von 6) …` : 'Schreibt …';
+    }, () => { r.hinweis = 'Denkt nach …'; });
+    r.hinweis = 'Speichert …';
+    const text = `*${modell} · ${datum(d, { day: '2-digit', month: '2-digit', year: 'numeric' })} · Kosten ${antwortKI.preis} $*\n\n` + antwortKI.text;
     const alt = r.ausgaben.find(a => a.datum === d);
     const antwort = await nacheinander(() => gh(`lernseiten/${f}/${d}.md`, { method: 'PUT', roh: false, body: { message: `Ausgabe ${f} ${d}`, content: base64(text), sha: alt?.sha } }));
     r.ausgaben = [{ datum: d, sha: antwort.content.sha }, ...r.ausgaben.filter(a => a.datum !== d)].sort((a, b) => b.datum.localeCompare(a.datum));
     r.cache[d] = zerlege(text, d);
     if (d !== HEUTE) location.hash = `#/${encodeURIComponent(f)}/${d}`;
   } catch (e) {
-    r.fehler = e.message;
+    r.fehler = wpWarum(e);
   } finally {
+    clearInterval(uhr); wach(false);
     r.druckt = false; zeichne(); kosten();
   }
 }
@@ -1050,8 +1045,17 @@ function kommende() {
     .filter(t => tageBis(t.datum) >= 0 && tageBis(t.datum) <= 14)
     .sort((a, b) => (a.datum + (a.zeit || '99')).localeCompare(b.datum + (b.zeit || '99')));
 }
-function presse() {
-  return el('p', { class: 'presse', role: 'status' }, 'Wird erstellt … App bitte offen lassen.');
+// Fortschritt beim Erstellen: Schritt (für Screenreader) und mitlaufende Zeit (nur sichtbar, sonst würde jede Sekunde vorgelesen)
+const minuten = ms => `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}`;
+function presse(f) {
+  return el('p', { class: 'presse', 'data-presse': f }, el('span', { role: 'status' }, R[f].hinweis), ' ',
+    el('span', { class: 'uhr', 'aria-hidden': 'true' }, minuten(Date.now() - R[f].start)), el('span', { class: 'klein' }, ' · App offen lassen, der Bildschirm bleibt an.'));
+}
+function presseZeigen(f) {
+  for (const p of document.querySelectorAll(`[data-presse="${CSS.escape(f)}"]`)) {
+    if (p.firstChild.textContent !== R[f].hinweis) p.firstChild.textContent = R[f].hinweis;
+    p.querySelector('.uhr').textContent = minuten(Date.now() - R[f].start);
+  }
 }
 let ALLE_FRISTEN = false;
 const fristPille = (t, naechste) => el('span', { class: `pille${tageBis(t.datum) <= 1 ? ' warn' : naechste ? ' akzent' : ''}` }, faellig(tageBis(t.datum)));
@@ -1064,7 +1068,7 @@ function fachZeile(f) {
       blick && el('p', { class: 'anriss' }, blick.replace(/^\s*[-*]\s+/, '').replace(/[*_`]/g, '').replace(/\\\(|\\\)/g, ''))]
       : el('p', { class: 'anriss' }, 'Noch keine Ausgabe. Antippen und erstellen.')),
     a && el('p', { class: 'meta' }, `Ausgabe vom ${kurz(a.datum)}, ${a.begriffe.length} Begriffe`),
-    r.druckt && presse(),
+    r.druckt && presse(f),
     r.fehler && el('p', { class: 'fehlertext' }, r.fehler));
 }
 function titelblatt() {
@@ -1289,8 +1293,8 @@ function nachtrag(f) {
   const feld = el('input', { type: 'date', name: 'stichtag', max: HEUTE, 'aria-label': 'Anderer Tag' });
   return el('div', { class: 'nachtrag' },
     el('h3', {}, 'Frühere Vorlesung nacharbeiten'),
-    el('p', { class: 'klein' }, 'Erstellt eine Ausgabe mit Stand dieses Tages: Zusammenfassung dieser Einheit, Übungen, Begriffe. Dauert ein bis drei Minuten.'),
-    r.druckt ? presse() : [
+    el('p', { class: 'klein' }, 'Erstellt eine Ausgabe mit Stand dieses Tages: Zusammenfassung dieser Einheit, Übungen, Begriffe. Dauert zwei bis vier Minuten.'),
+    r.druckt ? presse(f) : [
       vos.length > 0 && el('div', { class: 'knopfreihe' }, vos.map(d => el('button', { class: 'knopf', type: 'button', onclick: () => drucke(f, d) }, `VO ${kurz(d)}`))),
       el('form', { class: 'zeile nachtrag-tag', onsubmit: e => { e.preventDefault(); if (feld.value && feld.value <= HEUTE) drucke(f, feld.value); } }, feld, el('button', { class: 'knopf' }, 'Für diesen Tag erstellen'))]);
 }
@@ -1303,8 +1307,8 @@ async function ausgabeZeigen(f, tag) {
     sektion.replaceChildren(...[
       el('a', { class: 'zurueck nur-schmal', href: '#/' }, 'Heute'),
       el('header', { class: 'ausgabe-kopf' }, el('div', {}, el('h1', {}, f),
-        el('p', { class: 'unterzeile' }, 'Noch keine Ausgabe. Die erste ist nach ein bis drei Minuten fertig.'))),
-      r.druckt ? presse() : el('button', { class: 'knopf voll', type: 'button', onclick: () => drucke(f) }, 'Erste Ausgabe erstellen'),
+        el('p', { class: 'unterzeile' }, 'Noch keine Ausgabe. Die erste ist nach zwei bis vier Minuten fertig.'))),
+      r.druckt ? presse(f) : el('button', { class: 'knopf voll', type: 'button', onclick: () => drucke(f) }, 'Erste Ausgabe erstellen'),
       r.fehler && el('p', { class: 'fehlertext' }, r.fehler)].filter(Boolean));
     return;
   }
@@ -1331,7 +1335,7 @@ async function ausgabeZeigen(f, tag) {
       el('div', { class: 'kopf-aktionen' },
         f === 'Englisch' && el('a', { class: 'knopf', href: '#/wordpower' }, el('span', { translate: 'no' }, 'Word Power')),
         !r.druckt && el('button', { class: 'knopf voll', type: 'button', onclick: () => drucke(f) }, 'Neu erstellen'))),
-    r.druckt && presse(),
+    r.druckt && presse(f),
     r.fehler && el('p', { class: 'fehlertext' }, r.fehler),
     quellen.length > 0 && el('details', { class: 'quellen' }, el('summary', {}, `Beruht auf ${quellen.length} ${quellen.length === 1 ? 'Unterlage' : 'Unterlagen'}`), el('p', {}, quellen.join(', '))),
     leiste,
@@ -1552,13 +1556,18 @@ async function entsperren(bereich, pin) {
   try { return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b(j.iv) }, key, b(j.daten)))); }
   catch { throw new Error('Falsches Passwort.'); }
 }
-let wachSperre = null;
-async function wach(an) {  // Bildschirm wach halten: die Sperre beendet sonst eine laufende Anfrage
-  try {
-    if (an) wachSperre = await navigator.wakeLock?.request('screen');
-    else { await wachSperre?.release(); wachSperre = null; }
-  } catch {}
+// Bildschirm wach halten, solange irgendetwas läuft: die Bildschirmsperre beendet sonst eine laufende Anfrage
+let wachSperre = null, wachZahl = 0;
+async function sperren() {
+  try { wachSperre = await navigator.wakeLock?.request('screen'); wachSperre?.addEventListener('release', () => { wachSperre = null; }); } catch {}
 }
+async function wach(an) {
+  wachZahl = Math.max(0, wachZahl + (an ? 1 : -1));
+  if (wachZahl && !wachSperre) await sperren();
+  else if (!wachZahl) await wachSperre?.release().catch(() => {});
+}
+// Beim Wegschalten gibt der Browser die Sperre selbst frei; zurück in der App wieder holen
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && wachZahl && !wachSperre) sperren(); });
 
 /* ---------- Word Power: Englisch-Hausaufgabe ---------- */
 const WP_TRANSKRIPT = 'google/gemini-3.8-flash';  // nur Gemini über Google AI Studio nimmt YouTube-Links
@@ -1604,31 +1613,43 @@ async function wpNachschlagen() {  // Titel und Vorschaubild über YouTube oEmbe
     $('wp-talk').hidden = false;
   } catch { $('wp-talk').hidden = true; }
 }
-// OpenRouter gestreamt: zeigt Fortschritt und hält die Verbindung offen
+// OpenRouter gestreamt: zeigt Fortschritt und hält die Verbindung offen. OpenRouter schickt auch beim Nachdenken
+// alle paar Sekunden ein Lebenszeichen; bleibt das lange aus, ist die Verbindung tot (iPad gesperrt, Funkloch) und wir brechen ab.
+const STILLE = 90e3;  // gemessen: höchstens 4 s ohne Lebenszeichen
 async function strom(body, beiText, beimDenken) {
-  const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST', body: JSON.stringify({ ...body, stream: true, usage: { include: true } }),
-    headers: { Authorization: 'Bearer ' + cfg.openrouter, 'Content-Type': 'application/json', 'X-Title': 'OLAT Lernhelfer' },
-  });
-  if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error('OpenRouter ' + r.status + ': ' + (j.error?.message || r.statusText)); }
-  const leser = r.body.pipeThrough(new TextDecoderStream()).getReader();
-  let puffer = '', text = '', preis = 0;
-  for (;;) {
-    const { value, done } = await leser.read();
-    if (done) break;
-    puffer += value;
-    const zeilen = puffer.split('\n'); puffer = zeilen.pop();
-    for (const z of zeilen) {
-      if (!z.startsWith('data: ') || z === 'data: [DONE]') continue;  // „: OPENROUTER PROCESSING“ u. Ä.
-      const m = JSON.parse(z.slice(6));
-      if (m.error) throw new Error('OpenRouter: ' + (m.error.message || JSON.stringify(m.error)));
-      if (m.usage) preis = m.usage.cost || 0;  // kommt im letzten Stück, mit echtem Preis in $
-      const d = m.choices?.[0]?.delta || {};
-      if (d.content) { text += d.content; beiText(text); } else if (d.reasoning && beimDenken) beimDenken();
+  const halt = new AbortController();
+  let wache = setTimeout(() => halt.abort(), STILLE), puffer = '', text = '', preis = 0, ende = null;
+  try {
+    const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST', body: JSON.stringify({ ...body, stream: true, usage: { include: true } }), signal: halt.signal,
+      headers: { Authorization: 'Bearer ' + cfg.openrouter, 'Content-Type': 'application/json', 'X-Title': 'OLAT Lernhelfer' },
+    });
+    if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error('OpenRouter ' + r.status + ': ' + (j.error?.message || r.statusText)); }
+    const leser = r.body.pipeThrough(new TextDecoderStream()).getReader();
+    for (;;) {
+      const { value, done } = await leser.read();
+      if (done) break;
+      clearTimeout(wache); wache = setTimeout(() => halt.abort(), STILLE);
+      puffer += value;
+      const zeilen = puffer.split('\n'); puffer = zeilen.pop();
+      for (const z of zeilen) {
+        if (!z.startsWith('data: ') || z === 'data: [DONE]') continue;  // „: OPENROUTER PROCESSING“ u. Ä.
+        const m = JSON.parse(z.slice(6));
+        if (m.error) throw new Error('OpenRouter: ' + (m.error.message || JSON.stringify(m.error)));
+        if (m.usage) preis = m.usage.cost || 0;  // kommt im letzten Stück, mit echtem Preis in $
+        ende = m.choices?.[0]?.finish_reason || ende;
+        const d = m.choices?.[0]?.delta || {};
+        if (d.content) { text += d.content; beiText(text); } else if ((d.reasoning || d.reasoning_details?.length) && beimDenken) beimDenken();
+      }
     }
-  }
+  } catch (e) {
+    if (halt.signal.aborted) throw new Error('Die Verbindung ist abgerissen: 90 Sekunden kam von OpenRouter nichts mehr. Bitte noch einmal starten, Bildschirm dabei anlassen.');
+    throw e;
+  } finally { clearTimeout(wache); }
+  if (ende === 'length') throw new Error('Die Antwort wurde abgeschnitten, weil das Modell zu lange nachgedacht hat. Bitte noch einmal starten.');
   if (!text.trim()) throw new Error('Leere Antwort von OpenRouter. Bitte nochmal versuchen.');
-  return { text: text.trim().replace(/^```\w*\s*|\s*```$/g, ''), preis };
+  text = text.trim();
+  return { text: text.startsWith('```') ? text.replace(/^```\w*\s*|\s*```$/g, '') : text, preis };  // nur ganz umschlossene Antworten auspacken, der JSON-Block einer Ausgabe bleibt
 }
 function wpZeigen() {
   if (!wpDoc) return;
@@ -1893,7 +1914,7 @@ async function loesen(t, q) {
     merk('loeser:' + k, JSON.stringify({ text, preis, zeit: new Date().toISOString() }));
   } catch (e) { L.fehler = wpWarum(e); }
   L.laeuft = false;
-  if (!Object.values(LOESUNGEN).some(x => x.laeuft)) wach(false);
+  wach(false);
   kosten();
   if (hier()) testZeigen(t);
 }
