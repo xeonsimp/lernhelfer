@@ -666,6 +666,16 @@
   .admin-setzen { display: flex; align-items: center; gap: 6px; }
   .admin-setzen select { width: auto; min-width: 7.5em; }
   .admin-setzen input { width: 5.5em; }
+  .seitenleiste .ecke-link { margin: 8px 10px 0; color: var(--text-3); font-size: 0.75rem; text-decoration: none; }
+  .seitenleiste .ecke-link:hover { color: var(--text-2); text-decoration: underline; }
+  .kacheln { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: 10px; }
+  .kachel { padding: 14px 16px; border: 1px solid var(--linie); border-radius: var(--r-l); background: var(--bg); }
+  .kachel p { margin: 0; }
+  .kachel .zahl { margin: 4px 0 2px; color: var(--text); font: 700 1.5rem/1.2 var(--sans); font-variant-numeric: tabular-nums; }
+  .admin .tabelle td { white-space: nowrap; }
+  .werte-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; margin-top: 14px; }
+  .werte-form label { display: grid; gap: 4px; color: var(--text-2); font-size: 0.875rem; font-weight: 600; }
+  .werte-form input { width: 8em; }
 </style>
 </head>
 <body>
@@ -684,12 +694,12 @@
       <a href="#/wordpower" data-ansicht="wordpower" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a1 1 0 0 1 1 1v9.5a1 1 0 0 1-1 1h-8L7 20v-3.5H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg><span translate="no">Word Power</span></a>
       <a href="#/vortrag" data-ansicht="vortrag" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5M8.5 20.5h7"/></svg>Vortrag</a>
       <a href="#/upgrade" data-ansicht="upgrade" class="nur-server mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>Tarife</a>
-      <a href="#/admin" data-ansicht="admin" class="nur-server" id="nav-admin" hidden><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l7 3v5c0 4.4-3 7.8-7 9-4-1.2-7-4.6-7-9v-5z"/><path d="M9 12l2 2 4-4"/></svg>Verwaltung</a>
       <hr>
       <a href="#/anleitung" data-ansicht="anleitung"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10.5 5 8.3 4.5 4 4.5v14c4.3 0 6.5.5 8 2 1.5-1.5 3.7-2 8-2v-14c-4.3 0-6.5.5-8 2zM12 6.5v14"/></svg>Anleitung</a>
       <a href="#/einstellungen" data-ansicht="einstellungen"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>Einrichten</a>
     </nav>
     <p class="kosten" data-kosten></p>
+    <a href="#/admin" class="ecke-link nur-server" id="nav-admin" hidden>Admin-Ecke</a>
   </div></aside>
 
   <main id="inhalt" tabindex="-1">
@@ -740,13 +750,13 @@
     <section id="wordpower" hidden class="werkstatt">
       <header class="ausgabe-kopf">
         <h1 translate="no">Word Power</h1>
-        <p class="schlagzeile">Vom YouTube-Talk zum Hausaufgaben-Entwurf</p>
+        <p class="schlagzeile" id="wp-zeile">Vom YouTube-Talk zum Hausaufgaben-Entwurf</p>
         <p class="meta">Englisch, Communication in Business</p>
       </header>
       <form id="wp-sperre" class="sperre nur-eigen">
         <label>Passwort <input id="wp-pin" name="passwort" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Passwort" required></label>
         <div><button class="knopf voll">Öffnen</button></div>
-        <p class="klein" id="wp-sperre-text" role="status">Das Passwort bekommst du von der Person, die dir den Lernhelfer gezeigt hat.</p>
+        <p class="klein" id="wp-sperre-text" role="status">Privater Bereich mit Passwort.</p>
       </form>
       <div id="wp-werk" hidden>
         <section class="schritt" aria-labelledby="wp-s1">
@@ -777,7 +787,6 @@
             <button id="wp-zu" class="knopf nur-eigen" type="button">Wieder sperren</button>
           </div>
         </section>
-        <div id="wp-gesperrt" hidden></div>
       </div>
     </section>
 
@@ -847,7 +856,7 @@
         <ul>
           <li><b>Konto:</b> Unter <a href="#/einstellungen">Konto</a> mit E-Mail und Passwort registrieren und die Adresse über den Link in der Mail bestätigen. Base ist kostenlos und bleibt es.</li>
           <li><b>OLAT-Abgleich:</b> Unter Konto das PC-Programm laden und am Windows-PC öffnen, siehe <a href="#a-pc">Der Abgleich am PC</a>. Danach kommen deine Unterlagen von selbst.</li>
-          <li><b>Base</b> bringt die Wochenausgabe für jedes Fach und den Überblick über die Onlinetests. <b>Pro</b> dazu Kalender, Word-Power-Transkript und Vortragsanalyse, <b>Ultra</b> zusätzlich alle Fragen an die KI, den Löser und den Hausaufgaben-Entwurf.</li>
+          <li><b>Base</b> bringt die Wochenausgabe für jedes Fach und den Überblick über die Onlinetests. <b>Pro</b> dazu Kalender, Word-Power-Transkript und Vortragsanalyse, <b>Ultra</b> zusätzlich alle Fragen an die KI und Lösungswege zu den Onlinetests.</li>
           <li><b>Ausprobieren:</b> Einmal pro Konto gibt es 24 Stunden Ultra gratis, ohne Zahlungsdaten.</li>
           <li><b>Bezahlen:</b> Unter <a href="#/upgrade">Tarife</a> wählen und per Überweisung oder PayPal mit dem angezeigten Verwendungszweck zahlen. Kein Abo: Nach der Laufzeit geht es von selbst mit Base weiter.</li>
           <li><b>Freunde einladen:</b> Mit deinem Link unter Konto zahlen Freunde im ersten Monat weniger, und du bekommst denselben Rabatt, sobald sie zahlen.</li>
@@ -919,9 +928,9 @@
           <p><b>So liest der PC Tests:</b> Läuft ein bewerteter Test, öffnet der PC ihn genau einmal, liest die Fragen und tippt dann auf „Test unterbrechen“ und „Ok“. Antworten werden nie eingetragen, gespeichert oder abgeschickt, und „Test beenden“ wird nie gedrückt. Ein Schutz im Browser blockiert diese Knöpfe zusätzlich. Dein Versuch bleibt also voll erhalten. Tests, die noch nicht begonnen haben, öffnet der PC nie.</p>
         </div>
         <p>Abgelaufene Tests zeigen deine Antworten und die Lösung von OLAT, Selbsttests sind zum Üben da. Beides nimmt die Wochenausgabe für die Übungsaufgaben.</p>
-        <p class="nur-server"><b>Der Löser</b> (Ultra) zeigt die Fragen eines Tests einzeln, mit Formeln wie in OLAT, und rechnet sie mit Rechenweg zum Aufklappen vor. Selbsttests, Aufgaben ohne Punkte und vorbei Tests rechnet er mit den Originalzahlen. Bei einem laufenden Test, der für die Note zählt, rechnet er eine gleichartige Aufgabe mit anderen Zahlen vor: Den Weg lernst du daran, die Originalaufgabe rechnest du selbst. Der Löser schreibt nichts nach OLAT.</p>
+        <p class="nur-server"><b>Lösungswege</b> (Ultra) zeigt die Fragen eines Tests einzeln, mit Formeln wie in OLAT. Zu jeder Frage stellt der Lernhelfer eine gleichartige Übungsaufgabe mit anderen Zahlen, rechnet sie mit Rechenweg zum Aufklappen vor und erklärt jeden Schritt. Die Originalaufgabe löst du damit selbst: Ergebnisse dafür nennt er nicht, und er schreibt nichts nach OLAT. Welche Hilfsmittel bei einem Test erlaubt sind, legt jede Lehrveranstaltung fest, meist im Syllabus.</p>
         <p class="nur-eigen"><b>Der Löser</b> zeigt die Fragen eines Tests einzeln, mit Formeln wie in OLAT. Bei jeder Frage „Lösen lassen“ tippen: Du bekommst das Ergebnis so, wie es in OLAT eingetragen wird, und den Rechenweg zum Aufklappen. Bei „Rückfrage“ fragst du nach, was unklar ist. Mit „Weiter“ und „Zurück“ gehst du durch die Fragen; Lösungen und Rückfragen bleiben gespeichert. Gedacht ist er zum Vergleichen: erst selbst lösen, dann mit dem Löser prüfen, dann selbst in OLAT eintragen. Der Löser schreibt nichts nach OLAT. Ob KI bei einem Test erlaubt ist, legt jede Lehrveranstaltung selbst fest, meist im Syllabus.</p>
-        <p class="nur-eigen">Löser und <a href="#/wordpower">Word Power</a> (Englisch-Hausaufgaben) haben ein Passwort. Du bekommst es von der Person, die dir den Lernhelfer gezeigt hat. Groß- und Kleinschreibung ist egal.</p>
+        <p class="nur-eigen">Löser und <a href="#/wordpower">Word Power</a> (Englisch-Hausaufgaben) sind privat und haben je ein eigenes Passwort. Ihre Prompts liegen verschlüsselt im privaten Daten-Repo. Groß- und Kleinschreibung ist egal.</p>
 
         <h2 id="a-vortrag">Vortrag analysieren</h2>
         <p>Unter <a href="#/vortrag">Vortrag</a> bekommst du Rückmeldung zu einer Präsentation, etwa vor dem PS oder für Englisch. Video oder Tonaufnahme wählen, optional Anlass und Vorgaben dazuschreiben (Zeitvorgabe, Bewertungskriterien), auf „Analysieren“ tippen. Nach etwa 2 bis 5 Minuten bekommst du:</p>
@@ -1126,7 +1135,7 @@ async function api(pfad, body) {
   if (!r.ok) throw Object.assign(new Error(j.error?.message || `Der Server antwortet ${r.status}. Bitte gleich nochmal.`), { status: r.status });
   return j;
 }
-const darf = f => !SERVER || !!(ICH && TARIFE && TARIFE.tarife[ICH.tarif].rang >= TARIFE.funktionen[f]);
+const darf = f => !SERVER || !!ICH?.ecke || !!(ICH && TARIFE && TARIFE.tarife[ICH.tarif].rang >= TARIFE.funktionen[f]);  // Admin-Ecke: alles
 
 let cfg = JSON.parse(merk('cfg') || 'null');  // { openrouter, github, repo }; beim Einrichten Schritt für Schritt gefüllt
 const fertig = () => SERVER ? !!ICH : !!(cfg?.openrouter && cfg?.github && cfg?.repo);
@@ -1748,12 +1757,12 @@ function kalenderNachladen() {  // beim Start: Heute braucht den Stundenplan fü
 }
 
 /* ---------- Geschützte Bereiche (Word Power, Löser) ---------- */
-// Ihre Prompts liegen verschlüsselt neben der App (geschuetzt/<bereich>.json, erstellt mit verschluesseln.mjs), damit alle sie
-// haben; ohne Passwort gibt es nichts zu entschlüsseln. Groß/klein, Leer- und Satzzeichen zählen nicht. Entsperrt bis zum Neuladen.
+// Ihre Prompts liegen verschlüsselt im privaten Daten-Repo (geschuetzt/<bereich>.json, erstellt mit verschluesseln.mjs): Lesen geht nur
+// mit dem GitHub-Schlüssel, Entschlüsseln nur mit dem Passwort. Groß/klein, Leer- und Satzzeichen zählen nicht. Entsperrt bis zum Neuladen.
 async function entsperren(bereich, pin) {
-  const antwort = await fetch(`geschuetzt/${bereich}.json`, { cache: 'no-store' });
-  if (!antwort.ok) throw new Error('Dieser Bereich ist gerade nicht erreichbar. Später nochmal versuchen.');
-  const j = await antwort.json(), b = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const roh = await gh(`geschuetzt/${bereich}.json`);
+  if (!roh) throw new Error('Diesen Bereich gibt es in deinem Daten-Repo nicht.');
+  const j = JSON.parse(roh), b = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
   const basis = await crypto.subtle.importKey('raw', new TextEncoder().encode(pin.toLowerCase().replace(/[^a-zäöüß0-9]/g, '')), 'PBKDF2', false, ['deriveKey']);
   const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b(j.salt), iterations: j.iter, hash: 'SHA-256' }, basis, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
   try { return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b(j.iv) }, key, b(j.daten)))); }
@@ -1790,9 +1799,9 @@ function wordpower() {
     WP_LAEDT = true;
     api('geschuetzt/wordpower').then(j => { WP = j; }, e => status(e.message, true)).finally(() => { WP_LAEDT = false; if (WP && document.body.dataset.ansicht === 'wordpower') wordpower(); });
   }
-  const text = darf('wp-text');
-  $('wp-schritt2').hidden = !text; $('wp-gesperrt').hidden = text;
-  if (!text && !$('wp-gesperrt').firstChild) $('wp-gesperrt').replaceChildren(sperrkarte('wp-text'));
+  const text = darf('wp-text');  // Server: den Hausaufgaben-Entwurf gibt es nur in der Admin-Ecke, alle anderen bekommen das Transkript
+  $('wp-schritt2').hidden = !text;
+  $('wp-zeile').textContent = text ? 'Vom YouTube-Talk zum Hausaufgaben-Entwurf' : 'YouTube-Talks mit Zeitstempeln mitschreiben';
   $('wp-sperre').hidden = !!WP; $('wp-werk').hidden = !WP;
   $('wp-dl').disabled = !$('wp-out').value.trim();
 }
@@ -2332,7 +2341,7 @@ function vtSeite(v) {
     job && presse('vortrag', job), fehler && el('p', { class: 'fehlertext' }, fehler),
     el('section', { class: 'vt-gesamt', 'aria-label': 'Gesamtbewertung' },
       el('div', { class: 'vt-links' }, el('div', { class: 'vt-note' }, el('span', { class: 'vt-note-zahl', 'data-note': a.note }, a.note),
-        el('div', {}, el('b', {}, VT_NOTEN[a.note]), el('span', { class: 'meta' }, `${a.punkte} von 100 Punkten`))), el('p', { class: 'vt-urteil' }, a.urteil)),
+        el('div', {}, el('b', {}, VT_NOTEN[a.note]), el('span', { class: 'meta' }, `${a.punkte} von 100 Punkten${SERVER ? ' · Einschätzung der KI, keine Note deiner Lehrveranstaltung' : ''}`))), el('p', { class: 'vt-urteil' }, a.urteil)),
       el('ul', { class: 'vt-kriterien' }, a.kriterien.map(k => el('li', {},
         el('div', { class: 'vt-k-kopf' }, el('span', {}, k.name), el('b', {}, `${k.punkte}/10`)),
         el('div', { class: 'vt-balken', 'aria-hidden': 'true' }, el('span', { style: `width:${Math.max(0, Math.min(10, +k.punkte || 0)) * 10}%` })),
@@ -2497,9 +2506,9 @@ function loesungZeigen(text) {
         markdown(el('div', { class: 'text' }), weg)));
   }));
 }
-// Server-Version: Läuft ein bewerteter Test, rechnet der Löser eine gleichartige Aufgabe mit anderen Zahlen statt der Originalaufgabe,
-// wie Ausgaben und Chats auch. Wer den Löser bezahlt, kauft Lernhilfe, keine Antworten für eine laufende Prüfung (§ 116a UG).
-const variante = (t, q) => SERVER && teststand(t).gruppe === 'offen' && Number(String(q.max ?? '1').replace(',', '.')) > 0;
+// Server-Version: Der Löser zeigt immer nur den Lösungsweg an einer gleichartigen Aufgabe mit anderen Zahlen, nie die Originalaufgabe
+// (Lernhilfe statt fertiger Prüfungsleistung, § 116a UG); der Server setzt die Regel zusätzlich selbst durch. Voll nur in der Admin-Ecke.
+const variante = () => SERVER && !ICH?.ecke;
 function testZeigen(t) {
   const st = teststand(t), id = testId(t), fragen = fragenListe(t);
   if (SERVER && darf('loeser') && !LOESER_PROMPT) LOESER_LADEN ??= api('geschuetzt/onlinetest').then(j => { LOESER_PROMPT = j.system; },
@@ -2540,27 +2549,27 @@ function testZeigen(t) {
         q.max && el('span', { class: 'pille' }, `Max. ${q.max} ${q.max === '1' ? 'Punkt' : 'Punkte'}`)),
       q.nr == null && t.ergebnis && el('p', { class: 'klein' }, 'So zeigt OLAT den Test nach Ablauf: deine Antworten in Kästchen, danach die Lösung.'),
       olatText(el('div', { class: 'aufgabentext' }), q.text),
-      el('div', { class: 'loeser-teil' }, ...(!darf('loeser') ? [el('h3', {}, 'Löser'), sperrkarte('loeser', true)]
-        : !LOESER_PROMPT ? [el('h3', {}, 'Löser'), SERVER ? el('p', { class: 'meta' }, 'Lade den Löser …') : sperre] : [
-        el('h3', {}, 'Lösung'),
-        !g && !L.laeuft && el('p', { class: 'klein' }, variante(t, q)
-          ? 'Dieser Test läuft und zählt für die Note. Der Löser rechnet darum eine gleichartige Aufgabe mit anderen Zahlen vor, mit Rechenweg zum Aufklappen. Die Originalaufgabe rechnest du daran selbst.'
+      el('div', { class: 'loeser-teil' }, ...(!darf('loeser') ? [el('h3', {}, 'Lösungsweg'), sperrkarte('loeser', true)]
+        : !LOESER_PROMPT ? [el('h3', {}, variante() ? 'Lösungsweg' : 'Löser'), SERVER ? el('p', { class: 'meta' }, 'Lade …') : sperre] : [
+        el('h3', {}, variante() ? 'Lösungsweg an einer Übungsaufgabe' : 'Lösung'),
+        !g && !L.laeuft && el('p', { class: 'klein' }, variante()
+          ? 'Der Lernhelfer stellt eine gleichartige Übungsaufgabe mit anderen Zahlen, rechnet sie Schritt für Schritt vor und erklärt den Weg. Die Originalaufgabe löst du damit selbst; Ergebnisse dafür nennt er nicht.'
           : `MiMo V2.6 Pro rechnet ${q.nr == null ? 'alle Fragen' : 'die Frage'} mit Nachdenken vor: das Ergebnis so, wie es in OLAT eingetragen würde, und den Rechenweg zum Aufklappen. Eintragen tust du selbst, der Löser schreibt nichts nach OLAT.`),
         el('div', { class: 'knopfreihe' },
           L.laeuft ? el('p', { class: 'presse', id: 'lo-status', 'data-k': k, role: 'status' }, L.hinweis)
-            : el('button', { class: `knopf${g ? '' : ' voll'}`, type: 'button', onclick: () => loesen(t, q) }, g ? 'Neu lösen' : 'Lösen lassen'),
+            : el('button', { class: `knopf${g ? '' : ' voll'}`, type: 'button', onclick: () => loesen(t, q) }, g ? (variante() ? 'Neue Übungsaufgabe' : 'Neu lösen') : variante() ? 'Lösungsweg zeigen' : 'Lösen lassen'),
           g && !L.laeuft && el('span', { class: 'meta' }, `Gelöst ${zeitpunkt(g.zeit)}${SERVER ? '' : ', ' + geld(g.preis || 0)}`)),
         L.fehler && el('p', { class: 'fehlertext' }, L.fehler),
         g && loesungZeigen(g.text),
         el('h3', { class: 'rueck-kopf' }, 'Rückfrage'),
-        chat(`loeser-chat:${k}`, () => rueckKontext(t, q), { platzhalter: 'z. B. Warum wird hier abgeleitet und nicht integriert?', einstellung: LOESER, loeschen: 'Alle Rückfragen zu dieser Frage löschen?' })])),
+        chat(`loeser-chat:${k}`, () => rueckKontext(t, q), { platzhalter: 'z. B. Warum wird hier abgeleitet und nicht integriert?', einstellung: { ...LOESER, feature: 'loeser' }, loeschen: 'Alle Rückfragen zu dieser Frage löschen?' })])),
       fragen.length > 1 && el('div', { class: 'schritte-nav' },
         el('button', { class: 'knopf', type: 'button', disabled: n === 0, onclick: () => geh(n - 1) }, el('span', { class: 'pfeil links', 'aria-hidden': 'true' }), 'Zurück'),
         el('span', { class: 'meta' }, `${n + 1} von ${fragen.length}`),
         el('button', { class: 'knopf', type: 'button', disabled: n === fragen.length - 1, onclick: () => geh(n + 1) }, 'Weiter', el('span', { class: 'pfeil', 'aria-hidden': 'true' })))),
   ].filter(Boolean));
 }
-const rueckKontext = (t, q) => `Du erklärst eine Aufgabe aus dem OLAT-Test „${t.titel}“ im Fach ${t.fach} (1. Semester Wirtschaftswissenschaften, Universität Innsbruck). Beantworte Rückfragen knapp, verständlich und auf Deutsch. Rechne nach, wenn danach gefragt wird; ist an der Lösung unten etwas falsch, sag es klar und rechne richtig.${variante(t, q) ? ' Dieser Test läuft gerade und wird bewertet: Die Originalaufgabe rechnest du nie mit den Originalzahlen vor und nennst kein Ergebnis dafür, sondern erklärst den Weg an Beispielen mit anderen Zahlen.' : ''} Im Aufgabentext stehen Formeln als LaTeX ohne Begrenzer und Eingabefelder als []. Formeln in deinen Antworten in LaTeX zwischen \\( und \\), abgesetzt zwischen \\[ und \\].
+const rueckKontext = (t, q) => `Du erklärst eine Aufgabe aus dem OLAT-Test „${t.titel}“ im Fach ${t.fach} (1. Semester Wirtschaftswissenschaften, Universität Innsbruck). Beantworte Rückfragen knapp, verständlich und auf Deutsch. Rechne nach, wenn danach gefragt wird; ist an der Lösung unten etwas falsch, sag es klar und rechne richtig.${variante() ? ' Die Originalaufgabe rechnest du nie mit den Originalzahlen vor und nennst weder ein Ergebnis noch die richtige Antwortmöglichkeit dafür, sondern erklärst den Weg an Beispielen mit anderen Zahlen.' : ''} Im Aufgabentext stehen Formeln als LaTeX ohne Begrenzer und Eingabefelder als []. Formeln in deinen Antworten in LaTeX zwischen \\( und \\), abgesetzt zwischen \\[ und \\].
 
 === STARTSEITE ===
 ${t.startseite || '(keine)'}
@@ -2579,7 +2588,7 @@ async function loesen(t, q) {
   await wach(true);
   try {
     const kopf = `Fach: ${t.fach}\nTest: ${t.titel}\n\n=== STARTSEITE ===\n${t.startseite || '(keine)'}\n\n`;
-    const auftragText = variante(t, q) ? `Dieser Test läuft gerade und wird bewertet. Rechne die Originalaufgabe nicht vor und nenne kein Ergebnis dafür. Bilde stattdessen zu ${q.nr == null ? 'jeder Frage' : `Frage ${q.nr}`} eine gleichartige Übungsaufgabe mit anderen Zahlen, stell sie vollständig vor und löse sie in der verlangten Form, damit die Person den Weg lernt und die Originalaufgabe selbst rechnet.\n\n${kopf}=== ${q.nr == null ? 'FRAGEN' : 'FRAGE ' + q.nr} ===\n${q.text}`
+    const auftragText = variante() ? `Rechne die Originalaufgabe nicht vor und nenne kein Ergebnis dafür. Bilde stattdessen zu ${q.nr == null ? 'jeder Frage' : `Frage ${q.nr}`} eine gleichartige Übungsaufgabe mit anderen Zahlen, stell sie vollständig vor, löse sie Schritt für Schritt und erkläre jeden Schritt, damit die Person den Weg lernt und die Originalaufgabe selbst rechnet.\n\n${kopf}=== ${q.nr == null ? 'FRAGEN' : 'FRAGE ' + q.nr} ===\n${q.text}`
       : q.nr == null ? `Löse alle Fragen mit den Originalzahlen.\n\n${kopf}=== FRAGEN ===\n${q.text}`
       : `Löse nur Frage ${q.nr} mit den Originalzahlen, in der verlangten Form.\n\n${kopf}=== FRAGE ${q.nr} ===\n${q.text}`;
     const { text, preis } = await strom({ ...LOESER, feature: 'loeser', messages: [{ role: 'system', content: LOESER_PROMPT }, { role: 'user', content: auftragText }] },
@@ -2782,15 +2791,14 @@ function einrichtenZeigen() {
   if (KAMERA && $('kamera')) { $('kamera').srcObject = KAMERA; $('kamera').play().catch(() => {}); }
 }
 
-/* ---------- Server-Version: Konto, Tarife, Sperren mit Gratis-Test, Verwaltung, Recht ---------- */
+/* ---------- Server-Version: Konto, Tarife, Sperren mit Gratis-Test, Admin-Ecke, Recht ---------- */
 const SPERREN = { kalender: 'kalender', wordpower: 'wp-transkript', vortrag: 'vortrag' };  // Ansicht → Funktion, die sie braucht
 const SPERRE = {  // was ein Tarif bringt, je Funktion in einem Satz
   kalender: ['Der Kalender', 'Stundenplan aus LFU:online und alle Fristen auf einen Blick, mit einem Tipp ins iPad übernommen.'],
   'wp-transkript': ['Word Power', 'Gemini schreibt jeden YouTube-Talk für die Englisch-Hausaufgabe mit Zeitstempeln mit.'],
-  vortrag: ['Vortrag analysieren', 'Note, Tipps und jeder Fehler mit Zeitstempel: Rückmeldung zu deiner Präsentation, bevor sie zählt.'],
+  vortrag: ['Vortrag analysieren', 'Einschätzung, Tipps und jeder Fehler mit Zeitstempel: Rückmeldung zu deiner Präsentation, bevor sie zählt.'],
   chat: ['Fragen an die KI', 'Rückfragen zu jeder Ausgabe, jedem Vortrag und jeder Aufgabe, und „Frag den Lernhelfer“ zu Terminen, Fristen und nächsten Schritten.'],
-  loeser: ['Der Löser', 'Rechnet Aufgaben Schritt für Schritt vor, mit Rechenweg zum Aufklappen und Rückfragen.'],
-  'wp-text': ['Der Hausaufgaben-Entwurf', 'Aus dem Transkript wird ein Entwurf fürs Word Power Journal, mit Talk-Skript, Cue Card und Reflection.'],
+  loeser: ['Der Lösungsweg zu jeder Frage', 'Zu jeder Frage aus deinen Onlinetests eine gleichartige Übungsaufgabe mit anderen Zahlen, Schritt für Schritt vorgerechnet und erklärt, mit Rückfragen.'],
 };
 const stufeName = f => TARIFE?.funktionen[f] === 1 ? 'Pro' : 'Ultra';
 function sperrkarte(f, klein) {
@@ -2880,7 +2888,7 @@ function kontoZeigen() {
   einst.hidden = !ICH;
   $('k-recht')?.remove();
   const recht = el('p', { class: 'rechtszeile meta', id: 'k-recht' }, el('a', { href: '#/upgrade' }, 'Tarife'), el('a', { href: '#/recht' }, 'Impressum, Datenschutz und AGB'),
-    ICH?.admin && el('a', { href: '#/admin' }, 'Verwaltung'));
+    ICH?.admin && el('a', { href: '#/admin' }, 'Admin-Ecke'));
   if (PW_TOKEN) {
     $('ei-schlagzeile').textContent = 'Neues Passwort setzen.';
     return $('ei-schritte').replaceChildren(kontoForm('Neues Passwort', [kontoFeld('passwort', 'Neues Passwort, mindestens 10 Zeichen', 'password', { autocomplete: 'new-password', minlength: 10 })],
@@ -2970,8 +2978,8 @@ function kontoZeigen() {
 const UP = { wahl: null, monate: 1 };
 const PLAN = {  // was jeder Tarif dazubringt
   base: ['Wochenausgabe für jedes Fach: Zusammenfassung, Übungen, Begriffe, Termine', 'OLAT-Abgleich am PC', 'Onlinetests im Überblick'],
-  pro: ['Kalender mit Stundenplan und allen Fristen, mit Übernahme ins iPad', 'Word Power: YouTube-Talks transkribieren', 'Vortrag analysieren: Note, Tipps und Fehler mit Zeitstempel'],
-  ultra: ['Fragen an die KI zu jeder Ausgabe, jedem Vortrag und jeder Aufgabe', 'Frag den Lernhelfer: Termine, Fristen, nächste Schritte', 'Löser mit Rechenweg und Rückfragen', 'Word Power: Hausaufgaben-Entwurf aus dem Transkript'],
+  pro: ['Kalender mit Stundenplan und allen Fristen, mit Übernahme ins iPad', 'Word Power: YouTube-Talks mit Zeitstempeln transkribieren', 'Vortrag analysieren: Einschätzung, Tipps und Fehler mit Zeitstempel'],
+  ultra: ['Fragen an die KI zu jeder Ausgabe, jedem Vortrag und jeder Aufgabe', 'Frag den Lernhelfer: Termine, Fristen, nächste Schritte', 'Lösungswege zu Onlinetest-Fragen: gleichartige Aufgabe mit anderen Zahlen, Schritt für Schritt erklärt'],
   ultraplus: ['Eigener OpenRouter-Schlüssel mit rund 10 € KI-Guthaben pro Monat, für eigene Projekte'],
 };
 const DAZU = { pro: 'Alles aus Base, dazu:', ultra: 'Alles aus Pro, dazu:', ultraplus: 'Alles aus Ultra, dazu:' };
@@ -3028,6 +3036,7 @@ function upgradeZeigen() {
   $('upgrade').replaceChildren(...[
     el('header', { class: 'ausgabe-kopf' }, el('h1', {}, 'Tarife'),
       el('p', { class: 'schlagzeile' }, 'Base bleibt kostenlos. Pro und Ultra schalten frei, was dir in der Woche am meisten Zeit spart.'),
+      el('p', { class: 'meta' }, 'Endpreise in Euro. Als Kleinunternehmer verrechne ich keine Umsatzsteuer.'),
       ICH && el('p', { class: 'meta' }, `Dein Tarif: ${ICH.test ? `Ultra-Test bis ${zeitpunkt(ICH.bis)}` : T[ICH.tarif].name + (ICH.bis ? ` bis ${new Date(ICH.bis).toLocaleDateString('de-AT')}` : '')}`)),
     zahlung,
     ICH?.testFrei && el('section', { class: 'sperrkarte', 'aria-labelledby': 'u-test' }, el('h2', { id: 'u-test' }, 'Erst ausprobieren?'),
@@ -3050,12 +3059,31 @@ function upgradeZeigen() {
   ].filter(Boolean));
 }
 
+const eckeWechsel = () => { WP = null; LOESER_PROMPT = null; LOESER_LADEN = null; kontoZeile(); zeichne(); };  // Prompts voll oder öffentlich neu laden
 async function adminZeigen() {
   const s = $('admin');
-  if (!ICH?.admin) return s.replaceChildren(el('p', { class: 'leer' }, 'Nur für die Verwaltung.'));
+  if (!ICH?.admin) return s.replaceChildren(el('p', { class: 'leer' }, 'Diese Seite gibt es nicht.'));
+  if (!ICH.ecke) {
+    const hinweis = el('p', { class: 'klein', role: 'status' }, 'Dashboard und volle Werkzeuge, danach 12 Stunden offen auf diesem Gerät.');
+    return s.replaceChildren(el('header', { class: 'ausgabe-kopf' }, el('h1', {}, 'Admin-Ecke')),
+      el('form', { class: 'sperre', onsubmit: async e => {
+        e.preventDefault();
+        const k = e.target.querySelector('button');
+        k.disabled = true; hinweis.textContent = 'Prüfe …';
+        try { ICH = await api('ecke', { passwort: e.target.elements.pw.value }); eckeWechsel(); }
+        catch (err) { hinweis.textContent = err.message; k.disabled = false; }
+      } },
+        el('label', {}, 'Passwort', el('input', { name: 'pw', type: 'password', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false', required: true })),
+        el('div', {}, el('button', { class: 'knopf voll' }, 'Öffnen')), hinweis));
+  }
   let d;
-  try { d = await api('admin'); } catch (e) { return s.replaceChildren(el('p', { class: 'fehlertext' }, e.message)); }
-  const T = TARIFE.tarife, tag = x => x ? new Date(x).toLocaleDateString('de-AT') : '–', jetzt = Date.now();
+  try { d = await api('admin'); }
+  catch (e) {
+    if (e.status === 403) { ICH = await api('ich').catch(() => ICH); if (!ICH.ecke) return adminZeigen(); }  // nach 12 Stunden wieder zu
+    return s.replaceChildren(el('p', { class: 'fehlertext' }, e.message));
+  }
+  if (document.body.dataset.ansicht !== 'admin') return;
+  const T = TARIFE.tarife, K = d.kennzahlen, G = d.geld, F = d.freunde, tag = x => x ? new Date(x).toLocaleDateString('de-AT') : '–', jetzt = Date.now();
   const tun = (pfad, body) => async e => {
     e.currentTarget.disabled = true;
     try { const r = await api(pfad, body); if (r.warnung) alert('Freigeschaltet, aber: ' + r.warnung); } catch (err) { alert(err.message); }
@@ -3068,9 +3096,55 @@ async function adminZeigen() {
     el('input', { name: 'tage', type: 'number', min: 0, value: 30, 'aria-label': 'Tage' }), el('button', { class: 'knopf', name: 'knopf' }, 'Setzen'));
   const offen = d.bestellungen.filter(b => b.status !== 'bezahlt'), bezahlt = d.bestellungen.filter(b => b.status === 'bezahlt');
   const betrag = b => euro(b.betrag) + (b.rabatt ? ` (−${euro(b.rabatt)})` : '');
+  const kachel = (titel, wert, zusatz) => el('div', { class: 'kachel' }, el('p', { class: 'meta' }, titel), el('p', { class: 'zahl' }, String(wert)), zusatz && el('p', { class: 'meta' }, zusatz));
+  const anteil = (a, b) => b ? `${Math.round(100 * a / b)} %` : '–';
+  const kostet = usd => `${euro(-Math.round(usd * G.kurs * 100) || 0)} (${geld(usd)})`;
+  const fix = Math.round(G.fixkosten * 100), komma = x => String(x).replace('.', ',');
+  const stand = k => k.tarif && k.bis > jetzt ? `${T[k.tarif].name} bis ${tag(k.bis)}` : k.test_bis > jetzt ? `Ultra-Test bis ${zeitpunkt(k.test_bis)}` : k.test_bis ? 'Base, Test genutzt' : 'Base';
+  const werte = el('form', { class: 'werte-form', onsubmit: async e => {
+    e.preventDefault();
+    const f = e.target.elements;
+    f.knopf.disabled = true;
+    try { await api('admin/werte', { fixkosten: f.fixkosten.value, kurs: f.kurs.value }); } catch (err) { alert(err.message); }
+    adminZeigen();
+  } },
+    el('label', {}, 'Fixkosten pro Monat in €', el('input', { name: 'fixkosten', type: 'text', inputmode: 'decimal', value: komma(G.fixkosten) })),
+    el('label', {}, '1 $ KI kostet dich in €', el('input', { name: 'kurs', type: 'text', inputmode: 'decimal', value: komma(G.kurs) })),
+    el('button', { class: 'knopf', name: 'knopf' }, 'Speichern'));
   s.replaceChildren(
-    el('header', { class: 'ausgabe-kopf' }, el('h1', {}, 'Verwaltung'),
-      el('p', { class: 'unterzeile' }, el('span', {}, `Einnahmen im ${MONAT}: ${euro(d.monat.einnahmen)}`), el('span', {}, `KI-Kosten im ${MONAT}: ${geld(d.monat.kiUsd)}`), el('span', {}, `${d.konten.length} Konten`))),
+    el('header', { class: 'ausgabe-kopf' }, el('h1', {}, 'Admin-Ecke'),
+      el('p', { class: 'unterzeile' }, el('span', {}, `Stand ${zeitpunkt(jetzt)}`), el('span', {}, 'Bleibt 12 Stunden nach dem Öffnen offen')),
+      el('div', { class: 'knopfreihe' },
+        el('button', { class: 'knopf', type: 'button', onclick: e => { e.currentTarget.disabled = true; adminZeigen(); } }, 'Aktualisieren'),
+        el('button', { class: 'knopf', type: 'button', onclick: async e => { e.currentTarget.disabled = true; ICH = await api('ecke-zu', {}).catch(() => ICH); eckeWechsel(); } }, 'Ecke sperren'))),
+    el('h2', {}, 'Volle Werkzeuge'),
+    el('p', { class: 'klein' }, 'Nur für dich, solange die Ecke offen ist: Word Power mit Hausaufgaben-Entwurf und der Löser mit den Originalzahlen. Alle anderen bekommen nur das Transkript und Lösungswege an Übungsaufgaben mit anderen Zahlen.'),
+    el('div', { class: 'knopfreihe' }, el('a', { class: 'knopf voll', href: '#/wordpower' }, 'Word Power, voll'), el('a', { class: 'knopf voll', href: '#/onlinetests' }, 'Onlinetests mit vollem Löser')),
+    el('h2', {}, 'Auf einen Blick'),
+    el('div', { class: 'kacheln' },
+      kachel('Konten', K.konten, `+${K.neu7} in 7 Tagen, +${K.neu30} in 30 Tagen`),
+      kachel('Aktiv in 7 Tagen', K.aktiv7, `${K.aktiv30} in 30 Tagen`),
+      kachel('Zahlende jetzt', Object.values(K.zahlend).reduce((a, b) => a + b, 0), Object.entries(K.zahlend).map(([t, n]) => `${T[t].name} ${n}`).join(', ')),
+      kachel('Im Gratis-Test', K.imTest, `${K.testGenutzt} haben ihn genutzt`),
+      kachel('Monatsumsatz (MRR)', euro(K.mrr), 'laufende Tarife mal Monatspreis'),
+      kachel(`Gewinn im ${MONAT}`, euro(G.gewinn.monat), `seit Start ${euro(G.gewinn.gesamt)}`)),
+    el('h2', {}, 'Vom Konto zur Zahlung'),
+    el('div', { class: 'kacheln' }, [['Registriert', K.konten], ['E-Mail bestätigt', K.bestaetigt], ['Gratis-Test genutzt', K.testGenutzt], ['Mindestens einmal bezahlt', K.kunden]]
+      .map(([n, x]) => kachel(n, x, `${anteil(x, K.konten)} der Konten`))),
+    el('h2', {}, 'Geld'),
+    tabelle(['', `Im ${MONAT}`, `Seit Start (${G.laufzeit} ${G.laufzeit === 1 ? 'Monat' : 'Monate'})`], [
+      ['Einnahmen', euro(G.einnahmen.monat), euro(G.einnahmen.gesamt)],
+      ['KI über den Server', kostet(G.ki.monat), kostet(G.ki.gesamt)],
+      ['Ultra+-Schlüssel', kostet(G.api.monat), kostet(G.api.gesamt)],
+      ['Fixkosten', euro(-fix || 0), euro(-fix * G.laufzeit || 0)],
+      [el('b', {}, 'Gewinn'), el('b', {}, euro(G.gewinn.monat)), el('b', {}, euro(G.gewinn.gesamt))]]),
+    el('p', { class: 'meta' }, `Einnahmen vor PayPal-Gebühren, Rabatte schon abgezogen (bisher ${euro(G.rabatte)}). KI-Kosten kommen in Dollar und werden mit deinem Wert umgerechnet.`),
+    werte,
+    el('h2', {}, 'Letzte sechs Monate'),
+    tabelle(['Monat', 'Neue Konten', 'Einnahmen', 'KI-Kosten', 'Gewinn'], d.verlauf.map(v => [
+      new Date(v.monat + '-15').toLocaleDateString('de-AT', { month: 'long', year: 'numeric' }), String(v.neu), euro(v.einnahmen), kostet(v.kiUsd), euro(v.gewinn)])),
+    el('h2', {}, 'Freunde-Bonus'),
+    el('p', { class: 'klein' }, `${F.geworben} ${F.geworben === 1 ? 'Konto' : 'Konten'} über Einladungslinks, davon ${F.zahlend} zahlend (${anteil(F.zahlend, F.geworben)}). Rabatte für Werbende: ${F.offen} offen, ${F.eingeloest} eingelöst.`),
     el('h2', {}, 'Offene Zahlungen'),
     offen.length ? tabelle(['Zweck', 'Konto', 'Tarif', 'Betrag', 'Stand', ''], offen.map(b => [b.zweck, b.email, `${T[b.tarif].name}, ${b.monate} Mon.`, betrag(b),
       b.status === 'gemeldet' ? `bezahlt gemeldet ${tag(b.gemeldet)}` : `offen seit ${tag(b.erstellt)}`,
@@ -3080,10 +3154,12 @@ async function adminZeigen() {
     el('h2', {}, 'Bezahlt in den letzten 60 Tagen'),
     bezahlt.length ? tabelle(['Zweck', 'Konto', 'Tarif', 'Betrag', 'Am'], bezahlt.map(b => [b.zweck, b.email, `${T[b.tarif].name}, ${b.monate} Mon.`, betrag(b), tag(b.bezahlt)]))
       : el('p', { class: 'leer' }, 'Noch nichts.'),
-    el('h2', {}, 'Konten'),
-    tabelle(['E-Mail', 'Tarif', 'Bis', `KI im ${MONAT}`, 'Geworben von', 'Tarif von Hand'], d.konten.map(k => [
-      k.email + (k.bestaetigt ? '' : ' (unbestätigt)'), k.tarif && k.bis > jetzt ? T[k.tarif].name : k.test_bis > jetzt ? 'Ultra-Test' : 'Base',
-      k.tarif && k.bis > jetzt ? tag(k.bis) : k.test_bis > jetzt ? zeitpunkt(k.test_bis) : '–', geld(k.usd), k.werber || '–', setzen(k)])));
+    el('h2', {}, `Konten (${d.konten.length})`),
+    tabelle(['E-Mail', 'Registriert', 'Zuletzt aktiv', 'Tarif', `KI im ${MONAT}`, 'KI gesamt', 'Bezahlt', 'Geworben', 'Geworben von', 'Speicher', 'Tarif von Hand'], d.konten.map(k => [
+      k.email + (k.bestaetigt ? '' : ' (unbestätigt)'), tag(k.erstellt), tag(k.zuletzt), stand(k),
+      geld(k.ki_monat + (k.api?.monat || 0)), geld(k.ki_gesamt + (k.api?.gesamt || 0)), euro(k.bezahlt),
+      k.geworben ? `${k.geworben}, davon ${k.geworben_zahlend} zahlend` : '–', k.werber || '–',
+      `${(k.speicher / 1e6).toLocaleString('de-AT', { maximumFractionDigits: 1 })} MB`, setzen(k)])));
 }
 async function rechtZeigen() {
   const s = $('recht');
@@ -3118,7 +3194,7 @@ async function zeichne() {
     el('span', { class: 'punkt', 'data-fach': f, 'aria-hidden': 'true' }), f, R[f].druckt && el('span', { class: 'laeuft', role: 'img', 'aria-label': 'wird erstellt' }))));
   $('nav-faecher-kopf').hidden = !fertig() || !Object.keys(R).length;
   const namen = { kalender: 'Kalender', wordpower: 'Word Power', onlinetests: 'Onlinetests', vortrag: 'Vortrag', anleitung: 'Anleitung', einstellungen: SERVER ? 'Konto' : 'Einrichten',
-    upgrade: 'Tarife', admin: 'Verwaltung', recht: 'Impressum, Datenschutz und AGB' };
+    upgrade: 'Tarife', admin: 'Admin-Ecke', recht: 'Impressum, Datenschutz und AGB' };
   document.title = neu === 'titelblatt' ? 'Lernhelfer' : `${neu === 'ausgabe' ? teil : namen[hier]} – Lernhelfer`;
   $('modell-name').textContent = $('modell').value;
   $('alle').disabled = Object.values(R).some(r => r.druckt) || !Object.keys(R).length;

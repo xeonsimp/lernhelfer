@@ -6,7 +6,7 @@ Konten, Tarife (Base, Pro, Ultra, Ultra+ API), Zahlung per Überweisung oder Pay
 - `test.mjs`: Prüflauf mit OpenRouter-Attrappe: `node server/test.mjs`
 - `recht-vorlage.md`: Vorlage für Impressum, Datenschutz und AGB. Ausfüllen, prüfen lassen und als `recht.md` in den Datenordner legen.
 
-Preise, KI-Kontingente, Gratis-Test und Rabatte stehen oben in `server.mjs` (`TARIFE`, `TEST`). Was welcher Tarif darf, steht in `FUNKTIONEN`.
+Preise, KI-Kontingente, Gratis-Test und Rabatte stehen oben in `server.mjs` (`TARIFE`, `TEST`). Was welcher Tarif darf, steht in `FUNKTIONEN` (9 = nur in der Admin-Ecke).
 
 ## Auf dem Hetzner-Server einrichten (Ubuntu 24.04)
 
@@ -34,7 +34,7 @@ LH_PORT=8080
 LH_DATEN=/var/lib/lernhelfer
 # lange Zufallszeichenkette: openssl rand -hex 32
 LH_GEHEIM=
-# deine Mail: dieses Konto sieht unter Verwaltung die Zahlungen
+# deine Mail: nur dieses Konto kommt (mit LH_ECKE) in die Admin-Ecke
 LH_ADMIN=
 # OpenRouter-Schlüssel des Servers, dort mit Monatslimit anlegen
 LH_OR_KEY=
@@ -48,7 +48,9 @@ LH_EMPFAENGER=Vorname Nachname
 LH_IBAN=
 LH_BIC=
 LH_PAYPAL=
-# Passphrasen von Word Power und Löser (dieselben wie in der App)
+# Admin-Ecke (Dashboard und volle Werkzeuge): eigenes Passwort, zusätzlich zur Anmeldung mit LH_ADMIN
+LH_ECKE=
+# Passwörter von Word Power und vollem Löser (dieselben wie in deiner App)
 LH_PASS_WORDPOWER=
 LH_PASS_ONLINETEST=
 ```
@@ -96,11 +98,19 @@ sudo systemctl daemon-reload && sudo systemctl enable --now lernhelfer && sudo s
 sudo journalctl -u lernhelfer -f    # Log ansehen (Strg+C beendet)
 ```
 
-Dann auf der Seite mit der Mail aus `LH_ADMIN` registrieren und bestätigen: In der Seitenleiste erscheint „Verwaltung“.
+Die verschlüsselten Prompts liegen nur im privaten Daten-Repo. Auf dem Server `sudo mkdir -p /var/lib/lernhelfer/geschuetzt`, dann einmal vom PC kopieren (PowerShell, Server-IP einsetzen):
+
+```powershell
+scp Z:\workflow\daten\geschuetzt\*.json root@SERVER-IP:/var/lib/lernhelfer/geschuetzt/
+```
+
+Dann auf dem Server `sudo chown -R lernhelfer /var/lib/lernhelfer/geschuetzt`. Ohne die Dateien laufen Word-Power-Transkript und die vollen Werkzeuge nicht; die Lösungswege für alle anderen brauchen sie nicht.
+
+Dann auf der Seite mit der Mail aus `LH_ADMIN` registrieren und bestätigen: Ganz unten in der Seitenleiste (am Handy unter „Konto“) erscheint „Admin-Ecke“. Sie fragt nach dem Passwort aus `LH_ECKE` und zeigt dann Dashboard, Zahlungen und die vollen Werkzeuge, 12 Stunden lang.
 
 ## Laufender Betrieb
 
-- **Zahlung kommt rein:** Verwaltung → bei der Bestellung mit diesem Verwendungszweck „Geld ist da“. Der Tarif startet sofort, die Person bekommt eine Mail.
+- **Zahlung kommt rein:** Admin-Ecke → bei der Bestellung mit diesem Verwendungszweck „Geld ist da“. Der Tarif startet sofort, die Person bekommt eine Mail.
 - **Update:** `cd /opt/lernhelfer && sudo git pull && sudo systemctl restart lernhelfer`
 - **Sicherung** jede Nacht, sieben Tage rollierend (`sudo crontab -e`):
   `0 3 * * * sqlite3 /var/lib/lernhelfer/lernhelfer.db ".backup '/var/lib/lernhelfer/sicherung-$(date +\%u).db'"`

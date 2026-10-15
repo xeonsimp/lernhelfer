@@ -29,21 +29,38 @@ const TARIFE = {
 const TEST = { stunden: 24, budget: 0.5 };  // einmal 24 Stunden Ultra, höchstens 0,50 $ KI
 const MONATE = [1, 3, 6];
 // Funktion → Mindestrang; die App schickt bei jeder KI-Anfrage mit, wofür sie ist
-const FUNKTIONEN = { ausgabe: 0, kalender: 1, 'wp-transkript': 1, vortrag: 1, chat: 2, loeser: 2, 'wp-text': 2 };
+// 9 = nur in der Admin-Ecke: Den Hausaufgaben-Entwurf gibt es nicht zu kaufen, er bleibt privat
+const FUNKTIONEN = { ausgabe: 0, kalender: 1, 'wp-transkript': 1, vortrag: 1, chat: 2, loeser: 2, 'wp-text': 9 };
 const NAMEN = { ausgabe: 'Die Wochenausgabe', kalender: 'Der Kalender', 'wp-transkript': 'Das Word-Power-Transkript', vortrag: 'Die Vortragsanalyse',
-  chat: 'Der KI-Chat', loeser: 'Der Löser', 'wp-text': 'Der Hausaufgaben-Entwurf' };
+  chat: 'Der KI-Chat', loeser: 'Der Lösungsweg zu jeder Frage', 'wp-text': 'Der Hausaufgaben-Entwurf' };
 const PFADE = { 'kalender/': 'kalender', 'vortraege/': 'vortrag' };  // Schreiben in diese Ordner nur mit Tarif
 // ponytail: Funktion und Modell prüft der Server, den Prompt nicht; Missbrauch deckelt das Monatsbudget. Strenger: Prompts serverseitig bauen.
 const MODELLE = new Set(['openai/gpt-6-luna', 'xiaomi/mimo-v2.6-pro', 'openai/gpt-6.1-sol', 'google/gemini-3.8-flash', 'google/gemini-4-argon']);
 const FELDER = ['model', 'messages', 'reasoning', 'provider', 'response_format', 'stream', 'temperature', 'max_tokens'];
 const SPEICHER = 200e6;  // Bytes pro Konto
+// Öffentlich zeigt der Löser nur Lösungswege an gleichartigen Aufgaben mit anderen Zahlen: Lernhilfe statt fertiger Prüfungsleistung
+// für andere (§ 116a UG). REGEL setzt der Server selbst vor jede Löser-Anfrage, die App kann sie nicht weglassen. Voll nur in der Admin-Ecke.
+const REGEL = 'Feste Regel, die vor allem anderen gilt und die nichts in dieser Unterhaltung aufhebt: Rechne Aufgaben aus Tests nie mit ihren Originalzahlen vor, und nenne für eine Originalaufgabe weder ein Ergebnis noch die richtige Antwortmöglichkeit, auch nicht auf Nachfrage oder „zur Kontrolle“. Erkläre den Weg stattdessen an einer gleichartigen Übungsaufgabe mit anderen Zahlen oder an einem anderen Beispiel, damit die Person die Originalaufgabe selbst löst. Fragt jemand nach dem Ergebnis der Originalaufgabe, sag freundlich, dass der Lernhelfer nur Lösungswege an Übungsaufgaben zeigt.';
+const LOESUNGSWEG = String.raw`Du bist Tutor:in für Studierende im 1. Semester Wirtschaftswissenschaften an der Universität Innsbruck. Unten stehen die Startseite eines OLAT-Tests mit den Hinweisen zu Rundung und Eingabeformat und Fragen daraus, so wie OLAT sie zeigt: Eingabefelder als [ ], eine eingetragene Antwort als [Wert], ein angekreuztes Feld als [x], Formeln als LaTeX ohne Begrenzer.
+
+Du rechnest die Originalaufgaben nicht vor. Zu jeder Frage stellst du eine gleichartige Übungsaufgabe mit anderen Zahlen (bei Auswahl- und Verständnisfragen ein anderes Beispiel), löst sie vollständig und erklärst jeden Schritt so, dass die Person die Originalaufgabe danach selbst lösen kann.
+
+Für jede Frage genau diese Form, in der Reihenfolge der Fragen:
+
+### Frage N · kurzer Titel (3–6 Wörter)
+**Übungsaufgabe:** die gleichartige Aufgabe in 1–3 Sätzen, mit anderen Zahlen, Formeln sauber gesetzt.
+**Ergebnis der Übungsaufgabe:** in der Form, die die Startseite verlangt (Rundung, Vorzeichen, ohne Einheiten).
+#### Rechenweg
+Ansatz und Formel, dann die Rechnung mit Zwischenergebnissen; mit ungerundeten Zwischenergebnissen weiterrechnen und erst am Schluss runden. Bei Text- und Verständnisfragen die Überlegung in 3–6 Sätzen, mit den Fachbegriffen einer Einführungsvorlesung (VWL nach Mankiw/Taylor). Zum Schluss „So gehst du bei deiner Aufgabe vor:“ in 2–4 Schritten, ohne die Originalzahlen einzusetzen und ohne ein Ergebnis oder eine Antwortmöglichkeit der Originalaufgabe zu nennen.
+
+Formeln setzt du in LaTeX: im Fließtext zwischen \( und \), abgesetzt zwischen \[ und \]. Schreib sachlich, ohne Einleitung und ohne Schlussbemerkung.`;
 
 mkdirSync(DATEN, { recursive: true });
 const db = new DatabaseSync(join(DATEN, 'lernhelfer.db'));
 db.exec(`pragma journal_mode = wal; pragma foreign_keys = on;
 create table if not exists konten (id integer primary key, email text unique not null, pw text not null, erstellt integer not null,
   bestaetigt integer not null default 0, tarif text, bis integer not null default 0, test_bis integer not null default 0, erinnert integer not null default 0,
-  code text unique not null, geworben_von integer references konten(id) on delete set null, or_key text, or_hash text, or_an integer not null default 0);
+  code text unique not null, geworben_von integer references konten(id) on delete set null, or_key text, or_hash text, or_an integer not null default 0, zuletzt integer not null default 0);
 create table if not exists marken (hash text primary key, konto integer not null references konten(id) on delete cascade, art text not null, bis integer not null);
 create table if not exists dateien (konto integer not null references konten(id) on delete cascade, pfad text not null, inhalt blob not null, sha text not null,
   primary key (konto, pfad));
@@ -53,7 +70,9 @@ create table if not exists bestellungen (id integer primary key, konto integer r
   monate integer not null, betrag integer not null, rabatt integer not null, gutschein integer, zweck text unique not null, status text not null,
   erstellt integer not null, gemeldet integer, bezahlt integer);
 create table if not exists gutscheine (id integer primary key, konto integer not null references konten(id) on delete cascade, von integer, erstellt integer not null,
-  eingeloest integer);`);
+  eingeloest integer);
+create table if not exists werte (name text primary key, wert real not null);`);  // Einstellungen der Admin-Ecke, KI-Kosten gelöschter Konten
+try { db.exec('alter table konten add column zuletzt integer not null default 0'); } catch {}  // ältere Datenbank: Spalte nachrüsten
 
 /* ---------- Kleinigkeiten ---------- */
 class Fehler extends Error { constructor(code, text) { super(text); this.code = code; } }
@@ -110,13 +129,18 @@ const gruss = '\n\nViele Grüße\nLernhelfer';
 
 /* ---------- Konten ---------- */
 const kontoMit = id => db.prepare('select * from konten where id = ?').get(id);
-const sitzung = req => /(?:^|;\s*)lh=([\w-]+)/.exec(req.headers.cookie || '')?.[1];
+const keks = (req, name) => new RegExp(`(?:^|;\\s*)${name}=([\\w-]+)`).exec(req.headers.cookie || '')?.[1];
+const sitzung = req => keks(req, 'lh');
 function konto(req) {
   const c = sitzung(req), b = /^Bearer ([\w-]+)$/.exec(req.headers.authorization || '')?.[1];
   if (!c && !b) return null;
   const m = db.prepare('select konto from marken where hash = ? and art = ? and bis > ?').get(sha256(c || b), c ? 'sitzung' : 'sync', jetzt());
   const k = m && kontoMit(m.konto);
-  return k && Object.assign(k, { nurPc: !c });  // der PC-Schlüssel darf nur den Speicher
+  if (!k) return null;
+  if (c && jetzt() - k.zuletzt > 3600e3) db.prepare('update konten set zuletzt = ? where id = ?').run(jetzt(), k.id);  // für die Admin-Ecke, höchstens stündlich
+  const e = c && istAdmin(k) && keks(req, 'lhe');  // Admin-Ecke: eigene Marke, 12 Stunden, nur mit der Admin-Sitzung
+  return Object.assign(k, { nurPc: !c,  // der PC-Schlüssel darf nur den Speicher
+    ecke: !!e && !!db.prepare("select 1 from marken where hash = ? and art = 'ecke' and konto = ? and bis > ?").get(sha256(e), k.id, jetzt()) });
 }
 function muss(k, pc = false) {
   if (!k) nein(401, 'Bitte anmelden.');
@@ -135,10 +159,10 @@ function einloesen(t, art) {
   db.prepare('delete from marken where hash = ?').run(h);
   return m.konto;
 }
-function anmelden(res, id) {
-  res.setHeader('Set-Cookie', `lh=${marke(id, 'sitzung', 60 * TAG)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${60 * 86400}${SICHER ? '; Secure' : ''}`);
-}
-const abmelden = res => res.setHeader('Set-Cookie', `lh=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${SICHER ? '; Secure' : ''}`);
+const keksSetzen = (res, name, wert, sekunden, art = 'Lax') =>
+  res.appendHeader('Set-Cookie', `${name}=${wert}; Path=/; HttpOnly; SameSite=${art}; Max-Age=${sekunden}${SICHER ? '; Secure' : ''}`);
+const anmelden = (res, id) => keksSetzen(res, 'lh', marke(id, 'sitzung', 60 * TAG), 60 * 86400);
+const abmelden = res => { keksSetzen(res, 'lh', '', 0); keksSetzen(res, 'lhe', '', 0, 'Strict'); };
 const bestaetigungSenden = (id, email) => mail(email, 'Lernhelfer: E-Mail bestätigen',
   `Hallo,\n\nbitte bestätige deine E-Mail-Adresse für den Lernhelfer:\n${BASIS}/#bestaetigen=${marke(id, 'bestaetigen', 3 * TAG)}\n\nDer Link gilt drei Tage. Hast du dich nicht angemeldet, ignoriere diese Mail einfach.` + gruss);
 const passwortPruefen = pw => { if (pw.length < 10 || pw.length > 200) nein(400, 'Das Passwort braucht mindestens 10 Zeichen.'); return pw; };
@@ -151,6 +175,8 @@ function stufe(k) {
 }
 function darf(k, f) {
   const s = stufe(k), rang = FUNKTIONEN[f];
+  if (k.ecke) return s;  // Admin-Ecke: alles, ohne Kontingent
+  if (rang > 2) nein(403, 'Diese Funktion gibt es hier nicht.');
   if (TARIFE[s.tarif].rang < rang) nein(402, `${NAMEN[f]} gehört zu ${rang === 1 ? 'Pro' : 'Ultra'}.`);
   return s;
 }
@@ -160,10 +186,11 @@ const buchen = (id, usd, test) => { if (!(usd > 0)) return; buchenSql.run(id, mo
 const bezahlt = id => !!db.prepare("select 1 from bestellungen where konto = ? and status = 'bezahlt'").get(id);
 
 function ich(k) {
+  const ecke = !!k.ecke;
   k = kontoMit(k.id);
   const s = stufe(k), budget = s.test ? TEST.budget : TARIFE[s.tarif].budget;
   return {
-    email: k.email, bestaetigt: !!k.bestaetigt, admin: istAdmin(k),
+    email: k.email, bestaetigt: !!k.bestaetigt, admin: istAdmin(k), ecke,
     tarif: s.tarif, bis: s.bis, test: s.test, testFrei: !k.test_bis && !bezahlt(k.id) && s.tarif === 'base',
     genutzt: Math.min(100, Math.round(100 * verbraucht(k.id, s.test) / budget)),
     code: k.code, freunde: db.prepare('select count(*) n from konten where geworben_von = ?').get(k.id).n,
@@ -266,9 +293,10 @@ async function ki(req, res, k) {
   const b = await liesJson(req, 40e6);  // Vortrag: bis 9 MB Ton pro Teil, als base64
   if (!(b.feature in FUNKTIONEN)) nein(400, 'Unbekannte Funktion.');
   const s = darf(k, b.feature);
+  if (b.feature === 'loeser' && !k.ecke) b.messages = [{ role: 'system', content: REGEL }, ...Array.isArray(b.messages) ? b.messages : []];
   if (!MODELLE.has(b.model)) nein(400, 'Dieses Modell gibt es hier nicht.');
   if (!E.LH_OR_KEY) nein(503, 'Die KI ist auf dem Server noch nicht eingerichtet.');
-  if (verbraucht(k.id, s.test) >= (s.test ? TEST.budget : TARIFE[s.tarif].budget))
+  if (!k.ecke && verbraucht(k.id, s.test) >= (s.test ? TEST.budget : TARIFE[s.tarif].budget))
     nein(429, s.test ? 'Das KI-Guthaben des Tests ist aufgebraucht. Mit einem Tarif geht es sofort weiter.'
       : `Dein KI-Kontingent für diesen Monat ist aufgebraucht. Am 1. geht es weiter${s.tarif === 'ultra' || s.tarif === 'ultraplus' ? '' : ', mit einem größeren Tarif sofort'}.`);
   const halt = new AbortController();
@@ -293,21 +321,80 @@ async function ki(req, res, k) {
   res.end();
 }
 
-// Word Power und Löser: Prompts liegen verschlüsselt im App-Repo; der Server kennt die Passphrasen und gibt sie nur mit Tarif heraus
+// Word Power und voller Löser: Prompts liegen verschlüsselt im Datenordner (geschuetzt/, Kopie aus dem privaten Daten-Repo), der Server
+// kennt die Passwörter. Öffentlich gibt er nur das Transkript-Prompt und LOESUNGSWEG heraus, alles andere nur in der Admin-Ecke.
 const PROMPTS = {};
 async function prompts(bereich) {
   if (PROMPTS[bereich]) return PROMPTS[bereich];
   const pass = E['LH_PASS_' + bereich.toUpperCase()];
   if (!pass) nein(503, 'Dieser Bereich ist auf dem Server noch nicht eingerichtet.');
-  const j = JSON.parse(readFileSync(join(APP, 'geschuetzt', bereich + '.json'), 'utf8')), b = s => Buffer.from(s, 'base64');
+  const datei = join(DATEN, 'geschuetzt', bereich + '.json');
+  if (!existsSync(datei)) nein(503, 'Dieser Bereich ist auf dem Server noch nicht eingerichtet.');
+  const j = JSON.parse(readFileSync(datei, 'utf8')), b = s => Buffer.from(s, 'base64');
   const basis = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass.toLowerCase().replace(/[^a-zäöüß0-9]/g, '')), 'PBKDF2', false, ['deriveKey']);
   const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b(j.salt), iterations: j.iter, hash: 'SHA-256' }, basis, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
   return PROMPTS[bereich] = JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b(j.iv) }, key, b(j.daten))));
 }
 
+/* ---------- Admin-Ecke ---------- */
+const wert = (name, vorgabe) => db.prepare('select wert from werte where name = ?').get(name)?.wert ?? vorgabe;
+const wertDazu = db.prepare('insert into werte (name, wert) values (?, ?) on conflict (name) do update set wert = wert + excluded.wert');
+async function orNutzung(hash) {  // Ultra+: was der eigene Schlüssel verbraucht hat, in $ (gesamt und im laufenden Monat)
+  try {
+    const r = await fetch(`${OR}/keys/${hash}`, { headers: { Authorization: 'Bearer ' + E.LH_OR_VERWALTUNG }, signal: AbortSignal.timeout(5000) });
+    const d = r.ok ? (await r.json()).data : null;
+    return d && { gesamt: +d.usage || 0, monat: +(d.usage_monthly ?? (d.limit != null && d.limit_remaining != null ? d.limit - d.limit_remaining : 0)) || 0 };
+  } catch { return null; }
+}
+function dashboard(konten) {  // Kennzahlen, Geld und Verlauf; KI-Kosten in $, mit dem eingestellten Kurs in Cent umgerechnet
+  const t = jetzt(), m = monat(), summe = (sql, ...p) => db.prepare(sql).get(...p).n, n = f => konten.filter(f).length;
+  const zahlend = Object.fromEntries(Object.keys(TARIFE).filter(x => TARIFE[x].preis).map(x => [x, n(z => z.tarif === x && z.bis > t)]));
+  const kurs = wert('kurs', 0.91), fix = Math.round(wert('fixkosten', 0) * 100);  // € pro $ mit OpenRouter-Gebühr; Fixkosten in Cent pro Monat
+  const erst = Math.min(t, ...konten.map(x => x.erstellt)), d0 = new Date(erst), d1 = new Date(t);
+  const laufzeit = (d1.getUTCFullYear() - d0.getUTCFullYear()) * 12 + d1.getUTCMonth() - d0.getUTCMonth() + 1;  // Monate seit dem ersten Konto, angebrochene zählen
+  const einnahmen = (ab, bis = 9e15) => summe("select coalesce(sum(betrag), 0) n from bestellungen where status = 'bezahlt' and bezahlt >= ? and bezahlt < ?", ab, bis);
+  const kiMonat = mm => summe('select coalesce(sum(usd), 0) n from verbrauch where monat = ?', mm) + wert('ki-geloescht:' + mm, 0);
+  const api = { monat: wert('api-geloescht:' + m, 0), gesamt: summe("select coalesce(sum(wert), 0) n from werte where name like 'api-geloescht:%'") };
+  for (const x of konten) if (x.api) { api.monat += x.api.monat; api.gesamt += x.api.gesamt; }
+  const cent = usd => Math.round(usd * kurs * 100);
+  const geld = { kurs, fixkosten: fix / 100, laufzeit, api,
+    einnahmen: { monat: einnahmen(Date.parse(m + '-01T00:00:00Z')), gesamt: einnahmen(0) },
+    rabatte: summe("select coalesce(sum(rabatt), 0) n from bestellungen where status = 'bezahlt'"),
+    ki: { monat: kiMonat(m), gesamt: summe("select coalesce(sum(usd), 0) n from verbrauch where monat != 'test'") + summe("select coalesce(sum(wert), 0) n from werte where name like 'ki-geloescht:%'") } };
+  geld.gewinn = { monat: geld.einnahmen.monat - cent(geld.ki.monat + api.monat) - fix, gesamt: geld.einnahmen.gesamt - cent(geld.ki.gesamt + api.gesamt) - fix * laufzeit };
+  // ponytail: Ultra+-Schlüssel kennt OpenRouter nur für den laufenden Monat und gesamt, frühere Monate im Verlauf ohne sie
+  const verlauf = Array.from({ length: 6 }, (_, i) => {
+    const a = Date.UTC(d1.getUTCFullYear(), d1.getUTCMonth() - 5 + i, 1), b = Date.UTC(d1.getUTCFullYear(), d1.getUTCMonth() - 4 + i, 1), mm = new Date(a).toISOString().slice(0, 7);
+    const ein = einnahmen(a, b), ki = kiMonat(mm) + (mm === m ? api.monat : 0);
+    return { monat: mm, neu: summe('select count(*) n from konten where erstellt >= ? and erstellt < ?', a, b), einnahmen: ein, kiUsd: ki, gewinn: ein - cent(ki) - (b > erst ? fix : 0) };
+  });
+  return {
+    kennzahlen: { konten: konten.length, bestaetigt: n(x => x.bestaetigt), neu7: n(x => x.erstellt > t - 7 * TAG), neu30: n(x => x.erstellt > t - 30 * TAG),
+      aktiv7: n(x => x.zuletzt > t - 7 * TAG), aktiv30: n(x => x.zuletzt > t - 30 * TAG), imTest: n(x => x.test_bis > t), testGenutzt: n(x => x.test_bis > 0),
+      kunden: n(x => x.bezahlt > 0), zahlend, mrr: Object.entries(zahlend).reduce((s, [x, z]) => s + z * TARIFE[x].preis, 0) },
+    geld, verlauf,
+    freunde: { geworben: n(x => x.werber), zahlend: n(x => x.werber && x.bezahlt > 0),
+      offen: summe('select count(*) n from gutscheine where eingeloest is null'), eingeloest: summe('select count(*) n from gutscheine where eingeloest is not null') },
+  };
+}
+// Vertragsbestätigung mit Widerrufsbelehrung auf dauerhaftem Datenträger (§ 7 Abs. 3 FAGG), gleich bei der Bestellung
+function bestellMail(k, T, monate, betrag, zweck) {
+  const anbieter = [E.LH_EMPFAENGER, E.LH_ABSENDER].filter(Boolean).join(', ') || 'Lernhelfer', am = new Date().toLocaleDateString('de-AT');
+  return `Hallo,\n\ndanke für deine Bestellung. Das ist deine Vertragsbestätigung, bitte aufheben.\n\n`
+    + `Tarif: ${T.name}, ${monate} ${monate === 1 ? 'Monat' : 'Monate'}\nPreis: ${eur(betrag)} einmalig im Voraus, Endpreis (Kleinunternehmer, ohne Umsatzsteuer), kein Abo\n`
+    + `Verwendungszweck: ${zweck}\nBestellt am ${am} mit dem Konto ${k.email}\nAnbieter: ${anbieter}\n\n`
+    + `Der Tarif startet, sobald deine Zahlung da ist, und endet nach der Laufzeit von selbst. Zahlungsdaten: ${BASIS}/#/upgrade · AGB und Datenschutz: ${BASIS}/#/recht\n\n`
+    + `Du hast verlangt, dass der Tarif gleich nach Zahlungseingang startet, und bestätigt, dass du weißt: Bei einem Widerruf zahlst du für die schon genutzte Zeit, und dein Widerrufsrecht erlischt, sobald der Vertrag vollständig erfüllt ist.\n\n`
+    + `WIDERRUFSBELEHRUNG\nDu kannst diesen Vertrag binnen 14 Tagen ohne Angabe von Gründen widerrufen. Die Frist beginnt mit dem Tag des Vertragsabschlusses, also mit deiner Bestellung. `
+    + `Um zu widerrufen, schick uns (${anbieter}) eine eindeutige Erklärung, am einfachsten als Antwort auf diese Mail. Du kannst dafür das Muster unten verwenden, musst aber nicht. Es reicht, wenn du den Widerruf vor Ablauf der Frist absendest.\n`
+    + `Folgen des Widerrufs: Wir zahlen dir alles, was du für diesen Vertrag gezahlt hast, unverzüglich und spätestens binnen 14 Tagen ab Eingang deines Widerrufs zurück, auf demselben Weg, auf dem du gezahlt hast, ohne Gebühren. `
+    + `Hat der Tarif auf deinen Wunsch schon während der Widerrufsfrist begonnen, zahlst du einen Betrag, der dem Anteil der bis zum Widerruf genutzten Zeit an der ganzen Laufzeit entspricht.\n\n`
+    + `MUSTER-WIDERRUFSFORMULAR\nAn ${anbieter}: Hiermit widerrufe ich den von mir abgeschlossenen Vertrag über ${T.name} (Bestellung ${zweck}), bestellt am ${am}. Name, E-Mail-Adresse des Kontos, Datum.` + gruss;
+}
+
 /* ---------- Routen ---------- */
 const ROUTEN = {
-  'GET /api/tarife': () => ({ tarife: TARIFE, test: TEST, monate: MONATE, funktionen: FUNKTIONEN,
+  'GET /api/tarife': () => ({ tarife: TARIFE, test: TEST, monate: MONATE, funktionen: Object.fromEntries(Object.entries(FUNKTIONEN).filter(([, r]) => r <= 2)),
     zahlung: { empfaenger: E.LH_EMPFAENGER || '', iban: E.LH_IBAN || '', bic: E.LH_BIC || '', paypal: E.LH_PAYPAL || '' } }),
   'GET /api/recht': () => ({ text: existsSync(join(DATEN, 'recht.md')) ? readFileSync(join(DATEN, 'recht.md'), 'utf8') : '' }),
   'GET /api/ich': ({ k }) => ich(muss(k)),
@@ -334,7 +421,10 @@ const ROUTEN = {
     anmelden(res, k.id);
     return ich(k);
   },
-  'POST /api/abmelden': ({ req, res }) => { db.prepare('delete from marken where hash = ?').run(sha256(sitzung(req) || '')); abmelden(res); },
+  'POST /api/abmelden': ({ req, res }) => {
+    for (const x of [sitzung(req), keks(req, 'lhe')]) db.prepare('delete from marken where hash = ?').run(sha256(x || ''));
+    abmelden(res);
+  },
   'POST /api/bestaetigen': ({ req, b }) => { bremse(req, 60); db.prepare('update konten set bestaetigt = 1 where id = ?').run(einloesen(b.token, 'bestaetigen')); },
   'POST /api/bestaetigung-senden': async ({ req, k }) => { muss(k); bremse(req, 3, k.email); if (!k.bestaetigt) await bestaetigungSenden(k.id, k.email); },
   'POST /api/passwort-vergessen': async ({ req, b }) => {
@@ -347,7 +437,7 @@ const ROUTEN = {
     bremse(req, 60);
     const pw = passwortPruefen(String(b.passwort || '')), id = einloesen(b.token, 'passwort');
     db.prepare('update konten set pw = ?, bestaetigt = 1 where id = ?').run(pwHash(pw), id);  // der Link kam per Mail: Adresse damit bestätigt
-    db.prepare("delete from marken where konto = ? and art = 'sitzung'").run(id);  // überall abmelden
+    db.prepare("delete from marken where konto = ? and art in ('sitzung', 'ecke')").run(id);  // überall abmelden
     anmelden(res, id);
     return ich({ id });
   },
@@ -359,7 +449,7 @@ const ROUTEN = {
     db.prepare('update konten set test_bis = ? where id = ?').run(jetzt() + TEST.stunden * 3600e3, k.id);
     return ich(k);
   },
-  'POST /api/bestellen': ({ k, b }) => {
+  'POST /api/bestellen': async ({ k, b }) => {
     muss(k);
     const T = TARIFE[b.tarif], monate = Number(b.monate);
     if (!T?.preis || !MONATE.includes(monate)) nein(400, 'Tarif oder Laufzeit fehlt.');
@@ -370,6 +460,7 @@ const ROUTEN = {
     let zweck; do zweck = 'LH-' + code(6); while (db.prepare('select 1 from bestellungen where zweck = ?').get(zweck));
     db.prepare("insert into bestellungen (konto, email, tarif, monate, betrag, rabatt, gutschein, zweck, status, erstellt) values (?, ?, ?, ?, ?, ?, ?, ?, 'offen', ?)")
       .run(k.id, k.email, b.tarif, monate, T.preis * monate - rabatt, rabatt, gutschein, zweck, jetzt());
+    await mail(k.email, `Lernhelfer: Deine Bestellung ${zweck}`, bestellMail(k, T, monate, T.preis * monate - rabatt, zweck));
     return ich(k);
   },
   'POST /api/storno': ({ k }) => { muss(k); db.prepare("update bestellungen set status = 'storniert' where konto = ? and status = 'offen'").run(k.id); return ich(k); },
@@ -389,26 +480,63 @@ const ROUTEN = {
   'POST /api/konto-loeschen': async ({ k, b, res }) => {
     muss(k);
     if (!pwOk(String(b.passwort || ''), k.pw)) nein(403, 'Das Passwort stimmt nicht.');
-    if (k.or_hash && E.LH_OR_VERWALTUNG) await orSchluessel('/' + k.or_hash, 'DELETE').catch(e => console.error(e.message));
+    // Kosten bleiben in der Bilanz der Admin-Ecke, ohne Bezug zur Person
+    db.prepare("insert into werte (name, wert) select 'ki-geloescht:' || monat, usd from verbrauch where konto = ? and monat != 'test' on conflict (name) do update set wert = wert + excluded.wert").run(k.id);
+    if (k.or_hash && E.LH_OR_VERWALTUNG) {
+      const u = await orNutzung(k.or_hash);
+      if (u) wertDazu.run('api-geloescht:' + monat(), u.gesamt);  // ponytail: ganzer Verbrauch des Schlüssels im Löschmonat gebucht
+      await orSchluessel('/' + k.or_hash, 'DELETE').catch(e => console.error(e.message));
+    }
     db.prepare('delete from konten where id = ?').run(k.id);  // Speicher, Sitzungen, Verbrauch gehen mit; Bestellungen bleiben für die Buchhaltung
     abmelden(res);
   },
   'GET /api/geschuetzt/wordpower': async ({ k }) => {
-    const s = darf(muss(k), 'wp-transkript'), p = await prompts('wordpower');
-    return TARIFE[s.tarif].rang >= FUNKTIONEN['wp-text'] ? p : { transcribe: p.transcribe };
+    darf(muss(k), 'wp-transkript');
+    const p = await prompts('wordpower');
+    return k.ecke ? p : { transcribe: p.transcribe };  // für alle anderen nur das Transkript
   },
-  'GET /api/geschuetzt/onlinetest': async ({ k }) => { darf(muss(k), 'loeser'); return prompts('onlinetest'); },
+  'GET /api/geschuetzt/onlinetest': async ({ k }) => { darf(muss(k), 'loeser'); return k.ecke ? prompts('onlinetest') : { system: LOESUNGSWEG }; },
 
-  'GET /api/admin': ({ k }) => {
+  'POST /api/ecke': ({ req, res, k, b }) => {  // nur das Admin-Konto, dazu das Passwort der Ecke; 5 Versuche je 15 Minuten
+    if (!istAdmin(muss(k))) nein(404, 'Gibt es nicht.');
+    if (!E.LH_ECKE) nein(503, 'Die Admin-Ecke ist auf dem Server noch nicht eingerichtet (LH_ECKE).');
+    bremse(req, 5, k.email);
+    const h = s => createHash('sha256').update(String(s)).digest();
+    if (!timingSafeEqual(h(b.passwort || ''), h(E.LH_ECKE))) nein(403, 'Das Passwort stimmt nicht.');
+    keksSetzen(res, 'lhe', marke(k.id, 'ecke', 12 * 3600e3), 12 * 3600, 'Strict');
+    return ich({ id: k.id, ecke: true });
+  },
+  'POST /api/ecke-zu': ({ req, res, k }) => {
+    muss(k);
+    db.prepare('delete from marken where hash = ?').run(sha256(keks(req, 'lhe') || ''));
+    keksSetzen(res, 'lhe', '', 0, 'Strict');
+    return ich({ id: k.id });
+  },
+
+  'GET /api/admin': async ({ k }) => {
     admin(k);
-    const m = monat();
+    const konten = db.prepare(`select k.id, k.email, k.erstellt, k.bestaetigt, k.tarif, k.bis, k.test_bis, k.zuletzt, k.or_hash, w.email werber,
+        coalesce((select usd from verbrauch where konto = k.id and monat = ?), 0) ki_monat,
+        coalesce((select sum(usd) from verbrauch where konto = k.id and monat != 'test'), 0) ki_gesamt,
+        (select count(*) from konten g where g.geworben_von = k.id) geworben,
+        (select count(*) from konten g where g.geworben_von = k.id and exists (select 1 from bestellungen b where b.konto = g.id and b.status = 'bezahlt')) geworben_zahlend,
+        coalesce((select sum(betrag) from bestellungen b where b.konto = k.id and b.status = 'bezahlt'), 0) bezahlt,
+        coalesce((select sum(length(inhalt)) from dateien where konto = k.id), 0) speicher
+      from konten k left join konten w on w.id = k.geworben_von order by k.id desc`).all(monat());
+    await Promise.all(konten.map(async x => { x.api = x.or_hash && E.LH_OR_VERWALTUNG ? await orNutzung(x.or_hash) : null; delete x.or_hash; }));
     return {
+      ...dashboard(konten), konten,
       bestellungen: db.prepare("select id, email, tarif, monate, betrag, rabatt, zweck, status, erstellt, gemeldet, bezahlt from bestellungen where status in ('offen', 'gemeldet') or bezahlt > ? order by id desc").all(jetzt() - 60 * TAG),
-      konten: db.prepare(`select k.id, k.email, k.erstellt, k.bestaetigt, k.tarif, k.bis, k.test_bis, coalesce(v.usd, 0) usd, w.email werber
-        from konten k left join verbrauch v on v.konto = k.id and v.monat = ? left join konten w on w.id = k.geworben_von order by k.id desc limit 500`).all(m),
-      monat: { einnahmen: db.prepare("select coalesce(sum(betrag), 0) n from bestellungen where status = 'bezahlt' and bezahlt >= ?").get(Date.parse(m + '-01T00:00:00Z')).n,
-        kiUsd: db.prepare('select coalesce(sum(usd), 0) n from verbrauch where monat = ?').get(m).n },
     };
+  },
+  'POST /api/admin/werte': ({ k, b }) => {  // Fixkosten pro Monat in € und was 1 $ KI in € kostet
+    admin(k);
+    for (const name of ['fixkosten', 'kurs']) {
+      if (b[name] == null || b[name] === '') continue;
+      const x = Number(String(b[name]).replace(',', '.'));
+      if (!(x >= 0 && x < 1e5)) nein(400, 'Bitte eine Zahl eingeben, etwa 4,90.');
+      db.prepare('insert into werte (name, wert) values (?, ?) on conflict (name) do update set wert = excluded.wert').run(name, x);
+    }
   },
   'POST /api/admin/bezahlt': ({ k, b }) => { admin(k); return freischalten(Number(b.id)); },
   'POST /api/admin/storno': ({ k, b }) => { admin(k); db.prepare("update bestellungen set status = 'storniert' where id = ? and status in ('offen', 'gemeldet')").run(Number(b.id)); },
@@ -420,7 +548,7 @@ const ROUTEN = {
     await apiAbgleich(z).catch(e => console.error(e.message));
   },
 };
-const admin = k => { if (!istAdmin(muss(k))) nein(403, 'Nur für die Verwaltung.'); };
+const admin = k => { if (!istAdmin(muss(k)) || !k.ecke) nein(403, 'Nur in der Admin-Ecke.'); };
 
 /* ---------- Dateien der App (nur diese, nie den Rest des Ordners) ---------- */
 const DATEIEN = {
