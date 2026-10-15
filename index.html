@@ -3835,7 +3835,7 @@ async function abgleichHolen() {  // abgleich.json schreibt der PC: wann zuletzt
 let STIL_FORM = null;
 function stilZeigen() {
   const ort = $('stil-teil');
-  if (SERVER && !ICH) return ort.replaceChildren();
+  if (!fertig()) { STIL_FORM = null; return ort.replaceChildren(); }  // erst nach dem Einrichten bzw. Anmelden gibt es einen Speicher
   ort.replaceChildren(darf('stil') ? STIL_FORM ??= stilForm() : sperrkarte('stil', true));
 }
 function stilForm() {
