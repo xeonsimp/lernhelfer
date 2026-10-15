@@ -39,7 +39,7 @@ Kennt den Terminplan jedes Fachs (aus dem Syllabus) und die tatsächlich hochgel
 
 ## Evidence on Hand
 
-Echte Fächer und Unterlagen aus OLAT im privaten Repo `xeonsimp/lernhelfer-daten` (faecher/*.json). Keine erfundenen Termine oder Inhalte: alles kommt aus den Unterlagen.
+Echte Fächer und Unterlagen aus OLAT im privaten Repo `xnik243/lernhelfer-daten` (faecher/*.json). Keine erfundenen Termine oder Inhalte: alles kommt aus den Unterlagen.
 
 ## Product Principles
 

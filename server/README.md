@@ -23,7 +23,7 @@ sudo ufw allow OpenSSH && sudo ufw allow 80 && sudo ufw allow 443 && sudo ufw en
 
 # App und Datenordner
 sudo useradd --system --home /var/lib/lernhelfer --create-home lernhelfer
-sudo git clone https://github.com/xeonsimp/lernhelfer /opt/lernhelfer
+sudo git clone https://github.com/xnik243/lernhelfer /opt/lernhelfer
 ```
 
 `/etc/lernhelfer.env` anlegen (`sudo nano /etc/lernhelfer.env`, danach `sudo chmod 600 /etc/lernhelfer.env`):
