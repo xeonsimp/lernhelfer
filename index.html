@@ -192,7 +192,7 @@
   /* Heute */
   .heute-raster { display: grid; gap: 32px; }
   .heute-spalte { display: contents; }
-  #naechstes { order: 1; } .h-woche { order: 2; } .h-faecher { order: 3; } .h-chat { order: 4; }
+  #naechstes { order: 1; } .h-woche, .h-noten { order: 2; } .h-faecher { order: 3; } .h-chat { order: 4; }
   @media (min-width: 1100px) {
     .heute-raster { grid-template-columns: minmax(0, 1fr) minmax(320px, 380px); gap: 40px; align-items: start; }
     .heute-spalte { display: grid; gap: 36px; min-width: 0; }
@@ -676,6 +676,65 @@
   .werte-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; margin-top: 14px; }
   .werte-form label { display: grid; gap: 4px; color: var(--text-2); font-size: 0.875rem; font-weight: 600; }
   .werte-form input { width: 8em; }
+
+  /* Ultra-Fassung: Kennzeichen in der Kopfzeile; unter Ultra am Ende der Zusammenfassung, was Ultra hier noch geschrieben hätte */
+  .fassung { color: var(--akzent-text); font-weight: 650; }
+  .ultra-werbung { display: grid; justify-items: start; gap: 10px; margin-top: 32px; padding: 22px; border: 1px solid var(--akzent); border-radius: var(--r-l); background: var(--akzent-flaeche); }
+  .ultra-werbung h3 { margin: 0; font: 700 1.25rem/1.3 var(--sans); letter-spacing: -0.01em; }
+  .ultra-werbung .klein, .ultra-werbung .knopfreihe { margin: 0; }
+  .ultra-werbung .uw-zeile { margin: 4px 0 0; font: 650 0.875rem/1.4 var(--sans); }
+  .uw-formeln { width: 100%; padding: 4px 16px; border-radius: var(--r); background: var(--bg); font-size: 1rem; }
+  .uw-formeln p { margin: 0; }
+  .uw-liste { display: grid; gap: 7px; margin: 2px 0 4px; padding: 0; list-style: none; color: var(--text); font-size: 0.875rem; line-height: 1.45; }
+  .uw-liste li { position: relative; padding-left: 22px; }
+  .uw-liste li::before { content: ""; position: absolute; left: 0; top: 2px; width: 15px; height: 15px; background: var(--akzent); -webkit-mask: var(--haken) center / contain no-repeat; mask: var(--haken) center / contain no-repeat; }
+
+  /* Noten: Verlauf als Linie je Lehrveranstaltung in ihrer Fachfarbe, dazu die laufende Gesamtlinie in Textfarbe */
+  .noten { max-width: 980px; }
+  .noten .teil { margin-top: 36px; }
+  .noten .kacheln { margin-top: 20px; }
+  .notenbild { display: block; width: 100%; height: auto; overflow: visible; }
+  .notenbild .achse { stroke: var(--linie); }
+  .notenbild .grenze { stroke: var(--linie-2); stroke-dasharray: 4 4; }
+  .notenbild text { fill: var(--text-3); font: 500 11px var(--sans); font-variant-numeric: tabular-nums; }
+  .notenbild .nl { color: var(--fach, var(--text-3)); }
+  .notenbild .nl polyline { fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; opacity: 0.6; }
+  .notenbild .nl circle { fill: currentColor; stroke: var(--bg); stroke-width: 1.5; }
+  .notenbild .gesamt { fill: none; stroke: var(--text); stroke-width: 2.5; stroke-linejoin: round; }
+  .notenbild .kurs { fill: var(--bg); stroke: var(--text-3); stroke-width: 1.5; }
+  .legende { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 10px 0 0; padding: 0; list-style: none; color: var(--text-2); font-size: 0.8125rem; }
+  .legende li { display: inline-flex; align-items: center; gap: 7px; }
+  .legende i { width: 14px; height: 3px; border-radius: 2px; background: var(--fach, var(--text-3)); }
+  .legende i.ges { height: 4px; background: var(--text); }
+  .legende i.kurs { width: 9px; height: 9px; border: 1.5px solid var(--text-3); border-radius: 50%; background: none; }
+  .lv-karten { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 12px; }
+  .lv-karte { display: grid; gap: 8px; align-content: start; padding: 16px 18px; border: 1px solid var(--linie); border-top: 3px solid var(--fach, var(--linie-2)); border-radius: var(--r-l); }
+  .lv-kopf { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .lv-kopf h3 { margin: 0; font: 650 1rem/1.3 var(--sans); overflow-wrap: anywhere; }
+  .note-gross { font: 750 1.75rem/1 var(--sans); font-variant-numeric: tabular-nums; }
+  .lv-karte ul { display: grid; gap: 4px; margin: 0; padding-left: 1.1em; color: var(--text-2); font-size: 0.875rem; }
+  .lv-karte .klein, .lv-karte .meta { margin: 0; }
+  .lv-karte summary { color: var(--akzent-text); font-size: 0.875rem; font-weight: 600; cursor: pointer; }
+  .lv-einst { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); align-items: end; gap: 8px; margin-top: 10px; }
+  .lv-einst label { display: grid; gap: 4px; color: var(--text-2); font-size: 0.8125rem; font-weight: 600; }
+  .lv-einst .knopfreihe { grid-column: 1 / -1; margin-top: 4px; }
+  .vergleich { display: grid; gap: 14px; }
+  .vg-zeile { display: grid; grid-template-columns: minmax(0, 10em) minmax(0, 1fr); gap: 4px 14px; align-items: center; font-size: 0.875rem; font-weight: 600; }
+  .vg-balken { display: grid; gap: 3px; }
+  .vg-balken i { display: block; height: 9px; border-radius: 5px; background: var(--fach, var(--text)); }
+  .vg-balken i.kurs { background: var(--linie-2); }
+  .vg-zeile .meta { grid-column: 2; font-weight: 400; }
+  .noten-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr)); gap: 0 12px; }
+  .noten-form .feld { margin-top: 12px; }
+  .noten .tabelle td { white-space: nowrap; }
+  .noten .tabelle td:nth-child(3) { white-space: normal; min-width: 10em; }
+  .noten .tabelle .pille { margin-left: 6px; }
+  .noten-kurz li { display: grid; grid-template-columns: minmax(0, 1fr) auto 3.5ch; gap: 12px; align-items: baseline; padding: 10px 16px; }
+  .noten-kurz .lv { font-weight: 600; overflow-wrap: anywhere; }
+  .noten-kurz .lv::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 8px; border-radius: 3px; background: var(--fach, var(--linie-2)); }
+  .noten-kurz b { font-size: 1.0625rem; text-align: right; font-variant-numeric: tabular-nums; }
+  .noten-kurz .schnitt { background: var(--bg-2); }
+  .noten-kurz .schnitt .lv::before { visibility: hidden; }
 </style>
 </head>
 <body>
@@ -691,6 +750,7 @@
       <p class="gruppe mit-daten">Werkzeuge</p>
       <a href="#/kalender" data-ansicht="kalender" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Kalender</a>
       <a href="#/onlinetests" data-ansicht="onlinetests" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4.5" width="14" height="16" rx="2.5"/><path d="M9.5 3.5h5M9 12.5l2 2 4-4"/></svg>Onlinetests</a>
+      <a href="#/noten" data-ansicht="noten" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><path d="M7 16.5v-4M12 16.5v-9M17 16.5v-6"/></svg>Noten</a>
       <a href="#/wordpower" data-ansicht="wordpower" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a1 1 0 0 1 1 1v9.5a1 1 0 0 1-1 1h-8L7 20v-3.5H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg><span translate="no">Word Power</span></a>
       <a href="#/vortrag" data-ansicht="vortrag" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5M8.5 20.5h7"/></svg>Vortrag</a>
       <a href="#/upgrade" data-ansicht="upgrade" class="nur-server mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>Tarife</a>
@@ -735,6 +795,10 @@
           <section aria-labelledby="t-kopf" class="h-woche">
             <div class="block-kopf"><h2 id="t-kopf">Diese Woche</h2><a href="#/kalender" class="meta">Ganzer Kalender</a></div>
             <div class="woche-feld" id="tage"></div>
+          </section>
+          <section aria-labelledby="no-kopf" class="h-noten" id="h-noten" hidden>
+            <div class="block-kopf"><h2 id="no-kopf">Noten</h2><a href="#/noten" class="meta">Zum Notentracker</a></div>
+            <div id="h-noten-inhalt"></div>
           </section>
         </div>
       </div>
@@ -802,6 +866,8 @@
     </section>
 
     <section id="onlinetests" hidden class="werkstatt"></section>
+
+    <section id="noten" hidden class="werkstatt noten"></section>
 
     <section id="gesperrt" hidden class="werkstatt"></section>
 
@@ -919,11 +985,12 @@
         <h2 id="a-woche">Jede Woche</h2>
         <ol>
           <li>Unter <b>Heute</b> (oder links in der Seitenleiste) ein Fach antippen.</li>
-          <li>Sind neue Folien da (der PC holt sie von selbst), tippe auf <b>Neu erstellen</b>. Die Ausgabe ist nach zwei bis vier Minuten fertig, der Fortschritt läuft mit. Die App muss dabei offen bleiben, der Bildschirm bleibt von selbst an. Mit „Alle Fächer neu erstellen“ geht es für alle Fächer auf einmal.</li>
+          <li>Sind neue Folien da (der PC holt sie von selbst), tippe auf <b>Neu erstellen</b>. Die Ausgabe ist nach zwei bis vier Minuten fertig, die Ultra-Fassung nach vier bis sechs, der Fortschritt läuft mit. Die App muss dabei offen bleiben, der Bildschirm bleibt von selbst an. Mit „Alle Fächer neu erstellen“ geht es für alle Fächer auf einmal.</li>
           <li>Lesen, Übungsaufgaben erst selbst rechnen und dann aufdecken, Begriffe im Lexikon abfragen. Was unklar bleibt, bei „Fragen“ stellen. Die Leiste oben in der Ausgabe springt zu jedem Teil.</li>
         </ol>
         <p>Ältere Ausgaben bleiben unter „Frühere Ausgaben“ erhalten. Welches Modell schreibt, stellst du unter <span class="nur-eigen">Einrichten</span><span class="nur-server">Konto</span> ein.<span class="nur-server"> In Base schreibt immer DeepSeek V4.1, ab Pro wählst du selbst.</span></p>
         <p class="nur-server">Für Word Power gibt es in jedem Tarif die Vorlage: Du gibst deine Word Partnerships ein und bekommst das Journal mit allen Feldern zum Ausfüllen und der Progress-Tabelle, als Datei für Word. Ab Pro schreibt Gemini dazu jeden YouTube-Talk mit Zeitstempeln mit.</p>
+        <p>Die <b>Ultra-Fassung</b><span class="nur-server"> (in Ultra)</span> ist mehr als doppelt so ausführlich: Jeder Gedanke der Folien wird erklärt, mit Beispiel, typischen Fehlern und Merksatz. Dazu kommt der Teil „Formeln Schritt für Schritt“: jede Formel in anderen Schreibweisen, nach jeder Größe umgestellt, eine Umformung pro Zeile, mit Zahlenbeispiel. Außerdem 8 bis 12 Übungsaufgaben mit jedem Rechenschritt und bis zu 35 Begriffe.</p>
 
         <h2 id="a-termine">Termine und Kalender</h2>
         <ul>
@@ -943,6 +1010,16 @@
         <p class="nur-server"><b>Lösungswege</b> (Ultra) zeigt die Fragen eines Tests einzeln, mit Formeln wie in OLAT. Zu jeder Frage stellt der Lernhelfer eine gleichartige Übungsaufgabe mit anderen Zahlen, rechnet sie mit Rechenweg zum Aufklappen vor und erklärt jeden Schritt. Die Originalaufgabe löst du damit selbst: Ergebnisse dafür nennt er nicht, und er schreibt nichts nach OLAT. Welche Hilfsmittel bei einem Test erlaubt sind, legt jede Lehrveranstaltung fest, meist im Syllabus.</p>
         <p class="nur-eigen"><b>Der Löser</b> zeigt die Fragen eines Tests einzeln, mit Formeln wie in OLAT. Bei jeder Frage „Lösen lassen“ tippen: Du bekommst das Ergebnis so, wie es in OLAT eingetragen wird, und den Rechenweg zum Aufklappen. Bei „Rückfrage“ fragst du nach, was unklar ist. Mit „Weiter“ und „Zurück“ gehst du durch die Fragen; Lösungen und Rückfragen bleiben gespeichert. Gedacht ist er zum Vergleichen: erst selbst lösen, dann mit dem Löser prüfen, dann selbst in OLAT eintragen. Der Löser schreibt nichts nach OLAT. Ob KI bei einem Test erlaubt ist, legt jede Lehrveranstaltung selbst fest, meist im Syllabus.</p>
         <p class="nur-eigen">Löser und <a href="#/wordpower">Word Power</a> (Englisch-Hausaufgaben) sind privat und haben je ein eigenes Passwort. Ihre Prompts liegen verschlüsselt im privaten Daten-Repo. Groß- und Kleinschreibung ist egal.</p>
+
+        <h2 id="a-noten">Noten</h2>
+        <p>Unter <a href="#/noten">Noten</a><span class="nur-server"> (ab Pro)</span> stehen alle deine Punkte an einem Ort. Erledigte bewertete Onlinetests kommen mit dem Abgleich von selbst dazu, alles andere (Zwischentests, Klausuren, Abgaben) trägst du ein. Du siehst:</p>
+        <ul>
+          <li>deinen Verlauf als Diagramm, je Lehrveranstaltung und insgesamt;</li>
+          <li>je Lehrveranstaltung, auf welche Note du gerade zusteuerst, und mit den Gesamtpunkten aus dem Syllabus, was dir für jede Note noch fehlt;</li>
+          <li>wo du im Vergleich zum Kursschnitt stehst, wenn du ihn dazuschreibst;</li>
+          <li>deinen Notenschnitt, nach ECTS gewichtet, sobald du sie einträgst.</li>
+        </ul>
+        <p>Notenschlüssel und Gesamtpunkte stehen in der Wochenausgabe unter Stammdaten, Leistungsbeurteilung. Ohne eigenen Schlüssel rechnet der Tracker mit ab 50 % Note 4, ab 62,5 % Note 3, ab 75 % Note 2 und ab 87,5 % Note 1. Die Prognose rechnet nur mit deinen Einträgen, sie ist keine offizielle Note.</p>
 
         <h2 id="a-vortrag">Vortrag analysieren</h2>
         <p>Unter <a href="#/vortrag">Vortrag</a> bekommst du Rückmeldung zu einer Präsentation, etwa vor dem PS oder für Englisch. Video oder Tonaufnahme wählen, optional Anlass und Vorgaben dazuschreiben (Zeitvorgabe, Bewertungskriterien), auf „Analysieren“ tippen. Nach etwa 2 bis 5 Minuten bekommst du:</p>
@@ -1036,7 +1113,28 @@ const HEUTE = iso(heute);
 const TAG = heute.toLocaleDateString('de-AT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 const UHR = heute.toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit' });
 
-const auftrag = (fach, tag, d = HEUTE) => `Du bist Tutor:in für Studierende im 1. Semester Wirtschaftswissenschaften an der Universität Innsbruck.
+// Ultra-Fassung: hängt am Auftrag und geht weiter (gemessen mit Luna: gut doppelt so lang, 4–5½ Minuten, rund 3 Cent)
+const ULTRA = `ULTRA-FASSUNG. Diese Ausgabe ist die ausführliche Ultra-Fassung für Studierende, die den Stoff von Grund auf verstehen wollen. Sie geht deutlich weiter als die normale Fassung. Abweichend von oben gilt:
+
+1. Zusammenfassung der letzten Einheit: mindestens doppelt so ausführlich. Jeder Gedanke der Folien wird erklärt, nicht nur genannt: was er bedeutet, warum er gilt, wie er mit dem Vorigen zusammenhängt, dazu ein Zahlen- oder Alltagsbeispiel. Jeder ###-Teil endet mit **Typische Fehler:** und **Merke:** in je 1–3 Stichpunkten. Wo Stoff früherer Einheiten gebraucht wird, wiederhole ihn kurz.
+
+2. Direkt nach der Zusammenfassung kommt dieser zusätzliche Abschnitt:
+
+## Formeln Schritt für Schritt
+Für jede Formel der letzten Einheit (und jede frühere, die sie braucht) ein ###-Teil mit dem Namen der Formel, darin:
+- die Formel abgesetzt, darunter was jedes Zeichen bedeutet (mit Einheit, wo es eine gibt);
+- **Andere Schreibweisen:** dieselbe Aussage in anderer Form, etwa als Bruch und als Produkt, mit Δ, in Prozent, als Ableitung, in Worten, und wie Folien und Lehrbücher sie sonst schreiben;
+- **Umstellen:** nach jeder Größe, die in einer Aufgabe gesucht sein kann, Schritt für Schritt: eine Umformung pro Zeile in einem abgesetzten Block \\[\\begin{aligned} … \\end{aligned}\\], rechts neben jeder Zeile der Rechenschritt, etwa \\(\\quad \\mid \\cdot (1+i)\\);
+- **Zahlenbeispiel:** einmal vollständig mit Zahlen durchgerechnet;
+- **Typische Fehler:** 1–3 Stichpunkte.
+Hat die Einheit keine Formeln (etwa in Englisch oder in rein begrifflichen Einheiten), nimm stattdessen die zentralen Modelle, Schemata oder Regeln der Einheit und erkläre sie genauso gründlich Schritt für Schritt an Beispielen.
+
+3. Übungsaufgaben: 8–12 Aufgaben. Jede Lösung zeigt jeden Rechenschritt in einer eigenen Zeile mit kurzer Begründung; gibt es einen zweiten sinnvollen Lösungsweg, steht er danach unter **Anderer Weg:**.
+
+4. In "begriffe" 20–35 Einträge, jede Definition 2–3 Sätze mit einem kurzen Beispiel.
+
+Erklär wie eine geduldige Tutorin oder ein geduldiger Tutor, weiterhin ohne Ich-Form. Die Regeln zu laufenden Onlinetests und zu den Stammdaten gelten unverändert.`;
+const auftrag = (fach, tag, d = HEUTE, tief = false) => `Du bist Tutor:in für Studierende im 1. Semester Wirtschaftswissenschaften an der Universität Innsbruck.
 ${d === HEUTE ? `Heute ist ${tag}, ${UHR} Uhr (${HEUTE})` : `Dies ist eine nachträgliche Ausgabe zum Stichtag ${datum(d, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} abends (${d}). Schreib sie so, als wäre heute dieser Tag: die letzte Einheit ist die bis zu diesem Tag, „als Nächstes“ heißt nach diesem Tag. Unterlagen, Tests und Folien, die erst danach dazukamen, ignorierst du`}. Fach: ${fach}.
 Unten stehen ALLE Unterlagen, die in OLAT für dieses Fach liegen: Vorlesungsfolien, Proseminar-Unterlagen, Syllabus und Tests (TEST). Bei den Tests sind das die Startseiten der Onlinetests mit Thema, Bearbeitungszeitraum und Bewertung, nach Ablauf auch mit den Fragen, der eigenen Antwort in [eckigen Klammern] und der Lösung; die Fragen laufender Onlinetests, gelesen während der Bearbeitungszeit, mit „Max. … Punkt“ im Kopf jeder Frage; und die Fragen der unbewerteten Selbsttests.
 
@@ -1093,7 +1191,7 @@ In "termine" stehen alle Termine der nächsten 21 Tage ab heute (Vorlesungen, Pr
 
 Formeln setzt du in LaTeX: im Fließtext zwischen \\( und \\), abgesetzt zwischen \\[ und \\]. In den JSON-Feldern stehen keine LaTeX-Formeln, sondern einfache Schreibweise wie x², a/b oder √x.
 
-Schreib sachlich wie eine Zeitung, ohne Ich-Form und ohne Bemerkungen über dich selbst. Stütze dich nur auf die Unterlagen. Steht etwas nicht darin oder ist der Terminplan unklar, schreib das ehrlich, statt zu raten.`;
+Schreib sachlich wie eine Zeitung, ohne Ich-Form und ohne Bemerkungen über dich selbst. Stütze dich nur auf die Unterlagen. Steht etwas nicht darin oder ist der Terminplan unklar, schreib das ehrlich, statt zu raten.${tief ? '\n\n' + ULTRA : ''}`;
 
 const $ = id => document.getElementById(id);
 const merk = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch { return null; } };
@@ -1119,6 +1217,9 @@ const markdown = (knoten, s, inline) => {
   knoten.innerHTML = DOMPurify.sanitize(html);
   return knoten;
 };
+const tabelle = (kopf, zeilen) => el('div', { class: 'tabelle-rahmen' }, el('table', { class: 'tabelle' },
+  el('thead', {}, el('tr', {}, kopf.map(k => el('th', {}, k)))), el('tbody', {}, zeilen.map(z => el('tr', {}, z.map(x => el('td', {}, x)))))));
+const kachel = (titel, wert, zusatz) => el('div', { class: 'kachel' }, el('p', { class: 'meta' }, titel), el('p', { class: 'zahl' }, String(wert)), zusatz && el('p', { class: 'meta' }, zusatz));
 const liesJson = k => { try { return JSON.parse(merk(k) || 'null'); } catch { return null; } };
 const GLYPHEN = {  // eigene Zeichen je Fach, 24er-Raster wie die Symbole der Leiste
   Mathematik: '<path d="M4 4v16h16"/><path d="M7 15.5c2.2-.4 2.6-7.5 5.2-7.5 2.4 0 2.8 5.6 6.3 6"/>',
@@ -1241,15 +1342,15 @@ async function drucke(f, d = HEUTE) {  // d: Stichtag, für nachträgliche Ausga
   const uhr = setInterval(() => presseZeigen(f), 1000);
   await wach(true);
   try {
-    const q = await quelle(f);
-    const prompt = [auftrag(f, TAG, d), ...q.dateien.map(d => `=== ${d.art.toUpperCase()}: ${d.datei} ===\n${d.text.slice(0, 60000)}`)].join('\n\n');
+    const q = await quelle(f), tief = darf('ausgabe-ultra');  // Ultra und die eigene Version: die ausführliche Fassung
+    const prompt = [auftrag(f, TAG, d, tief), ...q.dateien.map(d => `=== ${d.art.toUpperCase()}: ${d.datei} ===\n${d.text.slice(0, 60000)}`)].join('\n\n');
     const modell = $('modell').value;
-    const antwortKI = await strom({ ...MODELLE[modell], feature: 'ausgabe', messages: [{ role: 'user', content: prompt }] }, x => {
+    const antwortKI = await strom({ ...MODELLE[modell], feature: tief ? 'ausgabe-ultra' : 'ausgabe', messages: [{ role: 'user', content: prompt }] }, x => {
       const teile = x.match(/^## .+/gm) || [];
-      r.hinweis = /```json/.test(x) ? 'Schreibt Termine und Begriffe …' : teile.length ? `Schreibt „${teile.at(-1).slice(3).trim()}“ (${teile.length} von 6) …` : 'Schreibt …';
+      r.hinweis = /```json/.test(x) ? 'Schreibt Termine und Begriffe …' : teile.length ? `Schreibt „${teile.at(-1).slice(3).trim()}“ (${teile.length} von ${tief ? 7 : 6}) …` : 'Schreibt …';
     }, () => { r.hinweis = 'Denkt nach …'; });
     r.hinweis = 'Speichert …';
-    const text = `*${modell} · ${datum(d, { day: '2-digit', month: '2-digit', year: 'numeric' })} · Kosten ${antwortKI.preis} $*\n\n` + antwortKI.text;
+    const text = `*${modell}${tief ? ' · Ultra-Fassung' : ''} · ${datum(d, { day: '2-digit', month: '2-digit', year: 'numeric' })} · Kosten ${antwortKI.preis} $*\n\n` + antwortKI.text;
     const alt = r.ausgaben.find(a => a.datum === d);
     const antwort = await nacheinander(() => gh(`lernseiten/${f}/${d}.md`, { method: 'PUT', roh: false, body: { message: `Ausgabe ${f} ${d}`, content: base64(text), sha: alt?.sha } }));
     r.ausgaben = [{ datum: d, sha: antwort.content.sha }, ...r.ausgaben.filter(a => a.datum !== d)].sort((a, b) => b.datum.localeCompare(a.datum));
@@ -1322,6 +1423,7 @@ function titelblatt() {
     (ALLE_FRISTEN || fristen.length > sichtbar.length) && el('li', {}, el('button', { class: 'mehr', type: 'button', 'aria-expanded': String(ALLE_FRISTEN),
       onclick: () => { ALLE_FRISTEN = !ALLE_FRISTEN; titelblatt(); } }, ALLE_FRISTEN ? 'Nur die nächsten offenen zeigen' : `Alle ${fristen.length} Fristen zeigen, auch erledigte`)));
   wocheZeigen();
+  notenKurz();
   $('assistent').replaceChildren(assistent());
 }
 let WAHL = null;  // in „Diese Woche“ gewählter Tag
@@ -1519,7 +1621,7 @@ function nachtrag(f) {
   const feld = el('input', { type: 'date', name: 'stichtag', max: HEUTE, 'aria-label': 'Anderer Tag' });
   return el('div', { class: 'nachtrag' },
     el('h3', {}, 'Frühere Vorlesung nacharbeiten'),
-    el('p', { class: 'klein' }, 'Erstellt eine Ausgabe mit Stand dieses Tages: Zusammenfassung dieser Einheit, Übungen, Begriffe. Dauert zwei bis vier Minuten.'),
+    el('p', { class: 'klein' }, `Erstellt eine Ausgabe mit Stand dieses Tages: Zusammenfassung dieser Einheit, Übungen, Begriffe. Dauert ${darf('ausgabe-ultra') ? 'vier bis sechs' : 'zwei bis vier'} Minuten.`),
     r.druckt ? presse(f) : [
       vos.length > 0 && el('div', { class: 'knopfreihe' }, vos.map(d => el('button', { class: 'knopf', type: 'button', onclick: () => drucke(f, d) }, `VO ${kurz(d)}`))),
       el('form', { class: 'zeile nachtrag-tag', onsubmit: e => { e.preventDefault(); if (feld.value && feld.value <= HEUTE) drucke(f, feld.value); } }, feld, el('button', { class: 'knopf' }, 'Für diesen Tag erstellen'))]);
@@ -1533,19 +1635,19 @@ async function ausgabeZeigen(f, tag) {
     sektion.replaceChildren(...[
       el('a', { class: 'zurueck nur-schmal', href: '#/' }, 'Heute'),
       el('header', { class: 'ausgabe-kopf' }, el('div', {}, el('h1', {}, f),
-        el('p', { class: 'unterzeile' }, 'Noch keine Ausgabe. Die erste ist nach zwei bis vier Minuten fertig.'))),
+        el('p', { class: 'unterzeile' }, `Noch keine Ausgabe. Die erste ist nach ${darf('ausgabe-ultra') ? 'vier bis sechs' : 'zwei bis vier'} Minuten fertig.`))),
       r.druckt ? presse(f) : el('button', { class: 'knopf voll', type: 'button', onclick: () => drucke(f) }, 'Erste Ausgabe erstellen'),
       r.fehler && el('p', { class: 'fehlertext' }, r.fehler)].filter(Boolean));
     return;
   }
   tag = tag && r.ausgaben.some(x => x.datum === tag) ? tag : r.ausgaben[0].datum;
   const a = await ausgabe(f, tag);
-  const stamm = abschnitt(a, 'stammdaten'), ueb = abschnitt(a, 'übungsaufgaben');
+  const stamm = abschnitt(a, 'stammdaten'), ueb = abschnitt(a, 'übungsaufgaben'), formeln = abschnitt(a, 'formeln'), ultra = /Ultra-Fassung/.test(a.meta);
   const kasten = (klasse, titel, anfang) => el('section', { class: `abschnitt ${klasse}` }, el('h2', {}, titel), markdown(el('div', { class: 'text' }), abschnitt(a, anfang) || 'Nicht in dieser Ausgabe.'));
   const teil = (id, titel, zusatz, inhalt) => el('section', { class: 'teil', id, 'aria-labelledby': id + '-k' },
     el('div', { class: 'rubrik' }, el('h2', { id: id + '-k' }, titel), zusatz && el('p', { class: 'meta' }, zusatz)), inhalt);
   const quellen = [...new Set(a.quellen.map(q => q.split('/').pop().replace(/\.\w+$/, '').replace(/_/g, ' ')))];
-  const ziele = [['teil-ueberblick', 'Überblick'], ueb && ['teil-uebungen', 'Übungen'], ['teil-lexikon', 'Lexikon'], ['teil-fragen', 'Fragen'],
+  const ziele = [['teil-ueberblick', 'Überblick'], formeln && ['teil-formeln', 'Formeln'], ueb && ['teil-uebungen', 'Übungen'], ['teil-lexikon', 'Lexikon'], ['teil-fragen', 'Fragen'],
     stamm && ['teil-stamm', 'Stammdaten'], ['teil-archiv', 'Frühere Ausgaben']].filter(Boolean);
   const ruhig = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   const leiste = el('nav', { class: 'abschnitte', 'aria-label': 'Teile der Ausgabe' }, ziele.map(([id, text]) =>
@@ -1557,19 +1659,22 @@ async function ausgabeZeigen(f, tag) {
         el('div', { class: 'titel-zeile' }, glyph(f), el('h1', {}, f)),
         a.schlagzeile && el('p', { class: 'schlagzeile' }, a.schlagzeile),
         el('p', { class: 'unterzeile' }, el('span', {}, `Ausgabe vom ${datum(tag, { weekday: 'long', day: 'numeric', month: 'long' })}`),
-          a.meta && el('span', {}, a.meta.split(' · ')[0]), !SERVER && a.preis && el('span', {}, `Kosten ${geld(a.preis)}`))),
+          a.meta && el('span', {}, a.meta.split(' · ')[0]), ultra && el('span', { class: 'fassung' }, 'Ultra-Fassung'), !SERVER && a.preis && el('span', {}, `Kosten ${geld(a.preis)}`))),
       el('div', { class: 'kopf-aktionen' },
         f === 'Englisch' && el('a', { class: 'knopf', href: '#/wordpower' }, el('span', { translate: 'no' }, 'Word Power')),
         !r.druckt && el('button', { class: 'knopf voll', type: 'button', onclick: () => drucke(f) }, 'Neu erstellen'))),
     r.druckt && presse(f),
     r.fehler && el('p', { class: 'fehlertext' }, r.fehler),
+    !ultra && !r.druckt && darf('ausgabe-ultra') && el('p', { class: 'meta' }, 'Diese Ausgabe ist noch die normale Fassung. „Neu erstellen“ schreibt sie als Ultra-Fassung.'),
     quellen.length > 0 && el('details', { class: 'quellen' }, el('summary', {}, `Beruht auf ${quellen.length} ${quellen.length === 1 ? 'Unterlage' : 'Unterlagen'}`), el('p', {}, quellen.join(', '))),
     leiste,
     el('div', { class: 'raster', id: 'teil-ueberblick' },
-      el('article', { class: 'artikel' }, el('h2', {}, 'Zusammenfassung der letzten Einheit'), markdown(el('div', { class: 'text' }), abschnitt(a, 'zusammenfassung') || 'Keine Zusammenfassung in dieser Ausgabe.')),
+      el('article', { class: 'artikel' }, el('h2', {}, 'Zusammenfassung der letzten Einheit'), markdown(el('div', { class: 'text' }), abschnitt(a, 'zusammenfassung') || 'Keine Zusammenfassung in dieser Ausgabe.'),
+        SERVER && ICH && !darf('ausgabe-ultra') && ultraWerbung(a)),
       kasten('blick', 'Auf einen Blick', 'auf einen blick'),
       kasten('', 'Nächstes Proseminar', 'nächstes proseminar'),
       kasten('', 'Nächste Vorlesung', 'nächste vorlesung')),
+    formeln && teil('teil-formeln', 'Formeln Schritt für Schritt', 'Jede Formel in anderen Schreibweisen und nach jeder Größe umgestellt', markdown(el('div', { class: 'text' }), formeln)),
     ueb && teil('teil-uebungen', 'Übungsaufgaben', 'Erst selbst rechnen, dann aufdecken', uebungen(ueb)),
     teil('teil-lexikon', 'Lexikon', a.begriffe.length ? `${a.begriffe.length} Begriffe der letzten Einheit` : null, lexikon(f, a.begriffe)),
     teil('teil-fragen', 'Fragen', `Antworten nur aus dieser Ausgabe und den OLAT-Unterlagen für ${f}`, fragen(f, a)),
@@ -1585,6 +1690,206 @@ async function ausgabeZeigen(f, tag) {
   SPION = new IntersectionObserver(eintraege => eintraege.forEach(e => e.isIntersecting && leiste.querySelectorAll('button').forEach(b =>
     b.dataset.ziel === e.target.id ? b.setAttribute('aria-current', 'true') : b.removeAttribute('aria-current'))), { rootMargin: '-15% 0px -75% 0px' });
   ziele.forEach(([id]) => SPION.observe($(id)));
+}
+
+// Unter Ultra, am Ende der Zusammenfassung: was die Ultra-Fassung genau dieser Ausgabe dazu hätte, mit ihren eigenen Formeln
+function ultraWerbung(a) {
+  const fs = [...new Set(abschnitt(a, 'zusammenfassung').match(/\\\[[\s\S]+?\\\]/g) || [])], n = fs.length;
+  return el('aside', { class: 'ultra-werbung', 'aria-labelledby': 'uw-kopf' },
+    el('span', { class: 'pille akzent' }, 'Ultra'),
+    el('h3', { id: 'uw-kopf' }, `Hier hört ${TARIFE.tarife[ICH.tarif].name} auf. Ultra fängt hier erst richtig an.`),
+    el('p', { class: 'klein' }, 'Mit Ultra wäre diese Ausgabe mehr als doppelt so ausführlich, verständlicher und viel leichter zu lernen. Jeder Gedanke der Folien erklärt statt nur genannt, mit Beispiel, typischen Fehlern und Merksatz.'),
+    n > 0 && [el('p', { class: 'uw-zeile' }, `${n === 1 ? 'Eine Formel wie diese' : 'Formeln wie diese'} aus deiner Zusammenfassung hätte Ultra Schritt für Schritt umgestellt, in anderen Schreibweisen gezeigt und mit Zahlen durchgerechnet:`),
+      markdown(el('div', { class: 'text uw-formeln' }), fs.slice(0, 3).join('\n\n'))],
+    el('ul', { class: 'uw-liste' }, [
+      n > 0 ? 'Jede Formel in anderen Schreibweisen, damit du sie in der Klausur in jeder Form wiedererkennst' : 'Die Modelle und Regeln der Einheit Schritt für Schritt an Beispielen erklärt',
+      'Eine Umformung pro Zeile, jeder Schritt begründet, dazu ein durchgerechnetes Zahlenbeispiel',
+      '8 bis 12 Übungsaufgaben statt 4 bis 8, jeder Rechenschritt einzeln, mit zweitem Lösungsweg',
+      'Bis zu 35 Begriffe im Lexikon, jeder mit Beispiel'].map(x => el('li', {}, x))),
+    el('div', { class: 'knopfreihe' },
+      ICH.testFrei && el('button', { class: 'knopf voll', type: 'button', onclick: testStarten }, '24 Stunden Ultra gratis testen'),
+      el('a', { class: `knopf${ICH.testFrei ? '' : ' voll'}`, href: '#/upgrade' }, 'Ultra ansehen')));
+}
+
+/* ---------- Noten: Punkte je Lehrveranstaltung, Verlauf, Prognose, Kursschnitt (Pro) ---------- */
+// noten.json im Speicher: { lv: { Name: { ects, gesamt, schluessel: [ab % für Note 4, 3, 2, 1], note } },
+//   eintraege: [{ id, lv, titel, datum, punkte, max, schnitt (in Punkten), olat (Test), weg }] }
+// Erledigte bewertete Onlinetests kommen mit ihren Punkten aus OLAT von selbst dazu; gelöscht bleiben sie weg.
+const SCHLUESSEL = [50, 62.5, 75, 87.5];  // ab … % Note 4, 3, 2, 1, solange die Lehrveranstaltung keinen eigenen hat
+const NOTEN_NAMEN = ['', 'Sehr gut', 'Gut', 'Befriedigend', 'Genügend', 'Nicht genügend'];
+let NOTEN = null, NOTEN_SHA = null, NOTEN_P = null, NOTE_ID = null;  // NOTE_ID: der Eintrag, der gerade im Formular steht
+const zahl = s => s == null || String(s).trim() === '' ? null : Number(String(s).trim().replace(',', '.'));
+const dez = (x, n = 1) => x == null ? '–' : x.toLocaleString('de-AT', { maximumFractionDigits: n });
+const feldWert = x => x == null ? '' : String(Math.round(x * 100) / 100).replace('.', ',');
+const summe = (l, k) => l.reduce((s, x) => s + (x[k] || 0), 0);
+const noteAus = (p, s) => p == null ? null : 5 - s.filter(g => p >= g).length;
+const notenAktiv = () => NOTEN.eintraege.filter(e => !e.weg && e.max > 0);
+const fachVon = lv => [...ORDNUNG, ...Object.keys(R)].find(f => lv.toLowerCase().startsWith(f.toLowerCase())) || '';
+const notenLaden = () => NOTEN_P ??= (async () => {
+  const j = await gh('noten.json', { roh: false });
+  NOTEN_SHA = j?.sha || null;
+  NOTEN = j ? JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(j.content.replace(/\s/g, '')), c => c.charCodeAt(0)))) : { lv: {}, eintraege: [] };
+  TESTS ??= JSON.parse(await gh('onlinetests.json').catch(() => null) || '[]');
+  let neu = 0;
+  for (const t of TESTS) {
+    const m = t.art === 'test' && t.ergebnis && !t.uebung && t.startseite?.match(/Erreichte Punktzahl\s*(-?[\d.,]+) von ([\d.,]+) Punkt/);
+    if (!m || NOTEN.eintraege.some(e => e.olat === testId(t))) continue;
+    NOTEN.eintraege.push({ id: crypto.randomUUID(), olat: testId(t), lv: `${t.fach} PS`, titel: t.titel, datum: (t.bis || HEUTE).slice(0, 10), punkte: zahl(m[1]), max: zahl(m[2]) });
+    neu++;
+  }
+  if (neu) await notenSpeichern();
+})().catch(e => { NOTEN = null; NOTEN_P = null; throw e; });
+const notenSpeichern = () => nacheinander(async () => {
+  const a = await gh('noten.json', { method: 'PUT', roh: false, body: { message: 'Noten', content: base64(JSON.stringify(NOTEN)), sha: NOTEN_SHA || undefined } });
+  NOTEN_SHA = a.content.sha;
+});
+async function notenAendern(fn) {  // ändern, speichern, neu zeichnen; geht das Speichern schief, gilt wieder der Stand im Speicher
+  fn();
+  try { await notenSpeichern(); } catch (e) { status(e.message, true); NOTEN = null; NOTEN_P = null; }
+  notenZeigen();
+}
+function lvStand(name) {
+  const c = NOTEN.lv[name] || {}, s = c.schluessel || SCHLUESSEL, e = notenAktiv().filter(x => x.lv === name);
+  const p = summe(e, 'punkte'), m = summe(e, 'max'), stand = m ? 100 * p / m : null;
+  const mitS = e.filter(x => x.schnitt != null), sm = summe(mitS, 'max');
+  return { name, c, s, e, p, m, stand, fach: fachVon(name), note: c.note || noteAus(stand, s), offen: c.gesamt ? Math.max(0, c.gesamt - m) : null,
+    du: sm ? 100 * summe(mitS, 'punkte') / sm : null, schnitt: sm ? 100 * summe(mitS, 'schnitt') / sm : null };
+}
+const notenLVs = () => [...new Set([...Object.keys(NOTEN.lv), ...notenAktiv().map(e => e.lv)])]
+  .sort((a, b) => ((ORDNUNG.indexOf(fachVon(a)) + 1 || 99) - (ORDNUNG.indexOf(fachVon(b)) + 1 || 99)) || a.localeCompare(b, 'de')).map(lvStand);
+// Notenschnitt aus Endnoten und Prognosen: nach ECTS gewichtet, sobald alle ECTS haben, sonst ungewichtet
+const nachEcts = lvs => lvs.filter(l => l.note).every(l => l.c.ects > 0);
+const notenSchnitt = lvs => {
+  const m = lvs.filter(l => l.note), w = l => nachEcts(lvs) ? l.c.ects : 1;
+  return m.length ? m.reduce((s, l) => s + l.note * w(l), 0) / m.reduce((s, l) => s + w(l), 0) : null;
+};
+function notenVerlauf(lvs) {
+  const e = notenAktiv().sort((a, b) => a.datum.localeCompare(b.datum));
+  if (e.length < 2) return el('p', { class: 'leer' }, 'Ab zwei Einträgen steht hier dein Verlauf.');
+  // so breit wie der Platz, damit die Schrift im Bild so groß bleibt wie daneben
+  const W = Math.round(Math.min(940, Math.max(300, $('noten').clientWidth || 640))), H = 230, L = 42, RA = 12, O = 12, U = 28;
+  const tg = d => Date.parse(d + 'T12:00'), t0 = tg(e[0].datum), t1 = tg(e.at(-1).datum);
+  const X = d => (L + (W - L - RA) * (t1 > t0 ? (tg(d) - t0) / (t1 - t0) : 0.5)).toFixed(1);
+  const Y = p => (O + (H - O - U) * (1 - Math.min(100, Math.max(0, p)) / 100)).toFixed(1);
+  const pz = q => 100 * q.punkte / q.max, esc = s => String(s).replace(/[&<>"]/g, c => `&#${c.charCodeAt(0)};`), tag = d => esc(datum(d, { day: '2-digit', month: '2-digit' }));
+  let P = 0, M = 0;
+  const gesamt = e.map(q => { P += q.punkte; M += q.max; return `${X(q.datum)},${Y(100 * P / M)}`; });
+  const svg = [
+    ...[0, 50, 100].map(p => `<line class="${p === 50 ? 'grenze' : 'achse'}" x1="${L}" x2="${W - RA}" y1="${Y(p)}" y2="${Y(p)}"/><text x="${L - 8}" y="${+Y(p) + 4}" text-anchor="end">${p} %</text>`),
+    ...lvs.filter(l => l.e.length).map(l => {
+      const q = l.e.slice().sort((a, b) => a.datum.localeCompare(b.datum));
+      return `<g class="nl" data-fach="${esc(l.fach)}">${q.length > 1 ? `<polyline points="${q.map(x => `${X(x.datum)},${Y(pz(x))}`).join(' ')}"/>` : ''}`
+        + q.map(x => `<circle cx="${X(x.datum)}" cy="${Y(pz(x))}" r="4"><title>${esc(`${l.name}, ${x.titel}: ${dez(pz(x), 0)} %`)}</title></circle>`).join('') + '</g>';
+    }),
+    `<polyline class="gesamt" points="${gesamt.join(' ')}"/>`,
+    ...e.filter(q => q.schnitt != null).map(q => `<circle class="kurs" cx="${X(q.datum)}" cy="${Y(100 * q.schnitt / q.max)}" r="4.5"><title>${esc(`Kursschnitt ${q.titel}: ${dez(100 * q.schnitt / q.max, 0)} %`)}</title></circle>`),
+    `<text x="${L}" y="${H - 8}">${tag(e[0].datum)}</text>`, t1 > t0 ? `<text x="${W - RA}" y="${H - 8}" text-anchor="end">${tag(e.at(-1).datum)}</text>` : '',
+  ].join('');
+  const bild = el('div');
+  bild.innerHTML = `<svg class="notenbild" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(`Verlauf in Prozent der möglichen Punkte, ${e.length} Einträge vom ${datum(e[0].datum, { day: 'numeric', month: 'long' })} bis ${datum(e.at(-1).datum, { day: 'numeric', month: 'long' })}, insgesamt ${dez(100 * P / M, 0)} Prozent`)}">${svg}</svg>`;
+  return [bild, el('ul', { class: 'legende' }, lvs.filter(l => l.e.length).map(l => el('li', { 'data-fach': l.fach || null }, el('i'), l.name)),
+    el('li', {}, el('i', { class: 'ges' }), 'Insgesamt, laufend'), e.some(q => q.schnitt != null) && el('li', {}, el('i', { class: 'kurs' }), 'Kursschnitt'))];
+}
+function lvKarte(l) {
+  const g = l.c.gesamt, zahlFeld = (text, name, wert) => el('label', {}, text, el('input', { name, inputmode: 'decimal', autocomplete: 'off', value: feldWert(wert) }));
+  const fehlt = g > 0 && l.offen > 0 && [...l.s].reverse().map((grenze, i) => {
+    const n = i + 1, noch = grenze / 100 * g - l.p;
+    return el('li', {}, noch <= 0 ? `Note ${n} ist dir sicher.` : noch > l.offen ? `Note ${n} ist nicht mehr erreichbar.`
+      : `Für Note ${n} fehlen dir ${dez(noch)} von ${dez(l.offen)} offenen Punkten, also ${dez(100 * noch / l.offen, 0)} %.`);
+  });
+  const form = el('form', { class: 'lv-einst', onsubmit: e => {
+    e.preventDefault();
+    const f = e.target.elements, s = [0, 1, 2, 3].map(i => zahl(f['s' + i].value));
+    notenAendern(() => { NOTEN.lv[l.name] = { ects: zahl(f.ects.value), gesamt: zahl(f.gesamt.value), schluessel: s.every(Number.isFinite) ? s.sort((a, b) => a - b) : null, note: +f.note.value || null }; });
+  } },
+    zahlFeld('ECTS', 'ects', l.c.ects), zahlFeld('Gesamtpunkte', 'gesamt', g),
+    [4, 3, 2, 1].map((n, i) => zahlFeld(`Note ${n} ab %`, 's' + i, l.s[i])),
+    el('label', {}, 'Endnote', el('select', { name: 'note' }, ['', 1, 2, 3, 4, 5].map(n => el('option', { value: n, selected: (l.c.note || '') === n }, n ? `${n}, ${NOTEN_NAMEN[n]}` : 'noch offen')))),
+    el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf' }, 'Speichern')));
+  return el('article', { class: 'lv-karte', 'data-fach': l.fach || null },
+    el('div', { class: 'lv-kopf' }, el('h3', {}, l.name), el('span', { class: 'note-gross', role: 'img', 'aria-label': l.note ? `Note ${l.note}` : 'noch keine Note' }, l.note ? String(l.note) : '–')),
+    el('p', { class: 'meta' }, l.c.note ? `Endnote: ${NOTEN_NAMEN[l.c.note]}` : l.stand == null ? 'Noch keine Punkte'
+      : `${dez(l.p)} von ${dez(l.m)} Punkten, ${dez(l.stand, 0)} %. Bleibt es so, wird es ${NOTEN_NAMEN[noteAus(l.stand, l.s)]}.`),
+    fehlt && el('ul', {}, fehlt),
+    !g && !l.c.note && l.e.length > 0 && el('p', { class: 'klein' }, 'Mit den Gesamtpunkten aus dem Syllabus steht hier, was dir für jede Note noch fehlt.'),
+    el('details', {}, el('summary', {}, 'Notenschlüssel und ECTS'),
+      R[l.fach] && el('p', { class: 'meta' }, 'Steht in der ', el('a', { href: `#/${encodeURIComponent(l.fach)}` }, `Ausgabe ${l.fach}`), ' unter Stammdaten.'), form));
+}
+function notenForm() {
+  const b = NOTE_ID && NOTEN.eintraege.find(e => e.id === NOTE_ID);
+  const fehler = el('p', { class: 'fehlertext', role: 'alert', hidden: true });
+  const feld = (text, name, extra) => el('label', { class: 'feld' }, text, el('input', { name, autocomplete: 'off', ...extra }));
+  return el('form', { class: 'schritt', id: 'noten-form', novalidate: true, onsubmit: e => {
+    e.preventDefault();
+    const d = Object.fromEntries(new FormData(e.target)), punkte = zahl(d.punkte), max = zahl(d.max);
+    const s = d.schnitt.trim(), proz = /%\s*$/.test(s), sz = zahl(s.replace(/%\s*$/, ''));
+    const warum = !d.lv.trim() ? 'Bitte die Lehrveranstaltung angeben.' : !(max > 0) ? 'Bitte angeben, wie viele Punkte möglich waren.'
+      : !Number.isFinite(punkte) ? 'Bitte deine Punkte als Zahl angeben.' : s && !Number.isFinite(sz) ? 'Den Kursschnitt bitte als Zahl, etwa 6,5 oder 65 %.' : '';
+    if (warum) { fehler.textContent = warum; fehler.hidden = false; return; }
+    const neu = { ...b, id: b?.id || crypto.randomUUID(), lv: d.lv.trim(), titel: d.titel.trim() || 'Ohne Titel', datum: d.datum || HEUTE, punkte, max, schnitt: s ? (proz ? sz * max / 100 : sz) : null };
+    notenAendern(() => { const i = NOTEN.eintraege.findIndex(x => x.id === neu.id); if (i < 0) NOTEN.eintraege.push(neu); else NOTEN.eintraege[i] = neu; NOTE_ID = null; });
+  } },
+    el('div', { class: 'noten-form' },
+      feld('Lehrveranstaltung', 'lv', { list: 'lv-liste', value: b?.lv || '', placeholder: 'Mathematik PS' }),
+      el('datalist', { id: 'lv-liste' }, [...new Set([...notenLVs().map(l => l.name), ...Object.keys(R).flatMap(f => [`${f} PS`, `${f} VO`])])].map(x => el('option', { value: x }))),
+      feld('Was', 'titel', { value: b?.titel || '', placeholder: 'z. B. Zwischentest 1' }),
+      feld('Datum', 'datum', { type: 'date', value: b?.datum || HEUTE }),
+      feld('Deine Punkte', 'punkte', { inputmode: 'decimal', value: feldWert(b?.punkte) }),
+      feld('Möglich', 'max', { inputmode: 'decimal', value: feldWert(b?.max) }),
+      el('label', { class: 'feld' }, el('span', {}, 'Kursschnitt ', el('span', { class: 'opt' }, 'optional')),
+        el('input', { name: 'schnitt', inputmode: 'decimal', autocomplete: 'off', placeholder: '6,5 oder 65 %', value: feldWert(b?.schnitt) }))),
+    el('p', { class: 'klein' }, 'Zählt ein Teil mit Prozent statt Punkten, trag ihn als Anteil ein: 20 von 25 für einen Teil mit 25 %. Minuspunkte gehen auch.'),
+    el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll' }, b ? 'Speichern' : 'Eintragen'),
+      b && el('button', { class: 'knopf', type: 'button', onclick: () => { NOTE_ID = null; notenZeigen(); } }, 'Abbrechen')),
+    fehler);
+}
+async function notenZeigen() {
+  const s = $('noten'), kopf = (...x) => el('header', { class: 'ausgabe-kopf' }, el('h1', {}, 'Noten'), ...x);
+  if (!NOTEN) {
+    s.replaceChildren(kopf(el('p', { class: 'meta' }, 'Lade deine Noten …')));
+    try { await notenLaden(); } catch (e) { return s.replaceChildren(kopf(el('p', { class: 'fehlertext' }, e.message))); }
+    if (document.body.dataset.ansicht !== 'noten') return;
+  }
+  const lvs = notenLVs(), g = notenSchnitt(lvs), alle = notenAktiv(), P = summe(alle, 'punkte'), M = summe(alle, 'max');
+  const mitS = alle.filter(e => e.schnitt != null), sm = summe(mitS, 'max'), abst = sm ? 100 * (summe(mitS, 'punkte') - summe(mitS, 'schnitt')) / sm : null;
+  const mitNote = lvs.filter(l => l.note).length, ects = lvs.filter(l => l.c.note && l.c.note <= 4).reduce((x, l) => x + (l.c.ects || 0), 0);
+  const teil = (titel, zusatz, inhalt) => el('section', { class: 'teil' }, el('div', { class: 'rubrik' }, el('h2', {}, titel), zusatz && el('p', { class: 'meta' }, zusatz)), inhalt);
+  const vergleich = lvs.filter(l => l.du != null);
+  s.replaceChildren(...[
+    kopf(el('p', { class: 'schlagzeile' }, g ? `Du steuerst auf einen Schnitt von ${dez(g)} zu` : 'Alle deine Punkte an einem Ort'),
+      el('p', { class: 'meta' }, 'Erledigte Onlinetests kommen mit dem Abgleich von selbst dazu, alles andere trägst du unten ein. Die Prognose rechnet nur mit deinen Einträgen, sie ist keine offizielle Note.')),
+    el('div', { class: 'kacheln' },
+      kachel('Notenschnitt', g ? dez(g, 2) : '–', g ? `aus ${mitNote} ${mitNote === 1 ? 'Lehrveranstaltung' : 'Lehrveranstaltungen'}, ${nachEcts(lvs) ? 'nach ECTS gewichtet' : 'ungewichtet, bis alle ECTS haben'}` : 'sobald Punkte da sind'),
+      kachel('Punkte insgesamt', M ? `${dez(100 * P / M, 0)} %` : '–', `${dez(P)} von ${dez(M)} möglichen Punkten`),
+      kachel('Gegen den Kursschnitt', abst == null ? '–' : `${abst >= 0 ? '+' : '−'}${dez(Math.abs(abst), 0)}`, abst == null ? 'Schreib bei einem Eintrag den Kursschnitt dazu' : `Prozentpunkte ${abst >= 0 ? 'über' : 'unter'} dem Schnitt`),
+      ects > 0 && kachel('Positiv abgeschlossen', `${dez(ects)} ECTS`, 'mit eingetragener Endnote')),
+    teil('Verlauf', 'Jeder Punkt ein Eintrag, in Prozent der möglichen Punkte', notenVerlauf(lvs)),
+    lvs.length > 0 && teil('Lehrveranstaltungen', 'Prognose und was dir für jede Note noch fehlt', el('div', { class: 'lv-karten' }, lvs.map(lvKarte))),
+    vergleich.length > 0 && teil('Du gegen den Kursschnitt', 'Nur Einträge, bei denen der Schnitt dabeisteht', el('div', { class: 'vergleich' }, vergleich.map(l =>
+      el('div', { class: 'vg-zeile', 'data-fach': l.fach || null }, el('span', {}, l.name),
+        el('div', { class: 'vg-balken', role: 'img', 'aria-label': `Du ${dez(l.du, 0)} Prozent, Kursschnitt ${dez(l.schnitt, 0)} Prozent` },
+          el('i', { style: `width: ${Math.min(100, Math.max(1, l.du))}%` }), el('i', { class: 'kurs', style: `width: ${Math.min(100, Math.max(1, l.schnitt))}%` })),
+        el('span', { class: 'meta' }, `Du ${dez(l.du, 0)} %, Kurs ${dez(l.schnitt, 0)} %`))))),
+    teil(NOTE_ID ? 'Eintrag ändern' : 'Punkte eintragen', null, notenForm()),
+    alle.length > 0 && teil('Alle Einträge', `${alle.length} ${alle.length === 1 ? 'Eintrag' : 'Einträge'}, neueste zuerst`,
+      tabelle(['Datum', 'Lehrveranstaltung', 'Was', 'Punkte', '%', 'Kursschnitt', ''], alle.slice().sort((a, b) => b.datum.localeCompare(a.datum)).map(e => [
+        datum(e.datum, { day: '2-digit', month: '2-digit', year: '2-digit' }), e.lv, [e.titel, e.olat && el('span', { class: 'pille' }, 'aus OLAT')],
+        `${dez(e.punkte)} von ${dez(e.max)}`, `${dez(100 * e.punkte / e.max, 0)} %`, e.schnitt != null ? `${dez(100 * e.schnitt / e.max, 0)} %` : '–',
+        el('div', { class: 'knopfreihe' },
+          el('button', { class: 'knopf', type: 'button', onclick: () => { NOTE_ID = e.id; notenZeigen(); $('noten-form').scrollIntoView({ block: 'center' }); $('noten-form').querySelector('input').focus({ preventScroll: true }); } }, 'Ändern'),
+          el('button', { class: 'knopf', type: 'button', onclick: () => confirm(`„${e.titel}“ (${e.lv}) löschen?`)
+            && notenAendern(() => { if (e.olat) e.weg = true; else NOTEN.eintraege.splice(NOTEN.eintraege.indexOf(e), 1); if (NOTE_ID === e.id) NOTE_ID = null; }) }, 'Löschen'))]))),
+  ].filter(Boolean));
+}
+async function notenKurz() {  // Heute: Stand je Lehrveranstaltung, auch für das iPad hochkant ohne Seitenleiste
+  $('h-noten').hidden = !darf('noten');
+  if (!darf('noten')) return;
+  try { await notenLaden(); } catch (e) { return $('h-noten-inhalt').replaceChildren(el('p', { class: 'leer' }, e.message)); }
+  const lvs = notenLVs().filter(l => l.note), g = notenSchnitt(lvs);
+  $('h-noten-inhalt').replaceChildren(lvs.length ? el('ul', { class: 'liste-rahmen noten-kurz' },
+    lvs.map(l => el('li', { 'data-fach': l.fach || null }, el('span', { class: 'lv' }, l.name), el('span', { class: 'meta' }, l.stand == null ? '' : `${dez(l.stand, 0)} %`), el('b', {}, String(l.note)))),
+    lvs.length > 1 && el('li', { class: 'schnitt' }, el('span', { class: 'lv' }, 'Schnitt'), el('span'), el('b', {}, dez(g))))
+    : el('p', { class: 'leer' }, 'Noch keine Punkte. Erledigte Onlinetests kommen mit dem Abgleich von selbst dazu.'));
 }
 
 /* ---------- Kalender ---------- */
@@ -2831,9 +3136,10 @@ function einrichtenZeigen() {
 }
 
 /* ---------- Server-Version: Konto, Tarife, Sperren mit Gratis-Test, Admin-Ecke, Recht ---------- */
-const SPERREN = { kalender: 'kalender', vortrag: 'vortrag' };  // Ansicht → Funktion, die sie braucht
+const SPERREN = { kalender: 'kalender', noten: 'noten', vortrag: 'vortrag' };  // Ansicht → Funktion, die sie braucht
 const SPERRE = {  // was ein Tarif bringt, je Funktion in einem Satz
   kalender: ['Der Kalender', 'Stundenplan aus LFU:online und alle Fristen auf einen Blick, mit einem Tipp ins iPad übernommen.'],
+  noten: ['Der Notentracker', 'Alle Punkte an einem Ort: Onlinetests kommen von selbst aus OLAT, dazu dein Verlauf als Diagramm, die Prognose je Lehrveranstaltung, der Vergleich mit dem Kursschnitt und was dir für jede Note noch fehlt.'],
   'wp-transkript': ['Das Transkript', 'Gemini schreibt jeden YouTube-Talk für Word Power mit Zeitstempeln mit.'],
   vortrag: ['Vortrag analysieren', 'Einschätzung, Tipps und jeder Fehler mit Zeitstempel: Rückmeldung zu deiner Präsentation, bevor sie zählt.'],
   chat: ['Fragen an die KI', 'Rückfragen zu jeder Ausgabe, jedem Vortrag und jeder Aufgabe, und „Frag den Lernhelfer“ zu Terminen, Fristen und nächsten Schritten.'],
@@ -3018,15 +3324,17 @@ const UP = { wahl: null, monate: 1 };
 const PLAN = {  // was jeder Tarif dazubringt
   base: ['Wochenausgabe für jedes Fach: Zusammenfassung, Übungen, Begriffe, Termine, geschrieben von DeepSeek V4.1', 'OLAT-Abgleich am PC', 'Onlinetests im Überblick',
     'Word Power: das Journal als Vorlage mit deinen Word Partnerships'],
-  pro: ['Freie Wahl des KI-Modells: GPT-6 Luna, MiMo V2.6 Pro, GPT-6.1 Sol oder DeepSeek', 'Kalender mit Stundenplan und allen Fristen, mit Übernahme ins iPad', 'Word Power: YouTube-Talks mit Zeitstempeln transkribieren', 'Vortrag analysieren: Einschätzung, Tipps und Fehler mit Zeitstempel'],
-  ultra: ['Fragen an die KI zu jeder Ausgabe, jedem Vortrag und jeder Aufgabe', 'Frag den Lernhelfer: Termine, Fristen, nächste Schritte', 'Lösungswege zu Onlinetest-Fragen: gleichartige Aufgabe mit anderen Zahlen, Schritt für Schritt erklärt'],
+  pro: ['Freie Wahl des KI-Modells: GPT-6 Luna, MiMo V2.6 Pro, GPT-6.1 Sol oder DeepSeek',
+    'Notentracker: Onlinetest-Punkte von selbst aus OLAT, Verlauf als Diagramm, Prognose, Vergleich mit dem Kursschnitt, was dir für jede Note noch fehlt', 'Kalender mit Stundenplan und allen Fristen, mit Übernahme ins iPad', 'Word Power: YouTube-Talks mit Zeitstempeln transkribieren', 'Vortrag analysieren: Einschätzung, Tipps und Fehler mit Zeitstempel'],
+  ultra: ['Ultra-Fassung jeder Wochenausgabe: mehr als doppelt so ausführlich, jede Formel Schritt für Schritt umgestellt und in anderen Schreibweisen, 8 bis 12 Übungsaufgaben mit jedem Rechenschritt',
+    'Fragen an die KI zu jeder Ausgabe, jedem Vortrag und jeder Aufgabe', 'Frag den Lernhelfer: Termine, Fristen, nächste Schritte', 'Lösungswege zu Onlinetest-Fragen: gleichartige Aufgabe mit anderen Zahlen, Schritt für Schritt erklärt'],
   ultraplus: ['Eigener OpenRouter-Schlüssel mit rund 10 € KI-Guthaben pro Monat, für eigene Projekte'],
 };
 const DAZU = { pro: 'Alles aus Base, dazu:', ultra: 'Alles aus Pro, dazu:', ultraplus: 'Alles aus Ultra, dazu:' };
 const euro = c => (c / 100).toLocaleString('de-AT', { style: 'currency', currency: 'EUR' });
 // gemessene Kosten einer Wochenausgabe in $, gerundet auf eine runde Zahl Ausgaben pro Monat
-const reicht = (budget, t) => Math.floor(budget / (t === 'base' ? AUSGABE_USD.deepseek : AUSGABE_USD.luna) / 10) * 10;
-const AUSGABE_USD = { deepseek: 0.03, luna: 0.05 };
+const reicht = (budget, t) => Math.floor(budget / AUSGABE_USD[t] / 10) * 10;
+const AUSGABE_USD = { base: 0.03, pro: 0.05, ultra: 0.06 };  // DeepSeek, Luna, Luna als Ultra-Fassung (gemessen 2,5–3 Cent, vorsichtig gerechnet)
 function upgradeZeigen() {
   if (!TARIFE) return $('upgrade').replaceChildren(el('p', { class: 'fehlertext' }, 'Die Tarife ließen sich nicht laden. Bist du online?'));
   const T = TARIFE.tarife, z = TARIFE.zahlung, b = ICH?.bestellung, mitRabatt = !!ICH && (ICH.erstrabatt || ICH.gutscheine > 0);
@@ -3087,7 +3395,7 @@ function upgradeZeigen() {
       el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll', type: 'button', onclick: testStarten }, '24 Stunden Ultra gratis testen'))),
     el('div', { class: 'tarife' }, Object.keys(T).map(karte)),
     el('p', { class: 'meta fair' }, `Fair Use: Jeder Tarif deckt KI-Kosten bis zu einem Betrag pro Monat. Base reicht für rund ${reicht(T.base.budget, 'base')} Wochenausgaben mit DeepSeek, `
-      + `Pro für rund ${reicht(T.pro.budget)} mit dem gründlicheren GPT-6 Luna, Ultra für rund ${reicht(T.ultra.budget)}. Wie viel du schon genutzt hast, steht in der Seitenleiste; am Monatsersten geht es wieder bei null los.`),
+      + `Pro für rund ${reicht(T.pro.budget, 'pro')} mit dem gründlicheren GPT-6 Luna, Ultra für rund ${reicht(T.ultra.budget, 'ultra')} in der Ultra-Fassung. Wie viel du schon genutzt hast, steht in der Seitenleiste; am Monatsersten geht es wieder bei null los.`),
     bestellen,
     el('section', { class: 'text warum', 'aria-labelledby': 'u-warum' },
       el('h2', { id: 'u-warum' }, 'Warum kostet das etwas, und wofür zahle ich?'),
@@ -3134,14 +3442,11 @@ async function adminZeigen() {
     try { const r = await api(pfad, body); if (r.warnung) alert('Freigeschaltet, aber: ' + r.warnung); } catch (err) { alert(err.message); }
     adminZeigen();
   };
-  const tabelle = (kopf, zeilen) => el('div', { class: 'tabelle-rahmen' }, el('table', { class: 'tabelle' },
-    el('thead', {}, el('tr', {}, kopf.map(k => el('th', {}, k)))), el('tbody', {}, zeilen.map(z => el('tr', {}, z.map(x => el('td', {}, x)))))));
   const setzen = k => el('form', { class: 'admin-setzen', onsubmit: e => { e.preventDefault(); const f = e.target.elements; tun('admin/tarif', { konto: k.id, tarif: f.tarif.value, tage: +f.tage.value })({ currentTarget: f.knopf }); } },
     el('select', { name: 'tarif', 'aria-label': 'Tarif' }, Object.keys(T).map(t => el('option', { value: t }, T[t].name))),
     el('input', { name: 'tage', type: 'number', min: 0, value: 30, 'aria-label': 'Tage' }), el('button', { class: 'knopf', name: 'knopf' }, 'Setzen'));
   const offen = d.bestellungen.filter(b => b.status !== 'bezahlt'), bezahlt = d.bestellungen.filter(b => b.status === 'bezahlt');
   const betrag = b => euro(b.betrag) + (b.rabatt ? ` (−${euro(b.rabatt)})` : '');
-  const kachel = (titel, wert, zusatz) => el('div', { class: 'kachel' }, el('p', { class: 'meta' }, titel), el('p', { class: 'zahl' }, String(wert)), zusatz && el('p', { class: 'meta' }, zusatz));
   const anteil = (a, b) => b ? `${Math.round(100 * a / b)} %` : '–';
   const kostet = usd => `${euro(-Math.round(usd * G.kurs * 100) || 0)} (${geld(usd)})`;
   const fix = Math.round(G.fixkosten * 100), komma = x => String(x).replace('.', ',');
@@ -3229,10 +3534,10 @@ async function zeichne() {
   const [teil, tag] = anker ? ['anleitung'] : location.hash.replace(/^#\/?/, '').split('/').map(decodeURIComponent);
   const offen = SERVER && ['recht', 'upgrade'].includes(teil);  // Preise und Impressum auch ohne Konto
   let neu = teil === 'anleitung' ? 'anleitung' : offen ? teil : !fertig() || teil === 'einstellungen' ? 'einstellungen'
-    : ['kalender', 'wordpower', 'onlinetests', 'vortrag', ...SERVER ? ['admin'] : []].includes(teil) ? teil : R[teil] ? 'ausgabe' : 'titelblatt';
+    : ['kalender', 'wordpower', 'onlinetests', 'noten', 'vortrag', ...SERVER ? ['admin'] : []].includes(teil) ? teil : R[teil] ? 'ausgabe' : 'titelblatt';
   if (SPERREN[neu] && !darf(SPERREN[neu])) neu = 'gesperrt';  // Server: Funktion ohne passenden Tarif
   if ($('meldung').open) $('meldung').close();
-  for (const id of ['titelblatt', 'ausgabe', 'einstellungen', 'kalender', 'wordpower', 'onlinetests', 'vortrag', 'anleitung', 'gesperrt', 'upgrade', 'admin', 'recht']) $(id).hidden = id !== neu;
+  for (const id of ['titelblatt', 'ausgabe', 'einstellungen', 'kalender', 'wordpower', 'onlinetests', 'noten', 'vortrag', 'anleitung', 'gesperrt', 'upgrade', 'admin', 'recht']) $(id).hidden = id !== neu;
   document.body.dataset.ansicht = neu;
   document.querySelectorAll('.mit-daten').forEach(a => { a.hidden = !fertig(); });
   $('nav-admin').hidden = !ICH?.admin;
@@ -3245,7 +3550,7 @@ async function zeichne() {
   $('nav-faecher').replaceChildren(...Object.keys(R).map(f => el('a', { href: `#/${encodeURIComponent(f)}`, 'aria-current': neu === 'ausgabe' && teil === f ? 'page' : null },
     el('span', { class: 'punkt', 'data-fach': f, 'aria-hidden': 'true' }), f, R[f].druckt && el('span', { class: 'laeuft', role: 'img', 'aria-label': 'wird erstellt' }))));
   $('nav-faecher-kopf').hidden = !fertig() || !Object.keys(R).length;
-  const namen = { kalender: 'Kalender', wordpower: 'Word Power', onlinetests: 'Onlinetests', vortrag: 'Vortrag', anleitung: 'Anleitung', einstellungen: SERVER ? 'Konto' : 'Einrichten',
+  const namen = { kalender: 'Kalender', wordpower: 'Word Power', onlinetests: 'Onlinetests', noten: 'Noten', vortrag: 'Vortrag', anleitung: 'Anleitung', einstellungen: SERVER ? 'Konto' : 'Einrichten',
     upgrade: 'Tarife', admin: 'Admin-Ecke', recht: 'Impressum, Datenschutz und AGB' };
   document.title = neu === 'titelblatt' ? 'Lernhelfer' : `${neu === 'ausgabe' ? teil : namen[hier]} – Lernhelfer`;
   modellWahl(); $('modell-name').textContent = $('modell').value;
@@ -3259,6 +3564,7 @@ async function zeichne() {
   } else if (neu === 'kalender') kalenderZeigen();
   else if (neu === 'wordpower') wordpower();
   else if (neu === 'onlinetests') await onlinetestsZeigen(tag);
+  else if (neu === 'noten') await notenZeigen();
   else if (neu === 'vortrag') await vortragZeigen(tag);
   else if (neu === 'gesperrt') $('gesperrt').replaceChildren(el('header', { class: 'ausgabe-kopf' }, el('h1', {}, namen[teil])), sperrkarte(SPERREN[teil]));
   else if (neu === 'upgrade') upgradeZeigen();

@@ -107,6 +107,7 @@ try {
   assert.equal((await anna('PUT', gh('faecher/BWL.json'), { content: b64('neu'), sha })).status, 200);
   assert.equal((await chef('GET', gh('faecher/BWL.json'))).status, 404, 'jedes Konto sieht nur seins');
   assert.equal((await anna('PUT', gh('kalender/plan.ics'), { content: b64('BEGIN:VCALENDAR') })).status, 402, 'Kalender ist Pro');
+  assert.equal((await anna('PUT', gh('noten.json'), { content: b64('{}') })).status, 402, 'Notentracker ist Pro');
   assert.equal((await anna('PUT', gh('a%2F..%2Fb'), { content: '' })).status, 400);
 
   // PC-Abgleich mit eigenem Schlüssel: darf nur den Speicher
@@ -120,6 +121,8 @@ try {
 
   // KI: Base darf die Ausgabe, nicht den Chat; Preis wird gebucht und der Server-Schlüssel benutzt
   assert.equal((await anna('POST', '/api/ki', { feature: 'chat', model: 'openai/gpt-6-luna', messages: [] })).status, 402);
+  r = await anna('POST', '/api/ki', { feature: 'ausgabe-ultra', model: 'openai/gpt-6-luna', messages: [] });
+  assert.equal(r.status, 402); assert.match(r.j.error.message, /Ultra-Fassung der Wochenausgabe gehört zu Ultra/);
   assert.equal((await anna('POST', '/api/ki', { feature: 'ausgabe', model: 'anthropic/teuer', messages: [] })).status, 400);
   r = await anna('POST', '/api/ki', { feature: 'ausgabe', model: 'openai/gpt-6-luna', messages: [{ role: 'user', content: 'x' }], plugins: [{ id: 'web' }] });
   assert.equal(r.j.choices[0].message.content, 'Antwort');
@@ -177,6 +180,9 @@ try {
   assert.equal((await chef('POST', '/api/admin/bezahlt', { id: offen.id })).status, 200);
   r = (await anna('GET', '/api/ich')).j;
   assert.equal(r.tarif, 'ultra'); assert.equal(r.test, false); assert.equal(r.bestellung, null); assert.equal(r.erstrabatt, false);
+  assert.equal((await anna('PUT', gh('noten.json'), { content: b64('{"lv":{},"eintraege":[]}') })).status, 201, 'Noten ab Pro');
+  assert.equal((await anna('POST', '/api/ki', { feature: 'ausgabe-ultra', model: 'openai/gpt-6-luna', messages: [{ role: 'user', content: 'x' }] })).status, 200);
+  assert.equal(or.anfragen.at(-1).model, 'openai/gpt-6-luna', 'Ultra: das gewählte Modell');
   assert.ok(Math.abs(r.bis - Date.now() - 30 * 864e5) < 60e3);
   assert.match(log, /Freundes-Bonus/);
 

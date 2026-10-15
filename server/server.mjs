@@ -37,10 +37,11 @@ const TEST = { stunden: 24, budget: 0.5 };  // einmal 24 Stunden Ultra, höchste
 const MONATE = [1, 3, 6];
 // Funktion → Mindestrang; die App schickt bei jeder KI-Anfrage mit, wofür sie ist
 // 9 = nur in der Admin-Ecke: Den Hausaufgaben-Entwurf gibt es nicht zu kaufen, er bleibt privat
-const FUNKTIONEN = { ausgabe: 0, kalender: 1, 'wp-transkript': 1, vortrag: 1, chat: 2, loeser: 2, 'wp-text': 9 };
-const NAMEN = { ausgabe: 'Die Wochenausgabe', kalender: 'Der Kalender', 'wp-transkript': 'Das Word-Power-Transkript', vortrag: 'Die Vortragsanalyse',
-  chat: 'Der KI-Chat', loeser: 'Der Lösungsweg zu jeder Frage', 'wp-text': 'Der Hausaufgaben-Entwurf' };
-const PFADE = { 'kalender/': 'kalender', 'vortraege/': 'vortrag' };  // Schreiben in diese Ordner nur mit Tarif
+// ausgabe-ultra: die ausführliche Fassung der Wochenausgabe (Formeln Schritt für Schritt, mehr Aufgaben); noten: der Notentracker, ohne KI
+const FUNKTIONEN = { ausgabe: 0, kalender: 1, noten: 1, 'wp-transkript': 1, vortrag: 1, 'ausgabe-ultra': 2, chat: 2, loeser: 2, 'wp-text': 9 };
+const NAMEN = { ausgabe: 'Die Wochenausgabe', kalender: 'Der Kalender', noten: 'Der Notentracker', 'wp-transkript': 'Das Word-Power-Transkript', vortrag: 'Die Vortragsanalyse',
+  'ausgabe-ultra': 'Die Ultra-Fassung der Wochenausgabe', chat: 'Der KI-Chat', loeser: 'Der Lösungsweg zu jeder Frage', 'wp-text': 'Der Hausaufgaben-Entwurf' };
+const PFADE = { 'kalender/': 'kalender', 'vortraege/': 'vortrag', 'noten.json': 'noten' };  // Schreiben hierhin nur mit Tarif
 // ponytail: Funktion und Modell prüft der Server, den Prompt nicht; Missbrauch deckelt das Monatsbudget. Strenger: Prompts serverseitig bauen.
 const MODELLE = new Set(['openai/gpt-6-luna', 'xiaomi/mimo-v2.6-pro', 'openai/gpt-6.1-sol', 'google/gemini-3.8-flash', 'google/gemini-4-argon', BASIS_KI.model]);
 const FELDER = ['model', 'messages', 'reasoning', 'provider', 'response_format', 'stream', 'temperature', 'max_tokens'];
