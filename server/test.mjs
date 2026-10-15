@@ -40,6 +40,11 @@ const attrappe = createServer((req, res) => {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       return res.end(JSON.stringify({ choices: [{ message: { content: 'Antwort' } }], usage: { cost: 0.3 } }));
     }
+    if (req.url === '/audio/speech') {  // 4 Sekunden Stille
+      or.anfragen.push({ auth: req.headers.authorization, sprache: true, ...j });
+      res.writeHead(200, { 'Content-Type': 'audio/pcm;rate=24000;channels=1' });
+      return res.end(Buffer.alloc(4 * 48000));
+    }
     if (req.method === 'GET') { res.writeHead(200, { 'Content-Type': 'application/json' }); return res.end(JSON.stringify({ data: { usage: 2.5, usage_monthly: 1.5 } })); }
     or.schluessel.push({ method: req.method, url: req.url, ...j });
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -108,6 +113,8 @@ try {
   assert.equal((await chef('GET', gh('faecher/BWL.json'))).status, 404, 'jedes Konto sieht nur seins');
   assert.equal((await anna('PUT', gh('kalender/plan.ics'), { content: b64('BEGIN:VCALENDAR') })).status, 402, 'Kalender ist Pro');
   assert.equal((await anna('PUT', gh('noten.json'), { content: b64('{}') })).status, 402, 'Notentracker ist Pro');
+  assert.equal((await anna('PUT', gh('karten.json'), { content: b64('{}') })).status, 402, 'Karteikarten sind Pro');
+  assert.equal((await anna('PUT', gh('lernskripte/VWL.md'), { content: b64('x') })).status, 402, 'Lernskript ist Ultra');
   assert.equal((await anna('PUT', gh('a%2F..%2Fb'), { content: '' })).status, 400);
 
   // PC-Abgleich mit eigenem Schlüssel: darf nur den Speicher
@@ -123,6 +130,8 @@ try {
   assert.equal((await anna('POST', '/api/ki', { feature: 'chat', model: 'openai/gpt-6-luna', messages: [] })).status, 402);
   r = await anna('POST', '/api/ki', { feature: 'ausgabe-ultra', model: 'openai/gpt-6-luna', messages: [] });
   assert.equal(r.status, 402); assert.match(r.j.error.message, /Ultra-Fassung der Wochenausgabe gehört zu Ultra/);
+  assert.equal((await anna('POST', '/api/sprache', { input: [{ text: 'Hallo', voice: 'Kore' }] })).status, 402, 'Anhören ist Ultra');
+  assert.equal((await anna('POST', '/api/ki', { feature: 'probeklausur', model: 'openai/gpt-6-luna', messages: [] })).status, 402);
   assert.equal((await anna('POST', '/api/ki', { feature: 'ausgabe', model: 'anthropic/teuer', messages: [] })).status, 400);
   r = await anna('POST', '/api/ki', { feature: 'ausgabe', model: 'openai/gpt-6-luna', messages: [{ role: 'user', content: 'x' }], plugins: [{ id: 'web' }] });
   assert.equal(r.j.choices[0].message.content, 'Antwort');
@@ -183,6 +192,17 @@ try {
   assert.equal((await anna('PUT', gh('noten.json'), { content: b64('{"lv":{},"eintraege":[]}') })).status, 201, 'Noten ab Pro');
   assert.equal((await anna('POST', '/api/ki', { feature: 'ausgabe-ultra', model: 'openai/gpt-6-luna', messages: [{ role: 'user', content: 'x' }] })).status, 200);
   assert.equal(or.anfragen.at(-1).model, 'openai/gpt-6-luna', 'Ultra: das gewählte Modell');
+  assert.equal((await anna('PUT', gh('karten.json'), { content: b64('{"karten":{},"gelesen":{}}') })).status, 201);
+  assert.equal((await anna('PUT', gh('lernskripte/VWL.md'), { content: b64('# Skript') })).status, 201);
+  const vorher = (await anna('GET', '/api/ich')).j.genutzt;
+  const ton = await anna('POST', '/api/sprache', { input: [{ text: 'Hallo, das ist die Woche.', voice: 'Kore', instructions: 'freundlich' }, { text: 'Genau.', voice: 'Puck' }] });
+  assert.equal(ton.status, 200); assert.equal(ton.text.length, 4 * 48000, '4 Sekunden Ton durchgereicht');
+  assert.deepEqual(or.anfragen.at(-1).input.map(t => t.voice), ['Kore', 'Puck']); assert.equal(or.anfragen.at(-1).model, 'google/gemini-3.8-flash-tts');
+  assert.equal(or.anfragen.at(-1).response_format, 'pcm');
+  assert.ok((await anna('GET', '/api/ich')).j.genutzt >= vorher, 'Ton gebucht');
+  assert.equal((await anna('POST', '/api/sprache', { input: [{ text: 'x'.repeat(9000) }] })).status, 400, 'zu viel Text');
+  await anna('POST', '/api/ki', { feature: 'training', model: 'openai/gpt-6-luna', messages: [{ role: 'user', content: 'Schwächen' }] });
+  assert.match(or.anfragen.at(-1).messages[0].content, /nie mit ihren Originalzahlen/, 'Training: Regel vom Server');
   assert.ok(Math.abs(r.bis - Date.now() - 30 * 864e5) < 60e3);
   assert.match(log, /Freundes-Bonus/);
 

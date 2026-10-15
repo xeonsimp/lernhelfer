@@ -729,12 +729,51 @@
   .noten .tabelle td { white-space: nowrap; }
   .noten .tabelle td:nth-child(3) { white-space: normal; min-width: 10em; }
   .noten .tabelle .pille { margin-left: 6px; }
-  .noten-kurz li { display: grid; grid-template-columns: minmax(0, 1fr) auto 3.5ch; gap: 12px; align-items: baseline; padding: 10px 16px; }
+  .noten-kurz li { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 12px; align-items: baseline; padding: 10px 16px; }
+  .noten-kurz a.lv { color: var(--text); }
   .noten-kurz .lv { font-weight: 600; overflow-wrap: anywhere; }
   .noten-kurz .lv::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 8px; border-radius: 3px; background: var(--fach, var(--linie-2)); }
   .noten-kurz b { font-size: 1.0625rem; text-align: right; font-variant-numeric: tabular-nums; }
   .noten-kurz .schnitt { background: var(--bg-2); }
   .noten-kurz .schnitt .lv::before { visibility: hidden; }
+
+  /* Prüfungen mit Lernplan, Karteikarten, Prüfungstraining, Anhören */
+  .text h2 { margin: 1.8em 0 0.5em; font: 700 1.3125rem/1.3 var(--sans); letter-spacing: -0.01em; }
+  .note-gross small { color: var(--text-3); font-size: 0.8125rem; font-weight: 600; }
+  .lernplan { display: grid; gap: 6px; margin: 10px 0 0; padding-left: 1.25em; color: var(--text-2); font-size: 0.875rem; }
+  .pruefung-neu { margin-top: 12px; }
+  .pruefung-neu > summary, .skript > summary { width: max-content; cursor: pointer; }
+  .pruefung-neu > summary { color: var(--akzent-text); font-size: 0.875rem; font-weight: 600; }
+  .pruefung-form, .pk-form { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 160px), 1fr)); gap: 0 12px; align-items: end; }
+  .pruefung-form .knopfreihe, .pk-form .knopfreihe { grid-column: 1 / -1; }
+  .karten-seite { display: grid; gap: 20px; max-width: 640px; margin-top: 20px; }
+  .karten-seite .feld { max-width: 280px; margin: 0; }
+  .karte .seite-v > .pille { position: absolute; top: 14px; left: 14px; }
+  .pille[data-fach] { background: color-mix(in srgb, var(--fach) 14%, var(--bg)); color: var(--fach); }
+  .fertig-karte { display: grid; place-items: center; min-height: 12rem; padding: 24px; border-radius: var(--r-l); background: var(--bg-2); text-align: center; }
+  .fertig-karte p { margin: 0; }
+  .pk-kopf { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 12px 0; padding: 10px 0; border-bottom: 1px solid var(--linie);
+    background: color-mix(in srgb, var(--bg) 92%, transparent); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+  .pk-kopf .meta { margin-top: 2px; }
+  .pk-uhr { margin: 0; font: 750 1.5rem/1 var(--sans); font-variant-numeric: tabular-nums; }
+  .pk-aufgaben { display: grid; gap: 12px; margin: 12px 0 0; padding: 0; list-style: none; counter-reset: pk; }
+  .pk-aufgaben > li { counter-increment: pk; }
+  .pk-aufgaben > li::before { content: "Aufgabe " counter(pk); color: var(--text-3); font: 700 0.8125rem/1 var(--sans); }
+  .pk-optionen { display: grid; gap: 6px; margin: 0; padding: 0; border: 0; }
+  .pk-optionen label { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border: 1px solid var(--linie); border-radius: var(--r); cursor: pointer; }
+  .pk-optionen label:has(input:checked) { border-color: var(--akzent); background: var(--akzent-flaeche); }
+  .pk-optionen input { flex: none; margin: 3px 0 0; accent-color: var(--akzent); }
+  .pk-aufgaben .pk-ok { border-left: 3px solid var(--ok); }
+  .pk-aufgaben .pk-falsch { border-left: 3px solid var(--fehler); }
+  .pk-urteil { margin: 0; font-size: 0.875rem; font-weight: 700; }
+  .pk-ok .pk-urteil { color: var(--ok); } .pk-falsch .pk-urteil { color: var(--fehler); } .pk-leer .pk-urteil { color: var(--text-3); }
+  .skript[open] > summary { margin-bottom: 14px; }
+  .pt-faecher { position: static; margin-top: 16px; }  /* die Probeklausur hat oben ihre eigene Uhr */
+  .hoeren { display: grid; gap: 10px; margin: 0 0 20px; padding: 18px 20px; border: 1px solid var(--linie); border-radius: var(--r-l); background: var(--bg-2); }
+  .hoeren .rubrik, .hoeren .knopfreihe { margin: 0; }
+  .hoeren audio { width: 100%; }
+  .tempo { display: inline-flex; align-items: center; gap: 8px; font-size: 0.875rem; font-weight: 600; }
+  .tempo select { width: auto; min-height: 40px; }
 </style>
 </head>
 <body>
@@ -751,6 +790,8 @@
       <a href="#/kalender" data-ansicht="kalender" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Kalender</a>
       <a href="#/onlinetests" data-ansicht="onlinetests" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4.5" width="14" height="16" rx="2.5"/><path d="M9.5 3.5h5M9 12.5l2 2 4-4"/></svg>Onlinetests</a>
       <a href="#/noten" data-ansicht="noten" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><path d="M7 16.5v-4M12 16.5v-9M17 16.5v-6"/></svg>Noten</a>
+      <a href="#/karten" data-ansicht="karten" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="8" width="13" height="11" rx="2"/><path d="M7.5 5h11a2 2 0 0 1 2 2v8.5"/></svg>Karteikarten</a>
+      <a href="#/pruefung" data-ansicht="pruefung" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9.5L12 5l9 4.5-9 4.5z"/><path d="M7 11.5v4.5c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5v-4.5M21 9.5V14"/></svg>Prüfungstraining</a>
       <a href="#/wordpower" data-ansicht="wordpower" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a1 1 0 0 1 1 1v9.5a1 1 0 0 1-1 1h-8L7 20v-3.5H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg><span translate="no">Word Power</span></a>
       <a href="#/vortrag" data-ansicht="vortrag" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5M8.5 20.5h7"/></svg>Vortrag</a>
       <a href="#/upgrade" data-ansicht="upgrade" class="nur-server mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>Tarife</a>
@@ -797,7 +838,7 @@
             <div class="woche-feld" id="tage"></div>
           </section>
           <section aria-labelledby="no-kopf" class="h-noten" id="h-noten" hidden>
-            <div class="block-kopf"><h2 id="no-kopf">Noten</h2><a href="#/noten" class="meta">Zum Notentracker</a></div>
+            <div class="block-kopf"><h2 id="no-kopf">Lernen</h2><a href="#/noten" class="meta">Notentracker</a></div>
             <div id="h-noten-inhalt"></div>
           </section>
         </div>
@@ -868,6 +909,10 @@
     <section id="onlinetests" hidden class="werkstatt"></section>
 
     <section id="noten" hidden class="werkstatt noten"></section>
+
+    <section id="karten" hidden class="werkstatt"></section>
+
+    <section id="pruefung" hidden class="werkstatt"></section>
 
     <section id="gesperrt" hidden class="werkstatt"></section>
 
@@ -1020,6 +1065,15 @@
           <li>deinen Notenschnitt, nach ECTS gewichtet, sobald du sie einträgst.</li>
         </ul>
         <p>Notenschlüssel und Gesamtpunkte stehen in der Wochenausgabe unter Stammdaten, Leistungsbeurteilung. Ohne eigenen Schlüssel rechnet der Tracker mit ab 50 % Note 4, ab 62,5 % Note 3, ab 75 % Note 2 und ab 87,5 % Note 1. Die Prognose rechnet nur mit deinen Einträgen, sie ist keine offizielle Note.</p>
+
+        <h2 id="a-lernen">Lernen und Prüfungen</h2>
+        <ul>
+          <li><b>Karteikarten</b><span class="nur-server"> (ab Pro)</span>: alle Begriffe aus allen Ausgaben in einem Stapel. Was du weißt, kommt nach 1, 3, 7, 14 und 30 Tagen wieder, was nicht, gleich nochmal; neu kommen höchstens 20 am Tag. Am PC geht es auch mit der Tastatur: Leertaste dreht um, 1 heißt nochmal, 2 gewusst. Für Anki lädst du den Stapel als Datei herunter, für Quizlet kopierst du ihn und fügst ihn beim Importieren ein.</li>
+          <li><b>Prüfungen</b><span class="nur-server"> (ab Pro)</span> stehen im Notentracker mit Countdown. Neue Wochenausgaben übernehmen die Termine aus dem Syllabus; fehlt einer, trägst du ihn ein. Der Lernplan verteilt alle Ausgaben des Fachs auf die Wochen bis dahin, die letzten zwei Tage bleiben zum Üben.</li>
+          <li><b>PDF</b><span class="nur-server"> (ab Pro)</span>: In jeder Ausgabe öffnet „PDF“ eine Druckfassung mit allen Lösungen und Begriffen. Dort „Als PDF sichern“ wählen, am iPad im Teilen-Menü „Drucken“ und dann „In Dateien sichern“.</li>
+          <li><b>Anhören</b><span class="nur-server"> (Ultra)</span>: Keine Lust zu lesen oder gerade im Bus? „Anhören“ macht aus der Ausgabe einen Podcast: Lena fragt, Max erklärt, rund 10 Minuten. Das Erstellen dauert etwa zwei Minuten; danach bleibt der Ton auf dem Gerät, und „Für unterwegs speichern“ legt ihn als Datei ab.</li>
+          <li><b>Prüfungstraining</b><span class="nur-server"> (Ultra)</span>: Die <b>Probeklausur</b> stellt Aufgaben im Stil deiner Prüfung über den ganzen bisherigen Stoff, mit Zeitlimit; danach siehst du Punkte, Note und jeden Lösungsweg. Das <b>Schwächen-Training</b> sucht in deinen Onlinetests, Probeklausuren und Noten, woran es hakt, und macht genau dazu neue Übungen. Das <b>Lernskript</b> fasst den Stoff eines Fachs nach Themen zusammen, mit Formelsammlung, Begriffen und Prüfungs-Checkliste, auch als PDF.</li>
+        </ul>
 
         <h2 id="a-vortrag">Vortrag analysieren</h2>
         <p>Unter <a href="#/vortrag">Vortrag</a> bekommst du Rückmeldung zu einer Präsentation, etwa vor dem PS oder für Englisch. Video oder Tonaufnahme wählen, optional Anlass und Vorgaben dazuschreiben (Zeitvorgabe, Bewertungskriterien), auf „Analysieren“ tippen. Nach etwa 2 bis 5 Minuten bekommst du:</p>
@@ -1186,8 +1240,9 @@ Schritt 3: Ganz am Ende genau ein Codeblock \`\`\`json mit diesem Aufbau:
 {"schlagzeile": "Zeitungsschlagzeile zur letzten Einheit, höchstens 60 Zeichen",
  "quellen": ["Dateinamen der Unterlagen, auf denen die fünf Wochenabschnitte beruhen"],
  "termine": [{"datum": "JJJJ-MM-TT", "zeit": "HH:MM oder null", "art": "VO, PS, Abgabe, Test oder Sonstiges", "code": "kurzer Code wie VO 05 oder PS EH3", "titel": "worum es geht", "ort": "Raum oder null", "info": "2–4 Sätze laut Unterlagen: was genau ansteht oder abzugeben ist (Thema, Umfang, Form, Abgabeweg, erlaubte Hilfsmittel) und wie man sich vorbereitet"}],
- "begriffe": [{"begriff": "...", "definition": "präzise, 1–2 Sätze"}]}
-In "termine" stehen alle Termine der nächsten 21 Tage ab heute (Vorlesungen, Proseminare, Abgaben, Tests), aber nur solche, deren Datum in den Unterlagen steht oder sich eindeutig aus einem dort genannten festen Wochenrhythmus ergibt. Vermutete Termine gehören nicht in die Liste. Jeder Onlinetest, dessen Bearbeitungszeitraum in diese 21 Tage fällt, steht mit art "Test" und dem Ende des Zeitraums als datum und zeit darin; Beginn des Zeitraums und Anzahl der Fragen gehören ins info-Feld. In "begriffe" 10–25 prüfungsrelevante Begriffe der letzten Einheit.
+ "begriffe": [{"begriff": "...", "definition": "präzise, 1–2 Sätze"}],
+ "pruefungen": [{"datum": "JJJJ-MM-TT", "zeit": "HH:MM oder null", "titel": "kurz, etwa VO-Prüfung, PS-Klausur, Zwischentest 2"}]}
+In "termine" stehen alle Termine der nächsten 21 Tage ab heute (Vorlesungen, Proseminare, Abgaben, Tests), aber nur solche, deren Datum in den Unterlagen steht oder sich eindeutig aus einem dort genannten festen Wochenrhythmus ergibt. Vermutete Termine gehören nicht in die Liste. Jeder Onlinetest, dessen Bearbeitungszeitraum in diese 21 Tage fällt, steht mit art "Test" und dem Ende des Zeitraums als datum und zeit darin; Beginn des Zeitraums und Anzahl der Fragen gehören ins info-Feld. In "begriffe" 10–25 prüfungsrelevante Begriffe der letzten Einheit. In "pruefungen" stehen alle Prüfungstermine des ganzen Semesters (Klausuren, Zwischentests, Endprüfungen; keine Onlinetests und keine Anmeldefristen), deren Datum in den Unterlagen steht, auch weit in der Zukunft; sonst eine leere Liste.
 
 Formeln setzt du in LaTeX: im Fließtext zwischen \\( und \\), abgesetzt zwischen \\[ und \\]. In den JSON-Feldern stehen keine LaTeX-Formeln, sondern einfache Schreibweise wie x², a/b oder √x.
 
@@ -1201,7 +1256,7 @@ const el = (tag, attrs = {}, ...kinder) => {
     if (v == null || v === false) continue;
     if (k === 'class') e.className = v; else if (k.startsWith('on')) e[k] = v; else e.setAttribute(k, v === true ? '' : v);
   }
-  e.append(...kinder.flat().filter(k => k != null && k !== false));
+  e.append(...kinder.flat(Infinity).filter(k => k != null && k !== false));
   return e;
 };
 // Formeln vor marked herausnehmen (sonst frisst es die Backslashes), als MathML setzen und erst danach alles gemeinsam säubern
@@ -1217,6 +1272,39 @@ const markdown = (knoten, s, inline) => {
   knoten.innerHTML = DOMPurify.sanitize(html);
   return knoten;
 };
+// Eine JSON-Datei im Speicher (Noten, Karteikarten): einmal laden, nacheinander schreiben, immer mit der neuesten sha
+function datei(pfad, leer) {
+  const d = { daten: null, sha: null, p: null };
+  d.laden = () => d.p ??= gh(pfad, { roh: false }).then(j => {
+    d.sha = j?.sha || null;
+    return d.daten = j ? JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(j.content.replace(/\s/g, '')), c => c.charCodeAt(0)))) : leer();
+  }).catch(e => { d.p = null; throw e; });
+  d.speichern = () => nacheinander(async () => {
+    d.sha = (await gh(pfad, { method: 'PUT', roh: false, body: { message: pfad, content: base64(JSON.stringify(d.daten)), sha: d.sha || undefined } })).content.sha;
+  });
+  d.vergessen = () => { d.p = null; d.daten = null; d.sha = null; };
+  return d;
+}
+// Textdatei überschreiben (Training, Lernskript, Podcast-Gespräch): erst die sha holen, die GitHub zum Überschreiben braucht
+const textSchreiben = async (pfad, text) => { const alt = await gh(pfad, { roh: false }); await nacheinander(() => gh(pfad, { method: 'PUT', roh: false, body: { message: pfad, content: base64(text), sha: alt?.sha } })); };
+const plusTage = n => iso(new Date(heute.getFullYear(), heute.getMonth(), heute.getDate() + n));
+const escHtml = s => String(s).replace(/[&<>"]/g, c => `&#${c.charCodeAt(0)};`);
+// Druckfassung als eigene Seite: der Browser macht daraus ein PDF („Als PDF sichern“, am iPad über Teilen → Drucken)
+function drucken(titel, inhalt) {
+  const css = WP_DOC_CSS + 'h1{font-size:1.8em;line-height:1.2;margin:0 0 .3em}h4{margin:1.2em 0 .3em}math{font-size:1.05em}math[display=block]{margin:.8em 0}'
+    + '.meta{color:#6b6458;font-size:.9em}@media print{html{background:none}body{padding:0}h2,h3{break-after:avoid}}';
+  const html = `<!doctype html><html lang="de"><head><meta charset="utf-8"><title>${escHtml(titel)}</title><style>${css}</style></head><body>${inhalt}</body></html>`;
+  const w = open(URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' })));
+  if (!w) return speichern(html, titel + '.html', 'text/html;charset=utf-8');  // Fenster gesperrt: dann als Datei
+  w.addEventListener('load', () => setTimeout(() => w.print(), 400));
+}
+function ausgabeDrucken(f, a) {
+  const md = s => markdown(el('div'), s).innerHTML;
+  drucken(`${f} ${a.datum}`, [`<h1>${escHtml(f)}: ${escHtml(a.schlagzeile || 'Wochenausgabe')}</h1><p class="meta">Ausgabe vom ${datum(a.datum, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p>`,
+    ...[['Auf einen Blick', 'auf einen blick'], ['Zusammenfassung der letzten Einheit', 'zusammenfassung'], ['Formeln Schritt für Schritt', 'formeln'], ['Nächstes Proseminar', 'nächstes proseminar'],
+      ['Übungsaufgaben', 'übungsaufgaben'], ['Nächste Vorlesung', 'nächste vorlesung'], ['Stammdaten', 'stammdaten']].map(([titel, k]) => abschnitt(a, k) && `<h2>${titel}</h2>${md(abschnitt(a, k))}`),
+    a.begriffe.length && `<h2>Begriffe</h2><table>${a.begriffe.map(b => `<tr><th>${escHtml(b.begriff)}</th><td>${escHtml(b.definition)}</td></tr>`).join('')}</table>`].filter(Boolean).join(''));
+}
 const tabelle = (kopf, zeilen) => el('div', { class: 'tabelle-rahmen' }, el('table', { class: 'tabelle' },
   el('thead', {}, el('tr', {}, kopf.map(k => el('th', {}, k)))), el('tbody', {}, zeilen.map(z => el('tr', {}, z.map(x => el('td', {}, x)))))));
 const kachel = (titel, wert, zusatz) => el('div', { class: 'kachel' }, el('p', { class: 'meta' }, titel), el('p', { class: 'zahl' }, String(wert)), zusatz && el('p', { class: 'meta' }, zusatz));
@@ -1314,6 +1402,7 @@ function zerlege(text, tag) {
     quellen: liste(daten.quellen).filter(q => typeof q === 'string'),
     termine: liste(daten.termine).filter(t => t && /^\d{4}-\d{2}-\d{2}$/.test(t.datum)),
     begriffe: liste(daten.begriffe).filter(b => b && b.begriff && b.definition),
+    pruefungen: liste(daten.pruefungen).filter(p => p && /^\d{4}-\d{2}-\d{2}$/.test(p.datum)),
   };
 }
 const abschnitt = (a, anfang) => Object.entries(a.abschnitte).find(([k]) => k.toLowerCase().startsWith(anfang))?.[1] || '';
@@ -1423,7 +1512,7 @@ function titelblatt() {
     (ALLE_FRISTEN || fristen.length > sichtbar.length) && el('li', {}, el('button', { class: 'mehr', type: 'button', 'aria-expanded': String(ALLE_FRISTEN),
       onclick: () => { ALLE_FRISTEN = !ALLE_FRISTEN; titelblatt(); } }, ALLE_FRISTEN ? 'Nur die nächsten offenen zeigen' : `Alle ${fristen.length} Fristen zeigen, auch erledigte`)));
   wocheZeigen();
-  notenKurz();
+  lernenKurz();
   $('assistent').replaceChildren(assistent());
 }
 let WAHL = null;  // in „Diese Woche“ gewählter Tag
@@ -1662,9 +1751,13 @@ async function ausgabeZeigen(f, tag) {
           a.meta && el('span', {}, a.meta.split(' · ')[0]), ultra && el('span', { class: 'fassung' }, 'Ultra-Fassung'), !SERVER && a.preis && el('span', {}, `Kosten ${geld(a.preis)}`))),
       el('div', { class: 'kopf-aktionen' },
         f === 'Englisch' && el('a', { class: 'knopf', href: '#/wordpower' }, el('span', { translate: 'no' }, 'Word Power')),
+        el('button', { class: 'knopf', type: 'button', 'aria-expanded': String(!!HOER[`${f}/${tag}`]?.offen), onclick: () => hoerenKlick(f, tag) }, 'Anhören'),
+        darf('export') && el('button', { class: 'knopf', type: 'button', onclick: () => ausgabeDrucken(f, a) }, 'PDF'),
+        el('a', { class: 'knopf', href: `#/pruefung/${encodeURIComponent(f)}` }, 'Prüfungstraining'),
         !r.druckt && el('button', { class: 'knopf voll', type: 'button', onclick: () => drucke(f) }, 'Neu erstellen'))),
     r.druckt && presse(f),
     r.fehler && el('p', { class: 'fehlertext' }, r.fehler),
+    hoerenTeil(f, tag, a),
     !ultra && !r.druckt && darf('ausgabe-ultra') && el('p', { class: 'meta' }, 'Diese Ausgabe ist noch die normale Fassung. „Neu erstellen“ schreibt sie als Ultra-Fassung.'),
     quellen.length > 0 && el('details', { class: 'quellen' }, el('summary', {}, `Beruht auf ${quellen.length} ${quellen.length === 1 ? 'Unterlage' : 'Unterlagen'}`), el('p', {}, quellen.join(', '))),
     leiste,
@@ -1705,7 +1798,9 @@ function ultraWerbung(a) {
       n > 0 ? 'Jede Formel in anderen Schreibweisen, damit du sie in der Klausur in jeder Form wiedererkennst' : 'Die Modelle und Regeln der Einheit Schritt für Schritt an Beispielen erklärt',
       'Eine Umformung pro Zeile, jeder Schritt begründet, dazu ein durchgerechnetes Zahlenbeispiel',
       '8 bis 12 Übungsaufgaben statt 4 bis 8, jeder Rechenschritt einzeln, mit zweitem Lösungsweg',
-      'Bis zu 35 Begriffe im Lexikon, jeder mit Beispiel'].map(x => el('li', {}, x))),
+      'Bis zu 35 Begriffe im Lexikon, jeder mit Beispiel',
+      'Keine Lust zu lesen? Die Ausgabe als Podcast zum Anhören, für Bus, Zug und Spaziergang',
+      'Probeklausur, Schwächen-Training und Lernskript für die Prüfung'].map(x => el('li', {}, x))),
     el('div', { class: 'knopfreihe' },
       ICH.testFrei && el('button', { class: 'knopf voll', type: 'button', onclick: testStarten }, '24 Stunden Ultra gratis testen'),
       el('a', { class: `knopf${ICH.testFrei ? '' : ' voll'}`, href: '#/upgrade' }, 'Ultra ansehen')));
@@ -1717,7 +1812,7 @@ function ultraWerbung(a) {
 // Erledigte bewertete Onlinetests kommen mit ihren Punkten aus OLAT von selbst dazu; gelöscht bleiben sie weg.
 const SCHLUESSEL = [50, 62.5, 75, 87.5];  // ab … % Note 4, 3, 2, 1, solange die Lehrveranstaltung keinen eigenen hat
 const NOTEN_NAMEN = ['', 'Sehr gut', 'Gut', 'Befriedigend', 'Genügend', 'Nicht genügend'];
-let NOTEN = null, NOTEN_SHA = null, NOTEN_P = null, NOTE_ID = null;  // NOTE_ID: der Eintrag, der gerade im Formular steht
+let NOTEN = null, NOTEN_P = null, NOTE_ID = null;  // NOTE_ID: der Eintrag, der gerade im Formular steht
 const zahl = s => s == null || String(s).trim() === '' ? null : Number(String(s).trim().replace(',', '.'));
 const dez = (x, n = 1) => x == null ? '–' : x.toLocaleString('de-AT', { maximumFractionDigits: n });
 const feldWert = x => x == null ? '' : String(Math.round(x * 100) / 100).replace('.', ',');
@@ -1725,10 +1820,11 @@ const summe = (l, k) => l.reduce((s, x) => s + (x[k] || 0), 0);
 const noteAus = (p, s) => p == null ? null : 5 - s.filter(g => p >= g).length;
 const notenAktiv = () => NOTEN.eintraege.filter(e => !e.weg && e.max > 0);
 const fachVon = lv => [...ORDNUNG, ...Object.keys(R)].find(f => lv.toLowerCase().startsWith(f.toLowerCase())) || '';
+// pruefungen: [{ id, fach, titel, datum, zeit, quelle, weg }] (Termine aus den Ausgaben kommen von selbst); proben: Ergebnisse der Probeklausuren
+const NOTEN_D = datei('noten.json', () => ({ lv: {}, eintraege: [] }));
 const notenLaden = () => NOTEN_P ??= (async () => {
-  const j = await gh('noten.json', { roh: false });
-  NOTEN_SHA = j?.sha || null;
-  NOTEN = j ? JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(j.content.replace(/\s/g, '')), c => c.charCodeAt(0)))) : { lv: {}, eintraege: [] };
+  NOTEN = await NOTEN_D.laden();
+  NOTEN.pruefungen ??= []; NOTEN.proben ??= [];
   TESTS ??= JSON.parse(await gh('onlinetests.json').catch(() => null) || '[]');
   let neu = 0;
   for (const t of TESTS) {
@@ -1737,15 +1833,17 @@ const notenLaden = () => NOTEN_P ??= (async () => {
     NOTEN.eintraege.push({ id: crypto.randomUUID(), olat: testId(t), lv: `${t.fach} PS`, titel: t.titel, datum: (t.bis || HEUTE).slice(0, 10), punkte: zahl(m[1]), max: zahl(m[2]) });
     neu++;
   }
+  for (const f of Object.keys(R)) for (const x of aktuell(f)?.pruefungen || []) {  // derselbe Tag im selben Fach ist dieselbe Prüfung
+    if (NOTEN.pruefungen.some(q => q.fach === f && q.datum === x.datum)) continue;
+    NOTEN.pruefungen.push({ id: crypto.randomUUID(), fach: f, titel: String(x.titel || 'Prüfung').trim().slice(0, 80), datum: x.datum, zeit: /^\d\d:\d\d$/.test(x.zeit) ? x.zeit : null, quelle: 'ausgabe' });
+    neu++;
+  }
   if (neu) await notenSpeichern();
-})().catch(e => { NOTEN = null; NOTEN_P = null; throw e; });
-const notenSpeichern = () => nacheinander(async () => {
-  const a = await gh('noten.json', { method: 'PUT', roh: false, body: { message: 'Noten', content: base64(JSON.stringify(NOTEN)), sha: NOTEN_SHA || undefined } });
-  NOTEN_SHA = a.content.sha;
-});
+})().catch(e => { NOTEN = null; NOTEN_P = null; NOTEN_D.vergessen(); throw e; });
+const notenSpeichern = () => NOTEN_D.speichern();
 async function notenAendern(fn) {  // ändern, speichern, neu zeichnen; geht das Speichern schief, gilt wieder der Stand im Speicher
   fn();
-  try { await notenSpeichern(); } catch (e) { status(e.message, true); NOTEN = null; NOTEN_P = null; }
+  try { await notenSpeichern(); } catch (e) { status(e.message, true); NOTEN = null; NOTEN_P = null; NOTEN_D.vergessen(); }
   notenZeigen();
 }
 function lvStand(name) {
@@ -1863,6 +1961,7 @@ async function notenZeigen() {
       kachel('Punkte insgesamt', M ? `${dez(100 * P / M, 0)} %` : '–', `${dez(P)} von ${dez(M)} möglichen Punkten`),
       kachel('Gegen den Kursschnitt', abst == null ? '–' : `${abst >= 0 ? '+' : '−'}${dez(Math.abs(abst), 0)}`, abst == null ? 'Schreib bei einem Eintrag den Kursschnitt dazu' : `Prozentpunkte ${abst >= 0 ? 'über' : 'unter'} dem Schnitt`),
       ects > 0 && kachel('Positiv abgeschlossen', `${dez(ects)} ECTS`, 'mit eingetragener Endnote')),
+    pruefungenTeil(teil),
     teil('Verlauf', 'Jeder Punkt ein Eintrag, in Prozent der möglichen Punkte', notenVerlauf(lvs)),
     lvs.length > 0 && teil('Lehrveranstaltungen', 'Prognose und was dir für jede Note noch fehlt', el('div', { class: 'lv-karten' }, lvs.map(lvKarte))),
     vergleich.length > 0 && teil('Du gegen den Kursschnitt', 'Nur Einträge, bei denen der Schnitt dabeisteht', el('div', { class: 'vergleich' }, vergleich.map(l =>
@@ -1881,15 +1980,450 @@ async function notenZeigen() {
             && notenAendern(() => { if (e.olat) e.weg = true; else NOTEN.eintraege.splice(NOTEN.eintraege.indexOf(e), 1); if (NOTE_ID === e.id) NOTE_ID = null; }) }, 'Löschen'))]))),
   ].filter(Boolean));
 }
-async function notenKurz() {  // Heute: Stand je Lehrveranstaltung, auch für das iPad hochkant ohne Seitenleiste
+const kommendePruefungen = () => (NOTEN?.pruefungen || []).filter(p => !p.weg && p.datum >= HEUTE).sort((a, b) => (a.datum + (a.zeit || '')).localeCompare(b.datum + (b.zeit || '')));
+function pruefungenTeil(teil) {
+  const liste = kommendePruefungen();
+  const form = el('form', { class: 'pruefung-form', onsubmit: e => {
+    e.preventDefault();
+    const d = Object.fromEntries(new FormData(e.target));
+    if (!d.titel.trim() || !d.datum) return;
+    notenAendern(() => NOTEN.pruefungen.push({ id: crypto.randomUUID(), fach: d.fach, titel: d.titel.trim(), datum: d.datum, zeit: d.zeit || null }));
+  } },
+    el('label', { class: 'feld' }, 'Fach', el('select', { name: 'fach' }, Object.keys(R).map(f => el('option', { value: f }, f)))),
+    el('label', { class: 'feld' }, 'Was', el('input', { name: 'titel', required: true, autocomplete: 'off', placeholder: 'VO-Prüfung' })),
+    el('label', { class: 'feld' }, 'Datum', el('input', { name: 'datum', type: 'date', required: true, min: HEUTE })),
+    el('label', { class: 'feld' }, el('span', {}, 'Uhrzeit ', el('span', { class: 'opt' }, 'optional')), el('input', { name: 'zeit', type: 'time' })),
+    el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf' }, 'Eintragen')));
+  return teil('Prüfungen', 'Countdown und Lernplan bis dahin', [
+    liste.length ? el('div', { class: 'lv-karten' }, liste.map(pruefungKarte))
+      : el('p', { class: 'leer' }, 'Noch keine Prüfung. Neue Wochenausgaben übernehmen die Termine aus dem Syllabus von selbst, oder du trägst sie hier ein.'),
+    el('details', { class: 'pruefung-neu' }, el('summary', {}, 'Prüfung eintragen'), form)]);
+}
+function pruefungKarte(p) {
+  const n = tageBis(p.datum);
+  return el('article', { class: 'lv-karte', 'data-fach': p.fach },
+    el('div', { class: 'lv-kopf' }, el('h3', {}, `${p.fach}: ${p.titel}`),
+      el('span', { class: 'note-gross', role: 'img', 'aria-label': faellig(n) }, String(n), el('small', {}, n === 1 ? ' Tag' : ' Tage'))),
+    el('p', { class: 'meta' }, `${datum(p.datum, { weekday: 'long', day: 'numeric', month: 'long' })}${p.zeit ? `, ${p.zeit} Uhr` : ''}, ${faellig(n)}`),
+    el('details', {}, el('summary', {}, 'Lernplan bis dahin'), lernplan(p)),
+    el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf', type: 'button', onclick: () => confirm(`${p.fach}: ${p.titel} löschen?`)
+      && notenAendern(() => { if (p.quelle) p.weg = true; else NOTEN.pruefungen.splice(NOTEN.pruefungen.indexOf(p), 1); }) }, 'Löschen')));
+}
+// Rückwärts von der Prüfung: alle Ausgaben des Fachs gleichmäßig auf die Wochen bis dahin, die letzten zwei Tage zum Üben
+function lernplan(p) {
+  const einheiten = (R[p.fach]?.ausgaben || []).map(x => x.datum).filter(d => d <= p.datum).sort(), frei = tageBis(p.datum) - 2;
+  const je = Math.ceil(einheiten.length / Math.max(1, Math.ceil(frei / 7))), plan = [];
+  const link = d => el('a', { href: `#/${encodeURIComponent(p.fach)}/${d}` }, datum(d, { day: '2-digit', month: '2-digit' }));
+  if (frei > 0) for (let w = 0; w * je < einheiten.length; w++)
+    plan.push(el('li', {}, el('b', {}, `Bis ${datum(plusTage(Math.min(frei, (w + 1) * 7) - 1), { weekday: 'short', day: '2-digit', month: '2-digit' })}: `),
+      'Ausgaben vom ', einheiten.slice(w * je, (w + 1) * je).flatMap((d, i) => [i ? ', ' : '', link(d)]), ' wiederholen, Übungsaufgaben ohne Lösung rechnen, Karteikarten.'));
+  plan.push(el('li', {}, el('b', {}, frei > 0 ? 'Die letzten zwei Tage: ' : 'Jetzt: '), darf('probeklausur')
+    ? [el('a', { href: `#/pruefung/${encodeURIComponent(p.fach)}` }, 'Probeklausur schreiben'), ', Fehler nacharbeiten, Formeln und Begriffe ein letztes Mal.']
+    : 'alle Übungsaufgaben ohne Lösung rechnen, Formeln und Begriffe ein letztes Mal.'));
+  return el('ol', { class: 'lernplan' }, !einheiten.length && el('li', {}, `Noch keine Ausgaben für ${p.fach}.`), plan);
+}
+async function lernenKurz() {  // Heute (ab Pro): Karteikarten, nächste Prüfung, Noten; auch fürs iPad hochkant ohne Seitenleiste
   $('h-noten').hidden = !darf('noten');
   if (!darf('noten')) return;
-  try { await notenLaden(); } catch (e) { return $('h-noten-inhalt').replaceChildren(el('p', { class: 'leer' }, e.message)); }
-  const lvs = notenLVs().filter(l => l.note), g = notenSchnitt(lvs);
-  $('h-noten-inhalt').replaceChildren(lvs.length ? el('ul', { class: 'liste-rahmen noten-kurz' },
+  try { await Promise.all([notenLaden(), kartenLaden(false)]); } catch (e) { return $('h-noten-inhalt').replaceChildren(el('p', { class: 'leer' }, e.message)); }
+  const lvs = notenLVs().filter(l => l.note), g = notenSchnitt(lvs), dran = kartenStapel('').length, p = kommendePruefungen()[0];
+  $('h-noten-inhalt').replaceChildren(el('ul', { class: 'liste-rahmen noten-kurz' },
+    el('li', {}, el('a', { class: 'lv', href: '#/karten' }, 'Karteikarten'), el('span', { class: 'meta' }, dran ? 'heute dran' : 'alles gelernt'), el('b', {}, String(dran))),
+    p && el('li', { 'data-fach': p.fach }, el('a', { class: 'lv', href: '#/noten' }, `${p.fach}: ${p.titel}`), el('span', { class: 'meta' }, faellig(tageBis(p.datum))), el('b', {}, kurz(p.datum))),
     lvs.map(l => el('li', { 'data-fach': l.fach || null }, el('span', { class: 'lv' }, l.name), el('span', { class: 'meta' }, l.stand == null ? '' : `${dez(l.stand, 0)} %`), el('b', {}, String(l.note)))),
-    lvs.length > 1 && el('li', { class: 'schnitt' }, el('span', { class: 'lv' }, 'Schnitt'), el('span'), el('b', {}, dez(g))))
-    : el('p', { class: 'leer' }, 'Noch keine Punkte. Erledigte Onlinetests kommen mit dem Abgleich von selbst dazu.'));
+    lvs.length > 1 && el('li', { class: 'schnitt' }, el('span', { class: 'lv' }, 'Notenschnitt'), el('span'), el('b', {}, dez(g)))));
+}
+
+/* ---------- Karteikarten: alle Begriffe aller Ausgaben mit Wiederholplan (Pro) ---------- */
+// karten.json: { karten: { "Fach|begriff": { f, b, d, datum, box, faellig } }, gelesen: { "Fach/Datum": sha }, neu: { datum, n } }
+// Box 0 heißt neu; gewusst rückt eine Box weiter (1, 3, 7, 14, 30 Tage), „Nochmal“ schickt die Karte in Box 1 und heute noch einmal.
+const ABSTAND = [0, 1, 3, 7, 14, 30], NEU_PRO_TAG = 20;
+const KARTEN_D = datei('karten.json', () => ({ karten: {}, gelesen: {} }));
+let KARTEN = null, KARTEN_FACH = '', STAPEL = null, KARTEN_UHR = null, KARTEN_P = Promise.resolve();
+function kartenMischen(f, a, sha) {  // Begriffe einer Ausgabe in den Stapel; neuere Definitionen ersetzen ältere
+  for (const x of a.begriffe) {
+    const id = `${f}|${x.begriff.trim().toLowerCase()}`, k = KARTEN.karten[id];
+    if (!k) KARTEN.karten[id] = { f, b: x.begriff.trim(), d: x.definition, datum: a.datum, box: 0, faellig: null };
+    else if (a.datum >= k.datum) Object.assign(k, { b: x.begriff.trim(), d: x.definition, datum: a.datum });
+  }
+  KARTEN.gelesen[`${f}/${a.datum}`] = sha;
+}
+// alle: auch Ausgaben holen, die noch nicht im Gerät sind (Karteikarten-Seite); sonst nur die schon geladenen (Heute)
+const kartenLaden = alle => KARTEN_P = KARTEN_P.then(async () => {
+  KARTEN = await KARTEN_D.laden();
+  const fehlen = Object.keys(R).flatMap(f => R[f].ausgaben.filter(x => KARTEN.gelesen[`${f}/${x.datum}`] !== x.sha && (alle || R[f].cache[x.datum])).map(x => [f, x]));
+  const ausgaben = await Promise.all(fehlen.map(([f, x]) => ausgabe(f, x.datum)));
+  fehlen.forEach(([f, x], i) => kartenMischen(f, ausgaben[i], x.sha));
+  if (fehlen.length) await KARTEN_D.speichern();
+}).catch(e => { KARTEN = null; KARTEN_P = Promise.resolve(); KARTEN_D.vergessen(); throw e; });
+function kartenStapel(fach = KARTEN_FACH) {  // heute dran: fällige Wiederholungen, dazu neue bis zum Tageslimit
+  const alle = Object.entries(KARTEN?.karten || {}).filter(([, k]) => !fach || k.f === fach);
+  const schon = KARTEN?.neu?.datum === HEUTE ? KARTEN.neu.n : 0;
+  return [...alle.filter(([, k]) => k.box > 0 && k.faellig <= HEUTE),
+    ...alle.filter(([, k]) => !k.box).sort(([, a], [, b]) => a.datum.localeCompare(b.datum)).slice(0, Math.max(0, NEU_PRO_TAG - schon))].map(([id]) => id);
+}
+const kartenSichern = () => { clearTimeout(KARTEN_UHR); KARTEN_UHR = null; return KARTEN_D.speichern().catch(e => status(e.message, true)); };
+function kartenAntwort(gewusst) {
+  const id = STAPEL.shift(), k = KARTEN.karten[id];
+  if (!k.box) KARTEN.neu = { datum: HEUTE, n: (KARTEN.neu?.datum === HEUTE ? KARTEN.neu.n : 0) + 1 };
+  k.box = gewusst ? Math.min(5, k.box + 1) : 1;
+  k.faellig = plusTage(gewusst ? ABSTAND[k.box] : 0);
+  if (!gewusst) STAPEL.push(id);
+  clearTimeout(KARTEN_UHR); KARTEN_UHR = setTimeout(kartenSichern, 3000);  // gesammelt speichern, nicht nach jeder Karte
+  kartenZeigen();
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && KARTEN_UHR) kartenSichern(); });
+document.addEventListener('keydown', e => {  // am PC: Leertaste dreht um, 1 nochmal, 2 gewusst
+  if (document.body.dataset.ansicht !== 'karten' || e.metaKey || e.ctrlKey || e.altKey || e.target.closest?.('input, select, textarea, button, a')) return;
+  const karte = $('karten').querySelector('.karte');
+  if (!karte) return;
+  if (e.key === ' ') { e.preventDefault(); karte.click(); } else if (e.key === '1') kartenAntwort(false); else if (e.key === '2') kartenAntwort(true);
+});
+const kartenText = (quizlet) => Object.values(KARTEN.karten).filter(k => !KARTEN_FACH || k.f === KARTEN_FACH)
+  .map(k => [k.b, k.d, ...quizlet ? [] : [k.f]].map(x => x.replace(/\s+/g, ' ')).join('\t')).join('\n');
+async function kartenZeigen() {
+  const s = $('karten'), kopf = (...x) => el('header', { class: 'ausgabe-kopf' }, el('h1', {}, 'Karteikarten'), ...x);
+  if (!STAPEL) {
+    s.replaceChildren(kopf(el('p', { class: 'meta' }, 'Sammelt die Begriffe aus allen Ausgaben …')));
+    try { await kartenLaden(true); } catch (e) { return s.replaceChildren(kopf(el('p', { class: 'fehlertext' }, e.message))); }
+    if (document.body.dataset.ansicht !== 'karten') return;
+    STAPEL = kartenStapel();
+  }
+  const id = STAPEL[0], k = id && KARTEN.karten[id], alle = Object.values(KARTEN.karten).filter(x => !KARTEN_FACH || x.f === KARTEN_FACH);
+  const anzahl = f => alle.filter(x => f(x.box)).length, morgen = alle.filter(x => x.box > 0 && x.faellig === plusTage(1)).length;
+  const karte = k && el('button', { class: 'karte', type: 'button', 'aria-label': `Karteikarte ${k.b}. Tippen zum Umdrehen.`,
+    onclick: e => { const um = e.currentTarget.classList.toggle('um'); e.currentTarget.querySelector('.seite-h').setAttribute('aria-hidden', String(!um)); } },
+    el('span', { class: 'innen' },
+      el('span', { class: 'seite-v' }, el('span', { class: 'pille', 'data-fach': k.f }, k.f), el('span', { class: 'begriff' }, k.b), el('span', { class: 'hinweis' }, k.box ? 'Tippen zum Umdrehen' : 'Neu · Tippen zum Umdrehen')),
+      el('span', { class: 'seite-h', 'aria-hidden': 'true' }, el('span', { class: 'definition' }, k.d))));
+  s.replaceChildren(...[
+    kopf(el('p', { class: 'schlagzeile' }, STAPEL.length ? `Heute ${STAPEL.length === 1 ? 'ist eine Karte' : `sind ${STAPEL.length} Karten`} dran` : 'Für heute alles gelernt'),
+      el('p', { class: 'meta' }, 'Alle Begriffe aus deinen Wochenausgaben. Was du weißt, kommt nach 1, 3, 7, 14 und 30 Tagen wieder, was nicht, gleich nochmal. Neu kommen höchstens 20 am Tag.')),
+    el('div', { class: 'karten-seite' },
+      el('label', { class: 'feld' }, 'Fach', el('select', { onchange: e => { KARTEN_FACH = e.target.value; STAPEL = kartenStapel(); kartenZeigen(); } },
+        ['', ...new Set(Object.values(KARTEN.karten).map(x => x.f))].map(f => el('option', { value: f, selected: f === KARTEN_FACH }, f || 'Alle Fächer')))),
+      k ? el('div', { class: 'lexikon-karte' }, el('p', { class: 'fortschritt meta' }, `Noch ${STAPEL.length} für heute`), karte,
+        el('div', { class: 'karten-aktionen' },
+          el('button', { class: 'knopf', type: 'button', onclick: () => kartenAntwort(false) }, 'Nochmal'),
+          el('button', { class: 'knopf voll', type: 'button', onclick: () => kartenAntwort(true) }, 'Gewusst')))
+        : el('div', { class: 'fertig-karte' }, el('div', {}, el('p', { class: 'schlagzeile' }, alle.length ? 'Geschafft.' : 'Noch keine Begriffe.'),
+          el('p', { class: 'meta' }, alle.length ? `Morgen ${morgen === 1 ? 'kommt eine Wiederholung' : `kommen ${morgen} Wiederholungen`}${anzahl(b => !b) ? ', dazu neue Karten' : ''}.` : 'Sie kommen mit der ersten Wochenausgabe.'))),
+      el('div', { class: 'kacheln' }, kachel('Neu', anzahl(b => !b), 'noch nie gesehen'), kachel('Am Lernen', anzahl(b => b === 1 || b === 2), 'kommen bald wieder'),
+        kachel('Sitzt', anzahl(b => b >= 3), 'auch nach einer Woche noch gewusst')),
+      darf('export') && alle.length > 0 && el('div', { class: 'knopfreihe' },
+        el('button', { class: 'knopf', type: 'button', onclick: () => speichern('#separator:tab\n#html:false\n#tags column:3\n' + kartenText(false), `Lernhelfer Karteikarten${KARTEN_FACH ? ' ' + KARTEN_FACH : ''}.txt`, 'text/plain;charset=utf-8') }, 'Für Anki herunterladen'),
+        el('button', { class: 'knopf', type: 'button', onclick: e => kopieren(e, kartenText(true)) }, 'Für Quizlet kopieren'))),
+  ].filter(Boolean));
+}
+
+/* ---------- Prüfungstraining (Ultra): Probeklausur, Schwächen-Training, Lernskript ---------- */
+const PT = {};  // Fach → { training, skript, geladen, job: { art, hinweis, start }, fehler }
+let PK = liesJson('pk'), PK_UHR = null;  // laufende oder zuletzt korrigierte Probeklausur; bleibt beim Neuladen erhalten
+const pkMerken = () => merk('pk', JSON.stringify(PK));
+const PK_AUFTRAG = (f, n, min) => `Du stellst eine Probeklausur für Studierende im 1. Semester Wirtschaftswissenschaften an der Universität Innsbruck zusammen, Fach ${f}. Unten stehen alle bisherigen Wochenausgaben (Zusammenfassungen, Formeln, Übungsaufgaben) und die Stammdaten mit der Leistungsbeurteilung.
+
+Erstelle ${n} Aufgaben für ${min} Minuten über den ganzen bisherigen Stoff, so nah wie möglich am Format der echten Prüfung laut Stammdaten (etwa Single Choice mit Punkten für richtig und Abzug für falsch). Stehen dort keine Angaben, nimm Single Choice mit vier Antwortmöglichkeiten und Rechenaufgaben mit Zahlenergebnis. Mische Rechen- und Verständnisaufgaben, gewichte nach Prüfungsrelevanz, übernimm keine Übungsaufgabe wörtlich und nimm andere Zahlen.
+
+Antworte nur mit JSON in genau diesem Aufbau:
+{"titel": "kurzer Titel", "bewertung": "ein Satz, etwa: richtig +5, falsch −1, keine Antwort 0",
+ "aufgaben": [{"frage": "Aufgabentext in Markdown, Formeln in LaTeX zwischen \\\\( und \\\\)", "typ": "auswahl" oder "zahl",
+   "optionen": ["nur bei auswahl: vier oder fünf Antwortmöglichkeiten"], "richtig": bei auswahl die Nummer der richtigen Option ab 0, bei zahl das Ergebnis als Zahl,
+   "toleranz": bei zahl die erlaubte Abweichung (etwa 0.01), "punkte": Punkte für richtig, "abzug": Abzug für falsch (0, wenn es keinen gibt),
+   "erklaerung": "Lösungsweg Schritt für Schritt in Markdown mit LaTeX"}]}`;
+const TRAINING_AUFTRAG = f => `Du bist Tutor:in für Studierende im 1. Semester Wirtschaftswissenschaften an der Universität Innsbruck, Fach ${f}. Unten stehen erledigte Onlinetests mit den eigenen Antworten und der Lösung, Aufgaben, die in Probeklausuren falsch waren, der Punktestand je Lehrveranstaltung und der Stoff aus den Wochenausgaben. Finde heraus, woran es hakt, und übe genau das. Genau diese Abschnitte:
+
+## Woran es hakt
+3–6 Stichpunkte: welches Thema oder welche Art Fehler, jeweils mit einem Satz Beleg aus den Unterlagen unten.
+
+## Übungsaufgaben
+6–10 neue Aufgaben genau zu diesen Schwächen, von leicht nach schwer, mit anderen Zahlen als in den Tests, jede in dieser Form:
+### Schwäche · kurzer Titel
+Vollständige Aufgabenstellung mit allen Zahlen.
+#### Lösung
+Lösungsweg Schritt für Schritt, das Ergebnis **fett**, dazu ein Satz, worauf man achten muss.
+
+Gibt es noch keine Fehler, nimm die prüfungsrelevantesten Themen. Formeln in LaTeX: im Text zwischen \\( und \\), abgesetzt zwischen \\[ und \\]. Schreib sachlich, ohne Ich-Form.`;
+const SKRIPT_AUFTRAG = f => `Du schreibst für Studierende im 1. Semester Wirtschaftswissenschaften an der Universität Innsbruck das Lernskript zur Prüfungsvorbereitung im Fach ${f}. Unten stehen alle Wochenausgaben des Semesters, älteste zuerst, und die Stammdaten. Fasse den ganzen Stoff zu einem zusammenhängenden Skript zusammen: nach Themen statt Woche für Woche, ohne Wiederholungen, vollständig genug, um allein damit für die Prüfung zu lernen. Genau diese Abschnitte:
+
+## Überblick
+Worum es im Fach geht, wie die Themen zusammenhängen und wie die Prüfung abläuft (laut Stammdaten).
+
+## Kapitel: Name des Themas
+Ein solcher Abschnitt für jedes große Thema, in der Reihenfolge der Vorlesung: Erklärung mit ### Zwischenüberschriften, Beispiele, typische Fehler.
+
+## Formelsammlung
+Alle Formeln nach Thema, jede mit einem Satz, wann man sie braucht.
+
+## Begriffe
+Die wichtigsten Begriffe als Tabelle mit den Spalten Begriff und Bedeutung.
+
+## Prüfungs-Checkliste
+10–20 Stichpunkte: was man am Prüfungstag sicher können muss.
+
+Formeln in LaTeX: im Text zwischen \\( und \\), abgesetzt zwischen \\[ und \\]. Schreib sachlich, ohne Ich-Form.`;
+async function stoff(f, mitUebungen) {  // alle Ausgaben eines Fachs als Text für die KI, älteste zuerst
+  const as = await Promise.all([...R[f].ausgaben].reverse().map(x => ausgabe(f, x.datum)));
+  const teile = as.map(a => `=== AUSGABE ${a.datum} ===\n` + ['zusammenfassung', 'formeln', ...mitUebungen ? ['übungsaufgaben'] : []].map(k => abschnitt(a, k)).filter(Boolean).join('\n\n'));
+  while (teile.join('').length > 300000 && teile.length > 1) teile.shift();  // ponytail: darüber fallen die ältesten Ausgaben weg; ein Semester bleibt meist darunter
+  return [...teile, `=== STAMMDATEN ===\n${abschnitt(as.at(-1), 'stammdaten')}`].join('\n\n');
+}
+const pruefungNeu = () => { if (document.body.dataset.ansicht === 'pruefung') zeichne(); };
+async function ptLauf(f, art, hinweis, fn) {  // eine KI-Aufgabe im Prüfungstraining: Fortschritt, Bildschirm an, Fehler beim Fach
+  const st = PT[f] ??= {};
+  if (st.job) return;
+  st.job = { art, hinweis, start: Date.now() }; st.fehler = '';
+  pruefungNeu();
+  const uhr = setInterval(() => presseZeigen('pt:' + f, st.job), 1000);
+  await wach(true);
+  try { await fn(st.job); } catch (e) { st.fehler = wpWarum(e); }
+  finally { clearInterval(uhr); wach(false); st.job = null; pruefungNeu(); kosten(); }
+}
+const ptModell = () => MODELLE[$('modell').value] || MODELLE[Object.keys(MODELLE)[0]];
+const pkErstellen = (f, n, min) => ptLauf(f, 'pk', 'Liest alle Ausgaben …', async job => {
+  const text = await stoff(f, true);
+  job.hinweis = 'Stellt die Klausur zusammen …';
+  const { text: antwort } = await strom({ ...ptModell(), feature: 'probeklausur', response_format: { type: 'json_object' },
+    messages: [{ role: 'system', content: PK_AUFTRAG(f, n, min) }, { role: 'user', content: text }] },
+    x => { job.hinweis = `Schreibt Aufgabe ${Math.min(n, Math.max(1, (x.match(/"frage"/g) || []).length))} von ${n} …`; }, () => { job.hinweis = 'Denkt nach …'; });
+  const j = JSON.parse(antwort);
+  const aufgaben = (j.aufgaben || []).map(q => ({ ...q, typ: q.typ === 'zahl' ? 'zahl' : 'auswahl', richtig: Number(q.richtig) }))
+    .filter(q => q.frage && Number.isFinite(q.richtig) && (q.typ === 'zahl' || (Array.isArray(q.optionen) && q.optionen[q.richtig] != null)));
+  if (!aufgaben.length) throw new Error('Die KI hat keine brauchbare Klausur geliefert. Bitte nochmal.');
+  PK = { fach: f, titel: j.titel || `Probeklausur ${f}`, bewertung: j.bewertung || '', aufgaben, antworten: [], bis: Date.now() + min * 60e3 };
+  pkMerken(); pkUhr();
+});
+function pkUhr() {  // läuft weiter, auch wenn man die Seite wechselt; bei null wird abgegeben
+  clearInterval(PK_UHR);
+  PK_UHR = setInterval(() => {
+    if (!PK || PK.ergebnis) return clearInterval(PK_UHR);
+    const rest = PK.bis - Date.now();
+    if ($('pk-uhr')) $('pk-uhr').textContent = minuten(Math.max(0, rest));
+    if (rest <= 0) pkAbgeben();
+  }, 1000);
+}
+async function pkAbgeben() {
+  clearInterval(PK_UHR);
+  const wert = (q, a) => {
+    if (a == null || a === '') return 0;
+    const ok = q.typ === 'zahl' ? Math.abs(zahl(a) - q.richtig) <= (Number(q.toleranz) || Math.max(0.01, Math.abs(q.richtig) * 0.001)) : +a === q.richtig;
+    return ok ? Number(q.punkte) || 1 : -(Number(q.abzug) || 0);
+  };
+  const je = PK.aufgaben.map((q, i) => wert(q, PK.antworten[i])), max = PK.aufgaben.reduce((s, q) => s + (Number(q.punkte) || 1), 0);
+  PK.ergebnis = { je, max, punkte: Math.max(0, je.reduce((s, x) => s + x, 0)) };
+  pkMerken(); pruefungNeu();
+  try {  // für den Verlauf und das Schwächen-Training
+    await notenLaden();
+    NOTEN.proben.push({ id: crypto.randomUUID(), fach: PK.fach, datum: HEUTE, punkte: PK.ergebnis.punkte, max, falsch: PK.aufgaben.filter((q, i) => je[i] <= 0).map(q => q.frage.slice(0, 400)) });
+    await notenSpeichern();
+  } catch (e) { status(e.message, true); }
+  pruefungNeu();
+}
+function pkLaufend() {
+  return [
+    el('div', { class: 'pk-kopf' }, el('div', {}, el('b', {}, PK.titel), PK.bewertung && el('p', { class: 'meta' }, PK.bewertung)),
+      el('p', { class: 'pk-uhr', id: 'pk-uhr', role: 'timer', 'aria-label': 'Restzeit' }, minuten(Math.max(0, PK.bis - Date.now())))),
+    el('ol', { class: 'pk-aufgaben' }, PK.aufgaben.map((q, i) => el('li', { class: 'aufgabe' },
+      el('p', { class: 'meta' }, `${dez(Number(q.punkte) || 1)} ${Number(q.punkte) === 1 ? 'Punkt' : 'Punkte'}${Number(q.abzug) ? `, falsch −${dez(Number(q.abzug))}` : ''}`),
+      markdown(el('div', { class: 'text' }), q.frage),
+      q.typ === 'zahl'
+        ? el('label', { class: 'feld' }, 'Dein Ergebnis', el('input', { inputmode: 'decimal', autocomplete: 'off', value: PK.antworten[i] ?? '', oninput: e => { PK.antworten[i] = e.target.value; pkMerken(); } }))
+        : el('fieldset', { class: 'pk-optionen' }, el('legend', { class: 'sr' }, `Antwort zu Aufgabe ${i + 1}`), q.optionen.map((o, j) => el('label', {},
+          el('input', { type: 'radio', name: `pk-${i}`, checked: PK.antworten[i] === j, onchange: () => { PK.antworten[i] = j; pkMerken(); } }), markdown(el('span'), String(o), true))))))),
+    el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll', type: 'button', onclick: () => confirm('Probeklausur abgeben?') && pkAbgeben() }, 'Abgeben'),
+      el('button', { class: 'knopf', type: 'button', onclick: () => { if (confirm('Probeklausur verwerfen?')) { clearInterval(PK_UHR); PK = null; merk('pk', null); pruefungNeu(); } } }, 'Verwerfen'))];
+}
+function pkErgebnis() {
+  const { punkte, max, je } = PK.ergebnis, pz = 100 * punkte / max, eigen = NOTEN?.lv[`${PK.fach} VO`]?.schluessel, n = noteAus(pz, eigen || SCHLUESSEL);
+  return [
+    el('div', { class: 'kacheln' }, kachel('Punkte', `${dez(punkte)} von ${dez(max)}`, PK.titel), kachel('Prozent', `${dez(pz, 0)} %`),
+      kachel('Note', String(n), `${NOTEN_NAMEN[n]}, ${eigen ? 'Schlüssel der VO' : 'Standardschlüssel'}`)),
+    el('ol', { class: 'pk-aufgaben' }, PK.aufgaben.map((q, i) => {
+      const a = PK.antworten[i], leer = a == null || a === '', ok = je[i] > 0;
+      const richtig = q.typ === 'zahl' ? String(q.richtig).replace('.', ',') : String(q.optionen[q.richtig]);
+      return el('li', { class: `aufgabe ${leer ? 'pk-leer' : ok ? 'pk-ok' : 'pk-falsch'}` },
+        el('p', { class: 'pk-urteil' }, leer ? 'Nicht beantwortet' : ok ? `Richtig, +${dez(je[i])}` : `Falsch${je[i] ? `, −${dez(-je[i])}` : ''}`),
+        markdown(el('div', { class: 'text' }), q.frage),
+        el('p', { class: 'klein' }, !leer && !ok && ['Deine Antwort: ', markdown(el('span'), q.typ === 'zahl' ? String(a) : String(q.optionen[a]), true), '. '], 'Richtig: ', markdown(el('span'), richtig, true)),
+        q.erklaerung && el('details', { class: 'loesung' }, el('summary', { class: 'knopf' }, el('span', { class: 'zu' }, 'Lösungsweg zeigen'), el('span', { class: 'auf' }, 'Lösungsweg verbergen')),
+          markdown(el('div', { class: 'text' }), q.erklaerung)));
+    })),
+    el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll', type: 'button', onclick: () => { PK = null; merk('pk', null); pruefungNeu(); } }, 'Neue Probeklausur'),
+      el('button', { class: 'knopf', type: 'button', onclick: () => $('pt-training').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }) }, 'Schwächen trainieren'))];
+}
+function pkTeil(f, st) {
+  const meins = PK?.fach === f, alt = (NOTEN?.proben || []).filter(x => x.fach === f);
+  return el('section', { class: 'schritt', 'aria-labelledby': 'pk-k' }, el('h2', { id: 'pk-k' }, el('span', { class: 'nr' }, '1'), ' Probeklausur'),
+    st.job?.art === 'pk' ? presse('pt:' + f, st.job) : meins && !PK.ergebnis ? pkLaufend() : meins ? pkErgebnis() : [
+      el('p', { class: 'klein' }, 'Aufgaben im Stil deiner Prüfung über den ganzen bisherigen Stoff, mit Zeitlimit. Danach siehst du Punkte, Note und zu jeder Aufgabe den Lösungsweg.'),
+      el('form', { class: 'pk-form', onsubmit: e => { e.preventDefault(); const d = new FormData(e.target); pkErstellen(f, +d.get('n'), +d.get('min')); } },
+        el('label', { class: 'feld' }, 'Aufgaben', el('select', { name: 'n' }, [10, 15, 20].map(n => el('option', { value: n }, String(n))))),
+        el('label', { class: 'feld' }, 'Zeit', el('select', { name: 'min' }, [30, 60, 90].map(m => el('option', { value: m, selected: m === 60 }, `${m} Minuten`)))),
+        el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll', disabled: !!st.job || (PK && !PK.ergebnis) }, 'Probeklausur erstellen'))),
+      PK && !PK.ergebnis && el('p', { class: 'meta' }, `Erst die laufende Probeklausur in ${PK.fach} abgeben oder verwerfen.`)],
+    alt.length > 0 && !(meins && !PK.ergebnis) && el('p', { class: 'meta' }, 'Bisher: ' + alt.map(x => `${datum(x.datum, { day: '2-digit', month: '2-digit' })} ${dez(100 * x.punkte / x.max, 0)} %`).join(' · ')));
+}
+const trainingErstellen = f => ptLauf(f, 'training', 'Sucht deine Schwächen …', async job => {
+  await notenLaden().catch(() => {});
+  TESTS ??= JSON.parse(await gh('onlinetests.json').catch(() => null) || '[]');
+  // nur erledigte oder abgelaufene Tests: Fragen laufender Tests bleiben draußen
+  const tests = TESTS.filter(t => t.fach === f && t.art === 'test' && teststand(t).gruppe === 'fertig').map(t => `=== ONLINETEST: ${t.titel} ===\n${t.startseite || ''}\n${t.fragen || ''}`).join('\n\n');
+  const falsch = (NOTEN?.proben || []).filter(x => x.fach === f).flatMap(x => x.falsch || []).map(q => `- ${q}`).join('\n');
+  const punkte = NOTEN ? notenLVs().filter(l => l.fach === f).map(l => `${l.name}: ${dez(l.p)} von ${dez(l.m)} Punkten`).join('\n') : '';
+  const text = [`=== ONLINETESTS ===\n${tests || 'keine'}`, `=== FALSCH IN PROBEKLAUSUREN ===\n${falsch || 'keine'}`, `=== PUNKTE ===\n${punkte || 'keine'}`, await stoff(f, false)].join('\n\n');
+  job.hinweis = 'Schreibt, woran es hakt …';
+  const { text: antwort } = await strom({ ...ptModell(), feature: 'training', messages: [{ role: 'system', content: TRAINING_AUFTRAG(f) }, { role: 'user', content: text }] },
+    x => { const n = (x.match(/^### /gm) || []).length; job.hinweis = n ? `Schreibt Übung ${n} …` : 'Schreibt, woran es hakt …'; }, () => { job.hinweis = 'Denkt nach …'; });
+  PT[f].training = `*Stand ${datum(HEUTE, { day: '2-digit', month: '2-digit', year: 'numeric' })}*\n\n${antwort}`;
+  await textSchreiben(`training/${f}.md`, PT[f].training);
+});
+function trainingTeil(f, st) {
+  const a = st.training && zerlege(st.training, HEUTE);
+  return el('section', { class: 'schritt', id: 'pt-training', 'aria-labelledby': 'tr-k' }, el('h2', { id: 'tr-k' }, el('span', { class: 'nr' }, '2'), ' Schwächen-Training'),
+    st.job?.art === 'training' ? presse('pt:' + f, st.job) : [
+      el('p', { class: 'klein' }, 'Sucht in deinen Onlinetests, Probeklausuren und Noten, woran es hakt, und macht genau dazu neue Übungsaufgaben.'),
+      a && [el('p', { class: 'meta' }, a.meta), markdown(el('div', { class: 'text' }), abschnitt(a, 'woran')), uebungen(abschnitt(a, 'übungsaufgaben'))],
+      el('div', { class: 'knopfreihe' }, el('button', { class: `knopf${a ? '' : ' voll'}`, type: 'button', disabled: !!st.job, onclick: () => trainingErstellen(f) }, a ? 'Neue Übungen zu meinen Schwächen' : 'Schwächen finden und üben'))]);
+}
+const skriptErstellen = f => ptLauf(f, 'skript', 'Liest alle Ausgaben …', async job => {
+  const text = await stoff(f, false);
+  const { text: antwort } = await strom({ ...ptModell(), feature: 'lernskript', messages: [{ role: 'system', content: SKRIPT_AUFTRAG(f) }, { role: 'user', content: text }] },
+    x => { const t = x.match(/^## .+/gm) || []; job.hinweis = t.length ? `Schreibt „${t.at(-1).slice(3).trim()}“ (${t.length}. Abschnitt) …` : 'Schreibt …'; }, () => { job.hinweis = 'Denkt nach …'; });
+  PT[f].skript = `*Stand ${datum(HEUTE, { day: '2-digit', month: '2-digit', year: 'numeric' })}*\n\n${antwort}`;
+  await textSchreiben(`lernskripte/${f}.md`, PT[f].skript);
+});
+function skriptTeil(f, st) {
+  const k = st.skript, inhalt = k && k.replace(/^\*.+?\*\s*\n/, ''), stand = k?.match(/^\*(.+?)\*/)?.[1];
+  return el('section', { class: 'schritt', 'aria-labelledby': 'ls-k' }, el('h2', { id: 'ls-k' }, el('span', { class: 'nr' }, '3'), ' Lernskript'),
+    st.job?.art === 'skript' ? presse('pt:' + f, st.job) : [
+      el('p', { class: 'klein' }, 'Der ganze Stoff des Semesters nach Themen geordnet, mit Formelsammlung, Begriffen und Prüfungs-Checkliste. Zum Lernen vor der Prüfung, auch als PDF. Das Erstellen dauert einige Minuten.'),
+      k && [el('p', { class: 'meta' }, `${stand || ''} · ${(inhalt.match(/^## /gm) || []).length} Abschnitte`),
+        el('details', { class: 'skript' }, el('summary', { class: 'knopf' }, 'Lernskript lesen'), markdown(el('div', { class: 'text' }), inhalt))],
+      el('div', { class: 'knopfreihe' },
+        el('button', { class: `knopf${k ? '' : ' voll'}`, type: 'button', disabled: !!st.job, onclick: () => skriptErstellen(f) }, k ? 'Neu erstellen' : 'Lernskript erstellen'),
+        k && el('button', { class: 'knopf', type: 'button', onclick: () => drucken(`Lernskript ${f}`, `<h1>Lernskript ${escHtml(f)}</h1><p class="meta">${escHtml(stand || '')}</p>` + markdown(el('div'), inhalt).innerHTML) }, 'Als PDF'))]);
+}
+async function pruefungZeigen(fach) {
+  const faecher = Object.keys(R).filter(f => R[f].ausgaben.length), f = faecher.includes(fach) ? fach : faecher[0], s = $('pruefung');
+  const kopf = el('header', { class: 'ausgabe-kopf' }, el('h1', {}, 'Prüfungstraining'),
+    el('p', { class: 'schlagzeile' }, f ? `${f}: Probeklausur, Schwächen-Training und Lernskript` : 'Sobald es Ausgaben gibt, geht es hier los'),
+    el('p', { class: 'meta' }, 'Aus allen deinen Wochenausgaben, mit dem Modell aus den Einstellungen.'));
+  if (!f) return s.replaceChildren(kopf);
+  const st = PT[f] ??= {};
+  if (!st.geladen) {
+    st.geladen = true;
+    Promise.all([gh(`training/${f}.md`).catch(() => null), gh(`lernskripte/${f}.md`).catch(() => null), notenLaden().catch(() => null)])
+      .then(([tr, sk]) => { st.training ??= tr; st.skript ??= sk; pruefungNeu(); });
+  }
+  s.replaceChildren(...[kopf,
+    faecher.length > 1 && el('nav', { class: 'abschnitte pt-faecher', 'aria-label': 'Fach' }, faecher.map(x => el('button', { type: 'button', 'aria-current': x === f ? 'true' : null,
+      onclick: () => { location.hash = `#/pruefung/${encodeURIComponent(x)}`; } }, x))),
+    st.fehler && el('p', { class: 'fehlertext' }, st.fehler),
+    pkTeil(f, st), trainingTeil(f, st), skriptTeil(f, st)].filter(Boolean));
+  if (PK && !PK.ergebnis) pkUhr();
+}
+
+/* ---------- Anhören (Ultra): die Ausgabe als Podcast mit zwei Stimmen ---------- */
+// Erst schreibt Gemini das Gespräch (unter hoeren/ gespeichert, damit ein zweites Gerät es nicht noch einmal bezahlt), dann liest
+// Gemini TTS es in Teilen gleichzeitig vor. Der Ton (WAV, rund 30 MB für 10 Minuten) bleibt nur auf dem Gerät: zu groß für den Speicher.
+const HOER_SKRIPT = 'google/gemini-3.8-flash', HOER_STIMME = 'google/gemini-3.8-flash-tts', STIMMEN = { a: 'Kore', b: 'Puck' };
+const HOER = {};  // "Fach/Datum" → { offen, laeuft, hinweis, start, url, audio, fehler }
+const HOER_AUFTRAG = `Mach aus der Wochenausgabe unten einen Lern-Podcast auf Deutsch für Studierende im 1. Semester Wirtschaftswissenschaften: ein Gespräch zwischen Lena (Sprecherin a, moderiert und fragt nach wie eine Studentin) und Max (Sprecher b, Tutor, erklärt). Rund 10 Minuten, also 1200 bis 1500 Wörter.
+- Erst in zwei Sätzen, worum es diese Woche geht, dann der Stoff der Zusammenfassung Schritt für Schritt mit Beispielen, zum Schluss, was als Nächstes ansteht (Proseminar, Vorlesung, Fristen).
+- Alles muss sich vorlesen lassen: keine Aufzählungszeichen, Tabellen oder Abkürzungen, kein LaTeX. Formeln sagst du in Worten (etwa „f Strich von x ist gleich zwei x“), Zahlen so, wie man sie spricht.
+- Locker und freundlich, aber fachlich genau. Nichts erfinden, was nicht in der Ausgabe steht.
+Antworte nur mit JSON: {"turns": [{"sprecher": "a" oder "b", "text": "was gesagt wird, höchstens 600 Zeichen", "ton": "zwei, drei Wörter zur Sprechweise, etwa neugierig oder ruhig erklärend"}]}`;
+const audioDb = () => new Promise((ok, nein) => {
+  const r = indexedDB.open('lernhelfer', 1);
+  r.onupgradeneeded = () => r.result.createObjectStore('audio');
+  r.onsuccess = () => ok(r.result); r.onerror = () => nein(r.error);
+});
+async function audioMerken(k, blob) {  // höchstens 8 Podcasts im Gerät, die ältesten gehen
+  try {
+    const t = (await audioDb()).transaction('audio', 'readwrite'), s = t.objectStore('audio'), alle = [];
+    s.put({ blob, zeit: Date.now() }, k);
+    s.openCursor().onsuccess = e => { const c = e.target.result; if (c) { alle.push([c.key, c.value.zeit]); c.continue(); } else alle.sort((a, b) => b[1] - a[1]).slice(8).forEach(([x]) => s.delete(x)); };
+    await new Promise(ok => { t.oncomplete = t.onerror = ok; });
+  } catch {}  // ohne Speicher im Browser geht es auch, nur ohne Zwischenspeicher
+}
+async function audioHolen(k) {
+  try { const r = (await audioDb()).transaction('audio').objectStore('audio').get(k); return await new Promise(ok => { r.onsuccess = () => ok(r.result?.blob || null); r.onerror = () => ok(null); }); }
+  catch { return null; }
+}
+function wav(teile) {  // roher Ton von Gemini TTS: 16 Bit, 24 kHz, mono; davor der 44-Byte-Kopf einer WAV-Datei
+  teile = teile.map(x => x.subarray(0, x.length & ~1));  // ganze Samples, sonst rauscht alles danach
+  const n = teile.reduce((s, x) => s + x.length, 0), b = new Uint8Array(44 + n), v = new DataView(b.buffer);
+  for (const [o, s] of [[0, 'RIFF'], [8, 'WAVE'], [12, 'fmt '], [36, 'data']]) [...s].forEach((c, i) => { b[o + i] = c.charCodeAt(0); });
+  [[4, 36 + n, 32], [16, 16, 32], [20, 1, 16], [22, 1, 16], [24, 24000, 32], [28, 48000, 32], [32, 2, 16], [34, 16, 16], [40, n, 32]]
+    .forEach(([o, x, bits]) => bits === 32 ? v.setUint32(o, x, true) : v.setUint16(o, x, true));
+  let o = 44;
+  for (const x of teile) { b.set(x, o); o += x.length; }
+  return new Blob([b], { type: 'audio/wav' });
+}
+async function sprechen(turns) {
+  const input = turns.map(x => ({ text: x.text, voice: STIMMEN[x.sprecher], instructions: `${x.ton || 'natürlich'}; Deutsch, wie in einem Lern-Podcast` }));
+  const r = await fetch(SERVER ? 'api/sprache' : 'https://openrouter.ai/api/v1/audio/speech', { method: 'POST', headers: kiKopf(),
+    body: JSON.stringify(SERVER ? { input } : { model: HOER_STIMME, response_format: 'pcm', input }) });
+  if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error((SERVER ? '' : `OpenRouter ${r.status}: `) + (j.error?.message || r.statusText)); }
+  return new Uint8Array(await r.arrayBuffer());
+}
+async function hoerenKlick(f, tag) {
+  const key = `${f}/${tag}`, h = HOER[key] ??= {};
+  h.offen = !h.offen || h.laeuft || !!h.url;
+  if (!darf('hoeren') || h.url || h.laeuft || !h.offen) return zeichne();
+  const sha = R[f].ausgaben.find(x => x.datum === tag)?.sha || '', blob = await audioHolen(`${key}|${sha}`);
+  if (blob) { h.url = URL.createObjectURL(blob); return zeichne(); }
+  hoeren(f, tag, sha);
+}
+async function hoeren(f, tag, sha) {
+  const key = `${f}/${tag}`, h = HOER[key];
+  Object.assign(h, { laeuft: true, fehler: '', hinweis: 'Schreibt das Gespräch …', start: Date.now() }); zeichne();
+  const uhr = setInterval(() => presseZeigen('hoeren:' + key, h), 1000);
+  await wach(true);
+  try {
+    let skript = JSON.parse(await gh(`hoeren/${f}/${tag}.json`).catch(() => null) || 'null');
+    if (skript?.sha !== sha || !skript.turns?.length) {  // neu, oder die Ausgabe wurde neu erstellt
+      const a = await ausgabe(f, tag);
+      const quelle = [['Auf einen Blick', 'auf einen blick'], ['Zusammenfassung', 'zusammenfassung'], ['Formeln', 'formeln'], ['Nächstes Proseminar', 'nächstes proseminar'], ['Nächste Vorlesung', 'nächste vorlesung']]
+        .map(([titel, k]) => abschnitt(a, k) && `## ${titel}\n${abschnitt(a, k)}`).filter(Boolean).join('\n\n');
+      const { text } = await strom({ model: HOER_SKRIPT, feature: 'hoeren', reasoning: { effort: 'low' }, response_format: { type: 'json_object' },
+        messages: [{ role: 'system', content: HOER_AUFTRAG }, { role: 'user', content: `Fach: ${f}\n\n${quelle}` }] }, () => { h.hinweis = 'Schreibt das Gespräch …'; });
+      const turns = (JSON.parse(text).turns || []).filter(x => String(x?.text || '').trim())
+        .map(x => ({ sprecher: x.sprecher === 'b' ? 'b' : 'a', text: String(x.text).trim().slice(0, 1500), ton: String(x.ton || '').slice(0, 80) }));
+      if (!turns.length) throw new Error('Das Gespräch kam leer zurück. Bitte nochmal.');
+      skript = { sha, turns };
+      await textSchreiben(`hoeren/${f}/${tag}.json`, JSON.stringify(skript));
+    }
+    // Teile zu 2 500 bis 7 000 Zeichen, höchstens sechs, alle gleichzeitig vorlesen lassen
+    const groesse = Math.min(7000, Math.max(2500, Math.ceil(skript.turns.reduce((n, x) => n + x.text.length, 0) / 6))), teile = [];
+    for (const x of skript.turns) { const l = teile.at(-1); if (l && l.n + x.text.length <= groesse) { l.turns.push(x); l.n += x.text.length; } else teile.push({ turns: [x], n: x.text.length }); }
+    let fertig = 0;
+    h.hinweis = `Spricht ${teile.length} Teile ein …`;
+    const ton = await Promise.all(teile.map(async x => { const b = await sprechen(x.turns); h.hinweis = `Spricht ein: ${++fertig} von ${teile.length} Teilen fertig …`; return b; }));
+    const blob = wav(ton);
+    await audioMerken(`${key}|${sha}`, blob);
+    h.url = URL.createObjectURL(blob);
+  } catch (e) { h.fehler = wpWarum(e); }
+  finally { clearInterval(uhr); wach(false); h.laeuft = false; zeichne(); kosten(); }
+}
+function hoerenTeil(f, tag, a) {
+  const key = `${f}/${tag}`, h = HOER[key];
+  if (!h?.offen) return null;
+  if (!darf('hoeren')) return sperrkarte('hoeren', true);
+  if (h.url && !h.audio) {  // dasselbe Element bei jedem Neuzeichnen: so spielt es weiter
+    const tempo = +merk('tempo') || 1;
+    h.audio = el('audio', { controls: true, preload: 'metadata', src: h.url });
+    h.audio.defaultPlaybackRate = h.audio.playbackRate = tempo;
+    h.audio.onplay = () => { if ('mediaSession' in navigator) navigator.mediaSession.metadata = new MediaMetadata({ title: a.schlagzeile || f, artist: 'Lernhelfer', album: `${f}, Ausgabe vom ${datum(tag, { day: 'numeric', month: 'long' })}` }); };
+  }
+  return el('section', { class: 'hoeren', 'aria-labelledby': 'hoeren-k' },
+    el('div', { class: 'rubrik' }, el('h2', { id: 'hoeren-k' }, 'Zum Anhören'), el('p', { class: 'meta' }, 'Lena fragt, Max erklärt: deine Woche als Podcast, rund 10 Minuten.')),
+    h.laeuft && presse('hoeren:' + key, h),
+    h.audio && [h.audio, el('div', { class: 'knopfreihe' },
+      el('label', { class: 'tempo' }, 'Tempo', el('select', { onchange: e => { h.audio.defaultPlaybackRate = h.audio.playbackRate = +e.target.value; merk('tempo', e.target.value); } },
+        [1, 1.25, 1.5, 1.75, 2].map(x => el('option', { value: x, selected: x === (+merk('tempo') || 1) }, `${String(x).replace('.', ',')}×`)))),
+      el('a', { class: 'knopf', href: h.url, download: `Lernhelfer ${f} ${tag}.wav` }, 'Für unterwegs speichern'))],
+    h.fehler && el('p', { class: 'fehlertext' }, h.fehler),
+    h.fehler && !h.laeuft && el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf', type: 'button', onclick: () => hoeren(f, tag, R[f].ausgaben.find(x => x.datum === tag)?.sha || '') }, 'Nochmal versuchen')));
 }
 
 /* ---------- Kalender ---------- */
@@ -3138,10 +3672,13 @@ function einrichtenZeigen() {
 }
 
 /* ---------- Server-Version: Konto, Tarife, Sperren mit Gratis-Test, Admin-Ecke, Recht ---------- */
-const SPERREN = { kalender: 'kalender', noten: 'noten', vortrag: 'vortrag' };  // Ansicht → Funktion, die sie braucht
+const SPERREN = { kalender: 'kalender', noten: 'noten', karten: 'karten', pruefung: 'probeklausur', vortrag: 'vortrag' };  // Ansicht → Funktion, die sie braucht
 const SPERRE = {  // was ein Tarif bringt, je Funktion in einem Satz
   kalender: ['Der Kalender', 'Stundenplan aus LFU:online und alle Fristen auf einen Blick, mit einem Tipp ins iPad übernommen.'],
   noten: ['Der Notentracker', 'Alle Punkte an einem Ort: Onlinetests kommen von selbst aus OLAT, dazu dein Verlauf als Diagramm, die Prognose je Lehrveranstaltung, der Vergleich mit dem Kursschnitt und was dir für jede Note noch fehlt.'],
+  karten: ['Der Karteikasten', 'Alle Begriffe aus allen Ausgaben mit Wiederholplan: Was sitzt, kommt seltener, was nicht, gleich nochmal. Dazu Export für Anki und Quizlet.'],
+  probeklausur: ['Das Prüfungstraining', 'Probeklausur im Stil deiner Prüfung mit Zeitlimit, Note und Lösungswegen, Schwächen-Training genau zu deinen Fehlern und das Lernskript mit dem ganzen Stoff eines Fachs.'],
+  hoeren: ['Die Ausgabe zum Anhören', 'Unterwegs? Keine Lust zu lesen? Zu viel Stoff? Kein Problem: Lena fragt, Max erklärt, und du hörst deine Woche als Podcast, in rund 10 Minuten. Für Bus, Zug und Spaziergang.'],
   'wp-transkript': ['Das Transkript', 'Gemini schreibt jeden YouTube-Talk für Word Power mit Zeitstempeln mit.'],
   vortrag: ['Vortrag analysieren', 'Einschätzung, Tipps und jeder Fehler mit Zeitstempel: Rückmeldung zu deiner Präsentation, bevor sie zählt.'],
   chat: ['Fragen an die KI', 'Rückfragen zu jeder Ausgabe, jedem Vortrag und jeder Aufgabe, und „Frag den Lernhelfer“ zu Terminen, Fristen und nächsten Schritten.'],
@@ -3327,8 +3864,12 @@ const PLAN = {  // was jeder Tarif dazubringt
   base: ['Wochenausgabe für jedes Fach: Zusammenfassung, Übungen, Begriffe, Termine, geschrieben von DeepSeek V4.1', 'OLAT-Abgleich am PC', 'Onlinetests im Überblick',
     'Word Power: das Journal als Vorlage mit deinen Word Partnerships'],
   pro: ['Freie Wahl des KI-Modells: GPT-6 Luna, MiMo V2.6 Pro, GPT-6.1 Sol oder DeepSeek',
-    'Notentracker: Onlinetest-Punkte von selbst aus OLAT, Verlauf als Diagramm, Prognose, Vergleich mit dem Kursschnitt, was dir für jede Note noch fehlt', 'Kalender mit Stundenplan und allen Fristen, mit Übernahme ins iPad', 'Word Power: YouTube-Talks mit Zeitstempeln transkribieren', 'Vortrag analysieren: Einschätzung, Tipps und Fehler mit Zeitstempel'],
+    'Notentracker: Onlinetest-Punkte von selbst aus OLAT, Verlauf als Diagramm, Prognose, Vergleich mit dem Kursschnitt, was dir für jede Note noch fehlt',
+    'Prüfungs-Countdown mit Lernplan bis zur Klausur', 'Karteikarten aus allen Begriffen mit Wiederholplan, Export für Anki und Quizlet', 'Jede Ausgabe als PDF', 'Kalender mit Stundenplan und allen Fristen, mit Übernahme ins iPad', 'Word Power: YouTube-Talks mit Zeitstempeln transkribieren', 'Vortrag analysieren: Einschätzung, Tipps und Fehler mit Zeitstempel'],
   ultra: ['Ultra-Fassung jeder Wochenausgabe: mehr als doppelt so ausführlich, jede Formel Schritt für Schritt umgestellt und in anderen Schreibweisen, 8 bis 12 Übungsaufgaben mit jedem Rechenschritt',
+    'Keine Lust zu lesen? Jede Ausgabe als Podcast: Lena fragt, Max erklärt, rund 10 Minuten für Bus, Zug und Spaziergang',
+    'Probeklausur im Stil deiner Prüfung, mit Zeitlimit, Note und Lösungswegen', 'Schwächen-Training: neue Übungen genau zu deinen Fehlern',
+    'Lernskript: der ganze Stoff eines Fachs in einem Dokument, mit Formelsammlung und Checkliste',
     'Fragen an die KI zu jeder Ausgabe, jedem Vortrag und jeder Aufgabe', 'Frag den Lernhelfer: Termine, Fristen, nächste Schritte', 'Lösungswege zu Onlinetest-Fragen: gleichartige Aufgabe mit anderen Zahlen, Schritt für Schritt erklärt'],
   ultraplus: ['Eigener OpenRouter-Schlüssel mit rund 10 € KI-Guthaben pro Monat, für eigene Projekte'],
 };
@@ -3536,10 +4077,10 @@ async function zeichne() {
   const [teil, tag] = anker ? ['anleitung'] : location.hash.replace(/^#\/?/, '').split('/').map(decodeURIComponent);
   const offen = SERVER && ['recht', 'upgrade'].includes(teil);  // Preise und Impressum auch ohne Konto
   let neu = teil === 'anleitung' ? 'anleitung' : offen ? teil : !fertig() || teil === 'einstellungen' ? 'einstellungen'
-    : ['kalender', 'wordpower', 'onlinetests', 'noten', 'vortrag', ...SERVER ? ['admin'] : []].includes(teil) ? teil : R[teil] ? 'ausgabe' : 'titelblatt';
+    : ['kalender', 'wordpower', 'onlinetests', 'noten', 'karten', 'pruefung', 'vortrag', ...SERVER ? ['admin'] : []].includes(teil) ? teil : R[teil] ? 'ausgabe' : 'titelblatt';
   if (SPERREN[neu] && !darf(SPERREN[neu])) neu = 'gesperrt';  // Server: Funktion ohne passenden Tarif
   if ($('meldung').open) $('meldung').close();
-  for (const id of ['titelblatt', 'ausgabe', 'einstellungen', 'kalender', 'wordpower', 'onlinetests', 'noten', 'vortrag', 'anleitung', 'gesperrt', 'upgrade', 'admin', 'recht']) $(id).hidden = id !== neu;
+  for (const id of ['titelblatt', 'ausgabe', 'einstellungen', 'kalender', 'wordpower', 'onlinetests', 'noten', 'karten', 'pruefung', 'vortrag', 'anleitung', 'gesperrt', 'upgrade', 'admin', 'recht']) $(id).hidden = id !== neu;
   document.body.dataset.ansicht = neu;
   document.querySelectorAll('.mit-daten').forEach(a => { a.hidden = !fertig(); });
   $('nav-admin').hidden = !ICH?.admin;
@@ -3552,7 +4093,7 @@ async function zeichne() {
   $('nav-faecher').replaceChildren(...Object.keys(R).map(f => el('a', { href: `#/${encodeURIComponent(f)}`, 'aria-current': neu === 'ausgabe' && teil === f ? 'page' : null },
     el('span', { class: 'punkt', 'data-fach': f, 'aria-hidden': 'true' }), f, R[f].druckt && el('span', { class: 'laeuft', role: 'img', 'aria-label': 'wird erstellt' }))));
   $('nav-faecher-kopf').hidden = !fertig() || !Object.keys(R).length;
-  const namen = { kalender: 'Kalender', wordpower: 'Word Power', onlinetests: 'Onlinetests', noten: 'Noten', vortrag: 'Vortrag', anleitung: 'Anleitung', einstellungen: SERVER ? 'Konto' : 'Einrichten',
+  const namen = { kalender: 'Kalender', wordpower: 'Word Power', onlinetests: 'Onlinetests', noten: 'Noten', karten: 'Karteikarten', pruefung: 'Prüfungstraining', vortrag: 'Vortrag', anleitung: 'Anleitung', einstellungen: SERVER ? 'Konto' : 'Einrichten',
     upgrade: 'Tarife', admin: 'Admin-Ecke', recht: 'Impressum, Datenschutz und AGB' };
   document.title = neu === 'titelblatt' ? 'Lernhelfer' : `${neu === 'ausgabe' ? teil : namen[hier]} – Lernhelfer`;
   modellWahl(); $('modell-name').textContent = $('modell').value;
@@ -3567,6 +4108,8 @@ async function zeichne() {
   else if (neu === 'wordpower') wordpower();
   else if (neu === 'onlinetests') await onlinetestsZeigen(tag);
   else if (neu === 'noten') await notenZeigen();
+  else if (neu === 'karten') await kartenZeigen();
+  else if (neu === 'pruefung') await pruefungZeigen(tag);
   else if (neu === 'vortrag') await vortragZeigen(tag);
   else if (neu === 'gesperrt') $('gesperrt').replaceChildren(el('header', { class: 'ausgabe-kopf' }, el('h1', {}, namen[teil])), sperrkarte(SPERREN[teil]));
   else if (neu === 'upgrade') upgradeZeigen();

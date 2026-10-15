@@ -37,11 +37,18 @@ const TEST = { stunden: 24, budget: 0.5 };  // einmal 24 Stunden Ultra, höchste
 const MONATE = [1, 3, 6];
 // Funktion → Mindestrang; die App schickt bei jeder KI-Anfrage mit, wofür sie ist
 // 9 = nur in der Admin-Ecke: Den Hausaufgaben-Entwurf gibt es nicht zu kaufen, er bleibt privat
-// ausgabe-ultra: die ausführliche Fassung der Wochenausgabe (Formeln Schritt für Schritt, mehr Aufgaben); noten: der Notentracker, ohne KI
-const FUNKTIONEN = { ausgabe: 0, kalender: 1, noten: 1, 'wp-transkript': 1, vortrag: 1, 'ausgabe-ultra': 2, chat: 2, loeser: 2, 'wp-text': 9 };
-const NAMEN = { ausgabe: 'Die Wochenausgabe', kalender: 'Der Kalender', noten: 'Der Notentracker', 'wp-transkript': 'Das Word-Power-Transkript', vortrag: 'Die Vortragsanalyse',
-  'ausgabe-ultra': 'Die Ultra-Fassung der Wochenausgabe', chat: 'Der KI-Chat', loeser: 'Der Lösungsweg zu jeder Frage', 'wp-text': 'Der Hausaufgaben-Entwurf' };
-const PFADE = { 'kalender/': 'kalender', 'vortraege/': 'vortrag', 'noten.json': 'noten' };  // Schreiben hierhin nur mit Tarif
+// ausgabe-ultra: die ausführliche Fassung der Wochenausgabe; noten, karten, export: ohne KI; hoeren: Ausgabe als Podcast
+const FUNKTIONEN = { ausgabe: 0, kalender: 1, noten: 1, karten: 1, export: 1, 'wp-transkript': 1, vortrag: 1,
+  'ausgabe-ultra': 2, hoeren: 2, probeklausur: 2, training: 2, lernskript: 2, chat: 2, loeser: 2, 'wp-text': 9 };
+const NAMEN = { ausgabe: 'Die Wochenausgabe', kalender: 'Der Kalender', noten: 'Der Notentracker', karten: 'Der Karteikasten', export: 'Der Export',
+  'wp-transkript': 'Das Word-Power-Transkript', vortrag: 'Die Vortragsanalyse', 'ausgabe-ultra': 'Die Ultra-Fassung der Wochenausgabe', hoeren: 'Die Ausgabe zum Anhören',
+  probeklausur: 'Die Probeklausur', training: 'Das Schwächen-Training', lernskript: 'Das Lernskript',
+  chat: 'Der KI-Chat', loeser: 'Der Lösungsweg zu jeder Frage', 'wp-text': 'Der Hausaufgaben-Entwurf' };
+const PFADE = { 'kalender/': 'kalender', 'vortraege/': 'vortrag', 'noten.json': 'noten', 'karten.json': 'karten',
+  'training/': 'training', 'lernskripte/': 'lernskript', 'hoeren/': 'hoeren' };  // Schreiben hierhin nur mit Tarif
+// Vorlesen: Gemini TTS über /audio/speech. OpenRouter schickt dort keinen Preis mit; gebucht wird nach Länge des Tons
+// (16 Bit, 24 kHz, mono = 48 000 Byte/s; 25 Token/s zu 9 $/Mio. = 0,000225 $/s, aufgerundet)
+const SPRACHE = { model: 'google/gemini-3.8-flash-tts', usdProSekunde: 0.00025, zeichen: 8000 };
 // ponytail: Funktion und Modell prüft der Server, den Prompt nicht; Missbrauch deckelt das Monatsbudget. Strenger: Prompts serverseitig bauen.
 const MODELLE = new Set(['openai/gpt-6-luna', 'xiaomi/mimo-v2.6-pro', 'openai/gpt-6.1-sol', 'google/gemini-3.8-flash', 'google/gemini-4-argon', BASIS_KI.model]);
 const FELDER = ['model', 'messages', 'reasoning', 'provider', 'response_format', 'stream', 'temperature', 'max_tokens'];
@@ -303,14 +310,36 @@ async function ki(req, res, k) {
   const s = darf(k, b.feature);
   if (!MODELLE.has(b.model)) nein(400, 'Dieses Modell gibt es hier nicht.');
   if (!k.ecke && s.tarif === 'base') Object.assign(b, BASIS_KI);
-  if (b.feature === 'loeser' && !k.ecke) b.messages = [{ role: 'system', content: REGEL }, ...Array.isArray(b.messages) ? b.messages : []];
+  if (['loeser', 'training', 'probeklausur'].includes(b.feature) && !k.ecke) b.messages = [{ role: 'system', content: REGEL }, ...Array.isArray(b.messages) ? b.messages : []];
+  await mitKontingent(k, s, () => kiWeiter(res, k, b, s));
+}
+// Kontingent des Monats und gleichzeitige Anfragen prüfen, dann fn ausführen; für Text und für Sprache
+async function mitKontingent(k, s, fn) {
   if (!E.LH_OR_KEY) nein(503, 'Die KI ist auf dem Server noch nicht eingerichtet.');
   if (!k.ecke && verbraucht(k.id, s.test) >= (s.test ? TEST.budget : TARIFE[s.tarif].budget))
     nein(429, s.test ? 'Das KI-Guthaben des Tests ist aufgebraucht. Mit einem Tarif geht es sofort weiter.'
       : `Dein KI-Kontingent für diesen Monat ist aufgebraucht. Am 1. geht es weiter${s.tarif === 'ultra' || s.tarif === 'ultraplus' ? '' : ', mit einem größeren Tarif sofort'}.`);
   if ((LAEUFT.get(k.id) || 0) >= LAUFEND) nein(429, 'Es laufen schon einige KI-Anfragen gleichzeitig. Warte, bis eine fertig ist.');
   LAEUFT.set(k.id, (LAEUFT.get(k.id) || 0) + 1);
-  try { await kiWeiter(res, k, b, s); } finally { LAEUFT.set(k.id, LAEUFT.get(k.id) - 1); }
+  try { await fn(); } finally { LAEUFT.set(k.id, LAEUFT.get(k.id) - 1); }
+}
+async function sprache(req, res, k) {  // Ultra: Teile des Podcasts vorlesen lassen, zwei Stimmen, roher Ton (PCM) zurück
+  const b = await liesJson(req, 1e6), s = darf(k, 'hoeren'), teile = Array.isArray(b.input) ? b.input : [];
+  if (!teile.length || teile.some(t => typeof t?.text !== 'string') || teile.reduce((n, t) => n + t.text.length, 0) > SPRACHE.zeichen) nein(400, 'Zu viel oder kein Text auf einmal.');
+  await mitKontingent(k, s, async () => {
+    const halt = new AbortController();
+    res.on('close', () => halt.abort());
+    const up = await fetch(`${OR}/audio/speech`, { method: 'POST', signal: halt.signal,
+      headers: { Authorization: 'Bearer ' + E.LH_OR_KEY, 'Content-Type': 'application/json', 'X-Title': 'Lernhelfer', 'HTTP-Referer': BASIS },
+      body: JSON.stringify({ model: SPRACHE.model, response_format: 'pcm',
+        input: teile.map(t => ({ text: t.text, voice: String(t.voice || 'Kore').slice(0, 30), instructions: String(t.instructions || '').slice(0, 300) })) }),
+    }).catch(() => nein(502, 'OpenRouter ist gerade nicht erreichbar. Bitte gleich nochmal.'));
+    res.writeHead(up.status, { 'Content-Type': up.headers.get('content-type') || 'audio/pcm', 'Cache-Control': 'no-store' });
+    let n = 0;
+    try { for await (const t of up.body) { res.write(t); n += t.length; } } catch {}
+    if (up.ok) buchen(k.id, n / 48000 * SPRACHE.usdProSekunde, s.test);
+    res.end();
+  });
 }
 async function kiWeiter(res, k, b, s) {
   const halt = new AbortController();
@@ -606,6 +635,7 @@ createServer(async (req, res) => {
     const gh = url.pathname.match(/^\/api\/gh\/repos\/[^/]+\/[^/]+\/contents(?:\/(.*))?$/);
     if (gh) return await speicher(req, res, muss(k, true), gh[1] || '');
     if (url.pathname === '/api/ki' && req.method === 'POST') return await ki(req, res, muss(k));
+    if (url.pathname === '/api/sprache' && req.method === 'POST') return await sprache(req, res, muss(k));
     const route = ROUTEN[`${req.method} ${url.pathname}`];
     if (!route) nein(404, 'Gibt es nicht.');
     const b = req.method === 'POST' ? await liesJson(req) : {};
