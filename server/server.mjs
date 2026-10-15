@@ -18,14 +18,21 @@ const ADMIN = (E.LH_ADMIN || '').trim().toLowerCase();
 const TAG = 864e5, MONAT = 30 * TAG;
 if (SICHER && !E.LH_GEHEIM) throw new Error('LH_GEHEIM fehlt (lange Zufallszeichenkette, verschlüsselt gespeicherte API-Schlüssel).');
 
-// Preise in Cent pro Monat. budget: KI-Kosten in $ pro Monat, die der Server für ein Konto höchstens trägt.
+// Preise in Cent pro Monat. budget: Fair Use, KI-Kosten in $ pro Monat, die der Server für ein Konto höchstens trägt.
 // rabatt: % auf einen Monat für geworbene Freunde und ihre Werber; bei Ultra+ nur auf den Ultra-Teil, das API-Guthaben kostet echtes Geld.
 const TARIFE = {
-  base: { name: 'Base', preis: 0, rang: 0, budget: 1 },
+  base: { name: 'Base', preis: 0, rang: 0, budget: 2 },  // DeepSeek: eine Ausgabe 2–4 Cent, also rund 60 im Monat
   pro: { name: 'Pro', preis: 490, rang: 1, budget: 3, rabatt: 20 },
   ultra: { name: 'Ultra', preis: 990, rang: 2, budget: 6, rabatt: 30 },
   ultraplus: { name: 'Ultra+ API', preis: 1490, rang: 2, budget: 6, rabatt: 30, rabattAuf: 990, apiUsd: 11 },
 };
+// Base schreibt nur mit DeepSeek V4.1 Flash, maximal nachdenkend; der Server setzt das selbst, egal was die App schickt.
+// Nie mehr als 5 $ im Monat pro Gratis-Konto: Budget 2 $ + LAUFEND gleichzeitige Anfragen zu je höchstens 0,33 $
+// (1 Mio. Token Eingabe zu höchstens 0,20 $/Mio., 120 000 Token Ausgabe zu höchstens 1 $/Mio.) = 2 + 8 × 0,33 < 5.
+// Gemessen: eine Ausgabe 50–130 000 Token Eingabe, 25–30 000 Token Nachdenken, 2–4 Cent. Nur Anbieter, die nicht mit den Unterlagen trainieren.
+const BASIS_KI = { model: 'deepseek/deepseek-v4.1-flash', reasoning: { effort: 'max' }, max_tokens: 120000,
+  provider: { data_collection: 'deny', max_price: { prompt: 0.2, completion: 1 } } };
+const LAUFEND = 8, LAEUFT = new Map();  // gleichzeitige KI-Anfragen pro Konto; ein Vortrag schickt seine Teile parallel
 const TEST = { stunden: 24, budget: 0.5 };  // einmal 24 Stunden Ultra, höchstens 0,50 $ KI
 const MONATE = [1, 3, 6];
 // Funktion → Mindestrang; die App schickt bei jeder KI-Anfrage mit, wofür sie ist
@@ -35,7 +42,7 @@ const NAMEN = { ausgabe: 'Die Wochenausgabe', kalender: 'Der Kalender', 'wp-tran
   chat: 'Der KI-Chat', loeser: 'Der Lösungsweg zu jeder Frage', 'wp-text': 'Der Hausaufgaben-Entwurf' };
 const PFADE = { 'kalender/': 'kalender', 'vortraege/': 'vortrag' };  // Schreiben in diese Ordner nur mit Tarif
 // ponytail: Funktion und Modell prüft der Server, den Prompt nicht; Missbrauch deckelt das Monatsbudget. Strenger: Prompts serverseitig bauen.
-const MODELLE = new Set(['openai/gpt-6-luna', 'xiaomi/mimo-v2.6-pro', 'openai/gpt-6.1-sol', 'google/gemini-3.8-flash', 'google/gemini-4-argon']);
+const MODELLE = new Set(['openai/gpt-6-luna', 'xiaomi/mimo-v2.6-pro', 'openai/gpt-6.1-sol', 'google/gemini-3.8-flash', 'google/gemini-4-argon', BASIS_KI.model]);
 const FELDER = ['model', 'messages', 'reasoning', 'provider', 'response_format', 'stream', 'temperature', 'max_tokens'];
 const SPEICHER = 200e6;  // Bytes pro Konto
 // Öffentlich zeigt der Löser nur Lösungswege an gleichartigen Aufgaben mit anderen Zahlen: Lernhilfe statt fertiger Prüfungsleistung
@@ -293,12 +300,18 @@ async function ki(req, res, k) {
   const b = await liesJson(req, 40e6);  // Vortrag: bis 9 MB Ton pro Teil, als base64
   if (!(b.feature in FUNKTIONEN)) nein(400, 'Unbekannte Funktion.');
   const s = darf(k, b.feature);
-  if (b.feature === 'loeser' && !k.ecke) b.messages = [{ role: 'system', content: REGEL }, ...Array.isArray(b.messages) ? b.messages : []];
   if (!MODELLE.has(b.model)) nein(400, 'Dieses Modell gibt es hier nicht.');
+  if (!k.ecke && s.tarif === 'base') Object.assign(b, BASIS_KI);
+  if (b.feature === 'loeser' && !k.ecke) b.messages = [{ role: 'system', content: REGEL }, ...Array.isArray(b.messages) ? b.messages : []];
   if (!E.LH_OR_KEY) nein(503, 'Die KI ist auf dem Server noch nicht eingerichtet.');
   if (!k.ecke && verbraucht(k.id, s.test) >= (s.test ? TEST.budget : TARIFE[s.tarif].budget))
     nein(429, s.test ? 'Das KI-Guthaben des Tests ist aufgebraucht. Mit einem Tarif geht es sofort weiter.'
       : `Dein KI-Kontingent für diesen Monat ist aufgebraucht. Am 1. geht es weiter${s.tarif === 'ultra' || s.tarif === 'ultraplus' ? '' : ', mit einem größeren Tarif sofort'}.`);
+  if ((LAEUFT.get(k.id) || 0) >= LAUFEND) nein(429, 'Es laufen schon einige KI-Anfragen gleichzeitig. Warte, bis eine fertig ist.');
+  LAEUFT.set(k.id, (LAEUFT.get(k.id) || 0) + 1);
+  try { await kiWeiter(res, k, b, s); } finally { LAEUFT.set(k.id, LAEUFT.get(k.id) - 1); }
+}
+async function kiWeiter(res, k, b, s) {
   const halt = new AbortController();
   res.on('close', () => halt.abort());  // Gerät bricht ab → auch OpenRouter abbrechen
   const up = await fetch(`${OR}/chat/completions`, { method: 'POST', signal: halt.signal,

@@ -441,7 +441,7 @@
   .nr.ok { position: relative; color: transparent; background: var(--ok-flaeche); }
   .nr.ok::after { content: ""; position: absolute; inset: 6px; background: var(--ok); -webkit-mask: var(--haken) center / contain no-repeat; mask: var(--haken) center / contain no-repeat; }
   #wp-out { min-height: 16rem; font-variant-numeric: tabular-nums; }
-  #wp-notes { min-height: 8rem; }
+  #wp-notes, #wp-woerter { min-height: 8rem; }
   .talk { display: flex; align-items: center; gap: 14px; margin-top: 12px; padding: 10px; border-radius: var(--r); background: var(--bg-2); }
   .talk img { width: 112px; aspect-ratio: 16 / 9; flex: none; border-radius: 6px; object-fit: cover; background: var(--bg-3); }
   .talk p { margin: 0; }
@@ -761,6 +761,8 @@
       <div id="wp-werk" hidden>
         <section class="schritt" aria-labelledby="wp-s1">
           <h2 id="wp-s1"><span class="nr">1</span> Transkript</h2>
+          <div id="wp-tsperre"></div>
+          <div id="wp-tteil">
           <p class="klein">Gemini hört sich das Video an und schreibt alles mit Zeitstempeln mit, ohne Füllwörter.</p>
           <form id="wp-tform" class="feld" novalidate>
             <label for="wp-url">YouTube-Link</label>
@@ -773,6 +775,15 @@
           <p id="wp-st" class="wp-status" role="status"></p>
           <label class="feld">Transkript <textarea id="wp-out" name="transkript" spellcheck="false" placeholder="Hier erscheint das Transkript. Du kannst auch eins einfügen."></textarea></label>
           <div class="knopfreihe"><button id="wp-dl" class="knopf" type="button" disabled>Als .txt herunterladen</button></div>
+          </div>
+        </section>
+        <section class="schritt" aria-labelledby="wp-s3" id="wp-vorlage">
+          <h2 id="wp-s3"><span class="nr">2</span> Vorlage</h2>
+          <p class="klein">Schreib deine Word Partnerships hinein, eine pro Zeile. Daraus wird das Word Power Journal mit allen Feldern zum Ausfüllen und der Progress-Tabelle am Ende. Die Inhalte schreibst du selbst.</p>
+          <label class="feld">Word Partnerships <textarea id="wp-woerter" name="woerter" spellcheck="false" autocapitalize="off" placeholder="make a difference&#10;raise awareness&#10;…"></textarea></label>
+          <p id="wp-vst" class="wp-status" role="status"></p>
+          <div id="wp-vblatt" class="blatt-wp text" hidden></div>
+          <div class="knopfreihe"><button id="wp-vdl" class="knopf voll" type="button" disabled>Als .html herunterladen (öffnet in Word)</button></div>
         </section>
         <section class="schritt" aria-labelledby="wp-s2" id="wp-schritt2">
           <h2 id="wp-s2"><span class="nr">2</span> Hausaufgabe</h2>
@@ -810,7 +821,7 @@
       <section class="schritt" aria-labelledby="ei-einst">
         <h2 id="ei-einst">Einstellungen</h2>
         <label class="feld">Modell für neue Ausgaben <select id="modell" name="modell"></select></label>
-        <p class="klein">GPT-6 Luna schreibt am gründlichsten, MiMo ist am schnellsten und günstigsten.<span class="nur-eigen"> Eine Ausgabe kostet meist 1 bis 8 Cent.</span></p>
+        <p class="klein"><span id="modell-hinweis"></span><span class="nur-eigen"> Eine Ausgabe kostet meist 1 bis 8 Cent.</span></p>
         <div id="abmelden-teil" class="nur-eigen">
           <div class="knopfreihe"><button class="knopf" type="button" id="abmelden">Zugang von diesem Gerät löschen</button></div>
           <p class="klein">Schlüssel und Zugang liegen nur in diesem Browser auf diesem Gerät. Löschen betrifft deine Unterlagen nicht.</p>
@@ -911,7 +922,8 @@
           <li>Sind neue Folien da (der PC holt sie von selbst), tippe auf <b>Neu erstellen</b>. Die Ausgabe ist nach zwei bis vier Minuten fertig, der Fortschritt läuft mit. Die App muss dabei offen bleiben, der Bildschirm bleibt von selbst an. Mit „Alle Fächer neu erstellen“ geht es für alle Fächer auf einmal.</li>
           <li>Lesen, Übungsaufgaben erst selbst rechnen und dann aufdecken, Begriffe im Lexikon abfragen. Was unklar bleibt, bei „Fragen“ stellen. Die Leiste oben in der Ausgabe springt zu jedem Teil.</li>
         </ol>
-        <p>Ältere Ausgaben bleiben unter „Frühere Ausgaben“ erhalten. Welches Modell schreibt, stellst du unter <span class="nur-eigen">Einrichten</span><span class="nur-server">Konto</span> ein.</p>
+        <p>Ältere Ausgaben bleiben unter „Frühere Ausgaben“ erhalten. Welches Modell schreibt, stellst du unter <span class="nur-eigen">Einrichten</span><span class="nur-server">Konto</span> ein.<span class="nur-server"> In Base schreibt immer DeepSeek V4.1, ab Pro wählst du selbst.</span></p>
+        <p class="nur-server">Für Word Power gibt es in jedem Tarif die Vorlage: Du gibst deine Word Partnerships ein und bekommst das Journal mit allen Feldern zum Ausfüllen und der Progress-Tabelle, als Datei für Word. Ab Pro schreibt Gemini dazu jeden YouTube-Talk mit Zeitstempeln mit.</p>
 
         <h2 id="a-termine">Termine und Kalender</h2>
         <ul>
@@ -1012,7 +1024,9 @@ const MODELLE = {
   'GPT-6 Luna · xhigh': { model: 'openai/gpt-6-luna', reasoning: { effort: 'xhigh' } },  // MAX brauchte 9–18 min, xhigh gut 3
   'MiMo V2.6 Pro': { model: 'xiaomi/mimo-v2.6-pro', reasoning: { enabled: true } },
   'GPT-6.1 Sol · xhigh': { model: 'openai/gpt-6.1-sol', reasoning: { effort: 'xhigh' } },
+  'DeepSeek V4.1 · max': { model: 'deepseek/deepseek-v4.1-flash', reasoning: { effort: 'max' } },
 };
+const BASIS_MODELL = 'DeepSeek V4.1 · max';  // Server-Version, Base: nur dieses Modell (der Server erzwingt es auch)
 const ORDNUNG = ['Mathematik', 'VWL', 'BWL', 'Englisch'];
 const FRISTEN = new Set(['Abgabe', 'Test']);
 
@@ -1795,15 +1809,37 @@ let WP = null, wpTitel = merk('wp.title') || '', wpDoc = merk('wp.doc') || '';
 
 let WP_LAEDT = false;
 function wordpower() {
-  if (SERVER && !WP && !WP_LAEDT && darf('wp-transkript')) {  // Server: Prompts mit dem Tarif statt mit Passwort
+  const hoeren = darf('wp-transkript'), text = darf('wp-text');
+  if (SERVER && !WP && !WP_LAEDT && hoeren) {  // Server: Prompts mit dem Tarif statt mit Passwort
     WP_LAEDT = true;
     api('geschuetzt/wordpower').then(j => { WP = j; }, e => status(e.message, true)).finally(() => { WP_LAEDT = false; if (WP && document.body.dataset.ansicht === 'wordpower') wordpower(); });
   }
-  const text = darf('wp-text');  // Server: den Hausaufgaben-Entwurf gibt es nur in der Admin-Ecke, alle anderen bekommen das Transkript
-  $('wp-schritt2').hidden = !text;
-  $('wp-zeile').textContent = text ? 'Vom YouTube-Talk zum Hausaufgaben-Entwurf' : 'YouTube-Talks mit Zeitstempeln mitschreiben';
-  $('wp-sperre').hidden = !!WP; $('wp-werk').hidden = !WP;
+  // Server: Vorlage für alle, Transkript ab Pro, den Hausaufgaben-Entwurf gibt es nur in der Admin-Ecke
+  $('wp-tteil').hidden = !hoeren;
+  $('wp-tsperre').replaceChildren(...hoeren ? [] : [sperrkarte('wp-transkript', true)]);
+  $('wp-schritt2').hidden = !text; $('wp-vorlage').hidden = text;
+  $('wp-zeile').textContent = text ? 'Vom YouTube-Talk zum Hausaufgaben-Entwurf' : hoeren ? 'Talks mitschreiben, Vorlage mit deinen Wörtern' : 'Die Word-Power-Vorlage mit deinen Wörtern';
+  $('wp-sperre').hidden = !!WP; $('wp-werk').hidden = !SERVER && !WP;
   $('wp-dl').disabled = !$('wp-out').value.trim();
+  wpVorlage();
+}
+// Vorlage: das Word Power Journal mit den eigenen Word Partnerships und leeren Feldern, ganz ohne KI
+function wpVorlage() {
+  const w = $('wp-woerter').value.split('\n').map(s => s.trim()).filter(Boolean).slice(0, 30), n = w.length;
+  const feld = (name, wert = '') => el('p', {}, el('b', {}, name + ':'), ' ' + wert);
+  $('wp-vblatt').replaceChildren(...[
+    el('h2', {}, 'Word Power Journal: Week [X]'),
+    feld('Name', '[ ] | Communication in Business'), feld('Talk', '[Speaker, Title] ([length])'), feld('Link'), feld('Summary'), feld('Accent checked', '[US / UK / …]'),
+    el('h2', {}, 'Word partnerships'),
+    w.flatMap((x, i) => [el('h3', {}, `${i + 1}. ${x} (≈ [mm:ss])`), feld('Sentence', '"[ ]"'), ...['Explanation', 'Antonym', 'Synonym', 'Association'].map(l => feld(l))]),
+    el('h2', {}, 'Vocabulary learning strategies'), feld('Strategy 1'), feld('Strategy 2'), feld('Plan'),
+    el('h2', {}, 'Progress'),
+    el('table', {}, el('tr', {}, el('th', {}, 'Word partnership'), el('th', {}, 'Used in rehearsal video'), el('th', {}, 'Used in class')),
+      w.map(x => el('tr', {}, el('td', {}, x), el('td'), el('td')))),
+    feld('Number used', `__ / ${n}`), feld('Not used'), feld('Rehearsal video link'),
+    el('h2', {}, 'After class'), feld('Word partnerships activated in class', `__ / ${n}`), feld('Final video link')].flat());
+  $('wp-vblatt').hidden = !n; $('wp-vdl').disabled = !n;
+  $('wp-vst').textContent = n ? `${n} Word Partnership${n === 1 ? '' : 's'}${n === 10 ? '' : ', die Vorlage im Kurs hat 10'}` : '';
 }
 const wpSag = (knoten, text, art) => { knoten.textContent = text; knoten.className = 'wp-status' + (art ? ' ' + art : ''); };
 const wpWarum = e => e instanceof TypeError ? 'Keine Verbindung. Bist du online, und blieb der Bildschirm an?' : e.message;
@@ -1880,17 +1916,20 @@ $('wp-sperre').onsubmit = async e => {
   catch (err) { $('wp-sperre-text').textContent = err.message; }
 };
 $('wp-zu').onclick = () => { WP = null; wordpower(); $('wp-sperre-text').textContent = 'Gesperrt.'; };
-for (const [id, k] of [['wp-url', 'wp.url'], ['wp-out', 'wp.out'], ['wp-notes', 'wp.notes']]) {
+for (const [id, k] of [['wp-url', 'wp.url'], ['wp-out', 'wp.out'], ['wp-notes', 'wp.notes'], ['wp-woerter', 'wp.woerter']]) {
   $(id).value = merk(k) || '';
   $(id).addEventListener('input', () => { merk(k, $(id).value); wordpower(); });
 }
 $('wp-url').addEventListener('change', wpNachschlagen);
 $('wp-dl').onclick = () => speichern($('wp-out').value, 'transkript.txt', 'text/plain;charset=utf-8');
 $('wp-hwdl').onclick = () => speichern(wpDoc, 'word-power.html', 'text/html;charset=utf-8');
+$('wp-vdl').onclick = () => speichern(`<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Word Power Journal</title><style>${WP_DOC_CSS}</style></head><body>${$('wp-vblatt').innerHTML}</body></html>`,
+  'word-power-vorlage.html', 'text/html;charset=utf-8');
 $('wp-tform').onsubmit = async e => {
   e.preventDefault();
   const st = $('wp-st'), v = wpVideo();
   if (!v) return wpSag(st, 'Das sieht nicht nach einem YouTube-Link aus.', 'fehlertext');
+  if (!WP) return wpSag(st, 'Einen Moment, Word Power lädt noch.', 'fehlertext');
   await wpBeschaeftigt($('wp-go'), true);
   wpNachschlagen(); wpSag(st, 'Gemini sieht sich das Video an …', 'presse');
   try {
@@ -2792,10 +2831,10 @@ function einrichtenZeigen() {
 }
 
 /* ---------- Server-Version: Konto, Tarife, Sperren mit Gratis-Test, Admin-Ecke, Recht ---------- */
-const SPERREN = { kalender: 'kalender', wordpower: 'wp-transkript', vortrag: 'vortrag' };  // Ansicht → Funktion, die sie braucht
+const SPERREN = { kalender: 'kalender', vortrag: 'vortrag' };  // Ansicht → Funktion, die sie braucht
 const SPERRE = {  // was ein Tarif bringt, je Funktion in einem Satz
   kalender: ['Der Kalender', 'Stundenplan aus LFU:online und alle Fristen auf einen Blick, mit einem Tipp ins iPad übernommen.'],
-  'wp-transkript': ['Word Power', 'Gemini schreibt jeden YouTube-Talk für die Englisch-Hausaufgabe mit Zeitstempeln mit.'],
+  'wp-transkript': ['Das Transkript', 'Gemini schreibt jeden YouTube-Talk für Word Power mit Zeitstempeln mit.'],
   vortrag: ['Vortrag analysieren', 'Einschätzung, Tipps und jeder Fehler mit Zeitstempel: Rückmeldung zu deiner Präsentation, bevor sie zählt.'],
   chat: ['Fragen an die KI', 'Rückfragen zu jeder Ausgabe, jedem Vortrag und jeder Aufgabe, und „Frag den Lernhelfer“ zu Terminen, Fristen und nächsten Schritten.'],
   loeser: ['Der Lösungsweg zu jeder Frage', 'Zu jeder Frage aus deinen Onlinetests eine gleichartige Übungsaufgabe mit anderen Zahlen, Schritt für Schritt vorgerechnet und erklärt, mit Rückfragen.'],
@@ -2977,13 +3016,17 @@ function kontoZeigen() {
 
 const UP = { wahl: null, monate: 1 };
 const PLAN = {  // was jeder Tarif dazubringt
-  base: ['Wochenausgabe für jedes Fach: Zusammenfassung, Übungen, Begriffe, Termine', 'OLAT-Abgleich am PC', 'Onlinetests im Überblick'],
-  pro: ['Kalender mit Stundenplan und allen Fristen, mit Übernahme ins iPad', 'Word Power: YouTube-Talks mit Zeitstempeln transkribieren', 'Vortrag analysieren: Einschätzung, Tipps und Fehler mit Zeitstempel'],
+  base: ['Wochenausgabe für jedes Fach: Zusammenfassung, Übungen, Begriffe, Termine, geschrieben von DeepSeek V4.1', 'OLAT-Abgleich am PC', 'Onlinetests im Überblick',
+    'Word Power: das Journal als Vorlage mit deinen Word Partnerships'],
+  pro: ['Freie Wahl des KI-Modells: GPT-6 Luna, MiMo V2.6 Pro, GPT-6.1 Sol oder DeepSeek', 'Kalender mit Stundenplan und allen Fristen, mit Übernahme ins iPad', 'Word Power: YouTube-Talks mit Zeitstempeln transkribieren', 'Vortrag analysieren: Einschätzung, Tipps und Fehler mit Zeitstempel'],
   ultra: ['Fragen an die KI zu jeder Ausgabe, jedem Vortrag und jeder Aufgabe', 'Frag den Lernhelfer: Termine, Fristen, nächste Schritte', 'Lösungswege zu Onlinetest-Fragen: gleichartige Aufgabe mit anderen Zahlen, Schritt für Schritt erklärt'],
   ultraplus: ['Eigener OpenRouter-Schlüssel mit rund 10 € KI-Guthaben pro Monat, für eigene Projekte'],
 };
 const DAZU = { pro: 'Alles aus Base, dazu:', ultra: 'Alles aus Pro, dazu:', ultraplus: 'Alles aus Ultra, dazu:' };
 const euro = c => (c / 100).toLocaleString('de-AT', { style: 'currency', currency: 'EUR' });
+// gemessene Kosten einer Wochenausgabe in $, gerundet auf eine runde Zahl Ausgaben pro Monat
+const reicht = (budget, t) => Math.floor(budget / (t === 'base' ? AUSGABE_USD.deepseek : AUSGABE_USD.luna) / 10) * 10;
+const AUSGABE_USD = { deepseek: 0.03, luna: 0.05 };
 function upgradeZeigen() {
   if (!TARIFE) return $('upgrade').replaceChildren(el('p', { class: 'fehlertext' }, 'Die Tarife ließen sich nicht laden. Bist du online?'));
   const T = TARIFE.tarife, z = TARIFE.zahlung, b = ICH?.bestellung, mitRabatt = !!ICH && (ICH.erstrabatt || ICH.gutscheine > 0);
@@ -3043,6 +3086,8 @@ function upgradeZeigen() {
       el('p', { class: 'klein' }, '24 Stunden lang alles aus Ultra, einmal pro Konto, ohne Zahlungsdaten. Danach geht es von selbst mit Base weiter.'),
       el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll', type: 'button', onclick: testStarten }, '24 Stunden Ultra gratis testen'))),
     el('div', { class: 'tarife' }, Object.keys(T).map(karte)),
+    el('p', { class: 'meta fair' }, `Fair Use: Jeder Tarif deckt KI-Kosten bis zu einem Betrag pro Monat. Base reicht für rund ${reicht(T.base.budget, 'base')} Wochenausgaben mit DeepSeek, `
+      + `Pro für rund ${reicht(T.pro.budget)} mit dem gründlicheren GPT-6 Luna, Ultra für rund ${reicht(T.ultra.budget)}. Wie viel du schon genutzt hast, steht in der Seitenleiste; am Monatsersten geht es wieder bei null los.`),
     bestellen,
     el('section', { class: 'text warum', 'aria-labelledby': 'u-warum' },
       el('h2', { id: 'u-warum' }, 'Warum kostet das etwas, und wofür zahle ich?'),
@@ -3170,6 +3215,13 @@ async function rechtZeigen() {
 
 /* ---------- Ansichten ---------- */
 let ansicht = '', ort = null;
+function modellWahl() {
+  const nur = SERVER && ICH?.tarif === 'base' && !ICH?.ecke;
+  $('modell').disabled = nur;
+  $('modell').value = nur ? BASIS_MODELL : MODELLE[merk('modell')] ? merk('modell') : Object.keys(MODELLE)[0];
+  $('modell-hinweis').textContent = nur ? 'In Base schreibt DeepSeek V4.1 mit maximalem Nachdenken. Ab Pro wählst du GPT-6 Luna, MiMo oder Sol.'
+    : 'GPT-6 Luna schreibt am gründlichsten, MiMo ist am schnellsten, DeepSeek am günstigsten.';
+}
 async function zeichne() {
   const v = !SERVER && verbindungLesen(location.hash);  // QR-Code bzw. Verbindungslink von einem anderen Gerät
   if (v) { await verbinden(v); return 'verbunden'; }
@@ -3196,7 +3248,7 @@ async function zeichne() {
   const namen = { kalender: 'Kalender', wordpower: 'Word Power', onlinetests: 'Onlinetests', vortrag: 'Vortrag', anleitung: 'Anleitung', einstellungen: SERVER ? 'Konto' : 'Einrichten',
     upgrade: 'Tarife', admin: 'Admin-Ecke', recht: 'Impressum, Datenschutz und AGB' };
   document.title = neu === 'titelblatt' ? 'Lernhelfer' : `${neu === 'ausgabe' ? teil : namen[hier]} – Lernhelfer`;
-  $('modell-name').textContent = $('modell').value;
+  modellWahl(); $('modell-name').textContent = $('modell').value;
   $('alle').disabled = Object.values(R).some(r => r.druckt) || !Object.keys(R).length;
   if (neu !== 'einstellungen') kameraZu();
   clearInterval(ABFRAGE);  // auf der Einrichten-Seite sieht man den ersten Abgleich ankommen
@@ -3225,7 +3277,6 @@ async function zeichne() {
 async function start() {
   $('datumszeile').textContent = `${heute.toLocaleDateString('de-AT', { weekday: 'short', day: 'numeric', month: 'long' })}, KW ${kw(heute)}`;
   if (!$('modell').options.length) Object.keys(MODELLE).forEach(m => $('modell').add(new Option(m, m)));
-  if (MODELLE[merk('modell')]) $('modell').value = merk('modell');
   if (SERVER) await kontoStart(); else await orZurueck();  // Server: Konto und Tarife; sonst zurück vom OpenRouter-Login (?code=…)
   if (await zeichne() === 'verbunden') return;
   kosten();

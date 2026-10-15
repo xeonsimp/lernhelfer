@@ -29,6 +29,7 @@ const attrappe = createServer((req, res) => {
     const j = b ? JSON.parse(b) : {};
     if (req.url === '/chat/completions') {
       or.anfragen.push({ auth: req.headers.authorization, ...j });
+      if (j.messages?.[0]?.content === 'langsam') return setTimeout(() => { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end('{"usage":{"cost":0}}'); }, 400);
       if (j.stream) {
         res.writeHead(200, { 'Content-Type': 'text/event-stream' });
         res.write(': OPENROUTER PROCESSING\n\n');
@@ -123,7 +124,11 @@ try {
   r = await anna('POST', '/api/ki', { feature: 'ausgabe', model: 'openai/gpt-6-luna', messages: [{ role: 'user', content: 'x' }], plugins: [{ id: 'web' }] });
   assert.equal(r.j.choices[0].message.content, 'Antwort');
   assert.equal(or.anfragen.at(-1).auth, 'Bearer sk-or-server'); assert.equal(or.anfragen.at(-1).plugins, undefined, 'fremde Felder fliegen raus');
-  assert.equal((await anna('GET', '/api/ich')).j.genutzt, 30, '0,30 $ von 1 $');
+  const basis = or.anfragen.at(-1);
+  assert.equal(basis.model, 'deepseek/deepseek-v4.1-flash', 'Base: nur DeepSeek, egal was die App schickt');
+  assert.deepEqual(basis.reasoning, { effort: 'max' }); assert.equal(basis.max_tokens, 120000);
+  assert.deepEqual(basis.provider, { data_collection: 'deny', max_price: { prompt: 0.2, completion: 1 } });
+  assert.equal((await anna('GET', '/api/ich')).j.genutzt, 15, '0,30 $ von 2 $');
 
   // 24 Stunden Ultra: erst nach Bestätigung, dann Chat im Strom, Testbudget 0,50 $
   assert.equal((await anna('POST', '/api/test')).status, 403);
@@ -132,6 +137,7 @@ try {
   assert.equal(r.j.tarif, 'ultra'); assert.equal(r.j.test, true); assert.ok(r.j.bis - Date.now() > 23.9 * 3600e3);
   r = await anna('POST', '/api/ki', { feature: 'chat', model: 'openai/gpt-6-luna', stream: true, messages: [] });
   assert.match(r.text, /Hallo /); assert.match(r.text, /\[DONE\]/);
+  assert.equal(or.anfragen.at(-1).model, 'openai/gpt-6-luna', 'im Test die großen Modelle');
   assert.equal((await anna('GET', '/api/ich')).j.genutzt, 60, 'Test zählt extra: 0,30 von 0,50 $');
   assert.equal((await anna('POST', '/api/ki', { feature: 'wp-text', model: 'openai/gpt-6-luna', messages: [] })).status, 403, 'Entwurf gibt es öffentlich nicht');
   assert.deepEqual((await anna('GET', '/api/geschuetzt/wordpower')).j, { transcribe: 'TRANSKRIPT' });
@@ -234,6 +240,10 @@ try {
   assert.equal((await chef('GET', '/api/admin')).status, 403);
   await chef('POST', '/api/ecke', { passwort: 'Ecke-Passwort!' });
   assert.equal((await chef('GET', '/api/admin')).status, 200);
+  // Höchstens acht KI-Anfragen gleichzeitig pro Konto, danach wieder frei
+  const neun = await Promise.all(Array.from({ length: 9 }, () => chef('POST', '/api/ki', { feature: 'ausgabe', model: 'openai/gpt-6-luna', messages: [{ role: 'user', content: 'langsam' }] })));
+  assert.deepEqual(neun.map(x => x.status).sort(), [200, 200, 200, 200, 200, 200, 200, 200, 429]);
+  assert.equal((await chef('POST', '/api/ki', { feature: 'ausgabe', model: 'openai/gpt-6-luna', messages: [{ role: 'user', content: 'x' }] })).status, 200);
   for (let i = 0; i < 3; i++) await chef('POST', '/api/ecke', { passwort: 'raten' });
   assert.equal((await chef('POST', '/api/ecke', { passwort: 'Ecke-Passwort!' })).status, 429, 'Ecke-Passwort raten gebremst');
   assert.equal((await anna2('POST', '/api/anmelden', { email: 'anna@example.com', passwort: 'neues-passwort-1' })).status, 401);
