@@ -100,12 +100,21 @@ def test():
         if isinstance(a, Exception):
             raise a
         return a
-    holen.api, stand = api, {"sha": {"x.json": "alt"}}
+    zugang = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
+    zugang.write('{"repo": "n/d", "token": "t", "api": "https://server/api/gh"}')
+    zugang.close()
+    holen.ZUGANG = Path(zugang.name)
+    holen.api, stand = api, {"ziel": "https://server/api/gh/n/d", "sha": {"x.json": "alt"}}
     holen.hochladen(stand, "x.json", b"{}")
     assert anfragen == [("PUT", "alt"), ("GET", None), ("PUT", "alt2")] and stand["sha"]["x.json"] == "neu"
     stand["sha"]["x.json"] = holen.hashlib.sha1(b"blob 2\0{}").hexdigest()
     holen.hochladen(stand, "x.json", b"{}")
     assert len(anfragen) == 3  # gleiche Datei: nichts hochgeladen
+    stand["ziel"] = "https://api.github.com/n/d"  # Prüfsummen aus der GitHub-Zeit: auf dem Server trotzdem hochladen
+    antworten.append({"content": {"sha": "s"}})
+    holen.hochladen(stand, "x.json", b"{}")
+    assert anfragen[3] == ("PUT", None) and stand == {"ziel": "https://server/api/gh/n/d", "sha": {"x.json": "s"}}
+    Path(zugang.name).unlink()
 
     # Testliste für den Onlinetest-Überblick der App
     with tempfile.TemporaryDirectory() as t:

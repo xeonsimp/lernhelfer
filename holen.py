@@ -461,8 +461,13 @@ def hochgeladene(fach):
 
 
 def hochladen(stand, pfad, daten):
-    """Eine Datei ins Daten-Repo; unverändert seit dem letzten Hochladen = nichts tun (Git-Prüfsumme lokal gerechnet)."""
-    shas = stand.setdefault("sha", {})
+    """Eine Datei ins Daten-Repo; unverändert seit dem letzten Hochladen = nichts tun (Git-Prüfsumme lokal gerechnet).
+    Die Prüfsummen gelten nur für das Ziel, für das sie gemerkt wurden: nach dem Wechsel von GitHub zum Server liegt dort noch nichts."""
+    z = json.loads(ZUGANG.read_text("utf-8"))
+    ziel = f"{z.get('api') or API}/{z['repo']}"
+    if stand.get("ziel") != ziel:
+        stand["ziel"], stand["sha"] = ziel, {}
+    shas = stand["sha"]
     if shas.get(pfad) == hashlib.sha1(b"blob %d\0" % len(daten) + daten).hexdigest():
         return
     for versuch in (1, 2):
