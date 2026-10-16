@@ -20,11 +20,14 @@ Mischung (`src/ton.tsx`): Unter jedem Effekt wird die Musik um 6 dB abgesenkt (F
 
 ## Stimme (nur im langen Reel)
 
-- Werkzeug: [edge-tts](https://github.com/rany2/edge-tts) (Python, GPL-3.0), kostenlos und ohne Konto. Es nutzt die Vorlese-Stimmen von Microsoft Edge. Stimme `de-DE-KillianNeural`, Tempo `+8 %`; passt ein Satz nicht in sein Fenster, spricht `scripts/stimme.py` ihn mit `+12 %` oder `+16 %`. Welches Tempo jeder Satz bekam, steht in `public/vo/vo.json`.
-- Texte: selbst geschrieben, in `src/reel.tsx` (`stimme`); Uhrzeiten, Preise und die Adresse ausgeschrieben („lernhelfer Punkt x y z“), damit sie richtig gesprochen werden.
+- Stimme: ElevenLabs **Eleven v4 Turbo** über die Text-to-Speech-API von [OpenRouter](https://openrouter.ai/elevenlabs/eleven-v4-turbo) (`elevenlabs/eleven-v4-turbo`), Sprecher `liam`, Sprache Deutsch. Bezahlt pro Zeichen, alle 35 Sätze zusammen kosten ein paar Cent. Der Key kommt aus der Umgebungsvariable `OPENROUTER_API_KEY` und steht nirgends im Repo.
+- Ausweichlösung ohne Kosten: `python scripts/stimme.py --edge` nutzt [edge-tts](https://github.com/rany2/edge-tts) (Python, GPL-3.0, kein Konto) mit `de-DE-KillianNeural` und `+8 %` Tempo. edge-tts ist kein offizielles Microsoft-Produkt, eine ausdrückliche Lizenz für Werbung gibt es dafür nicht.
+- Tempo: Passt ein Satz nicht in sein Fenster, beschleunigt `scripts/stimme.py` ihn tonhöhengleich mit ffmpeg `atempo` auf 1,06 oder 1,12 (bei edge-tts `+12 %` oder `+16 %`). Welches Tempo und welche Stimme jeder Satz bekam, steht in `public/vo/vo.json`.
+- Texte: selbst geschrieben, in `src/reel.tsx` (`stimme`). Keine Abkürzungen: PS heißt Proseminar, PC heißt Computer, VWL heißt Volkswirtschaft; das Skript bricht ab, wenn zwei Großbuchstaben am Stück im Text stehen (deshalb „Olat“ statt „OLAT“). Uhrzeiten, Preise und die Adresse sind ausgeschrieben („vier Euro neunzig“, „lernhelfer Punkt x y z“). „Base“ spricht die Stimme falsch, daher im Ton „Einstieg“ und „kostenlos starten“; im Bild bleibt „Base“.
+- Kontrolle: Jede Aufnahme wurde mit einer lokalen Spracherkennung (faster-whisper, Modell medium) zurück in Text übersetzt und mit dem Soll-Text verglichen.
 - Bearbeitung mit ffmpeg (aus `imageio-ffmpeg`): Stille am Anfang und Ende entfernt (30 ms davor und 80 ms danach bleiben), Hochpass 80 Hz, sanfter Kompressor 3:1 ab −20 dB, Präsenz +3 dB bei 3,5 kHz, dann jeder Satz auf −16 LUFS gebracht und bei −1,5 dBTP begrenzt. Ergebnis: `public/vo/vo-<id>.mp3`.
 - Mischung: Die Stimme läuft mit voller Lautstärke. Die Musik liegt als Bett durchgehend etwa 12 dB darunter (Faktor 0,17 auf `musik-reel.wav` mit −12,6 LUFS, also etwa −28 LUFS), die Effekte sind 2 dB leiser als im Spot und bleiben Akzente unter der Sprache.
-- Nutzungsbedingungen: edge-tts ist kein offizielles Microsoft-Produkt, für die Ausgabe der Edge-Stimmen gibt es keine ausdrückliche Lizenz für Werbung. Für eine bezahlte Kampagne die Stimme daher besser mit einer Stimme mit klarer kommerzieller Lizenz neu erzeugen (das Skript tauscht nur `STIMME` und die Funktion `sprich`).
+- Nutzungsrechte: ElevenLabs erlaubt bei bezahlter Nutzung die kommerzielle Verwendung der erzeugten Audios. Ob das über OpenRouter genauso gilt, vor einer bezahlten Kampagne in den Bedingungen von OpenRouter und ElevenLabs nachlesen.
 Nach dem Rendern wird alles mit ffmpeg `loudnorm` auf etwa −14 LUFS normalisiert.
 
 ## Schrift

@@ -2,7 +2,7 @@
 
 Langfassung als Reel-Post: 9:16, 1080 × 1920, 60 fps, 2:38 min (9460 Frames); dieselben Szenen auch als 16:9, 1920 × 1080 (Text links, App rechts). Zügiges Grundtempo: `TEMPO` in `src/reel.tsx` steht überall auf 1 (die ruhigere Fassung mit 4:24 min war zu langsam). Erzählt aus der Sicht eines gestressten Erstsemesters, umgangssprachlich, in der Ich-Form; die App antwortet sachlich. Texte bleiben zwischen y = 250 und y = 1570.
 
-Voice-over: Der Erstsemester spricht seine Gedanken, 35 kurze Sätze, gesprochen von `de-DE-KillianNeural` (edge-tts). Die Sätze stehen bei den Szenen in `src/reel.tsx` (`stimme`), jeder hängt an einem Zeitpunkt der Szene (meist dem Erscheinen des Gedankens) und muss enden, bevor der nächste beginnt. Sie wiederholen das Bild nicht Wort für Wort: Details wie Preise im Kleingedruckten, Rabatte oder Dateiformate stehen nur im Bild. Das Video bleibt auch ohne Ton verständlich.
+Voice-over: Der Erstsemester spricht seine Gedanken, 35 kurze Sätze, gesprochen von ElevenLabs Eleven v4 Turbo (Sprecher „liam“, über OpenRouter), ohne Abkürzungen (Proseminar statt PS). Die Sätze stehen bei den Szenen in `src/reel.tsx` (`stimme`), jeder hängt an einem Zeitpunkt der Szene (meist dem Erscheinen des Gedankens) und muss enden, bevor der nächste beginnt. Sie wiederholen das Bild nicht Wort für Wort: Details wie Preise im Kleingedruckten, Rabatte oder Dateiformate stehen nur im Bild. Das Video bleibt auch ohne Ton verständlich.
 Gleiches Design wie der kurze Spot (Punktraster, gezeichnete Rahmen, gelber Marker), aber alle Szenen hell, damit die weißen App-Karten immer auf Papier liegen. Musik: eigener Lo-fi-Track (`scripts/musik.mjs`), unter Effekten 6 dB leiser. Alle App-Bilder sind echte Aufnahmen der lokalen App mit erfundenen Beispieldaten und klein mit „Beispieldaten“ beschriftet.
 Die KI-Antworten in den Chats kommen von einer lokalen Attrappe statt von OpenRouter: Die Texte sind vorgeschrieben und halten sich an das, was in den Beispiel-Unterlagen steht.
 
@@ -35,10 +35,10 @@ Die KI-Antworten in den Chats kommen von einer lokalen Attrappe statt von OpenRo
 
 ## Rendern
 
-Aus `werbung/video` (Node 22, Python 3 mit `pip install edge-tts imageio-ffmpeg`):
+Aus `werbung/video` (Node 22, Python 3 mit `pip install imageio-ffmpeg`, für die Stimme ein OpenRouter-Key in `OPENROUTER_API_KEY`):
 
 1. `node scripts/musik.mjs` erzeugt die Musik `public/sfx/musik-reel.wav` (nicht im Repo).
-2. `python scripts/stimme.py` spricht alle neuen oder geänderten Sätze, bearbeitet sie und prüft, ob jeder in sein Fenster passt. Ist einer zu lang, nennt das Skript ihn: dann den Text kürzen und erneut aufrufen.
+2. `python scripts/stimme.py` spricht alle neuen oder geänderten Sätze (kostenlos mit `--edge` und `pip install edge-tts`), bearbeitet sie und prüft, ob jeder in sein Fenster passt. Ist einer zu lang, nennt das Skript ihn: dann den Text kürzen und erneut aufrufen.
 3. `npx remotion render src/index.ts Lernhelfer-Reel out/roh-reel-9x16.mp4` und `npx remotion render src/index.ts Lernhelfer-Reel-16x9 out/roh-reel-16x9.mp4`.
 4. `python scripts/normalisieren.py out/roh-reel-9x16.mp4 out/lernhelfer-reel-9x16.mp4`, ebenso für 16:9 (−14 LUFS).
 
