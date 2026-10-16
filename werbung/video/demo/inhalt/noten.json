@@ -1,0 +1,105 @@
+{
+ "lv": {
+  "Mathematik PS": {
+   "ects": 4,
+   "gesamt": 40,
+   "schluessel": null,
+   "note": null
+  },
+  "VWL PS": {
+   "ects": 4,
+   "gesamt": 40,
+   "schluessel": null,
+   "note": null
+  },
+  "Englisch PS": {
+   "ects": 3,
+   "gesamt": 30,
+   "schluessel": null,
+   "note": null
+  }
+ },
+ "eintraege": [
+  {
+   "id": "m1",
+   "lv": "Mathematik PS",
+   "titel": "Onlinetest 1",
+   "datum": "2026-10-05",
+   "punkte": 3,
+   "max": 5,
+   "schnitt": 3.2
+  },
+  {
+   "id": "m2",
+   "lv": "Mathematik PS",
+   "titel": "Onlinetest 2",
+   "datum": "2026-10-12",
+   "punkte": 4,
+   "max": 5,
+   "schnitt": 3.4
+  },
+  {
+   "id": "m3",
+   "lv": "Mathematik PS",
+   "titel": "Hausübung 1",
+   "datum": "2026-10-15",
+   "punkte": 9,
+   "max": 10,
+   "schnitt": 7.1
+  },
+  {
+   "id": "v1",
+   "lv": "VWL PS",
+   "titel": "Übungsblatt 1",
+   "datum": "2026-10-09",
+   "punkte": 7,
+   "max": 10,
+   "schnitt": 6.8
+  },
+  {
+   "id": "v2",
+   "lv": "VWL PS",
+   "titel": "Onlinetest 1",
+   "datum": "2026-10-16",
+   "punkte": 4.5,
+   "max": 5,
+   "schnitt": 3.9
+  },
+  {
+   "id": "e1",
+   "lv": "Englisch PS",
+   "titel": "Word Power Journal 1",
+   "datum": "2026-10-13",
+   "punkte": 8,
+   "max": 10,
+   "schnitt": 7.5
+  }
+ ],
+ "pruefungen": [
+  {
+   "id": "p1",
+   "fach": "VWL",
+   "titel": "Zwischentest",
+   "datum": "2026-11-18",
+   "zeit": "10:00",
+   "quelle": "ausgabe"
+  },
+  {
+   "id": "p2",
+   "fach": "Mathematik",
+   "titel": "VO-Prüfung",
+   "datum": "2027-02-03",
+   "zeit": "09:00",
+   "quelle": "ausgabe"
+  },
+  {
+   "id": "p3",
+   "fach": "BWL",
+   "titel": "VO-Prüfung",
+   "datum": "2027-02-10",
+   "zeit": "14:00",
+   "quelle": "ausgabe"
+  }
+ ],
+ "proben": []
+}

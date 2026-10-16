@@ -1,0 +1,170 @@
+{
+ "id": "2026-10-16-demo",
+ "titel": "Pitch: a student café on campus",
+ "datum": "2026-10-16",
+ "quelle": {
+  "art": "datei",
+  "name": "pitch-probe.m4a"
+ },
+ "kontext": "Englisch-PS, Pitch, drei Minuten",
+ "dauer": 64,
+ "zeilen": [
+  {
+   "t": 0,
+   "s": "Good morning everyone. Today I want to pitch an idea for a student café on campus."
+  },
+  {
+   "t": 6,
+   "s": "Uh, first of all, let me show you why we need it."
+  },
+  {
+   "t": 12,
+   "s": "Right now there is only one place to get coffee, and at ten o'clock the line is, um, very long."
+  },
+  {
+   "t": 21,
+   "s": "We asked forty students, and most of them said they would buy there every day."
+  },
+  {
+   "t": 29,
+   "s": "Moving on to the costs. The rent is low because the university has a free room."
+  },
+  {
+   "t": 37,
+   "s": "So, uh, our break-even is at about eighty cups a day."
+  },
+  {
+   "t": 45,
+   "s": "Uh, the menu would be simple: coffee, tea and sandwiches."
+  },
+  {
+   "t": 52,
+   "s": "To sum up, a small café would save time and, um, make campus a nicer place."
+  },
+  {
+   "t": 60,
+   "s": "Thank you. I'm happy to take your questions."
+  }
+ ],
+ "analyse": {
+  "sprache": "Englisch",
+  "thema": "Studentisches Café",
+  "note": 2,
+  "punkte": 80,
+  "urteil": "Ein klar gebauter Pitch mit sicherem Signposting. Die Füllwörter kommen an Übergängen und vor der wichtigsten Zahl; dort lohnt eine kurze Pause statt „uh“.",
+  "kriterien": [
+   {
+    "name": "Aufbau",
+    "punkte": 9,
+    "kommentar": "Einstieg, Problem, Kosten und Schluss sind klar getrennt; „moving on to“ (0:29) führt sauber weiter."
+   },
+   {
+    "name": "Sprache",
+    "punkte": 8,
+    "kommentar": "Treffende Wortwahl, einfache und korrekte Sätze."
+   },
+   {
+    "name": "Vortragsweise",
+    "punkte": 7,
+    "kommentar": "Fünf äh-Laute, vor allem an Übergängen (0:06, 0:45) und vor der Break-even-Zahl (0:37)."
+   }
+  ],
+  "staerken": [
+   "Klarer Einstieg mit der Idee im ersten Satz (0:00)",
+   "Saubere Übergänge mit „first of all“ und „to sum up“"
+  ],
+  "tipps": [
+   {
+    "titel": "Pause statt „uh“",
+    "warum": "Vor Zahlen kommt jedes Mal ein Füllwort (0:37).",
+    "uebung": "Den Kostenteil dreimal laut lesen und vor jeder Zahl bewusst eine Sekunde schweigen."
+   }
+  ],
+  "fuellwoerter": [
+   {
+    "wort": "so",
+    "anzahl": 1
+   }
+  ],
+  "befunde": [
+   {
+    "zeit": "0:37",
+    "art": "fuellwort",
+    "zitat": "So, uh, our break-even is at about eighty cups a day.",
+    "problem": "Füllwort direkt vor der wichtigsten Zahl schwächt sie.",
+    "besser": "Our break-even is at about eighty cups a day."
+   },
+   {
+    "zeit": "0:21",
+    "art": "wortwahl",
+    "zitat": "most of them said they would buy there",
+    "problem": "„buy there“ bleibt vage.",
+    "besser": "most of them said they would buy their coffee there"
+   }
+  ],
+  "ger": {
+   "gesamt": "B2",
+   "skalen": [
+    {
+     "name": "Spektrum",
+     "niveau": "B2",
+     "begruendung": "Passender Wortschatz für einen Pitch, etwa „break-even“ (0:37).",
+     "naechste": "Für C1: mehr Varianten statt einfacher Verben wie „get“ (0:12)."
+    },
+    {
+     "name": "Korrektheit",
+     "niveau": "C1",
+     "begruendung": "Keine auffälligen Grammatikfehler im ganzen Transkript.",
+     "naechste": "Für C2: auch komplexe Sätze durchgehend sicher."
+    },
+    {
+     "name": "Flüssigkeit",
+     "niveau": "B2",
+     "begruendung": "Gleichmäßiges Tempo, aber äh-Laute an Übergängen (0:06, 0:45) und vor Zahlen (0:37).",
+     "naechste": "Für C1: Zahlen ohne Suchpausen nennen."
+    },
+    {
+     "name": "Kohärenz",
+     "niveau": "C1",
+     "begruendung": "Signposting mit „first of all“, „moving on to“, „to sum up“.",
+     "naechste": "Für C2: Übergänge noch variabler."
+    },
+    {
+     "name": "Vor Publikum sprechen",
+     "niveau": "B2",
+     "begruendung": "Klare Ansprache und Einladung zu Fragen (1:00).",
+     "naechste": "Für C1: das Publikum direkter einbinden."
+    }
+   ]
+  },
+  "reflexion": {
+   "fazit": "Deine Einschätzung trifft fast überall. Die äh-Laute hast du richtig bemerkt, sie kommen aber vor allem an Übergängen.",
+   "punkte": [
+    {
+     "feld": "gut",
+     "aussage": "Der Einstieg war klar.",
+     "urteil": "stimmt",
+     "begruendung": "Die Idee steht im ersten Satz (0:00), das Publikum weiß sofort, worum es geht."
+    },
+    {
+     "feld": "schlecht",
+     "aussage": "Bei den Kosten war ich zu schnell.",
+     "urteil": "teilweise",
+     "begruendung": "Das Tempo bleibt gleichmäßig; auffällig ist eher das „uh“ direkt vor der Break-even-Zahl (0:37)."
+    },
+    {
+     "feld": "besser",
+     "aussage": "Nächstes Mal weniger äh sagen.",
+     "urteil": "stimmt",
+     "begruendung": "Fünf äh-Laute in gut einer Minute, an Übergängen (0:06, 0:45) und vor Zahlen (0:37)."
+    }
+   ],
+   "uebersehen": [
+    "Am Schluss fehlt ein klarer Call to Action vor „Thank you“ (1:00)."
+   ]
+  }
+ },
+ "kosten": 0.02,
+ "bilder": 0,
+ "bewertet": "2026-10-16T18:20:00.000Z"
+}

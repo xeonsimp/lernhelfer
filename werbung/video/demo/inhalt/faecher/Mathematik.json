@@ -1,0 +1,19 @@
+{
+ "dateien": [
+  {
+   "datei": "VO 4 Differentialrechnung I.pdf",
+   "art": "folien",
+   "text": "Beispieltext."
+  },
+  {
+   "datei": "PS Blatt 3.pdf",
+   "art": "ps",
+   "text": "Beispieltext."
+  },
+  {
+   "datei": "Syllabus Mathematik.pdf",
+   "art": "syllabus",
+   "text": "Beispieltext."
+  }
+ ]
+}
