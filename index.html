@@ -7,8 +7,7 @@
 <meta name="referrer" content="no-referrer">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Lernhelfer">
-<meta name="theme-color" content="#fbfbf9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#26302b" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#fbfbf9">
 <title>Lernhelfer</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232446c8'/%3E%3Cpath d='M11 8h3.6v13H22v3H11z' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preload" href="fonts/Archivo.woff2" as="font" type="font/woff2" crossorigin>
@@ -37,8 +36,8 @@
     --f-mathe: #0f766e; --f-vwl: #b45309; --f-bwl: #7c3aed; --f-englisch: #be185d;
     color-scheme: light;
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
+  /* Dunkel nur auf Wunsch (Schalter in Seitenleiste und Einstellungen), hell ist Standard */
+  :root[data-thema="dunkel"] {
       --bg: #111317; --bg-2: #181b21; --bg-3: #23272f;
       --linie: #2a2f38; --linie-2: #3c434e;
       --text: #eceef3; --text-2: #b0b7c3; --text-3: #949ba8;
@@ -49,7 +48,6 @@
       --haken: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%230b0f1f' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
       --f-mathe: #5eead4; --f-vwl: #fbbf24; --f-bwl: #c4b5fd; --f-englisch: #f9a8d4;
       color-scheme: dark;
-    }
   }
 
   * { box-sizing: border-box; }
@@ -836,16 +834,31 @@
   .hoeren audio { width: 100%; }
   .tempo { display: inline-flex; align-items: center; gap: 8px; font-size: 0.875rem; font-weight: 600; }
   .tempo select { width: auto; min-height: 40px; }
+
+  /* Hell/Dunkel-Schalter */
+  .thema-schalter { display: inline-flex; align-items: center; gap: 10px; min-height: 40px; padding: 6px 10px; border: 0; border-radius: var(--r); background: none; color: var(--text-2); font-size: 0.875rem; font-weight: 550; cursor: pointer; }
+  .seitenleiste .thema-schalter { align-self: flex-start; margin: 10px 0 0; }
+  .einrichten .thema-schalter { margin: 0 0 12px -10px; }
+  .thema-schalter .spur { position: relative; width: 36px; height: 20px; flex: none; border-radius: 10px; background: var(--bg-3); box-shadow: inset 0 0 0 1px var(--linie-2); transition: background-color 0.2s ease; }
+  .thema-schalter .spur::after { content: ""; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: var(--text-2); transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1), background-color 0.2s ease; }
+  .thema-schalter[aria-checked="true"] .spur { background: var(--text); box-shadow: none; }
+  .thema-schalter[aria-checked="true"] .spur::after { transform: translateX(16px); background: var(--bg); }
+  @media (hover: hover) { .thema-schalter:hover { color: var(--text); } }
+  @media (prefers-reduced-motion: reduce) { .thema-schalter .spur, .thema-schalter .spur::after { transition: none; } }
+
 </style>
 <link rel="stylesheet" href="skizze.css" id="skizze-css">
 <script>
-// Das neue Design (skizze.css) ist Standard; das alte lässt sich unter Einstellungen wählen und gilt für dieses Gerät
-function designWaehlen(alt) {
+// Das neue Design (skizze.css) und hell sind Standard; altes Design und Dunkel wählt man selbst, beides gilt für dieses Gerät
+function aussehen() {
+  let alt = false, dunkel = false;
+  try { alt = localStorage.getItem('design') === 'alt'; dunkel = localStorage.getItem('thema') === 'dunkel'; } catch {}
   document.getElementById('skizze-css').disabled = alt;
-  const [hell, dunkel] = document.querySelectorAll('meta[name=theme-color]');
-  hell.content = alt ? '#ffffff' : '#fbfbf9'; dunkel.content = alt ? '#111317' : '#26302b';
+  if (dunkel) document.documentElement.dataset.thema = 'dunkel'; else delete document.documentElement.dataset.thema;
+  document.querySelector('meta[name=theme-color]').content = alt ? (dunkel ? '#111317' : '#ffffff') : (dunkel ? '#151515' : '#fbfbf9');
+  for (const s of document.querySelectorAll('.thema-schalter')) s.setAttribute('aria-checked', String(dunkel));
 }
-try { if (localStorage.getItem('design') === 'alt') designWaehlen(true); } catch {}
+aussehen();
 </script>
 </head>
 <body>
@@ -873,6 +886,7 @@ try { if (localStorage.getItem('design') === 'alt') designWaehlen(true); } catch
       <a href="#/einstellungen" data-ansicht="einstellungen"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>Einrichten</a>
     </nav>
     <p class="kosten" data-kosten></p>
+    <button class="thema-schalter" type="button" role="switch" aria-checked="false"><span class="spur" aria-hidden="true"></span>Dunkler Modus</button>
     <a href="#/admin" class="ecke-link nur-server" id="nav-admin" hidden>Admin-Ecke</a>
   </div></aside>
 
@@ -1006,6 +1020,7 @@ try { if (localStorage.getItem('design') === 'alt') designWaehlen(true); } catch
       <div id="ei-schritte"></div>
       <section class="schritt" aria-labelledby="ei-einst">
         <h2 id="ei-einst">Einstellungen</h2>
+        <button class="thema-schalter" type="button" role="switch" aria-checked="false"><span class="spur" aria-hidden="true"></span>Dunkler Modus</button>
         <label class="feld">Design <select id="design" name="design"><option value="">Neu: Skizze auf Punktraster</option><option value="alt">Alt: schlicht</option></select></label>
         <label class="feld">Modell für neue Ausgaben <select id="modell" name="modell"></select></label>
         <p class="klein"><span id="modell-hinweis"></span><span class="nur-eigen"> Eine Ausgabe kostet meist 1 bis 8 Cent.</span></p>
@@ -4950,7 +4965,9 @@ async function start() {
 window.onhashchange = () => SERVER && /^#(bestaetigen|passwort)=/.test(location.hash) ? kontoStart().then(zeichne) : zeichne();  // Mail-Link bei offener App
 if (SERVER) for (const a of document.querySelectorAll('a[data-ansicht="einstellungen"]')) a.lastChild.textContent = 'Konto';
 $('design').value = merk('design') || '';
-$('design').onchange = () => { merk('design', $('design').value || null); designWaehlen(!!$('design').value); };
+$('design').onchange = () => { merk('design', $('design').value || null); aussehen(); };
+for (const s of document.querySelectorAll('.thema-schalter')) s.onclick = () => { merk('thema', s.getAttribute('aria-checked') === 'true' ? null : 'dunkel'); aussehen(); };
+aussehen();
 $('modell').onchange = () => { merk('modell', $('modell').value); $('modell-name').textContent = $('modell').value; };
 $('alle').onclick = () => Promise.all(Object.keys(R).map(f => drucke(f)));
 $('abmelden').onclick = () => {
