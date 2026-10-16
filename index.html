@@ -1253,11 +1253,11 @@ aussehen();
         <p>Unter <a href="#/vortrag">Vortrag</a> bekommst du Rückmeldung zu einer Präsentation, etwa vor dem PS oder für Englisch. Video oder Tonaufnahme wählen, optional Anlass und Vorgaben dazuschreiben (Zeitvorgabe, Bewertungskriterien), auf „Transkript erstellen“ tippen. Nach 1 bis 3 Minuten steht das Transkript. Dann bist du dran: Video noch einmal ansehen und aufschreiben, was gut war, was nicht und was du beim nächsten Mal anders machen willst. Danach analysiert die KI in 1 bis 2 Minuten, und du bekommst:</p>
         <ul>
           <li><b>Deine Reflexion im Abgleich:</b> zu jedem deiner Punkte „stimmt“, „teilweise“ oder „stimmt nicht“, immer mit Begründung, dazu, was du übersehen hast. Die Reflexion lässt sich überspringen, aber sie lohnt sich.</li>
-          <li><b>Note und Gesamteindruck</b>, dazu Punkte für Aufbau, Sprache, Vortragsweise, Belege und Beispiele und Kernbotschaft und, bei Videos, Folien.</li>
+          <li><b>Note und Gesamteindruck</b>, dazu Punkte für Aufbau, Sprache, Vortragsweise und, bei Videos, Folien. Belege und Beispiele und die Kernbotschaft kommen nur dazu, wenn du „Auch den Inhalt prüfen“ ankreuzt.</li>
           <li><b>Sprachniveau nach GER</b> (A1 bis C2) für Spektrum, Korrektheit, Flüssigkeit, Kohärenz und Vor Publikum sprechen, jede Stufe mit Belegen aus deinem Vortrag und was für die nächste fehlt.</li>
           <li><b>Die wichtigsten Tipps</b>, jeweils mit einer Übung für die nächste Probe.</li>
           <li><b>Kennzahlen:</b> Sprechtempo, wie oft äh und ähm, Füllwörter, lange Pausen.</li>
-          <li><b>Befunde mit Zeitstempel:</b> Grammatik, Wortwahl, leere Wörter, Logikfehler, irreführende Formulierungen und Brüche im Aufbau, jeweils mit Zitat, Erklärung und besserer Formulierung. Ein Tipp auf die Zeit spielt das Video an dieser Stelle ab.</li>
+          <li><b>Befunde mit Zeitstempel:</b> Grammatik, Wortwahl, leere Wörter und Brüche im Aufbau, mit Inhaltsprüfung auch Logikfehler und irreführende Formulierungen, jeweils mit Zitat, Erklärung und besserer Formulierung. Ein Tipp auf die Zeit spielt das Video an dieser Stelle ab.</li>
           <li><b>Das Transkript</b> Wort für Wort, mit jedem äh, und Rückfragen an den Coach.</li>
         </ul>
         <p>Das Video bleibt auf deinem Gerät; an die KI gehen nur die Tonspur und ein paar Standbilder. YouTube-Links gehen nur bei öffentlichen Videos, weil Googles KI nicht gelistete Videos nicht öffnen kann. Ein Video vom iPad oder Handy wählst du deshalb am besten direkt als Datei. Transkript und Analyse liegen in deinem privaten Speicher und sind auf allen Geräten da.</p>
@@ -3103,13 +3103,13 @@ const GER = [
     'Kann ein komplexes Thema klar und gut gegliedert präsentieren und Standpunkte ausführlich mit Nebenpunkten, Gründen und Beispielen stützen.',
     'Kann ein komplexes Thema souverän und überzeugend präsentieren, auch vor einem Publikum ohne Vorwissen, und den Aufbau flexibel an das Publikum anpassen.'] },
 ];
-// Präsentation: die fünf Dimensionen der VALUE-Rubrik Oral Communication (AAC&U), in eigenen Worten
+// Präsentation: die fünf Dimensionen der VALUE-Rubrik Oral Communication (AAC&U), in eigenen Worten; true = Inhalt, nur wenn angekreuzt
 const VT_KRITERIEN = [
   ['Aufbau', 'Organization', 'Einleitung, Hauptteil und Schluss sind erkennbar, die Teile folgen schlüssig aufeinander, Überleitungen führen durch den Vortrag.'],
   ['Sprache', 'Language', 'Die Wortwahl passt zu Publikum und Anlass, ist präzise und anschaulich; Fachbegriffe stimmen und werden erklärt.'],
   ['Vortragsweise', 'Delivery', 'Tempo, Pausen, Betonung und Sprechfluss machen den Vortrag leicht verständlich und lebendig, Füller stören nicht; mit Standbildern auch Haltung, Blickkontakt und Gestik.'],
-  ['Belege und Beispiele', 'Supporting Material', 'Beispiele, Zahlen, Vergleiche und Quellen stützen die Aussagen und machen sie glaubwürdig.'],
-  ['Kernbotschaft', 'Central Message', 'Die Hauptaussage ist klar, wird früh genannt, ist begründet und bleibt am Ende hängen.'],
+  ['Belege und Beispiele', 'Supporting Material', 'Beispiele, Zahlen, Vergleiche und Quellen stützen die Aussagen und machen sie glaubwürdig.', true],
+  ['Kernbotschaft', 'Central Message', 'Die Hauptaussage ist klar, wird früh genannt, ist begründet und bleibt am Ende hängen.', true],
 ];
 const VT_QUELLEN = [
   ['Europarat (2001): Gemeinsamer europäischer Referenzrahmen für Sprachen, Tabelle 3 „Qualitative Aspekte des mündlichen Sprachgebrauchs“', 'https://www.coe.int/en/web/common-european-framework-reference-languages/table-3-cefr-3.3-common-reference-levels-qualitative-aspects-of-spoken-language-use'],
@@ -3117,9 +3117,10 @@ const VT_QUELLEN = [
   ['AAC&U (2009): VALUE Rubric Oral Communication', 'https://www.aacu.org/value/rubrics/value-rubrics-oral-communication'],
   ['Nicol, D. & Macfarlane-Dick, D. (2006): Formative assessment and self-regulated learning: a model and seven principles of good feedback practice. Studies in Higher Education 31(2)', 'https://doi.org/10.1080/03075070600572090'],
 ];
-const VT_ANALYSE = `Du bist Sprech- und Präsentationscoach für Studierende der Wirtschaftswissenschaften an der Universität Innsbruck. Du bekommst das wortgetreue Transkript eines Vortrags mit Zeitstempeln [m:ss], inklusive aller äh und ähm, Wiederholungen, Abbrüche und Fehler, dazu Kennzahlen, die die App gezählt hat, Anlass und Vorgaben, soweit angegeben, und manchmal Standbilder aus dem Video.
+const VT_OHNE_INHALT = 'Bewerte nur Sprache und Vortragsweise, nicht den Inhalt: Ob die Argumente logisch sind, ob Aussagen stimmen oder belegt sind und wie gut die Beispiele sind, gehört nicht in die Analyse, weder in Urteil, Note und Kriterien noch in Stärken, Tipps oder Befunde.';
+const vtAnalyse = inhalt => { const kriterien = VT_KRITERIEN.filter(k => inhalt || !k[3]); return `Du bist Sprech- und Präsentationscoach für Studierende der Wirtschaftswissenschaften an der Universität Innsbruck. Du bekommst das wortgetreue Transkript eines Vortrags mit Zeitstempeln [m:ss], inklusive aller äh und ähm, Wiederholungen, Abbrüche und Fehler, dazu Kennzahlen, die die App gezählt hat, Anlass und Vorgaben, soweit angegeben, und manchmal Standbilder aus dem Video.
 
-Analysiere gründlich, ehrlich und konkret, wie ein strenger, aber wohlwollender Coach. Antworte ausschließlich mit einem JSON-Objekt in genau diesem Aufbau:
+Analysiere gründlich, ehrlich und konkret, wie ein strenger, aber wohlwollender Coach.${inhalt ? '' : ' ' + VT_OHNE_INHALT} Antworte ausschließlich mit einem JSON-Objekt in genau diesem Aufbau:
 {"sprache": "Sprache des Vortrags, z. B. Englisch",
  "thema": "worum es geht, ein Satz",
  "note": österreichische Schulnote als Zahl 1 bis 5 (1 Sehr gut, 2 Gut, 3 Befriedigend, 4 Genügend, 5 Nicht genügend),
@@ -3133,9 +3134,9 @@ Analysiere gründlich, ehrlich und konkret, wie ein strenger, aber wohlwollender
  "fuellwoerter": [{"wort": "like", "anzahl": 4}],
  "befunde": [{"zeit": "m:ss", "art": "grammatik", "zitat": "…", "problem": "…", "besser": "…"}]}
 
-kriterien: genau diese fünf, in dieser Reihenfolge und mit genau diesen Namen; sie folgen den fünf Dimensionen der VALUE-Rubrik Oral Communication (AAC&U):
-${VT_KRITERIEN.map(([n, en, t]) => `- ${n} (${en}): ${t}`).join('\n')}
-Nur wenn Standbilder dabei sind, als sechstes: Folien (Lesbarkeit, Textmenge und Bezug zum Gesagten).
+kriterien: genau diese ${kriterien.length === 5 ? 'fünf' : 'drei'}, in dieser Reihenfolge und mit genau diesen Namen; sie folgen den Dimensionen der VALUE-Rubrik Oral Communication (AAC&U):
+${kriterien.map(([n, en, t]) => `- ${n} (${en}): ${t}`).join('\n')}
+Nur wenn Standbilder dabei sind, zusätzlich als letztes: Folien (Lesbarkeit, Textmenge und Bezug zum Gesagten).
 
 ger: das Sprachniveau nach dem Gemeinsamen Europäischen Referenzrahmen für Sprachen (GER) des Europarats. Miss ausschließlich an den Deskriptoren der BEWERTUNGSGRUNDLAGE unten, nicht nach eigenem Ermessen. skalen: genau diese fünf, in dieser Reihenfolge und mit genau diesen Namen: ${GER.map(g => g.name).join(', ')}. niveau: genau eine Stufe A1, A2, B1, B2, C1 oder C2, und zwar die höchste, deren Deskriptor der Vortrag insgesamt erfüllt; liegt er zwischen zwei Stufen, die niedrigere. begruendung: zwei bis drei Sätze, die den Deskriptor dieser Stufe mit Belegen aus dem Vortrag verbinden (Zeitstempel, kurzes Zitat oder Kennzahl). naechste: was für die nächsthöhere Stufe fehlt, gemessen an deren Deskriptor, mit einem konkreten Beispiel aus dem Vortrag; bei C2 leer. gesamt: die Stufe, die die fünf Skalen zusammen am besten trifft, nicht der Höchstwert. Für Flüssigkeit zählen auch die Kennzahlen der App (Tempo, äh-Laute, Pausen). Aussprache bewertest du nicht, weil du die Aufnahme nicht hörst; schließ auch nicht aus dem Transkript darauf.
 
@@ -3149,9 +3150,9 @@ befunde: Jede einzelne Stelle als eigener Eintrag, nichts zusammenfassen. art is
 - grammatik: Grammatik-, Kongruenz-, Zeitform-, Präpositions-, Wortstellungs- und Satzbaufehler
 - wortwahl: falsches, unpassendes oder zu umgangssprachliches Wort, falscher Fachbegriff, Germanismus im Englischen oder Anglizismus im Deutschen
 - leer: Wörter oder Sätze ohne Inhalt, Floskeln, Wiederholungen, die nichts hinzufügen, unnötige Abschwächungen (ich denke mal, eigentlich, sort of)
-- logik: Fehlschluss oder fachlicher Fehler (Korrelation als Ursache, Zirkelschluss, unzulässige Verallgemeinerung, falsches Dilemma, Widerspruch, falsche Definition)
+${inhalt ? `- logik: Fehlschluss oder fachlicher Fehler (Korrelation als Ursache, Zirkelschluss, unzulässige Verallgemeinerung, falsches Dilemma, Widerspruch, falsche Definition)
 - irrefuehrend: Formulierung, die mehr behauptet als belegt, übertreibt, mehrdeutig oder missverständlich ist; Zahlen ohne Bezugsgröße
-- struktur: fehlende Überleitung, Gedankensprung, abrupter Schluss, fehlende Gliederung
+` : ''}- struktur: fehlende Überleitung, Gedankensprung, abrupter Schluss, fehlende Gliederung
 - fuellwort: Stelle, an der sich äh und Füllwörter so häufen, dass der Satz darunter leidet
 zeit: Zeitstempel der Zeile, in der die Stelle steht. zitat: wörtlich aus dem Transkript, nur der betroffene Teil. problem: auf Deutsch, was genau falsch oder schwach ist. besser: verbesserte Formulierung in der Sprache des Vortrags.
 
@@ -3160,7 +3161,7 @@ Alle Erklärungen auf Deutsch, Zitate und Verbesserungen in der Sprache des Vort
 === BEWERTUNGSGRUNDLAGE GER ===
 Kurzfassungen der Deskriptoren aus Tabelle 3 des GER (Europarat 2001, „Qualitative Aspekte des mündlichen Sprachgebrauchs“) und der Skala „Addressing audiences“ aus dem Begleitband (Europarat 2020). Sie geben den offiziellen Wortlaut sinngemäß wieder; stufe danach ein.
 
-${GER.map(g => `${g.name} (${g.en}):\n${g.stufen.map((t, i) => `${GER_STUFEN[i]}: ${t}`).join('\n')}`).join('\n\n')}`;
+${GER.map(g => `${g.name} (${g.en}):\n${g.stufen.map((t, i) => `${GER_STUFEN[i]}: ${t}`).join('\n')}`).join('\n\n')}`; };
 const VT_ARTEN = { grammatik: 'Grammatik', wortwahl: 'Wortwahl', logik: 'Logik', irrefuehrend: 'Irreführend', leer: 'Leere Wörter', struktur: 'Aufbau', fuellwort: 'Füllwörter' };
 const VT_NOTEN = ['', 'Sehr gut', 'Gut', 'Befriedigend', 'Genügend', 'Nicht genügend'];
 const VT_AEH = { de: /(?<!\p{L})(?:äh+m*|öh+m*|ehm+|hm+)(?!\p{L})/giu, en: /(?<!\p{L})(?:uh+m*|um+|erm*|ah+|hmm+)(?!\p{L})/giu };
@@ -3340,7 +3341,7 @@ Was will ich beim nächsten Mal anders machen: ${v.reflexion.besser || '(nichts 
 
 === TRANSKRIPT ===
 ${vtText(v)}`;
-  const { text: antwort, preis } = await strom({ ...VT_DENKEN, feature: 'vortrag', response_format: { type: 'json_object' }, messages: [{ role: 'system', content: VT_ANALYSE },
+  const { text: antwort, preis } = await strom({ ...VT_DENKEN, feature: 'vortrag', response_format: { type: 'json_object' }, messages: [{ role: 'system', content: vtAnalyse(v.inhalt) },
     { role: 'user', content: [{ type: 'text', text }, ...bilder.flatMap(b => [{ type: 'text', text: `Standbild bei ${mmss(b.t)}:` }, { type: 'image_url', image_url: { url: b.url } }])] }] },
     x => { job.hinweis = `Schreibt die Bewertung … ${(x.match(/"zeit"/g) || []).length} Befunde`; }, () => { job.hinweis = 'Analysiert … denkt nach'; });
   let a;
@@ -3407,8 +3408,8 @@ function vtStart(form) {
     form.reset(); form.querySelector('.vt-datei-name').textContent = 'Keine Datei gewählt';
   });
 }
-const vtBewerten = (v, kontext, reflexion) => vtLauf(v.id, async job => {
-  v.kontext = kontext; v.reflexion = reflexion;
+const vtBewerten = (v, kontext, reflexion, inhalt) => vtLauf(v.id, async job => {
+  v.kontext = kontext; v.reflexion = reflexion; v.inhalt = inhalt;
   await vtAnalysieren(v, job);
   job.hinweis = 'Speichert die Analyse …';
   await vtSpeichern(v);
@@ -3436,7 +3437,7 @@ function vtSpielen(id, t) {
   const los = () => { video.currentTime = t; video.play().catch(() => {}); };
   if (video.readyState < 1) video.addEventListener('loadedmetadata', los, { once: true }); else los();
 }
-const vtKontext = v => `Du bist Präsentationscoach. Beantworte Rückfragen zu diesem Vortrag und seiner Analyse knapp, konkret und auf Deutsch; Formulierungsvorschläge in der Sprache des Vortrags. Stütze dich auf Transkript und Analyse.
+const vtKontext = v => `Du bist Präsentationscoach. Beantworte Rückfragen zu diesem Vortrag und seiner Analyse knapp, konkret und auf Deutsch; Formulierungsvorschläge in der Sprache des Vortrags. Stütze dich auf Transkript und Analyse.${v.inhalt ? '' : ' Inhalt, Logik der Argumente und Belege beurteilst du nur, wenn die Person ausdrücklich danach fragt.'}
 
 Anlass und Vorgaben: ${v.kontext || 'nicht angegeben'}
 
@@ -3517,6 +3518,8 @@ function vtReflexionForm(v) {
     VT_REFL.map(([k, frage, bsp]) => el('label', { class: 'feld' }, el('span', {}, frage), el('textarea', { name: k, rows: 3, placeholder: bsp }, v.reflexion?.[k] || ''))),
     el('label', { class: 'feld' }, el('span', {}, 'Anlass und Vorgaben ', el('span', { class: 'opt' }, 'optional')),
       el('textarea', { name: 'kontext', rows: 2, placeholder: 'z. B. Englisch-Präsentation, 5 Minuten, Thema Marketing-Mix.' }, v.kontext || '')),
+    el('label', { class: 'haken' }, el('input', { type: 'checkbox', name: 'inhalt', checked: !!v.inhalt }), 'Auch den Inhalt prüfen: Logik der Argumente, Belege und Beispiele'),
+    el('p', { class: 'meta' }, 'Ohne Haken geht es nur um Sprache und Vortragsweise: Grammatik, Wortwahl, Füllwörter, Tempo und Aufbau.'),
     meldungP,
     el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll' }, v.analyse ? 'Mit Reflexion neu bewerten' : 'Reflexion abschicken und analysieren'),
       el('button', { class: 'knopf', type: 'button', onclick: () => vtUeberspringen(() => los(false), () => form.elements.gut.focus()) }, 'Reflexion überspringen')),
@@ -3526,7 +3529,7 @@ function vtReflexionForm(v) {
     const f = form.elements, r = Object.fromEntries(VT_REFL.map(([k]) => [k, f[k].value.trim()]));
     if (mit && !Object.values(r).some(Boolean)) { Object.assign(meldungP, { textContent: 'Schreib mindestens einen Punkt, oder überspring die Reflexion.', hidden: false }); return f.gut.focus(); }
     meldungP.hidden = true;
-    vtBewerten(v, f.kontext.value.trim(), mit ? r : null);
+    vtBewerten(v, f.kontext.value.trim(), mit ? r : null, f.inhalt.checked);
   }
   return form;
 }
@@ -3560,7 +3563,7 @@ function vtGrundlage(a) {
     }),
     el('p', {}, 'Interaktion entfällt, weil ein Vortrag ein Monolog ist. Aussprache bewertet die App nicht: Die Analyse liest das Transkript und hört die Aufnahme nicht.'),
     el('h3', {}, 'Präsentation: VALUE-Rubrik Oral Communication'),
-    el('dl', {}, VT_KRITERIEN.map(([n, en, t]) => [el('dt', {}, n), el('dd', {}, `${t} (${en})`)])),
+    el('dl', {}, VT_KRITERIEN.map(([n, en, t, inhalt]) => [el('dt', {}, n), el('dd', {}, `${t} (${en})`, inhalt && ' Nur mit Inhaltsprüfung.')])),
     el('h3', {}, 'Quellen'),
     el('ul', {}, VT_QUELLEN.map(([text, url]) => el('li', {}, text, ' ', el('a', { href: url, target: '_blank', rel: 'noopener' }, url.replace(/^https:\/\/(www\.)?/, '').split('/')[0])))));
 }
@@ -3644,7 +3647,7 @@ function vtSeite(v) {
       zahl(z.aeh, z.sp === 'en' ? 'uh und um' : 'äh und ähm', `${komma(z.aehMin)} pro Minute`),
       zahl(fwSumme, 'Füllwörter', a.fuellwoerter[0] && `am häufigsten „${a.fuellwoerter.slice().sort((x, y) => y.anzahl - x.anzahl)[0].wort}“`),
       zahl(z.pausen.length, 'Pausen ab 2 s', z.pausen.length ? `längste ${komma(Math.max(...z.pausen))} s` : null),
-      zahl(a.befunde.length, 'Befunde', `${zaehle('grammatik')} Grammatik, ${zaehle('logik') + zaehle('irrefuehrend')} Logik`)),
+      zahl(a.befunde.length, 'Befunde', `${zaehle('grammatik')} Grammatik` + (v.inhalt ? `, ${zaehle('logik') + zaehle('irrefuehrend')} Logik` : `, ${zaehle('wortwahl')} Wortwahl`))),
     a.tipps.length > 0 && el('section', { class: 'block' }, el('h2', {}, 'Die wichtigsten Tipps'),
       el('ol', { class: 'vt-tipps' }, a.tipps.map(t => el('li', {}, el('h3', {}, t.titel), el('p', {}, t.warum), t.uebung && el('p', { class: 'vt-uebung' }, el('b', {}, 'Übung: '), t.uebung))))),
     a.staerken.length > 0 && el('section', { class: 'block' }, el('h2', {}, 'Das war gut'), el('ul', { class: 'vt-staerken' }, a.staerken.map(s => el('li', {}, s)))),
