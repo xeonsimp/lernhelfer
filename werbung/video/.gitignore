@@ -1,0 +1,7 @@
+node_modules/
+out/
+stills/
+demo/daten/
+demo/bundle/
+demo/daten-lang/
+demo/*.log

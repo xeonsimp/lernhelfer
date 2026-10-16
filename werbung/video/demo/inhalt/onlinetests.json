@@ -1,0 +1,59 @@
+[
+ {
+  "fach": "Mathematik",
+  "titel": "Onlinetest 3: Differentialrechnung",
+  "art": "test",
+  "von": "2026-10-19T08:00",
+  "bis": "2026-10-26T08:00",
+  "punkte": 5,
+  "startseite": "5 Fragen, 1 Versuch.",
+  "fragen": null
+ },
+ {
+  "fach": "VWL",
+  "titel": "Onlinetest 2: Elastizitäten",
+  "art": "test",
+  "von": "2026-10-23T12:00",
+  "bis": "2026-10-30T12:00",
+  "punkte": 5,
+  "startseite": "",
+  "fragen": null
+ },
+ {
+  "fach": "Mathematik",
+  "titel": "Selbsttest Ableitungen",
+  "art": "selbsttest",
+  "startseite": "Zum Üben, beliebig oft.",
+  "fragen": null
+ },
+ {
+  "fach": "Englisch",
+  "titel": "Vocabulary quiz Unit 3",
+  "art": "test",
+  "uebung": true,
+  "startseite": "Practice only.",
+  "fragen": null
+ },
+ {
+  "fach": "Mathematik",
+  "titel": "Onlinetest 2: Funktionen",
+  "art": "test",
+  "von": "2026-10-12T08:00",
+  "bis": "2026-10-19T08:00",
+  "punkte": 5,
+  "ergebnis": "4 von 5 Punkten",
+  "startseite": "5 Fragen, 1 Versuch. Runden Sie auf eine Nachkommastelle.",
+  "fragen": "Frage 1\nMax. 1 Punkt\nBestimmen Sie die Steigung der Geraden f(x)= 4x - 7. [4.0]\n\nFrage 2\nMax. 1 Punkt\nWo schneidet f(x)= 2x + 6 die x-Achse? x = [-3.0]"
+ },
+ {
+  "fach": "VWL",
+  "titel": "Onlinetest 1: Angebot und Nachfrage",
+  "art": "test",
+  "von": "2026-10-09T12:00",
+  "bis": "2026-10-16T12:00",
+  "punkte": 5,
+  "ergebnis": "4,5 von 5 Punkten",
+  "startseite": "5 Fragen.",
+  "fragen": null
+ }
+]
