@@ -1,8 +1,9 @@
 """Holt neue Unterlagen aus OLAT und lädt ihren Text ins private Daten-Repo (über die GitHub-API, ohne git).
 
-Einrichten: in der App „PC einrichten“ (lädt Python, dieses Skript und die Aufgabenplanung nach %LOCALAPPDATA%\\Lernhelfer).
+Einrichten: in der App unter Einrichten bzw. Konto. Windows: einrichten.ps1 (Python, dieses Skript und die Aufgabenplanung nach
+%LOCALAPPDATA%\\Lernhelfer); Mac: einrichten-mac.sh (nach ~/Library/Lernhelfer, launchd statt Aufgabenplanung).
 Start von Hand: python holen.py [Fach ...]; --auto = Lauf aus der Aufgabenplanung (alle 30 Minuten), --kurse = nur Kurse suchen.
-Ist die OLAT-Sitzung abgelaufen, öffnet sich Chrome: dort selbst einloggen (SSO + Authenticator).
+Ist die OLAT-Sitzung abgelaufen, öffnet sich Chrome (am Mac ohne Chrome: Chromium): dort selbst einloggen (SSO + Authenticator).
 
 Tests: Laufende Onlinetests werden einmal angesehen und danach mit „Test unterbrechen“ + „Ok“ verlassen,
 Selbsttests genauso. Nach Ablauf stehen Fragen und Lösung auf der Startseite. Ein Wächter im Browser lässt
@@ -16,6 +17,7 @@ import logging
 import os
 import re
 import sys
+import time
 import zipfile
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -23,18 +25,31 @@ from urllib.error import HTTPError
 from urllib.parse import parse_qs, quote, unquote, urljoin, urlparse
 from urllib.request import Request, urlopen
 
+if sys.platform == "darwin":  # Mac: Zertifikate aus dem Schlüsselbund wie in Safari (truststore lädt das Einrichten mit)
+    try:
+        import truststore
+        truststore.inject_into_ssl()
+    except ImportError:
+        pass
+
 BASIS = Path(__file__).parent
 MATERIAL = BASIS / "material"
 KURSDATEI = BASIS / "kurse.json"  # fehlt sie, sucht der erste Abgleich die Kurse selbst (kurse_finden)
 KURSE = json.loads(KURSDATEI.read_text("utf-8")) if KURSDATEI.exists() else None
-ZUGANG = BASIS / "zugang.json"  # {"repo": "name/lernhelfer-daten", "token": "github_pat_…", "api": Lernhelfer-Server oder null}, schreibt das Einrichten
+ZUGANG = BASIS / "zugang.json"  # {"repo": "name/lernhelfer-daten", "token": "github_pat_…", "api": Lernhelfer-Server oder null, "app": Adresse der App}, schreibt das Einrichten
 STAND = BASIS / ".stand.json"  # letzter Abgleich, hochgeladene Dateiversionen, wann das Login-Fenster zuletzt kam
 APP = "https://xnik243.github.io/lernhelfer/"
 API = os.environ.get("LH_API", "https://api.github.com")  # der Prüfstand setzt hier eine Attrappe ein
 SITZUNG = BASIS / ".olat-sitzung.json"
 PROFIL = BASIS / ".olat-chrome"  # eigenes Chrome-Profil nur fürs OLAT-Login
-KANAL = "chrome" if any(Path(p, r"Google\Chrome\Application\chrome.exe").exists() for p in
-                        (r"C:\Program Files", r"C:\Program Files (x86)", Path.home() / r"AppData\Local")) else "msedge"
+if sys.platform == "darwin":  # Mac: Chrome, sonst das Chromium von Playwright (lädt das Einrichten, wenn Chrome fehlt)
+    KANAL = "chrome" if Path("/Applications/Google Chrome.app").exists() else None
+else:
+    KANAL = "chrome" if any(Path(p, r"Google\Chrome\Application\chrome.exe").exists() for p in
+                            (r"C:\Program Files", r"C:\Program Files (x86)", Path.home() / r"AppData\Local")) else "msedge"
+BROWSER = {"chrome": "Chrome", "msedge": "Edge"}.get(KANAL, "Chromium")
+GERAET, ABLAGE = ("Mac", "Schreibtisch") if sys.platform == "darwin" else ("PC", "Desktop")
+HOCHGELADEN = "Hochgeladen/"  # Dateien, die die App selbst hochgeladen hat (iPad, Mac ohne Programm): bleiben beim Abgleich erhalten
 OLAT = "https://lms.uibk.ac.at"
 ARTEN = ["folien", "ps", "syllabus"]
 TESTS = "Tests"  # material/<Fach>/Tests: Startseiten der Onlinetests, Fragen der Selbsttests
@@ -63,8 +78,8 @@ def text(f):
     return ""  # Bilder, Videos usw. haben keinen Text
 
 
-def fach_json(fach):
-    """Alle geladenen Dateien eines Fachs samt Text, Folien zuerst."""
+def fach_json(fach, hochgeladen=()):
+    """Alle geladenen Dateien eines Fachs samt Text, Folien zuerst; in der App Hochgeladenes kommt unverändert ans Ende."""
     dateien = []
     for q in sorted(KURSE[fach], key=lambda q: ARTEN.index(q["art"])):
         ordner = MATERIAL / fach / q["name"]
@@ -76,7 +91,7 @@ def fach_json(fach):
             dateien.append({"datei": f"{q['name']}/{f.name}", "art": q["art"], "text": t})
     for f in sorted((MATERIAL / fach / TESTS).glob("*.txt"), key=lambda f: natur(f.name)):
         dateien.append({"datei": f"{TESTS}/{f.name}", "art": "test", "text": f.read_text("utf-8")})
-    return {"dateien": dateien}  # ohne Zeitstempel: unveränderte Fächer werden nicht neu hochgeladen
+    return {"dateien": dateien + list(hochgeladen)}  # ohne Zeitstempel: unveränderte Fächer werden nicht neu hochgeladen
 
 
 class Abgelaufen(Exception):
@@ -103,7 +118,7 @@ def olat_login(p, sichtbar=True, fenster_auf=lambda: None):
                                                        ignore_default_args=["--enable-automation", "--disable-extensions"])
         seite = fenster.pages[0] if fenster.pages else fenster.new_page()
         seite.goto(OLAT + "/auth/MyCoursesSite/0")
-        print(f"Bitte im {KANAL.title()}-Fenster bei OLAT einloggen (10 Minuten Zeit) …", flush=True)
+        print(f"Bitte im {BROWSER}-Fenster bei OLAT einloggen (10 Minuten Zeit) …", flush=True)
         seite.get_by_text("Eingeloggt als").wait_for(timeout=600_000)
         fenster.storage_state(path=SITZUNG)
         fenster.close()
@@ -424,13 +439,25 @@ def tests(browser, fach):
     return neu
 
 
-def api(methode, pfad, body=None):
-    """GitHub-API mit dem Token aus zugang.json (darf nur das eigene Daten-Repo lesen und schreiben)."""
+def api(methode, pfad, body=None, roh=False):
+    """GitHub-API mit dem Token aus zugang.json (darf nur das eigene Daten-Repo lesen und schreiben); roh: Dateiinhalt als Bytes, auch über 1 MB."""
     z = json.loads(ZUGANG.read_text("utf-8"))
     anfrage = Request(f"{z.get('api') or API}/repos/{z['repo']}/contents/{quote(pfad)}", method=methode, data=body and json.dumps(body).encode(),
-                      headers={"Authorization": "Bearer " + z["token"], "Accept": "application/vnd.github+json", "User-Agent": "Lernhelfer"})
+                      headers={"Authorization": "Bearer " + z["token"], "Accept": "application/vnd.github.raw+json" if roh else "application/vnd.github+json",
+                               "User-Agent": "Lernhelfer"})
     with urlopen(anfrage, timeout=120) as r:
-        return json.loads(r.read())
+        return r.read() if roh else json.loads(r.read())
+
+
+def hochgeladene(fach):
+    """Was die App unter „Unterlagen“ ins Fach hochgeladen hat; der Abgleich überschreibt die Datei und nimmt das mit."""
+    try:
+        d = json.loads(api("GET", f"faecher/{fach}.json", roh=True))
+    except HTTPError as e:
+        if e.code == 404:
+            return []
+        raise  # lieber gar nicht hochladen als hochgeladene Unterlagen verlieren
+    return [x for x in d.get("dateien", []) if str(x.get("datei", "")).startswith(HOCHGELADEN)]
 
 
 def hochladen(stand, pfad, daten):
@@ -461,7 +488,8 @@ def aktualisieren():
     if (BASIS / ".git").exists():
         return
     try:
-        neu = urlopen(APP + "holen.py", timeout=30).read()
+        app = (json.loads(ZUGANG.read_text("utf-8")).get("app") if ZUGANG.exists() else None) or APP  # Server-Version: von dort
+        neu = urlopen(app.rstrip("/") + "/holen.py", timeout=30).read()
         compile(neu, "holen.py", "exec")
         if neu != Path(__file__).read_bytes():
             Path(__file__).write_bytes(neu)
@@ -470,13 +498,42 @@ def aktualisieren():
         print("Aktualisierung übersprungen:", e)
 
 
+def sperre():
+    """Nur ein Abgleich gleichzeitig: Aufgabe bzw. launchd und der Doppelklick teilen Sitzung, Chrome-Profil und Stand.
+    Gibt die offene Sperrdatei zurück (bis zum Ende behalten) oder None, wenn schon einer läuft."""
+    f = open(BASIS / ".laeuft", "a+")
+    try:
+        f.seek(0)
+        if sys.platform == "win32":
+            import msvcrt
+            msvcrt.locking(f.fileno(), msvcrt.LK_NBLCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        return f
+    except OSError:
+        f.close()
+        return None
+
+
 if __name__ == "__main__":
     from playwright.sync_api import TimeoutError as Zeitueberschreitung, sync_playwright
 
-    auto = "--auto" in sys.argv  # aus der Aufgabenplanung: ohne Konsole, Ausgaben ins Log
+    auto = "--auto" in sys.argv  # aus der Aufgabenplanung bzw. launchd: ohne Konsole, Ausgaben ins Log
     if auto:
         sys.stdout = sys.stderr = open(BASIS / "holen.log", "a", encoding="utf-8", buffering=1)
         print(f"--- {datetime.now():%d.%m.%Y %H:%M}")
+    SPERRE = sperre()
+    for i in range(0 if auto else 240):  # von Hand: bis zu 20 Minuten warten, bis der Lauf im Hintergrund fertig ist
+        if SPERRE:
+            break
+        if not i:
+            print("Gerade gleicht der Lernhelfer im Hintergrund ab. Warte, bis er fertig ist …", flush=True)
+        time.sleep(5)
+        SPERRE = sperre()
+    if not SPERRE:
+        print("Es läuft schon ein Abgleich.")
+        sys.exit(0 if auto else 1)
     stand = json.loads(STAND.read_text("utf-8")) if STAND.exists() else {}
     alt = stand.get("abgleich", {})
     jetzt = datetime.now()
@@ -500,7 +557,7 @@ if __name__ == "__main__":
         except (Abgelaufen, Zeitueberschreitung) as e:
             print("OLAT-Anmeldung abgelaufen.", type(e).__name__)
             if alt.get("ok") is not False and ZUGANG.exists():
-                melde(False, "OLAT-Anmeldung am PC abgelaufen – am PC „Lernhelfer OLAT“ auf dem Desktop doppelklicken und einloggen.")
+                melde(False, f"OLAT-Anmeldung am {GERAET} abgelaufen – am {GERAET} „Lernhelfer OLAT“ auf dem {ABLAGE} doppelklicken und einloggen.")
             sys.exit(0 if auto else 1)
         ctx.storage_state(path=SITZUNG)  # jeder Aufruf hält die OLAT-Sitzung wach
         if auto and alt.get("ok") and jetzt - datetime.fromisoformat(alt["zeit"]) < timedelta(hours=12):
@@ -525,5 +582,5 @@ if __name__ == "__main__":
         browser.close()
     tests_alle = [t for f in KURSE for t in testliste(f)]
     melde(True, f"{len(neu)} neue Unterlagen" if neu else "Nichts Neues in OLAT",
-          [(f"faecher/{f}.json", fach_json(f)) for f in faecher] + [("onlinetests.json", tests_alle)])
+          [(f"faecher/{f}.json", fach_json(f, hochgeladene(f))) for f in faecher] + [("onlinetests.json", tests_alle)])
     print("\n".join(neu) or "Nichts Neues in OLAT.", "\nFertig – auf dem iPad die App neu laden.", sep="\n")

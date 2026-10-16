@@ -3,6 +3,7 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { crc32, inflateRawSync } from 'node:zlib';
 import { createServer } from 'node:http';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -75,6 +76,19 @@ function person() {  // eigene Cookies, wie ein Browser
   };
 }
 const gh = pfad => `/api/gh/repos/lernhelfer/konto/contents/${pfad}`;
+function entpacken(buf) {  // ZIP lesen und jede Prüfsumme nachrechnen
+  let e = buf.length - 22; while (buf.readUInt32LE(e) !== 0x06054b50) e--;
+  const aus = {}; let p = buf.readUInt32LE(e + 16);
+  for (let i = 0; i < buf.readUInt16LE(e + 10); i++) {
+    assert.equal(buf.readUInt32LE(p), 0x02014b50);
+    const groesse = buf.readUInt32LE(p + 20), nl = buf.readUInt16LE(p + 28), lokal = buf.readUInt32LE(p + 42), name = buf.subarray(p + 46, p + 46 + nl).toString();
+    assert.equal(buf.readUInt16LE(p + 8) & 0x800, 0x800, 'UTF-8-Namen');
+    const start = lokal + 30 + buf.readUInt16LE(lokal + 26) + buf.readUInt16LE(lokal + 28), inhalt = inflateRawSync(buf.subarray(start, start + groesse));
+    assert.equal(crc32(inhalt), buf.readUInt32LE(p + 16), 'Prüfsumme ' + name); assert.equal(inhalt.length, buf.readUInt32LE(p + 24));
+    aus[name] = inhalt.toString(); p += 46 + nl + buf.readUInt16LE(p + 30) + buf.readUInt16LE(p + 32);
+  }
+  return aus;
+}
 
 try {
   // Seite: nur die App-Dateien, mit Server-Kennung
@@ -82,6 +96,8 @@ try {
   assert.match(seite, /<html lang="de" data-server>/);
   assert.equal((await fetch(BASIS + '/api/tarife').then(r => r.json())).funktionen['wp-text'], undefined, 'Hausaufgaben-Entwurf steht nirgends im Angebot');
   for (const p of ['/openrouter_key.txt.txt', '/loeser_prompt.txt', '/daten/README.md', '/server/server.mjs', '/.git/config']) assert.equal((await fetch(BASIS + p)).status, 404, p);
+  const mac = await fetch(BASIS + '/einrichten-mac.sh').then(r => r.text());
+  assert.ok(mac.startsWith('#!/bin/bash\n') && !mac.includes('\r'), 'Mac-Einrichten mit Unix-Zeilenenden');
 
   // Konten
   const chef = person(), anna = person(), fremd = person();
@@ -142,6 +158,24 @@ try {
   assert.deepEqual(basis.reasoning, { effort: 'max' }); assert.equal(basis.max_tokens, 120000);
   assert.deepEqual(basis.provider, { data_collection: 'deny', max_price: { prompt: 0.2, completion: 1 } });
   assert.equal((await anna('GET', '/api/ich')).j.genutzt, 15, '0,30 $ von 2 $');
+  r = await anna('POST', '/api/ki', { feature: 'test-foto', model: 'google/gemini-3.8-flash', reasoning: { effort: 'max' }, provider: { x: 1 }, stil: false,
+    messages: [{ role: 'user', content: [{ type: 'text', text: 'Abschreiben' }, { type: 'image_url', image_url: { url: 'data:image/jpeg;base64,AAAA' } }] }] });
+  assert.equal(r.status, 200, 'Test-Fotos auch in Base');
+  const foto = or.anfragen.at(-1);
+  assert.equal(foto.model, 'google/gemini-3.8-flash', 'Fotos: Modell mit Bildern, nicht DeepSeek'); assert.equal(foto.max_tokens, 16000);
+  assert.equal(foto.reasoning, undefined); assert.equal(foto.provider, undefined); assert.equal(foto.messages[0].content[1].type, 'image_url');
+  assert.equal((await anna('POST', '/api/ki', { feature: 'test-foto', model: 'openai/gpt-6.1-sol', messages: [{ role: 'user', content: 'x' }] })).status, 200);
+  assert.equal(or.anfragen.at(-1).model, 'google/gemini-3.8-flash', 'auch wenn die App etwas anderes schickt');
+  // Seiten und gesperrte Funktionen zählen, Unbekanntes nicht; ohne Konto gar nichts
+  assert.equal((await anna('POST', '/api/nutzung', { was: 'seite:kalender' })).status, 200);
+  assert.equal((await anna('POST', '/api/nutzung', { was: 'gesperrt:kalender' })).status, 200);
+  assert.equal((await anna('POST', '/api/nutzung', { was: 'boese; drop table' })).status, 200);
+  assert.equal((await fremd('POST', '/api/nutzung', { was: 'seite:kalender' })).status, 401);
+  // Fehler melden: auch ohne Konto; leer geht nicht
+  assert.equal((await fremd('POST', '/api/fehler', { text: '' })).status, 400);
+  assert.equal((await fremd('POST', '/api/fehler', { text: 'Registrieren hängt', seite: '#/einstellungen', meldung: 'TypeError: x', geraet: 'Safari 26 iPad', kontakt: 'gast@example.com' })).status, 200);
+  assert.equal((await anna('POST', '/api/fehler', { text: 'Ausgabe bricht ab', seite: '#/BWL', meldung: 'Die Verbindung ist abgerissen', geraet: 'Chrome' })).status, 200);
+  assert.match(log, /\[Mail an chef@example.com\] Fehlerbericht #1: #\/einstellungen[\s\S]*gast@example.com[\s\S]*Registrieren hängt/);
 
   // 24 Stunden Ultra: erst nach Bestätigung, dann Chat im Strom, Testbudget 0,50 $
   assert.equal((await anna('POST', '/api/test')).status, 403);
@@ -185,6 +219,17 @@ try {
   assert.equal((await chef('POST', '/api/ki', { feature: 'wp-text', model: 'openai/gpt-6-luna', messages: [{ role: 'user', content: 'x' }] })).status, 200, 'Ecke: Entwurf, auch mit Base');
   await chef('POST', '/api/ki', { feature: 'loeser', model: 'xiaomi/mimo-v2.6-pro', messages: [{ role: 'system', content: 'VOLL' }] });
   assert.equal(or.anfragen.at(-1).messages[0].content, 'VOLL', 'Ecke: keine Regel');
+  let A = (await chef('GET', '/api/admin')).j;
+  const fx = was => A.funktionen.find(x => x.was === was);
+  assert.equal(fx('unterlagen').k30, 1, 'Unterlagen in der App hochgeladen'); assert.equal(fx('unterlagen').name, 'Unterlagen hochladen');
+  assert.ok(fx('ausgabe').k30 === 1 && fx('ausgabe').usd30 >= 0.3, 'KI-Anfrage mit Kosten');
+  assert.equal(fx('test-foto').n30, 2); assert.equal(fx('seite:kalender').k30, 1); assert.equal(fx('seite:kalender').art, 'Seite');
+  assert.equal(fx('gesperrt:kalender').art, 'Gesperrt angetippt'); assert.equal(fx('gesperrt:noten'), undefined, 'nie angetippt: nicht in der Liste');
+  assert.equal(fx('seite:wordpower').k30, 0, 'nie genutzt steht trotzdem da'); assert.equal(fx('boese; drop table'), undefined); assert.equal(fx('wp-text'), undefined);
+  assert.ok(A.funktionen.every((x, i, l) => !i || l[i - 1].k30 >= x.k30), 'meistgenutzt zuerst');
+  assert.equal(A.fehler.length, 2); assert.equal(A.fehler.at(-1).kontakt, 'gast@example.com'); assert.equal(A.fehler[0].kontakt, 'anna@example.com');
+  await chef('POST', '/api/admin/fehler', { id: A.fehler.at(-1).id });
+  assert.equal((await chef('GET', '/api/admin')).j.fehler.length, 1, 'erledigt');
   const offen = (await chef('GET', '/api/admin')).j.bestellungen.find(x => x.email === 'anna@example.com');
   assert.equal(offen.status, 'gemeldet');
   assert.equal((await chef('POST', '/api/admin/bezahlt', { id: offen.id })).status, 200);
@@ -271,6 +316,15 @@ try {
   assert.equal((await anna('GET', '/api/ich')).status, 401);
   assert.equal((await anna2('GET', '/api/ich')).j.email, 'anna@example.com');
 
+  // Alle meine Daten herunterladen: ZIP mit Konto und jeder Datei im Speicher; der PC-Schlüssel darf das nicht
+  const zipAntwort = await fetch(BASIS + '/api/export', { headers: { Cookie: (await (async () => { const r = await fetch(BASIS + '/api/anmelden', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: BASIS }, body: JSON.stringify({ email: 'anna@example.com', passwort: 'neues-passwort-1' }) }); return r.headers.getSetCookie()[0].split(';')[0]; })()) } });
+  assert.equal(zipAntwort.status, 200); assert.equal(zipAntwort.headers.get('content-type'), 'application/zip');
+  assert.match(zipAntwort.headers.get('content-disposition'), /lernhelfer-daten-\d{4}-\d\d-\d\d\.zip/);
+  const z = entpacken(Buffer.from(await zipAntwort.arrayBuffer())), kj = JSON.parse(z['konto.json']);
+  assert.equal(z['dateien/faecher/BWL.json'], 'neu'); assert.equal(z['dateien/abgleich.json'], '{"ok":true}'); assert.match(z['LIESMICH.txt'], /nur auf deinem Gerät/);
+  assert.equal(kj.email, 'anna@example.com'); assert.equal(kj.bestellungen.length, 2); assert.equal(kj.bestellungen[0].betrag_euro, 6.93);
+  assert.ok(kj.nutzung.some(x => x.was === 'unterlagen')); assert.equal(kj.fehlerberichte[0].text, 'Ausgabe bricht ab'); assert.ok(kj.ueber_einladung);
+  assert.equal((await mitPc('GET', '/api/export')).status, 401, 'PC-Schlüssel: kein Export');
   // Konto löschen: Daten weg, Bestellungen bleiben für die Buchhaltung, Schlüssel bei OpenRouter gelöscht
   assert.equal((await anna2('POST', '/api/konto-loeschen', { passwort: 'falsch' })).status, 403);
   assert.equal((await anna2('POST', '/api/konto-loeschen', { passwort: 'neues-passwort-1' })).status, 200);
@@ -282,6 +336,8 @@ try {
   assert.ok(Math.abs(dash.geld.ki.gesamt - kiVorher) < 1e-9, 'KI-Kosten gelöschter Konten bleiben in der Bilanz');
   assert.equal(dash.geld.api.gesamt, 2.5, 'auch die des Ultra+-Schlüssels');
   assert.equal(dash.kennzahlen.konten, 1);
+  assert.equal(dash.funktionen.find(x => x.was === 'unterlagen').k30, 1, 'Nutzung gelöschter Konten bleibt als Zahl');
+  assert.equal(dash.fehler[0].kontakt, null, 'Fehlerbericht ohne Kontakt der gelöschten Person');
   // Ecke sperren: Dashboard wieder zu; Raten wird gebremst
   assert.equal((await chef('POST', '/api/ecke-zu')).j.ecke, false);
   assert.equal((await chef('GET', '/api/admin')).status, 403);
@@ -294,6 +350,8 @@ try {
   for (let i = 0; i < 3; i++) await chef('POST', '/api/ecke', { passwort: 'raten' });
   assert.equal((await chef('POST', '/api/ecke', { passwort: 'Ecke-Passwort!' })).status, 429, 'Ecke-Passwort raten gebremst');
   assert.equal((await anna2('POST', '/api/anmelden', { email: 'anna@example.com', passwort: 'neues-passwort-1' })).status, 401);
+  for (let i = 0; i < 2; i++) await fremd('POST', '/api/fehler', { text: 'noch einer' });
+  assert.equal((await fremd('POST', '/api/fehler', { text: 'Flut' })).status, 429, 'Fehlerberichte gebremst');
   console.log('Server: alles in Ordnung.');
 } catch (e) {
   console.error(log);

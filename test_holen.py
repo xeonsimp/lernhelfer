@@ -117,6 +117,32 @@ def test():
         ot, th = holen.testliste("M")
         assert (ot["von"], ot["bis"], ot["punkte"], ot["verbleibend"], ot["ergebnis"], ot["uebung"]) == ("2026-10-15T16:30", "2026-10-19T18:00", 3, 1, False, False)
         assert ot["fragen"] == "Frage 1\nMax. 1 Punkt" and th["art"] == "selbsttest" and th["fragen"].startswith("Selbsttest")
+
+    # In der App Hochgeladenes bleibt beim Abgleich erhalten (roh gelesen, auch über 1 MB); fehlt die Datei, gibt es nichts
+    roh = [b'{"dateien": [{"datei": "VO/a.pdf", "art": "folien", "text": "alt"}, {"datei": "Hochgeladen/b.pdf", "art": "folien", "text": "neu"}]}',
+           HTTPError("u", 404, "", {}, None)]
+    def api_roh(methode, pfad, body=None, roh_=None, **k):
+        assert methode == "GET" and k.get("roh") and pfad.startswith("faecher/")
+        a = roh.pop(0)
+        if isinstance(a, Exception):
+            raise a
+        return a
+    holen.api = api_roh
+    assert holen.hochgeladene("F") == [{"datei": "Hochgeladen/b.pdf", "art": "folien", "text": "neu"}]
+    assert holen.hochgeladene("G") == []
+    with tempfile.TemporaryDirectory() as t:
+        holen.MATERIAL, holen.KURSE = Path(t), {"F": []}
+        assert holen.fach_json("F", [{"datei": "Hochgeladen/b.pdf"}])["dateien"] == [{"datei": "Hochgeladen/b.pdf"}]
+
+    # Nur ein Abgleich gleichzeitig
+    with tempfile.TemporaryDirectory() as t:
+        holen.BASIS = Path(t)
+        erst = holen.sperre()
+        assert erst and holen.sperre() is None, "zweiter Lauf wartet"
+        erst.close()
+        zweit = holen.sperre()
+        assert zweit, "nach dem Ende wieder frei"
+        zweit.close()
     print("ok")
 
 

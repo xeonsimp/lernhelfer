@@ -7,6 +7,7 @@ import { createCipheriv, createDecipheriv, createHash, randomBytes, randomInt, s
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { crc32, deflateRawSync } from 'node:zlib';
 
 const E = process.env;
 const APP = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -32,15 +33,17 @@ const TARIFE = {
 // Gemessen: eine Ausgabe 50–130 000 Token Eingabe, 25–30 000 Token Nachdenken, 2–4 Cent. Nur Anbieter, die nicht mit den Unterlagen trainieren.
 const BASIS_KI = { model: 'deepseek/deepseek-v4.1-flash', reasoning: { effort: 'max' }, max_tokens: 120000,
   provider: { data_collection: 'deny', max_price: { prompt: 0.2, completion: 1 } } };
+// Test-Fotos (iPad ohne PC-Programm): Fragen von Bildschirmfotos abschreiben. In jedem Tarif, darum fest ein günstiges Modell, das Bilder liest.
+const FOTO_KI = { model: 'google/gemini-3.8-flash', max_tokens: 16000 };
 const LAUFEND = 8, LAEUFT = new Map();  // gleichzeitige KI-Anfragen pro Konto; ein Vortrag schickt seine Teile parallel
 const TEST = { stunden: 24, budget: 0.5 };  // einmal 24 Stunden Ultra, höchstens 0,50 $ KI
 const MONATE = [1, 3, 6];
 // Funktion → Mindestrang; die App schickt bei jeder KI-Anfrage mit, wofür sie ist
 // 9 = nur in der Admin-Ecke: Den Hausaufgaben-Entwurf gibt es nicht zu kaufen, er bleibt privat
 // ausgabe-ultra: die ausführliche Fassung der Wochenausgabe; noten, karten, export: ohne KI; hoeren: Ausgabe als Podcast
-const FUNKTIONEN = { ausgabe: 0, kalender: 1, noten: 1, karten: 1, export: 1, 'wp-transkript': 1, vortrag: 1,
+const FUNKTIONEN = { ausgabe: 0, 'test-foto': 0, kalender: 1, noten: 1, karten: 1, export: 1, 'wp-transkript': 1, vortrag: 1,
   'ausgabe-ultra': 2, hoeren: 2, probeklausur: 2, training: 2, lernskript: 2, stil: 2, chat: 2, loeser: 2, 'wp-text': 9 };
-const NAMEN = { ausgabe: 'Die Wochenausgabe', kalender: 'Der Kalender', noten: 'Der Notentracker', karten: 'Der Karteikasten', export: 'Der Export',
+const NAMEN = { ausgabe: 'Die Wochenausgabe', 'test-foto': 'Das Auslesen von Test-Fotos', kalender: 'Der Kalender', noten: 'Der Notentracker', karten: 'Der Karteikasten', export: 'Der Export',
   'wp-transkript': 'Das Word-Power-Transkript', vortrag: 'Die Vortragsanalyse', 'ausgabe-ultra': 'Die Ultra-Fassung der Wochenausgabe', hoeren: 'Die Ausgabe zum Anhören',
   probeklausur: 'Die Probeklausur', training: 'Das Schwächen-Training', lernskript: 'Das Lernskript', stil: 'Der eigene Stil für die KI',
   chat: 'Der KI-Chat', loeser: 'Der Lösungsweg zu jeder Frage', 'wp-text': 'Der Hausaufgaben-Entwurf' };
@@ -119,7 +122,12 @@ create table if not exists bestellungen (id integer primary key, konto integer r
   erstellt integer not null, gemeldet integer, bezahlt integer);
 create table if not exists gutscheine (id integer primary key, konto integer not null references konten(id) on delete cascade, von integer, erstellt integer not null,
   eingeloest integer);
-create table if not exists werte (name text primary key, wert real not null);`);  // Einstellungen der Admin-Ecke, KI-Kosten gelöschter Konten
+create table if not exists werte (name text primary key, wert real not null);
+create table if not exists nutzung (konto integer not null, was text not null, tag text not null, n integer not null default 0, usd real not null default 0,
+  primary key (konto, was, tag));
+create table if not exists fehler (id integer primary key, zeit integer not null, konto integer references konten(id) on delete set null, kontakt text,
+  seite text, meldung text, text text, geraet text, erledigt integer not null default 0);`);  // werte: Einstellungen der Admin-Ecke, KI-Kosten gelöschter Konten
+// nutzung: was = Funktion (KI-Anfrage oder Speichern), „seite:…“ (Seite geöffnet) oder „gesperrt:…“ (gesperrte Funktion angetippt); für die Admin-Ecke
 try { db.exec('alter table konten add column zuletzt integer not null default 0'); } catch {}  // ältere Datenbank: Spalte nachrüsten
 
 /* ---------- Kleinigkeiten ---------- */
@@ -231,6 +239,12 @@ function darf(k, f) {
 const verbraucht = (id, test) => db.prepare('select usd from verbrauch where konto = ? and monat = ?').get(id, test ? 'test' : monat())?.usd || 0;
 const buchenSql = db.prepare('insert into verbrauch (konto, monat, usd) values (?, ?, ?) on conflict (konto, monat) do update set usd = usd + excluded.usd');
 const buchen = (id, usd, test) => { if (!(usd > 0)) return; buchenSql.run(id, monat(), usd); if (test) buchenSql.run(id, 'test', usd); };
+const zaehlenSql = db.prepare('insert into nutzung (konto, was, tag, n, usd) values (?, ?, ?, ?, ?) on conflict (konto, was, tag) do update set n = n + excluded.n, usd = usd + excluded.usd');
+const zaehlen = (id, was, usd = 0, n = 1) => zaehlenSql.run(id, was, new Date().toISOString().slice(0, 10), n, usd > 0 ? usd : 0);
+// Seiten, die die App beim Öffnen meldet (nur mit Konto), und Funktionen ohne Server, die sie selbst meldet
+const SEITEN = { titelblatt: 'Heute', ausgabe: 'Wochenausgabe lesen', unterlagen: 'Unterlagen', kalender: 'Kalender', onlinetests: 'Onlinetests', noten: 'Notentracker',
+  karten: 'Karteikarten', pruefung: 'Prüfungstraining', vortrag: 'Vortrag', wordpower: 'Word Power', anleitung: 'Anleitung', upgrade: 'Tarife', einstellungen: 'Konto' };
+const MELDBAR = new Set([...Object.keys(SEITEN).map(x => 'seite:' + x), ...Object.keys(FUNKTIONEN).filter(f => FUNKTIONEN[f] <= 2).map(f => 'gesperrt:' + f), 'export']);
 const bezahlt = id => !!db.prepare("select 1 from bestellungen where konto = ? and status = 'bezahlt'").get(id);
 
 function ich(k) {
@@ -337,6 +351,7 @@ async function speicher(req, res, k, pfad) {
   if (belegt + inhalt.length > SPEICHER) nein(413, 'Dein Speicher ist voll. Alte Vorträge löschen hilft.');
   const sha = blobSha(inhalt);
   db.prepare('insert into dateien (konto, pfad, inhalt, sha) values (?, ?, ?, ?) on conflict (konto, pfad) do update set inhalt = excluded.inhalt, sha = excluded.sha').run(k.id, pfad, inhalt, sha);
+  if (!k.nurPc && (f || pfad.startsWith('faecher/'))) zaehlen(k.id, f || 'unterlagen');  // in der App hochgeladene Unterlagen, Kalender, Noten …
   json(res, datei ? 200 : 201, { content: { type: 'file', name, path: pfad, sha } });
 }
 
@@ -346,7 +361,8 @@ async function ki(req, res, k) {
   if (!(b.feature in FUNKTIONEN)) nein(400, 'Unbekannte Funktion.');
   const s = darf(k, b.feature);
   if (!MODELLE.has(b.model)) nein(400, 'Dieses Modell gibt es hier nicht.');
-  if (!k.ecke && s.tarif === 'base') Object.assign(b, BASIS_KI);
+  if (b.feature === 'test-foto') { Object.assign(b, FOTO_KI); delete b.reasoning; delete b.provider; }
+  else if (!k.ecke && s.tarif === 'base') Object.assign(b, BASIS_KI);
   const stil = b.stil !== false && stilVon(k, s);  // Reihenfolge: REGEL, Stil, dann was die App schickt
   b.messages = [...stil ? [{ role: 'system', content: stilRahmen(stil) }] : [], ...Array.isArray(b.messages) ? b.messages : []];
   if (['loeser', 'training', 'probeklausur'].includes(b.feature) && !k.ecke) b.messages = [{ role: 'system', content: REGEL }, ...b.messages];
@@ -376,7 +392,7 @@ async function sprache(req, res, k) {  // Ultra: Teile des Podcasts vorlesen las
     res.writeHead(up.status, { 'Content-Type': up.headers.get('content-type') || 'audio/pcm', 'Cache-Control': 'no-store' });
     let n = 0;
     try { for await (const t of up.body) { res.write(t); n += t.length; } } catch {}
-    if (up.ok) buchen(k.id, n / 48000 * SPRACHE.usdProSekunde, s.test);
+    if (up.ok) { buchen(k.id, n / 48000 * SPRACHE.usdProSekunde, s.test); zaehlen(k.id, 'hoeren', n / 48000 * SPRACHE.usdProSekunde, 0); }  // Ton: nur die Kosten
     res.end();
   });
 }
@@ -400,6 +416,7 @@ async function kiWeiter(res, k, b, s) {
   } catch {}  // ponytail: bricht das Gerät mitten im Strom ab, fehlt der Preis dieser Anfrage; genauer ginge es über /generation?id=
   if (b.stream) zeile(rest); else try { usd = JSON.parse(rest).usage?.cost || 0; } catch {}
   buchen(k.id, usd, s.test);
+  if (up.ok) zaehlen(k.id, b.feature, usd);
   res.end();
 }
 
@@ -458,6 +475,60 @@ function dashboard(konten) {  // Kennzahlen, Geld und Verlauf; KI-Kosten in $, m
     freunde: { geworben: n(x => x.werber), zahlend: n(x => x.werber && x.bezahlt > 0),
       offen: summe('select count(*) n from gutscheine where eingeloest is null'), eingeloest: summe('select count(*) n from gutscheine where eingeloest is not null') },
   };
+}
+// Welche Funktionen genutzt werden: Konten in 7 und 30 Tagen, Anfragen bzw. Aufrufe und KI-Kosten in 30 Tagen; auch was nie genutzt wurde
+function nutzungListe() {
+  const tag = n => new Date(jetzt() - n * TAG).toISOString().slice(0, 10);
+  const z = new Map(db.prepare(`select was, count(distinct case when tag >= ? then konto end) k7, count(distinct konto) k30, sum(n) n30, sum(usd) usd30
+    from nutzung where tag >= ? group by was`).all(tag(6), tag(29)).map(x => [x.was, x]));
+  const name = was => was.startsWith('seite:') ? ['Seite', SEITEN[was.slice(6)]] : was.startsWith('gesperrt:') ? ['Gesperrt angetippt', NAMEN[was.slice(9)]]
+    : was === 'unterlagen' ? ['Funktion', 'Unterlagen hochladen'] : ['Funktion', NAMEN[was]];
+  const alle = new Set([...Object.keys(FUNKTIONEN).filter(f => FUNKTIONEN[f] <= 2), 'unterlagen', ...MELDBAR]);
+  return [...alle].map(was => { const [art, n] = name(was), x = z.get(was) || {}; return { was, art, name: n || was, k7: x.k7 || 0, k30: x.k30 || 0, n30: x.n30 || 0, usd30: x.usd30 || 0 }; })
+    .filter(x => x.art !== 'Gesperrt angetippt' || x.k30)  // gesperrte Funktionen nur, wenn jemand sie angetippt hat
+    .sort((a, b) => b.k30 - a.k30 || b.n30 - a.n30 || a.name.localeCompare(b.name));
+}
+// ZIP ohne Pakete (deflate, UTF-8-Namen) für „Alle meine Daten herunterladen“
+function zip(dateien) {
+  const d = new Date(), zeit = d.getHours() << 11 | d.getMinutes() << 5 | d.getSeconds() >> 1, datum = d.getFullYear() - 1980 << 9 | d.getMonth() + 1 << 5 | d.getDate();
+  const teile = [], verzeichnis = []; let pos = 0;
+  for (const [name, inhalt] of dateien) {
+    const n = Buffer.from(name), daten = deflateRawSync(inhalt), crc = crc32(inhalt), kopf = Buffer.alloc(30), eintrag = Buffer.alloc(46);
+    kopf.writeUInt32LE(0x04034b50, 0); kopf.writeUInt16LE(20, 4); kopf.writeUInt16LE(0x800, 6); kopf.writeUInt16LE(8, 8); kopf.writeUInt16LE(zeit, 10); kopf.writeUInt16LE(datum, 12);
+    kopf.writeUInt32LE(crc, 14); kopf.writeUInt32LE(daten.length, 18); kopf.writeUInt32LE(inhalt.length, 22); kopf.writeUInt16LE(n.length, 26);
+    eintrag.writeUInt32LE(0x02014b50, 0); eintrag.writeUInt16LE(20, 4); eintrag.writeUInt16LE(20, 6); eintrag.writeUInt16LE(0x800, 8); eintrag.writeUInt16LE(8, 10);
+    eintrag.writeUInt16LE(zeit, 12); eintrag.writeUInt16LE(datum, 14); eintrag.writeUInt32LE(crc, 16); eintrag.writeUInt32LE(daten.length, 20); eintrag.writeUInt32LE(inhalt.length, 24);
+    eintrag.writeUInt16LE(n.length, 28); eintrag.writeUInt32LE(pos, 42);
+    teile.push(kopf, n, daten); verzeichnis.push(eintrag, n); pos += 30 + n.length + daten.length;
+  }
+  const cd = Buffer.concat(verzeichnis), ende = Buffer.alloc(22);
+  ende.writeUInt32LE(0x06054b50, 0); ende.writeUInt16LE(dateien.length, 8); ende.writeUInt16LE(dateien.length, 10); ende.writeUInt32LE(cd.length, 12); ende.writeUInt32LE(pos, 16);
+  return Buffer.concat([...teile, cd, ende]);
+}
+// Auskunft und Datenübertragbarkeit (Art. 15 und 20 DSGVO): alles zum Konto als JSON, dazu jede Datei im Speicher, wie sie ist
+function exportieren(req, res, k) {
+  bremse(req, 5, k.email);
+  k = kontoMit(k.id);
+  const iso = x => x ? new Date(x).toISOString() : null, s = stufe(k);
+  const konto = {
+    email: k.email, registriert: iso(k.erstellt), bestaetigt: !!k.bestaetigt, zuletzt_aktiv: iso(k.zuletzt),
+    tarif: TARIFE[s.tarif].name, tarif_bis: iso(s.bis), gratis_test_bis: iso(k.test_bis), freundescode: k.code, ueber_einladung: !!k.geworben_von,
+    eingeladene_personen: db.prepare('select count(*) n from konten where geworben_von = ?').get(k.id).n,
+    offene_gutscheine: db.prepare('select count(*) n from gutscheine where konto = ? and eingeloest is null').get(k.id).n,
+    ultraplus_schluessel: !!k.or_hash,
+    ki_kosten_usd: db.prepare("select monat, usd from verbrauch where konto = ? and monat != 'test' order by monat").all(k.id),
+    bestellungen: db.prepare('select zweck, tarif, monate, betrag, rabatt, status, erstellt, gemeldet, bezahlt from bestellungen where konto = ? order by id').all(k.id)
+      .map(b => ({ ...b, betrag_euro: b.betrag / 100, rabatt_euro: b.rabatt / 100, betrag: undefined, rabatt: undefined, erstellt: iso(b.erstellt), gemeldet: iso(b.gemeldet), bezahlt: iso(b.bezahlt) })),
+    nutzung: db.prepare('select tag, was, n from nutzung where konto = ? order by tag, was').all(k.id),
+    fehlerberichte: db.prepare('select zeit, seite, meldung, text, geraet from fehler where konto = ? order by id').all(k.id).map(f => ({ ...f, zeit: iso(f.zeit) })),
+  };
+  const dateien = db.prepare('select pfad, inhalt from dateien where konto = ? order by pfad').all(k.id);
+  const liesmich = `Deine Daten aus dem Lernhelfer, Stand ${new Date().toLocaleString('de-AT')}.\n\nkonto.json: Konto, Tarif, Bestellungen, KI-Kosten pro Monat, welche Bereiche du an welchem Tag genutzt hast, deine Fehlerberichte.\n`
+    + 'dateien/: alles in deinem Speicher, so wie es dort liegt: Unterlagen (faecher/), Wochenausgaben (lernseiten/, Markdown), Vorträge, Kalender, Noten, Karteikarten.\n\n'
+    + 'Nicht dabei, weil es nie auf dem Server lag: Videos deiner Vorträge, Podcasts zum Anhören, Chats und gelöste Testfragen; die liegen nur auf deinem Gerät.\n';
+  const datei = zip([['LIESMICH.txt', Buffer.from(liesmich)], ['konto.json', Buffer.from(JSON.stringify(konto, null, 2))], ...dateien.map(d => ['dateien/' + d.pfad, Buffer.from(d.inhalt)])]);
+  res.writeHead(200, { 'Content-Type': 'application/zip', 'Content-Disposition': `attachment; filename="lernhelfer-daten-${new Date().toISOString().slice(0, 10)}.zip"`, 'Cache-Control': 'no-store' });
+  res.end(datei);
 }
 // Vertragsbestätigung mit Widerrufsbelehrung auf dauerhaftem Datenträger (§ 7 Abs. 3 FAGG), gleich bei der Bestellung
 function bestellMail(k, T, monate, betrag, zweck) {
@@ -554,6 +625,16 @@ const ROUTEN = {
     if (ADMIN) await mail(ADMIN, `Zahlung gemeldet: ${b.zweck} · ${eur(b.betrag)}`, `${k.email} meldet ${eur(b.betrag)} für ${TARIFE[b.tarif].name}, ${b.monate} Monat(e).\nVerwendungszweck: ${b.zweck}\n\nNach Zahlungseingang freischalten: ${BASIS}/#/admin`);
     return ich(k);
   },
+  'POST /api/nutzung': ({ k, b }) => { muss(k); if (MELDBAR.has(b.was)) zaehlen(k.id, b.was); },  // Seite geöffnet, gesperrte Funktion angetippt, PDF
+  'POST /api/fehler': async ({ req, k, b }) => {  // „Fehler melden“, auch ohne Konto (etwa beim Registrieren); 5 je 15 Minuten
+    bremse(req, 5);
+    const feld = (x, max) => String(x ?? '').trim().slice(0, max);
+    const f = { text: feld(b.text, 3000), meldung: feld(b.meldung, 3000), seite: feld(b.seite, 300), geraet: feld(b.geraet, 400), kontakt: k ? k.email : feld(b.kontakt, 200) };
+    if (!f.text && !f.meldung) nein(400, 'Schreib kurz, was passiert ist.');
+    const { lastInsertRowid: id } = db.prepare('insert into fehler (zeit, konto, kontakt, seite, meldung, text, geraet) values (?, ?, ?, ?, ?, ?, ?)')
+      .run(jetzt(), k?.id ?? null, f.kontakt || null, f.seite, f.meldung, f.text, f.geraet);
+    if (ADMIN) await mail(ADMIN, `Fehlerbericht #${id}${f.seite ? ': ' + f.seite : ''}`, `Von: ${f.kontakt || 'ohne Kontakt'}\nSeite: ${f.seite}\nGerät: ${f.geraet}\n\nMeldung:\n${f.meldung || '–'}\n\nBeschreibung:\n${f.text || '–'}\n\nAdmin-Ecke: ${BASIS}/#/admin`);
+  },
   'POST /api/pc': ({ k }) => {  // Schlüssel für den OLAT-Abgleich am PC; ein neuer ersetzt den alten
     muss(k);
     db.prepare("delete from marken where konto = ? and art = 'sync'").run(k.id);
@@ -569,6 +650,8 @@ const ROUTEN = {
       if (u) wertDazu.run('api-geloescht:' + monat(), u.gesamt);  // ponytail: ganzer Verbrauch des Schlüssels im Löschmonat gebucht
       await orSchluessel('/' + k.or_hash, 'DELETE').catch(e => console.error(e.message));
     }
+    db.prepare('update nutzung set konto = -konto where konto = ?').run(k.id);  // Nutzung bleibt nur als Zahl, ohne Bezug zur Person
+    db.prepare('update fehler set kontakt = null where konto = ?').run(k.id);
     db.prepare('delete from konten where id = ?').run(k.id);  // Speicher, Sitzungen, Verbrauch gehen mit; Bestellungen bleiben für die Buchhaltung
     abmelden(res);
   },
@@ -607,7 +690,8 @@ const ROUTEN = {
       from konten k left join konten w on w.id = k.geworben_von order by k.id desc`).all(monat());
     await Promise.all(konten.map(async x => { x.api = x.or_hash && E.LH_OR_VERWALTUNG ? await orNutzung(x.or_hash) : null; delete x.or_hash; }));
     return {
-      ...dashboard(konten), konten,
+      ...dashboard(konten), konten, funktionen: nutzungListe(),
+      fehler: db.prepare('select id, zeit, kontakt, seite, meldung, text, geraet from fehler where erledigt = 0 order by id desc limit 50').all(),
       bestellungen: db.prepare("select id, email, tarif, monate, betrag, rabatt, zweck, status, erstellt, gemeldet, bezahlt from bestellungen where status in ('offen', 'gemeldet') or bezahlt > ? order by id desc").all(jetzt() - 60 * TAG),
     };
   },
@@ -621,6 +705,7 @@ const ROUTEN = {
     }
   },
   'POST /api/admin/bezahlt': ({ k, b }) => { admin(k); return freischalten(Number(b.id)); },
+  'POST /api/admin/fehler': ({ k, b }) => { admin(k); db.prepare('update fehler set erledigt = ? where id = ?').run(jetzt(), Number(b.id)); },
   'POST /api/admin/storno': ({ k, b }) => { admin(k); db.prepare("update bestellungen set status = 'storniert' where id = ? and status in ('offen', 'gemeldet')").run(Number(b.id)); },
   'POST /api/admin/tarif': async ({ k, b }) => {  // von Hand: Tarif für n Tage setzen (0 Tage = zurück auf Base), etwa als Geschenk oder Erstattung
     admin(k);
@@ -636,6 +721,7 @@ const admin = k => { if (!istAdmin(muss(k)) || !k.ecke) nein(403, 'Nur in der Ad
 const DATEIEN = {
   '/': ['index.html', 'text/html; charset=utf-8'], '/index.html': ['index.html', 'text/html; charset=utf-8'],
   '/holen.py': ['holen.py', 'text/plain; charset=utf-8'], '/einrichten.ps1': ['einrichten.ps1', 'text/plain; charset=utf-8'],
+  '/einrichten-mac.sh': ['einrichten-mac.sh', 'text/plain; charset=utf-8'],
   '/fonts/Archivo.woff2': ['fonts/Archivo.woff2', 'font/woff2'], '/fonts/SourceSerif4.woff2': ['fonts/SourceSerif4.woff2', 'font/woff2'],
 };
 function statisch(req, res, pfad) {
@@ -652,6 +738,8 @@ async function aufraeumen() {
   const t = jetzt();
   db.prepare('delete from marken where bis < ?').run(t);
   db.prepare("update bestellungen set status = 'verfallen' where status = 'offen' and erstellt < ?").run(t - 14 * TAG);
+  db.prepare('delete from nutzung where tag < ?').run(new Date(t - 400 * TAG).toISOString().slice(0, 10));
+  db.prepare('delete from fehler where erledigt > 0 and erledigt < ?').run(t - 90 * TAG);
   for (const k of db.prepare('select id from konten where or_hash is not null or (tarif = ? and bis > ?)').all('ultraplus', t)) await apiAbgleich(k).catch(e => console.error(e.message));
   for (const k of db.prepare('select * from konten where tarif is not null and bis > ? and bis < ? and erinnert != bis').all(t, t + 3 * TAG)) {
     db.prepare('update konten set erinnert = bis where id = ?').run(k.id);
@@ -675,6 +763,7 @@ createServer(async (req, res) => {
     if (gh) return await speicher(req, res, muss(k, true), gh[1] || '');
     if (url.pathname === '/api/ki' && req.method === 'POST') return await ki(req, res, muss(k));
     if (url.pathname === '/api/sprache' && req.method === 'POST') return await sprache(req, res, muss(k));
+    if (url.pathname === '/api/export' && req.method === 'GET') return exportieren(req, res, muss(k));
     const route = ROUTEN[`${req.method} ${url.pathname}`];
     if (!route) nein(404, 'Gibt es nicht.');
     const b = req.method === 'POST' ? await liesJson(req) : {};

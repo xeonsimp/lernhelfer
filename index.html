@@ -623,9 +623,10 @@
   .vt-grundlage .hier { color: var(--akzent-text); font-weight: 650; }
   .vt-grundlage ul { margin: 0; padding-left: 1.2em; max-width: 80ch; }
   .vt-warum { display: grid; gap: 8px; margin: 0; padding-left: 1.2em; }
-  .stil-form { display: grid; gap: 10px; max-width: 680px; margin-top: 18px; }
-  .stil-form h3 { margin: 0; font: 650 1rem/1.35 var(--sans); }
-  .stil-form p, .stil-form .knopfreihe { margin: 0; }
+  .stil-form, .einst-teil { display: grid; gap: 10px; max-width: 680px; margin-top: 18px; }
+  .stil-form h3, .einst-teil h3 { margin: 0; font: 650 1rem/1.35 var(--sans); }
+  .stil-form p, .stil-form .knopfreihe, .einst-teil p, .einst-teil .knopfreihe { margin: 0; }
+  .einst-teil h3:not(:first-child) { margin-top: 8px; }
   .vt-transkript { margin: 0; padding: 0; list-style: none; }
   .vt-transkript li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 8px 6px; border-radius: var(--r-s); }
   .vt-transkript li + li { border-top: 1px solid var(--linie); }
@@ -709,6 +710,34 @@
   .werte-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; margin-top: 14px; }
   .werte-form label { display: grid; gap: 4px; color: var(--text-2); font-size: 0.875rem; font-weight: 600; }
   .werte-form input { width: 8em; }
+
+  /* Unterlagen selbst hochladen, Mac-Befehl, Admin: Nutzung und Fehlerberichte, Fehler melden */
+  .unterlagen { max-width: 860px; }
+  .ul-ergebnis { display: grid; gap: 6px; margin: 14px 0 0; padding: 0; list-style: none; font-size: 0.875rem; }
+  .ul-ergebnis li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; overflow-wrap: anywhere; }
+  .ul-fach { margin-top: 22px; }
+  .ul-fach h3 { margin: 0 0 8px; font: 650 1.0625rem/1.3 var(--sans); }
+  .ul-liste { margin: 0; padding: 0; list-style: none; border: 1px solid var(--linie); border-radius: var(--r-l); overflow: hidden; }
+  .ul-liste li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; align-items: center; padding: 10px 14px; }
+  .ul-liste li + li { border-top: 1px solid var(--linie); }
+  .ul-liste .name { overflow-wrap: anywhere; font-size: 0.9375rem; font-weight: 600; }
+  .ul-liste .meta { grid-column: 1; }
+  .ul-liste .knopf { grid-row: 1 / span 2; grid-column: 2; }
+  .mac-befehl { margin-top: 12px; font: 0.75rem/1.5 ui-monospace, Menlo, Consolas, monospace; }
+  .anteil { display: inline-block; width: 72px; height: 6px; margin-right: 8px; border-radius: 3px; background: var(--bg-3); vertical-align: middle; overflow: hidden; }
+  .anteil i { display: block; height: 100%; border-radius: 3px; background: var(--akzent); }
+  .kacheln.breit { grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+  .schritte + .meta { margin-top: 12px; }
+  .rangliste { display: grid; gap: 5px; margin: 8px 0 0; padding-left: 1.3em; font-size: 0.875rem; }
+  .rangliste li span { color: var(--text-3); }
+  .admin .tabelle td .umbruch { display: block; min-width: 14em; max-width: 30em; white-space: pre-line; overflow-wrap: anywhere; }
+  .status-melden { margin-left: 6px; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-decoration: underline; cursor: pointer; }
+  .meldung dd { white-space: pre-line; overflow-wrap: anywhere; }
+  .grenzen { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 12px; margin: 16px 0; }
+  .anleitung .grenzen .kasten { margin: 0; }
+  .anleitung .grenzen h3 { margin: 0 0 8px; }
+  .anleitung .grenzen ul { margin: 0; padding-left: 1.2em; }
+  kbd { padding: 1px 6px; border: 1px solid var(--linie-2); border-radius: 5px; background: var(--bg-2); font: 600 0.8125em var(--sans); }
 
   /* Ultra-Fassung: Kennzeichen in der Kopfzeile; unter Ultra am Ende der Zusammenfassung, was Ultra hier noch geschrieben hätte */
   .fassung { color: var(--akzent-text); font-weight: 650; }
@@ -827,6 +856,7 @@
       <a href="#/pruefung" data-ansicht="pruefung" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9.5L12 5l9 4.5-9 4.5z"/><path d="M7 11.5v4.5c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5v-4.5M21 9.5V14"/></svg>Prüfungstraining</a>
       <a href="#/wordpower" data-ansicht="wordpower" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a1 1 0 0 1 1 1v9.5a1 1 0 0 1-1 1h-8L7 20v-3.5H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg><span translate="no">Word Power</span></a>
       <a href="#/vortrag" data-ansicht="vortrag" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5M8.5 20.5h7"/></svg>Vortrag</a>
+      <a href="#/unterlagen" data-ansicht="unterlagen" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><path d="M12 16.5v-6M9.5 13l2.5-2.5 2.5 2.5"/></svg>Unterlagen</a>
       <a href="#/upgrade" data-ansicht="upgrade" class="nur-server mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>Tarife</a>
       <hr>
       <a href="#/anleitung" data-ansicht="anleitung"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10.5 5 8.3 4.5 4 4.5v14c4.3 0 6.5.5 8 2 1.5-1.5 3.7-2 8-2v-14c-4.3 0-6.5.5-8 2zM12 6.5v14"/></svg>Anleitung</a>
@@ -852,7 +882,7 @@
       <div class="heute-raster">
         <div class="heute-spalte">
           <section aria-labelledby="f-kopf" class="h-faecher">
-            <div class="block-kopf"><h2 id="f-kopf">Fächer</h2><p class="meta">Antippen für die Wochenausgabe</p></div>
+            <div class="block-kopf"><h2 id="f-kopf">Fächer</h2><a href="#/unterlagen" class="meta">Unterlagen hinzufügen</a></div>
             <div id="ressorts"></div>
           </section>
           <section aria-labelledby="c-kopf" class="h-chat">
@@ -884,6 +914,8 @@
     <section id="kalender" hidden class="kalender"></section>
 
     <section id="vortrag" hidden class="vortrag"></section>
+
+    <section id="unterlagen" hidden class="werkstatt unterlagen"></section>
 
     <section id="wordpower" hidden class="werkstatt">
       <header class="ausgabe-kopf">
@@ -959,7 +991,7 @@
       <header class="ausgabe-kopf">
         <h1 id="ei-titel">Einrichten</h1>
         <p class="schlagzeile" id="ei-schlagzeile">Drei Verbindungen, dann kommt alles von selbst.</p>
-        <p class="meta nur-eigen">Etwa 15 Minuten, am besten am Windows-PC. Jeder Schritt steht ausführlich in der <a href="#/anleitung">Anleitung</a>.</p>
+        <p class="meta nur-eigen">Etwa 15 Minuten, am besten am Windows-PC oder Mac. Jeder Schritt steht ausführlich in der <a href="#/anleitung">Anleitung</a>; nur mit iPad oder Handy geht es auch, siehe <a href="#a-ohne-pc">Mit iPad oder Mac</a>.</p>
       </header>
       <div id="ei-schritte"></div>
       <section class="schritt" aria-labelledby="ei-einst">
@@ -967,6 +999,7 @@
         <label class="feld">Modell für neue Ausgaben <select id="modell" name="modell"></select></label>
         <p class="klein"><span id="modell-hinweis"></span><span class="nur-eigen"> Eine Ausgabe kostet meist 1 bis 8 Cent.</span></p>
         <div id="stil-teil"></div>
+        <div id="daten-teil"></div>
         <div id="abmelden-teil" class="nur-eigen">
           <div class="knopfreihe"><button class="knopf" type="button" id="abmelden">Zugang von diesem Gerät löschen</button></div>
           <p class="klein">Schlüssel und Zugang liegen nur in diesem Browser auf diesem Gerät. Löschen betrifft deine Unterlagen nicht.</p>
@@ -982,21 +1015,23 @@
       </header>
       <ol class="inhalt">
         <li><a href="#a-was">Was der Lernhelfer macht</a></li>
+        <li><a href="#a-grenzen">Was er ist und was nicht</a></li>
         <li class="nur-eigen"><a href="#a-brauchst">Was du brauchst</a></li>
         <li class="nur-eigen"><a href="#a-einrichten">Einrichten in vier Schritten</a></li>
         <li class="nur-server"><a href="#a-konto">Konto und Tarife</a></li>
+        <li><a href="#a-ohne-pc">Mit iPad oder Mac</a></li>
         <li><a href="#a-woche">Jede Woche</a></li>
         <li><a href="#a-termine">Termine und Kalender</a></li>
         <li><a href="#a-tests">Onlinetests</a></li>
         <li><a href="#a-vortrag">Vortrag analysieren</a></li>
-        <li><a href="#a-pc">Der Abgleich am PC</a></li>
+        <li><a href="#a-pc">Der Abgleich am PC oder Mac</a></li>
         <li class="nur-eigen"><a href="#a-kosten">Kosten</a></li>
         <li><a href="#a-sicher">Datenschutz und Sicherheit</a></li>
         <li><a href="#a-hilfe">Wenn etwas nicht geht</a></li>
       </ol>
       <div class="text">
         <h2 id="a-was">Was der Lernhelfer macht</h2>
-        <p>Deine Lehrenden laden jede Woche Folien, PS-Unterlagen und Onlinetests in OLAT. Der Lernhelfer holt das alles automatisch ab und macht daraus <b>pro Fach eine Wochenausgabe</b>:</p>
+        <p>Deine Lehrenden laden jede Woche Folien, PS-Unterlagen und Onlinetests in OLAT. Der Lernhelfer holt das alles automatisch ab (mit einem Windows-PC oder Mac; ohne Computer lädst du die Dateien selbst hoch) und macht daraus <b>pro Fach eine Wochenausgabe</b>:</p>
         <ul>
           <li><b>Auf einen Blick:</b> was zuletzt dran war, was als Nächstes kommt, was bis wann fällig ist.</li>
           <li><b>Zusammenfassung der letzten Einheit:</b> der Stoff aus den Folien, ausführlich und verständlich.</li>
@@ -1007,11 +1042,40 @@
         </ul>
         <p>Dazu kommen die Seite <b>Heute</b> mit deinen Fristen, der Woche und einem Chat für alle Fragen rund ums Studium, ein Kalender mit deinem Stundenplan, der Fristen auch ins iPad übernimmt, und ein Überblick über alle Onlinetests. Was in den Unterlagen nicht steht, erfindet der Lernhelfer nicht, sondern sagt es.</p>
 
+        <h2 id="a-grenzen">Was der Lernhelfer ist und was nicht</h2>
+        <p>Der Lernhelfer ist ein Lernwerkzeug für dich allein. Er hilft dir, den Stoff zu verstehen, zu üben und deine Woche zu organisieren. Leistungen, die du selbst erbringen sollst, erbringt er nicht für dich.</p>
+        <div class="grenzen">
+          <div class="kasten">
+            <h3>Das ist er</h3>
+            <ul>
+              <li>eine <b>Lernhilfe</b>: Zusammenfassungen deiner Unterlagen, Erklärungen, Übungsaufgaben, Karteikarten, Probeklausuren;</li>
+              <li>ein <b>Organisationswerkzeug</b>: Stundenplan, Fristen, Onlinetests im Überblick, Notentracker;</li>
+              <li>ein <b>Übungspartner</b> für Vorträge, mit Rückmeldung nach festen, öffentlich nachlesbaren Kriterien;</li>
+              <li>ein <b>unabhängiges, privates Projekt</b> eines Studenten der Wirtschaftswissenschaften in Innsbruck.</li>
+            </ul>
+          </div>
+          <div class="kasten">
+            <h3>Das ist er nicht</h3>
+            <ul>
+              <li><b>Kein Angebot der Universität Innsbruck</b>, von ihr weder beauftragt noch geprüft oder empfohlen, und kein Produkt von OLAT bzw. OpenOLAT. Die Namen stehen hier nur, damit klar ist, womit er zusammenarbeitet.</li>
+              <li><b>Kein Werkzeug zum Schummeln.</b> Er trägt nichts in OLAT ein, speichert und schickt dort nichts ab, beendet keinen Test und schreibt keine Abgaben für dich.<span class="nur-server"> Zu Onlinetests zeigt er Lösungswege nur an Übungsaufgaben mit anderen Zahlen; Ergebnisse der Originalaufgaben nennt er nicht.</span></li>
+              <li><b>Kein Ersatz für Lehrveranstaltung und Lehrende.</b> Die KI kann sich irren. Was in OLAT, im Syllabus oder von deinen Lehrenden kommt, gilt immer.</li>
+              <li><b>Keine offizielle Bewertung.</b> Notenprognose, Probeklausur, Vortragsanalyse und Sprachniveau nach GER sind Einschätzungen zum Üben, keine Noten und keine Zertifikate.</li>
+              <li><b>Keine Tauschbörse.</b> Deine Unterlagen bleiben <span class="nur-eigen">in deinem privaten Speicher</span><span class="nur-server">in deinem Konto</span>; niemand sonst sieht sie, und der Lernhelfer gibt sie nicht weiter. Folien sind urheberrechtlich geschützt und nur für dich.</li>
+              <li><b>Kein Zugang zu deinem Uni-Konto.</b> Dein OLAT-Passwort sieht der Lernhelfer nie; einloggen tust du dich selbst.</li>
+            </ul>
+          </div>
+        </div>
+        <h3>Deine Verantwortung</h3>
+        <p>Ob und wie du KI nutzen darfst, legt jede Lehrveranstaltung selbst fest, meist im Syllabus (er steht auch in den Stammdaten jeder Wochenausgabe). Bei Prüfungen, Präsenztests, Onlinetests und Abgaben gelten diese Regeln auch für den Lernhelfer: Wo KI oder andere Hilfsmittel nicht erlaubt sind, nutzt du ihn nicht. Wer eine Beurteilung erschleicht, etwa mit unerlaubten Hilfsmitteln, riskiert, dass die Universität sie für ungültig erklärt; der Antritt zählt trotzdem (§ 73 Universitätsgesetz).</p>
+        <h3>Für Lehrende und die Universität</h3>
+        <p>Der Lernhelfer arbeitet nur mit dem, was eine Studentin oder ein Student ohnehin in OLAT sieht, und nur für diese eine Person. Er greift nicht in OLAT ein, trägt keine Antworten ein und gibt keine Unterlagen weiter. Fragen, Bedenken oder Hinweise, dass etwas nicht passt, gerne <span class="nur-server">an die Adresse im <a href="#/recht">Impressum</a></span><span class="nur-eigen">über <a href="https://github.com/xnik243" target="_blank" rel="noopener">github.com/xnik243</a></span>: Ich antworte zeitnah und ändere, was nötig ist.</p>
+
         <div class="nur-server">
         <h2 id="a-konto">Konto und Tarife</h2>
         <ul>
           <li><b>Konto:</b> Unter <a href="#/einstellungen">Konto</a> mit E-Mail und Passwort registrieren und die Adresse über den Link in der Mail bestätigen. Base ist kostenlos und bleibt es.</li>
-          <li><b>OLAT-Abgleich:</b> Unter Konto das PC-Programm laden und am Windows-PC öffnen, siehe <a href="#a-pc">Der Abgleich am PC</a>. Danach kommen deine Unterlagen von selbst.</li>
+          <li><b>Unterlagen aus OLAT:</b> Unter Konto das Programm für deinen Windows-PC oder Mac laden, siehe <a href="#a-pc">Der Abgleich am PC oder Mac</a>. Danach kommen deine Unterlagen von selbst. Nur mit iPad oder Handy lädst du sie selbst hoch, siehe <a href="#a-ohne-pc">Mit iPad oder Mac</a>.</li>
           <li><b>Base</b> bringt die Wochenausgabe für jedes Fach und den Überblick über die Onlinetests. <b>Pro</b> dazu Kalender, Word-Power-Transkript und Vortragsanalyse, <b>Ultra</b> zusätzlich alle Fragen an die KI und Lösungswege zu den Onlinetests.</li>
           <li><b>Ausprobieren:</b> Einmal pro Konto gibt es 24 Stunden Ultra gratis, ohne Zahlungsdaten.</li>
           <li><b>Bezahlen:</b> Unter <a href="#/upgrade">Tarife</a> wählen und per Überweisung oder PayPal mit dem angezeigten Verwendungszweck zahlen. Kein Abo: Nach der Laufzeit geht es von selbst mit Base weiter.</li>
@@ -1022,7 +1086,7 @@
         <div class="nur-eigen">
         <h2 id="a-brauchst">Was du brauchst</h2>
         <ul>
-          <li><b>Einen Windows-PC</b> (oder Windows-Laptop). Er holt die Unterlagen aus OLAT, weil der OLAT-Login den Authenticator braucht. Für Mac gibt es das noch nicht.</li>
+          <li><b>Einen Windows-PC oder Mac</b> (auch Laptop). Er holt die Unterlagen aus OLAT, weil der OLAT-Login den Authenticator braucht. Ohne Computer geht es auch: Dann lädst du die Unterlagen selbst hoch, siehe <a href="#a-ohne-pc">Mit iPad oder Mac</a>.</li>
           <li><b>Ein Gerät zum Lesen:</b> iPad, Handy oder derselbe PC. Die App läuft im Browser, nichts zu installieren.</li>
           <li><b>Etwa 5 $ Guthaben</b> für die KI, zahlbar mit Karte. Das reicht für ein ganzes Semester.</li>
           <li><b>Ein kostenloses GitHub-Konto</b> als privaten Speicher. Das legst du beim Einrichten an.</li>
@@ -1030,7 +1094,7 @@
         </ul>
 
         <h2 id="a-einrichten">Einrichten in vier Schritten</h2>
-        <p>Öffne <b>xnik243.github.io/lernhelfer</b> am Windows-PC in Chrome. Die App startet direkt bei <a href="#/einstellungen">Einrichten</a>; dort steht bei jedem Schritt, ob er erledigt ist.</p>
+        <p>Öffne <b>xnik243.github.io/lernhelfer</b> am Windows-PC oder Mac in Chrome. Die App startet direkt bei <a href="#/einstellungen">Einrichten</a>; dort steht bei jedem Schritt, ob er erledigt ist.</p>
         <h3>1. KI-Guthaben verbinden</h3>
         <ol>
           <li>Auf „Mit OpenRouter verbinden“ tippen. OpenRouter ist der Dienst, über den die KI-Modelle laufen.</li>
@@ -1045,7 +1109,8 @@
           <li>„Schlüssel erzeugen“: Name und Rechte sind schon ausgefüllt. Bei <b>Repository access</b> „Only select repositories“ wählen und <i>lernhelfer-daten</i> auswählen. Ganz unten <b>Generate token</b> tippen und den Schlüssel kopieren (er beginnt mit <code>github_pat_</code>).</li>
           <li>Zurück im Lernhelfer den Schlüssel einfügen und „Verbinden“ tippen. Der Lernhelfer findet den Speicher selbst.</li>
         </ol>
-        <h3>3. OLAT-Abgleich am PC</h3>
+        <h3>3. Unterlagen aus OLAT</h3>
+        <p>Am Windows-PC so; am Mac und nur mit iPad siehe <a href="#a-ohne-pc">Mit iPad oder Mac</a>.</p>
         <ol>
           <li>Auf „PC-Programm herunterladen“ tippen. Fragt Chrome, ob du die Datei behalten willst: <b>Behalten</b>.</li>
           <li>Die Datei <i>Lernhelfer-PC-einrichten</i> öffnen. Zeigt Windows „Der Computer wurde durch Windows geschützt“: auf <b>Weitere Informationen</b> und dann <b>Trotzdem ausführen</b> tippen. Das kommt bei jedem Programm, das nicht aus dem Microsoft Store stammt.</li>
@@ -1060,6 +1125,40 @@
           <li>Tipp: In Safari auf Teilen und „Zum Home-Bildschirm“ tippen, dann startet der Lernhelfer wie eine App. Fragt er dort noch einmal nach dem Einrichten (das iPad trennt den Home-Bildschirm vom Browser), tippe auf „Mit Kamera verbinden“ und scanne den Code noch einmal.</li>
         </ol>
         </div>
+
+        <h2 id="a-ohne-pc">Mit iPad oder Mac, ohne Windows-PC</h2>
+        <p>Den Lernhelfer selbst nutzt du auf jedem Gerät im Browser. Nur das automatische Holen der Unterlagen aus OLAT braucht einen Computer. Der Grund: OLAT öffnet sich nur mit deinem Uni-Login und dem Authenticator. Das erledigt ein kleines Programm in einem echten Browser auf deinem Computer, und es muss danach im Hintergrund weiterlaufen, damit die Anmeldung nicht abläuft. Ein iPad erlaubt solche Hintergrundprogramme nicht. Eine Schnittstelle, über die der Lernhelfer ohne Login an die Dateien käme, bietet die Universität nicht an, und deine Uni-Zugangsdaten soll kein fremder Server speichern.</p>
+        <h3>Mit einem Mac: automatisch, wie am Windows-PC</h3>
+        <ol>
+          <li>Den Lernhelfer am Mac öffnen<span class="nur-server"> und anmelden</span><span class="nur-eigen"> und einrichten bzw. mit dem Verbindungslink aus Schritt 4 verbinden</span>. Dann unter <span class="nur-eigen">Einrichten bei Schritt 3</span><span class="nur-server">Konto bei „Unterlagen aus OLAT“</span> auf <b>Befehl für den Mac kopieren</b> tippen.</li>
+          <li>Das Terminal öffnen: <kbd>⌘</kbd> und Leertaste drücken, „Terminal“ tippen, Enter. Das Terminal ist bei jedem Mac dabei.</li>
+          <li>Mit <kbd>⌘</kbd> <kbd>V</kbd> einfügen und Enter drücken. Ein Administratorpasswort braucht es nicht. Fragt macOS, ob das Terminal auf den Schreibtisch zugreifen darf: <b>Erlauben</b>, dort legt der Lernhelfer die Verknüpfung „Lernhelfer OLAT“ ab.</li>
+          <li>Es öffnet sich Chrome (fehlt Chrome: Chromium) mit der OLAT-Anmeldung. Ganz normal einloggen, mit Authenticator. Steht im Terminal „Fertig“, kann es zu. Beim ersten Mal dauert alles 5 bis 15 Minuten.</li>
+          <li>Meldet macOS „Hintergrundobjekt hinzugefügt“: Das ist der Abgleich. Unter Systemeinstellungen, Allgemein, Anmeldeobjekte muss er eingeschaltet bleiben.</li>
+        </ol>
+        <p>Warum ein Befehl im Terminal und keine Datei zum Doppelklicken? Programme aus dem Internet blockiert der Mac, solange sie keine kostenpflichtige Signatur von Apple haben. Ein Befehl, den du selbst einfügst, braucht das nicht. Er lädt nur Python, die Browser-Steuerung und das Abgleich-Programm in den Ordner <code>~/Library/Lernhelfer</code>, prüft jede Datei und richtet den Abgleich alle 30 Minuten ein.</p>
+        <h3>Nur mit iPad oder Handy: Unterlagen selbst hochladen</h3>
+        <p>Ohne Computer holst du die Dateien selbst aus OLAT und gibst sie dem Lernhelfer. Das dauert ein paar Minuten pro Woche; alles andere geht wie gewohnt: Wochenausgabe, Übungen, Karteikarten, Prüfungstraining.</p>
+        <ol>
+          <li>In Safari <b>lms.uibk.ac.at</b> öffnen und einloggen, dann den Kurs und den Ordner mit den Folien oder den PS-Unterlagen.</li>
+          <li>Die neuen Dateien laden: beim Eintrag auf die drei Punkte und <b>Herunterladen</b> tippen, dann <b>Laden</b>. Eine ZIP-Datei mit mehreren Dateien geht genauso. Alles landet in der App Dateien unter <i>Downloads</i>.</li>
+          <li>Im Lernhelfer <a href="#/unterlagen">Unterlagen</a> öffnen, Fach und Art wählen (Folien, PS oder Syllabus), auf <b>Dateien wählen</b> tippen und unter Downloads die neuen Dateien auswählen. Dann <b>Hinzufügen</b>.</li>
+          <li>Der Lernhelfer liest den Text direkt auf dem iPad aus; gespeichert wird nur der Text. Danach im Fach auf <b>Neu erstellen</b> tippen.</li>
+        </ol>
+        <p>Am Semesteranfang lohnt sich einmal der <b>Syllabus</b> jedes Kurses: Daraus kennt der Lernhelfer Termine, Prüfungen und Notenschlüssel. Lesen kann er PDF, PowerPoint (.pptx), Word (.docx), Text und ZIP. Eingescannte PDFs ohne Text gehen nicht; alte Formate (.ppt, .doc) vorher als PDF speichern.</p>
+        <h3>Onlinetests per Foto</h3>
+        <ol>
+          <li>In OLAT den Test öffnen und die Startseite als Bildschirmfoto aufnehmen: am iPad die obere Taste und die Lauter-Taste gleichzeitig drücken. Bearbeitest du den Test gerade, auch jede Frage.</li>
+          <li>Im Lernhelfer unter <a href="#/onlinetests">Onlinetests</a> auf <b>Test per Foto hinzufügen</b> tippen, das Fach angeben, die Bildschirmfotos wählen und <b>Fragen auslesen</b>.</li>
+          <li>Die KI schreibt Fragen, Zeitraum und Punkte ab, löst aber nichts. Der Test steht danach im Überblick<span class="nur-server">, mit Lösungswegen an Übungsaufgaben (Ultra)</span>, und die nächste Wochenausgabe nimmt die Fragen für ihre Übungsaufgaben.</li>
+        </ol>
+        <p>Deine Antworten trägst du in OLAT selbst ein; welche Hilfsmittel bei einem Test erlaubt sind, steht im Syllabus.</p>
+        <h3>Was ohne Computer fehlt</h3>
+        <ul>
+          <li>Neue Unterlagen kommen nicht von selbst: Schau einmal pro Woche in OLAT, am besten nach der Vorlesung.</li>
+          <li>Punkte erledigter Onlinetests übernimmt der Notentracker nicht automatisch; du trägst sie selbst ein.</li>
+          <li>Den Stundenplan gibt es trotzdem: die .ics-Dateien aus LFU:online im Kalender hochladen.</li>
+        </ul>
 
         <h2 id="a-woche">Jede Woche</h2>
         <ol>
@@ -1086,6 +1185,7 @@
           <p><b>So liest der PC Tests:</b> Läuft ein bewerteter Test, öffnet der PC ihn genau einmal, liest die Fragen und tippt dann auf „Test unterbrechen“ und „Ok“. Antworten werden nie eingetragen, gespeichert oder abgeschickt, und „Test beenden“ wird nie gedrückt. Ein Schutz im Browser blockiert diese Knöpfe zusätzlich. Dein Versuch bleibt also voll erhalten. Tests, die noch nicht begonnen haben, öffnet der PC nie.</p>
         </div>
         <p>Abgelaufene Tests zeigen deine Antworten und die Lösung von OLAT, Selbsttests sind zum Üben da. Beides nimmt die Wochenausgabe für die Übungsaufgaben.</p>
+        <p>Ohne PC-Programm fügst du einen Test <b>per Foto</b> hinzu, siehe <a href="#a-ohne-pc">Mit iPad oder Mac</a>. Selbst hinzugefügte Tests lassen sich bearbeiten und löschen.</p>
         <p class="nur-server"><b>Lösungswege</b> (Ultra) zeigt die Fragen eines Tests einzeln, mit Formeln wie in OLAT. Zu jeder Frage stellt der Lernhelfer eine gleichartige Übungsaufgabe mit anderen Zahlen, rechnet sie mit Rechenweg zum Aufklappen vor und erklärt jeden Schritt. Die Originalaufgabe löst du damit selbst: Ergebnisse dafür nennt er nicht, und er schreibt nichts nach OLAT. Welche Hilfsmittel bei einem Test erlaubt sind, legt jede Lehrveranstaltung fest, meist im Syllabus.</p>
         <p class="nur-eigen"><b>Der Löser</b> zeigt die Fragen eines Tests einzeln, mit Formeln wie in OLAT. Bei jeder Frage „Lösen lassen“ tippen: Du bekommst das Ergebnis so, wie es in OLAT eingetragen wird, und den Rechenweg zum Aufklappen. Bei „Rückfrage“ fragst du nach, was unklar ist. Mit „Weiter“ und „Zurück“ gehst du durch die Fragen; Lösungen und Rückfragen bleiben gespeichert. Gedacht ist er zum Vergleichen: erst selbst lösen, dann mit dem Löser prüfen, dann selbst in OLAT eintragen. Der Löser schreibt nichts nach OLAT. Ob KI bei einem Test erlaubt ist, legt jede Lehrveranstaltung selbst fest, meist im Syllabus.</p>
         <p class="nur-eigen">Löser und <a href="#/wordpower">Word Power</a> (Englisch-Hausaufgaben) sind privat und haben je ein eigenes Passwort. Ihre Prompts liegen verschlüsselt im privaten Daten-Repo. Groß- und Kleinschreibung ist egal.</p>
@@ -1123,13 +1223,14 @@
         <p>Das Video bleibt auf deinem Gerät; an die KI gehen nur die Tonspur und ein paar Standbilder. YouTube-Links gehen nur bei öffentlichen Videos, weil Googles KI nicht gelistete Videos nicht öffnen kann. Ein Video vom iPad oder Handy wählst du deshalb am besten direkt als Datei. Transkript und Analyse liegen in deinem privaten Speicher und sind auf allen Geräten da.</p>
         <p><b>Wonach bewertet wird:</b> Die KI bewertet nicht nach eigenem Ermessen. Sie bekommt mit jedem Vortrag feste Kriterien und muss jede Einstufung mit Stellen aus dem Vortrag belegen. Für die Sprache sind das die Deskriptoren des <a href="https://www.coe.int/en/web/common-european-framework-reference-languages/table-3-cefr-3.3-common-reference-levels-qualitative-aspects-of-spoken-language-use" target="_blank" rel="noopener">Gemeinsamen Europäischen Referenzrahmens</a> (Europarat, Tabelle 3) und die Skala „Addressing audiences“ aus dem <a href="https://rm.coe.int/common-european-framework-of-reference-for-languages-learning-teaching/16809ea0d4" target="_blank" rel="noopener">Begleitband von 2020</a>, für die Präsentation die fünf Dimensionen der <a href="https://www.aacu.org/value/rubrics/value-rubrics-oral-communication" target="_blank" rel="noopener">VALUE-Rubrik Oral Communication</a> (AAC&amp;U). Aussprache bewertet die App nicht, weil die Analyse das Transkript liest und die Aufnahme nicht hört. Alle Deskriptoren stehen unter jeder Analyse bei „Bewertungsgrundlage“.</p>
 
-        <h2 id="a-pc">Der Abgleich am PC</h2>
+        <h2 id="a-pc">Der Abgleich am PC oder Mac</h2>
         <ul>
-          <li>Solange der PC an ist, hält er alle 30 Minuten die OLAT-Anmeldung wach und holt höchstens alle 12 Stunden neue Unterlagen. Unten auf der Seite Heute steht, wann zuletzt abgeglichen wurde.</li>
-          <li>War der PC lange aus, ist die OLAT-Anmeldung abgelaufen. Dann öffnet sich nach dem Einschalten Chrome mit der OLAT-Anmeldung, einfach einloggen. Oder auf dem Desktop <b>Lernhelfer OLAT</b> doppelklicken.</li>
+          <li>Solange der Computer an ist (der Mac: wach), hält er alle 30 Minuten die OLAT-Anmeldung wach und holt höchstens alle 12 Stunden neue Unterlagen. Unten auf der Seite Heute steht, wann zuletzt abgeglichen wurde.</li>
+          <li>War der Computer lange aus, ist die OLAT-Anmeldung abgelaufen. Dann öffnet sich nach dem Einschalten Chrome mit der OLAT-Anmeldung, einfach einloggen. Oder auf dem Desktop bzw. Schreibtisch <b>Lernhelfer OLAT</b> doppelklicken.</li>
           <li>Sofort abgleichen, etwa wenn gerade neue Folien hochgeladen wurden: ebenfalls <b>Lernhelfer OLAT</b> doppelklicken.</li>
-          <li>Neue Kurse sucht der Lernhelfer zu Beginn jedes Semesters selbst unter „Meine Kurse“ in OLAT.</li>
-          <li>Entfernen: In der Windows-Aufgabenplanung die Aufgabe „Lernhelfer OLAT-Abgleich“ löschen, dann den Ordner <code>%LOCALAPPDATA%\Lernhelfer</code> und die Desktop-Verknüpfung.</li>
+          <li>Neue Kurse sucht der Lernhelfer zu Beginn jedes Semesters selbst unter „Meine Kurse“ in OLAT. Was du zusätzlich unter <a href="#/unterlagen">Unterlagen</a> hochlädst, bleibt beim Abgleich erhalten.</li>
+          <li>Entfernen am Windows-PC: In der Aufgabenplanung die Aufgabe „Lernhelfer OLAT-Abgleich“ löschen, dann den Ordner <code>%LOCALAPPDATA%\Lernhelfer</code> und die Desktop-Verknüpfung.</li>
+          <li>Entfernen am Mac: im Terminal <code>launchctl bootout gui/$(id -u)/at.lernhelfer.olat; rm -rf ~/Library/Lernhelfer ~/Library/LaunchAgents/at.lernhelfer.olat.plist</code> eingeben und die Verknüpfung vom Schreibtisch löschen. Hat der Lernhelfer Chromium geladen, liegt es in <code>~/Library/Caches/ms-playwright</code>.</li>
         </ul>
 
         <div class="nur-eigen">
@@ -1151,14 +1252,17 @@
           <li class="nur-eigen">Dein KI-Schlüssel und dein Speicher-Schlüssel liegen nur im Browser deiner Geräte. Sie gehen an niemanden außer OpenRouter und GitHub.</li>
           <li class="nur-eigen">Deine Unterlagen liegen in <b>deinem</b> privaten Speicher. Niemand sonst, auch nicht die Person, die den Lernhelfer gebaut hat, kommt daran.</li>
           <li class="nur-eigen">Der Speicher muss <b>privat</b> bleiben: Folien sind urheberrechtlich geschützt und dürfen nicht öffentlich werden. Der Lernhelfer prüft das beim Verbinden.</li>
-          <li>Dein OLAT-Passwort sieht der Lernhelfer nie. Du loggst dich selbst in Chrome ein; gespeichert wird nur die Sitzung, auf deinem PC.</li>
+          <li>Dein OLAT-Passwort sieht der Lernhelfer nie. Du loggst dich selbst in Chrome ein; gespeichert wird nur die Sitzung, auf deinem PC oder Mac.</li>
+          <li>Hochgeladene Dateien liest der Lernhelfer auf deinem Gerät aus; gespeichert wird nur ihr Text. Bei Test-Fotos gehen die Bilder einmal an die KI zum Abschreiben und werden nicht aufbewahrt.</li>
+          <li>Alle deine Daten lädst du jederzeit unter <span class="nur-eigen">Einrichten</span><span class="nur-server">Konto</span> bei „Deine Daten“ als ZIP-Datei herunter.</li>
+          <li class="nur-server">Damit klar ist, was gebraucht wird, zählt der Server, welche Bereiche der App ein Konto an welchem Tag nutzt, ohne Inhalte. Ein Fehlerbericht enthält nur, was du schreibst, die Seite, die letzten Meldungen und deinen Browser.</li>
           <li>Halte dich bei Abgaben und Tests an die Regeln deiner Lehrveranstaltungen zur Nutzung von KI; sie stehen im Syllabus und damit auch in den Stammdaten jeder Ausgabe.</li>
         </ul>
 
         <h2 id="a-hilfe">Wenn etwas nicht geht</h2>
         <dl>
-          <dt>Unten auf der Seite Heute steht „OLAT-Anmeldung am PC abgelaufen“.</dt>
-          <dd>Am PC auf dem Desktop <b>Lernhelfer OLAT</b> doppelklicken und im Chrome-Fenster einloggen.</dd>
+          <dt>Unten auf der Seite Heute steht „OLAT-Anmeldung am PC abgelaufen“ (oder „am Mac“).</dt>
+          <dd>Am PC auf dem Desktop bzw. am Mac auf dem Schreibtisch <b>Lernhelfer OLAT</b> doppelklicken und im Browserfenster einloggen.</dd>
           <dt class="nur-server">„Dein KI-Kontingent für diesen Monat ist aufgebraucht“.</dt>
           <dd class="nur-server">Jeder Tarif hat ein KI-Kontingent pro Monat. Am Monatsersten geht es weiter, mit einem größeren Tarif sofort.</dd>
           <dt class="nur-eigen">„GitHub antwortet 401“ oder „Schlüssel abgelaufen“.</dt>
@@ -1173,6 +1277,12 @@
           <dd>Noch einmal erstellen oder unter Einrichten ein anderes Modell wählen. Im Zweifel gilt immer, was in OLAT steht.</dd>
           <dt>Das schwarze Fenster beim Einrichten zeigt einen Fehler.</dt>
           <dd>Meist war kurz das Internet weg. Die Datei unter Einrichten bei Schritt 3 noch einmal herunterladen und öffnen; was schon da ist, wird nicht noch einmal geladen.</dd>
+          <dt>Am Mac zeigt das Terminal einen Fehler.</dt>
+          <dd>Den Befehl noch einmal ganz kopieren, einfügen und Enter drücken; meist war kurz das Internet weg, und was schon da ist, wird nicht noch einmal geladen. Der Abgleich braucht macOS 12 oder neuer.</dd>
+          <dt>Eine hochgeladene PDF bringt „kein Text gefunden“.</dt>
+          <dd>Dann ist sie eingescannt und enthält nur Bilder. Nimm, wenn es sie gibt, die PowerPoint-Fassung, oder frag nach einer PDF mit Text.</dd>
+          <dt>Etwas anderes klappt nicht.</dt>
+          <dd>Bei einer Fehlermeldung oben direkt auf „Fehler melden“ tippen, sonst unter <span class="nur-eigen">Einrichten</span><span class="nur-server">Konto</span>. Schreib kurz, was du gemacht hast; Seite, Meldung und Browser kommen von selbst dazu.</dd>
         </dl>
       </div>
     </section>
@@ -1328,6 +1438,7 @@ const plusTage = n => iso(new Date(heute.getFullYear(), heute.getMonth(), heute.
 const escHtml = s => String(s).replace(/[&<>"]/g, c => `&#${c.charCodeAt(0)};`);
 // Druckfassung als eigene Seite: der Browser macht daraus ein PDF („Als PDF sichern“, am iPad über Teilen → Drucken)
 function drucken(titel, inhalt) {
+  if (SERVER && ICH) api('nutzung', { was: 'export' }).catch(() => {});
   const css = WP_DOC_CSS + 'h1{font-size:1.8em;line-height:1.2;margin:0 0 .3em}h4{margin:1.2em 0 .3em}math{font-size:1.05em}math[display=block]{margin:.8em 0}'
     + '.meta{color:#6b6458;font-size:.9em}@media print{html{background:none}body{padding:0}h2,h3{break-after:avoid}}';
   const html = `<!doctype html><html lang="de"><head><meta charset="utf-8"><title>${escHtml(titel)}</title><style>${css}</style></head><body>${inhalt}</body></html>`;
@@ -1364,7 +1475,15 @@ const kurz = d => datum(d, { weekday: 'short', day: '2-digit', month: '2-digit' 
 const faellig = n => n === 0 ? 'heute' : n === 1 ? 'morgen' : `in ${n} Tagen`;
 const kw = d => { const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())); t.setUTCDate(t.getUTCDate() + 4 - (t.getUTCDay() || 7)); return Math.ceil(((t - Date.UTC(t.getUTCFullYear(), 0, 1)) / 864e5 + 1) / 7); };
 const base64 = s => btoa(Array.from(new TextEncoder().encode(s), b => String.fromCharCode(b)).join(''));
-const status = (text, fehler) => { $('status').textContent = text || ''; $('status').classList.toggle('fehler', !!fehler); };
+const FEHLER_LOG = [];  // die letzten Fehlermeldungen, für „Fehler melden“
+const fehlerMerken = text => { if (!text) return; FEHLER_LOG.push(`${new Date().toLocaleTimeString('de-AT')} ${String(text).slice(0, 500)}`); FEHLER_LOG.splice(0, FEHLER_LOG.length - 5); };
+addEventListener('error', e => fehlerMerken(e.message));
+addEventListener('unhandledrejection', e => fehlerMerken(e.reason?.message || e.reason));
+const status = (text, fehler) => {
+  $('status').replaceChildren(...text ? [text] : [], ...fehler && text ? [' ', el('button', { class: 'status-melden', type: 'button', onclick: () => fehlerMelden() }, 'Fehler melden')] : []);
+  $('status').classList.toggle('fehler', !!fehler);
+  if (fehler) fehlerMerken(text);
+};
 
 // Server-Version (eigene Domain, der Server setzt data-server): Konto statt eigener Schlüssel; Speicher und KI laufen über den Server
 const SERVER = document.documentElement.hasAttribute('data-server');
@@ -1500,7 +1619,8 @@ async function drucke(f, d = HEUTE) {  // d: Stichtag, für nachträgliche Ausga
   await wach(true);
   try {
     const q = await quelle(f), tief = darf('ausgabe-ultra');  // Ultra und die eigene Version: die ausführliche Fassung
-    const prompt = [auftrag(f, TAG, d, tief), ...q.dateien.map(d => `=== ${d.art.toUpperCase()}: ${d.datei} ===\n${d.text.slice(0, 60000)}`)].join('\n\n');
+    const fotos = (await EIGENE_D.laden().catch(() => ({ tests: [] }))).tests.filter(t => t.fach === f);
+    const prompt = [auftrag(f, TAG, d, tief), ...q.dateien.map(d => `=== ${d.art.toUpperCase()}: ${d.datei} ===\n${d.text.slice(0, 60000)}`), ...fotos.map(fotoTestText)].join('\n\n');
     const modell = $('modell').value;
     const antwortKI = await strom({ ...MODELLE[modell], feature: tief ? 'ausgabe-ultra' : 'ausgabe', messages: [{ role: 'user', content: prompt }] }, x => {
       const teile = x.match(/^## .+/gm) || [];
@@ -1564,8 +1684,9 @@ function titelblatt() {
   const faecher = Object.keys(R);
   $('ressorts').replaceChildren(...faecher.length ? faecher.map(fachZeile)
     : [el('div', { class: 'willkommen' }, el('h3', {}, 'Gleich kommen deine Fächer'),  // vor dem ersten Abgleich gibt es noch keine Fächer
-      el('p', { class: 'klein' }, `Sobald der PC zum ersten Mal mit OLAT abgeglichen hat, steht hier jedes Fach mit seiner Wochenausgabe. Das PC-Programm gibt es unter ${SERVER ? 'Konto' : 'Einrichten bei Schritt 3'}.`),
-      el('div', { class: 'knopfreihe' }, el('a', { class: 'knopf voll', href: '#/einstellungen' }, SERVER ? 'Zum Konto' : 'Zum Einrichten'), el('a', { class: 'knopf', href: '#/anleitung' }, 'Anleitung')))]);
+      el('p', { class: 'klein' }, `Sobald dein PC oder Mac zum ersten Mal mit OLAT abgeglichen hat, steht hier jedes Fach mit seiner Wochenausgabe. Das Programm gibt es unter ${SERVER ? 'Konto' : 'Einrichten bei Schritt 3'}. Nur mit iPad oder Handy lädst du die Folien aus OLAT selbst hoch.`),
+      el('div', { class: 'knopfreihe' }, el('a', { class: `knopf${WINDOWS || MAC ? ' voll' : ''}`, href: '#/einstellungen' }, SERVER ? 'Zum Konto' : 'Zum Einrichten'),
+        el('a', { class: `knopf${WINDOWS || MAC ? '' : ' voll'}`, href: '#/unterlagen' }, 'Unterlagen hochladen'), el('a', { class: 'knopf', href: '#a-ohne-pc' }, 'Anleitung')))]);
   $('ressorts').classList.toggle('faecher-raster', faecher.length > 0);
   const abhaken = t => el('label', { class: 'haken' }, el('input', { type: 'checkbox', checked: !!merk(fristSchluessel(t)), 'aria-label': `${t.fach} ${t.titel || t.art} erledigt`,
     onchange: e => { merk(fristSchluessel(t), e.target.checked ? '1' : null); titelblatt(); } }));
@@ -1610,7 +1731,7 @@ function wocheZeigen() {
 
 // Frag den Lernhelfer: kennt Stundenplan, Fristen, Onlinetests und die aktuelle Ausgabe jedes Fachs
 async function assistentKontext() {
-  TESTS ??= JSON.parse(await gh('onlinetests.json').catch(() => null) || '[]');
+  TESTS ??= await testsLaden().catch(() => []);
   const zeile = t => [`${kurz(t.datum)} ${t.zeit ? t.zeit + (t.ende ? '–' + t.ende : '') : 'ganztägig'}`, `${t.fach} ${t.code || t.art}${FRISTEN.has(t.art) ? ` (Frist${merk(fristSchluessel(t)) ? ', erledigt' : ''})` : ''}`,
     t.titel, t.ort, t.lv && `LV: ${t.lv}`].filter(Boolean).join(' | ');
   const plan = kalenderTermine().filter(t => tageBis(t.datum) >= -7 && tageBis(t.datum) <= 21).sort(nachZeit).map(zeile);
@@ -1793,7 +1914,8 @@ async function ausgabeZeigen(f, tag) {
       el('a', { class: 'zurueck nur-schmal', href: '#/' }, 'Heute'),
       el('header', { class: 'ausgabe-kopf' }, el('div', {}, el('h1', {}, f),
         el('p', { class: 'unterzeile' }, `Noch keine Ausgabe. Die erste ist nach ${darf('ausgabe-ultra') ? 'vier bis sechs' : 'zwei bis vier'} Minuten fertig.`))),
-      r.druckt ? presse(f) : el('button', { class: 'knopf voll', type: 'button', onclick: () => drucke(f) }, 'Erste Ausgabe erstellen'),
+      r.druckt ? presse(f) : el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll', type: 'button', onclick: () => drucke(f) }, 'Erste Ausgabe erstellen'),
+        el('a', { class: 'knopf', href: `#/unterlagen/${encodeURIComponent(f)}` }, 'Unterlagen hinzufügen')),
       r.fehler && el('p', { class: 'fehlertext' }, r.fehler)].filter(Boolean));
     return;
   }
@@ -1827,7 +1949,8 @@ async function ausgabeZeigen(f, tag) {
     r.fehler && el('p', { class: 'fehlertext' }, r.fehler),
     hoerenTeil(f, tag, a),
     !ultra && !r.druckt && darf('ausgabe-ultra') && el('p', { class: 'meta' }, 'Diese Ausgabe ist noch die normale Fassung. „Neu erstellen“ schreibt sie als Ultra-Fassung.'),
-    quellen.length > 0 && el('details', { class: 'quellen' }, el('summary', {}, `Beruht auf ${quellen.length} ${quellen.length === 1 ? 'Unterlage' : 'Unterlagen'}`), el('p', {}, quellen.join(', '))),
+    quellen.length > 0 && el('details', { class: 'quellen' }, el('summary', {}, `Beruht auf ${quellen.length} ${quellen.length === 1 ? 'Unterlage' : 'Unterlagen'}`), el('p', {}, quellen.join(', ')),
+      el('p', {}, el('a', { href: `#/unterlagen/${encodeURIComponent(f)}` }, 'Unterlagen ansehen oder hinzufügen'))),
     leiste,
     el('div', { class: 'raster', id: 'teil-ueberblick' },
       el('article', { class: 'artikel' }, el('h2', {}, 'Zusammenfassung der letzten Einheit'), markdown(el('div', { class: 'text' }), abschnitt(a, 'zusammenfassung') || 'Keine Zusammenfassung in dieser Ausgabe.'),
@@ -1893,7 +2016,7 @@ const NOTEN_D = datei('noten.json', () => ({ lv: {}, eintraege: [] }));
 const notenLaden = () => NOTEN_P ??= (async () => {
   NOTEN = await NOTEN_D.laden();
   NOTEN.pruefungen ??= []; NOTEN.proben ??= [];
-  TESTS ??= JSON.parse(await gh('onlinetests.json').catch(() => null) || '[]');
+  TESTS ??= await testsLaden().catch(() => []);
   let neu = 0;
   for (const t of TESTS) {
     const m = t.art === 'test' && t.ergebnis && !t.uebung && t.startseite?.match(/Erreichte Punktzahl\s*(-?[\d.,]+) von ([\d.,]+) Punkt/);
@@ -2332,7 +2455,7 @@ function pkTeil(f, st) {
 }
 const trainingErstellen = f => ptLauf(f, 'training', 'Sucht deine Schwächen …', async job => {
   await notenLaden().catch(() => {});
-  TESTS ??= JSON.parse(await gh('onlinetests.json').catch(() => null) || '[]');
+  TESTS ??= await testsLaden().catch(() => []);
   // nur erledigte oder abgelaufene Tests: Fragen laufender Tests bleiben draußen
   const tests = TESTS.filter(t => t.fach === f && t.art === 'test' && teststand(t).gruppe === 'fertig').map(t => `=== ONLINETEST: ${t.titel} ===\n${t.startseite || ''}\n${t.fragen || ''}`).join('\n\n');
   const falsch = (NOTEN?.proben || []).filter(x => x.fach === f).flatMap(x => x.falsch || []).map(q => `- ${q}`).join('\n');
@@ -3522,7 +3645,7 @@ function teststand(t) {
 async function onlinetestsZeigen(id) {
   if (!TESTS) {
     $('onlinetests').replaceChildren(el('header', { class: 'ausgabe-kopf' }, el('h1', {}, 'Onlinetests'), el('p', { class: 'meta' }, 'Lade die Tests …')));
-    try { TESTS = JSON.parse(await gh('onlinetests.json') || '[]'); } catch (e) { TESTS = []; status(e.message, true); }
+    try { TESTS = await testsLaden(); } catch (e) { TESTS = []; status(e.message, true); }
     if (document.body.dataset.ansicht !== 'onlinetests') return;
   }
   const t = id && TESTS.find(x => testId(x) === id);
@@ -3536,7 +3659,8 @@ function testUebersicht() {
   gruppen.fertig.sort((a, b) => (b.bis || '').localeCompare(a.bis || ''));
   const zeile = (t, erste) => {
     const st = teststand(t);
-    const unten = st.gruppe === 'uebung' ? st.text : [st.bis && `bis ${zeitpunkt(st.bis)}`, punkte(t), st.gruppe === 'offen' && (t.fragen ? 'Fragen gelesen' : 'Fragen kommen mit dem nächsten Abgleich')].filter(Boolean).join(', ');
+    const unten = [st.gruppe === 'uebung' ? st.text : [st.bis && `bis ${zeitpunkt(st.bis)}`, punkte(t), st.gruppe === 'offen' && !t.eigen && (t.fragen ? 'Fragen gelesen' : 'Fragen kommen mit dem nächsten Abgleich')].filter(Boolean).join(', '),
+      t.eigen && 'per Foto'].filter(Boolean).join(', ');
     const rest = st.bis && tageBis(iso(new Date(st.bis)));
     return el('li', { class: 'testzeile' },
       el('b', {}, t.fach),
@@ -3551,12 +3675,13 @@ function testUebersicht() {
   $('onlinetests').replaceChildren(...[
     el('header', { class: 'ausgabe-kopf' }, el('h1', {}, 'Onlinetests'),
       el('p', { class: 'schlagzeile' }, n ? `${n} ${n === 1 ? 'Test ist' : 'Tests sind'} gerade offen` : 'Gerade ist kein Test offen'),
-      el('p', { class: 'meta' }, 'Aus OLAT, Stand des letzten Abgleichs. Ein Test zeigt angetippt seine Aufgabenstellung.')),
+      el('p', { class: 'meta' }, 'Aus OLAT, Stand des letzten Abgleichs, dazu deine Tests per Foto. Ein Test zeigt angetippt seine Aufgabenstellung.')),
+    testFotoForm(),
     gruppe('Jetzt offen', 'Frist zuerst', gruppen.offen, true),
     gruppe('Demnächst', 'Bearbeitungszeitraum laut OLAT', gruppen.bald),
     gruppe('Zum Üben', 'Selbsttests und Tests ohne Punkte', gruppen.uebung),
     gruppe('Erledigt und vorbei', 'Mit deinen Antworten und der Lösung, soweit OLAT sie zeigt', gruppen.fertig),
-    !TESTS.length && el('p', { class: 'leer' }, 'Noch keine Tests. Der PC liest sie beim nächsten Abgleich aus OLAT.'),
+    !TESTS.length && el('p', { class: 'leer' }, 'Noch keine Tests. Der PC oder Mac liest sie beim nächsten Abgleich aus OLAT; ohne Computer fügst du sie per Foto hinzu.'),
   ].filter(Boolean));
 }
 // OLAT-Text: Formeln stehen ohne Begrenzer darin (f(x)= 6x^{3} \cdot e^{5x}). Wörter mit LaTeX-Zeichen werden mit ihren
@@ -3654,6 +3779,7 @@ function testZeigen(t) {
       el('p', { class: 'unterzeile' }, [t.fach, st.text, punkte(t), st.gruppe === 'bald' && t.bis && `bis ${zeitpunkt(t.bis)}`].filter(Boolean).map(x => el('span', {}, x)))),
     t.fragen && t.startseite && el('details', { class: 'quellen hinweise' }, el('summary', {}, 'Hinweise der Startseite: Rundung und Eingabe'),
       olatText(el('div', { class: 'aufgabentext' }), t.startseite)),
+    t.eigen && eigenerTestBearbeiten(t),
     !q ? el('p', { class: 'leer' }, st.gruppe === 'bald' ? 'Der Test hat noch nicht begonnen. Die Fragen liest der PC, sobald er offen ist.'
       : st.gruppe === 'offen' ? 'Die Fragen liest der PC beim nächsten Abgleich (höchstens alle 12 Stunden).' : 'Zu diesem Test zeigt OLAT keine Fragen.')
     : el('section', { class: 'frage-karte', id: 'frage-karte', 'aria-labelledby': 'frage-titel' },
@@ -3718,8 +3844,372 @@ async function loesen(t, q) {
   if (hier()) testZeigen(t);
 }
 
+// Tests per Foto (iPad ohne PC-Programm): eigene-tests.json, neben onlinetests.json vom PC; die App nimmt beide zusammen
+const EIGENE_D = datei('eigene-tests.json', () => ({ tests: [] }));
+async function testsLaden() {
+  const [pc, eigen] = await Promise.all([gh('onlinetests.json').then(t => JSON.parse(t || '[]')), EIGENE_D.laden().then(d => d.tests)]);
+  return [...pc, ...eigen];
+}
+const fotoTestText = t => `=== TEST: Fotos/${t.titel} ===\nOLAT-Test „${t.titel}“, selbst abfotografiert am ${new Date(t.erstellt).toLocaleDateString('de-AT')}${t.bis ? `, bearbeitbar bis ${zeitpunkt(t.bis)}` : ''}${t.uebung ? ', zählt nicht für die Note' : ''}, ohne Lösung.\n\n${[t.startseite, t.fragen].filter(Boolean).join('\n\n').slice(0, 60000)}`;
+const TEST_FOTO = String.raw`Du bekommst Bildschirmfotos aus einem OLAT-Onlinetest der Universität Innsbruck: die Startseite des Tests und/oder einzelne Fragen. Schreib genau ab, was darauf steht, vollständig und wortgetreu. Löse nichts, ergänze nichts, bewerte nichts und erfinde nichts.
+
+Antworte nur mit JSON in dieser Form:
+{"titel": "Name des Tests, wie er auf den Bildern steht, sonst ein kurzer passender Titel",
+ "startseite": "Text der Startseite: Verfügbarkeit, Punkte, Versuche und alle Hinweise zu Rundung und Eingabe; leer, wenn keine Startseite dabei ist",
+ "fragen": "alle Fragen, wie unten beschrieben; leer, wenn keine Frage dabei ist",
+ "von": "Beginn der Verfügbarkeit als JJJJ-MM-TTTHH:MM oder null", "bis": "Ende der Verfügbarkeit als JJJJ-MM-TTTHH:MM oder null",
+ "punkte": höchstmögliche Punktzahl des ganzen Tests als Zahl oder null,
+ "bewertet": true, wenn der Test für die Note zählt, false, wenn dasteht, dass er nur zur Übung ist, sonst null}
+
+So schreibst du die Fragen: Jede Frage beginnt mit einer eigenen Zeile „Frage N“ (N wie in OLAT, sonst fortlaufend), darunter „Max. X Punkte“, wenn es dasteht, dann der Aufgabentext. Formeln als LaTeX ohne Begrenzer, so wie OLAT sie zeigt, etwa f(x)= 6x^{3} \cdot e^{5x}. Ein leeres Eingabefeld als [], ein ausgefülltes als [Wert]; vor einer angekreuzten Antwortmöglichkeit [x], jede Antwortmöglichkeit in einer eigenen Zeile. Tabellen Zeile für Zeile mit | zwischen den Spalten. Was du nicht sicher lesen kannst, schreib als [unleserlich]. Dieselbe Frage auf mehreren Bildern nur einmal. Knöpfe, Menüs und die Navigation von OLAT lässt du weg.`;
+const TF = { offen: false, laeuft: false, hinweis: '', fehler: '' };
+async function bildFuerKi(datei) {  // Bildschirmfoto → JPEG mit höchstens 2000 Pixeln, als data:-Adresse (blob: verbietet die CSP für Bilder)
+  const url = await new Promise((ok, nein) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = () => nein(r.error); r.readAsDataURL(datei); });
+  const bild = new Image();
+  bild.src = url;
+  await bild.decode().catch(() => { throw new Error(`„${datei.name}“ ist kein Bild, das dieser Browser lesen kann.`); });
+  const f = Math.min(1, 2000 / Math.max(bild.naturalWidth, bild.naturalHeight)), c = el('canvas', { width: Math.round(bild.naturalWidth * f), height: Math.round(bild.naturalHeight * f) });
+  c.getContext('2d').drawImage(bild, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', 0.85);
+}
+function testFotoForm() {
+  if (!TF.offen) return el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf', type: 'button', onclick: () => { TF.offen = true; TF.fehler = ''; testUebersicht(); $('tf-fach')?.focus(); } }, 'Test per Foto hinzufügen'));
+  const name = el('span', { class: 'meta' }, 'Keine Bilder gewählt');
+  return el('form', { class: 'schritt', id: 'tf-form', novalidate: true, onsubmit: e => { e.preventDefault(); testFotoLesen(e.target); } },
+    el('h2', {}, 'Test per Foto hinzufügen'),
+    el('p', { class: 'klein' }, 'Für alle ohne PC-Programm: In OLAT die Startseite des Tests und, wenn du ihn gerade bearbeitest, jede Frage als Bildschirmfoto aufnehmen (am iPad obere Taste und Lauter-Taste gleichzeitig) und hier auswählen. Die KI schreibt Fragen, Zeitraum und Punkte ab; sie löst nichts und schickt nichts an OLAT.'),
+    el('label', { class: 'feld' }, 'Fach', el('input', { id: 'tf-fach', name: 'fach', list: 'tf-faecher', autocomplete: 'off', value: Object.keys(R)[0] || '', placeholder: 'z. B. VWL' })),
+    el('datalist', { id: 'tf-faecher' }, Object.keys(R).map(f => el('option', { value: f }))),
+    el('div', { class: 'vt-wahl' }, el('input', { type: 'file', id: 'tf-bilder', name: 'bilder', class: 'sr', accept: 'image/*', multiple: true,
+      onchange: e => { const n = e.target.files.length; name.textContent = n ? `${n} ${n === 1 ? 'Bild' : 'Bilder'} gewählt` : 'Keine Bilder gewählt'; } }),
+      el('label', { for: 'tf-bilder', class: 'knopf' }, 'Bildschirmfotos wählen'), name),
+    el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll', disabled: TF.laeuft }, 'Fragen auslesen'),
+      el('button', { class: 'knopf', type: 'button', onclick: () => { TF.offen = false; testUebersicht(); } }, 'Abbrechen')),
+    TF.laeuft && el('p', { class: 'presse', id: 'tf-status', role: 'status' }, TF.hinweis),
+    TF.fehler && el('p', { class: 'fehlertext', role: 'alert' }, TF.fehler));
+}
+async function testFotoLesen(form) {
+  const fach = form.elements.fach.value.trim().replace(/\s+/g, ' '), dateien = [...form.elements.bilder.files];
+  const sag = text => { TF.hinweis = text; if ($('tf-status')) $('tf-status').textContent = text; };
+  TF.fehler = !fach ? 'Zu welchem Fach gehört der Test?' : !dateien.length ? 'Bitte erst die Bildschirmfotos wählen.' : dateien.length > 12 ? 'Höchstens 12 Bilder auf einmal.' : '';
+  if (TF.fehler) return testUebersicht();
+  Object.assign(TF, { laeuft: true, hinweis: 'Bereitet die Bilder vor …' });
+  testUebersicht();
+  await wach(true);
+  try {
+    const bilder = [];
+    for (const d of dateien) bilder.push(await bildFuerKi(d));
+    sag('Liest die Bilder …');
+    const { text } = await strom({ model: 'google/gemini-3.8-flash', feature: 'test-foto', stil: false, max_tokens: 16000, response_format: { type: 'json_object' },
+      messages: [{ role: 'system', content: TEST_FOTO }, { role: 'user', content: [{ type: 'text', text: `Fach: ${fach}. ${bilder.length} Bildschirmfotos in dieser Reihenfolge:` },
+        ...bilder.map(url => ({ type: 'image_url', image_url: { url } }))] }] }, x => sag(`Schreibt ab … ${x.split(/\s+/).length} Wörter`), () => sag('Liest die Bilder …'));
+    let j;
+    try { j = JSON.parse(text); } catch { throw new Error('Die Bilder ließen sich nicht lesen. Bitte noch einmal, am besten mit Bildschirmfotos statt Kamerafotos.'); }
+    if (!String(j.fragen || '').trim() && !String(j.startseite || '').trim()) throw new Error('Auf den Bildern war kein Test zu erkennen.');
+    const zeit = x => /^\d{4}-\d\d-\d\dT\d\d:\d\d$/.test(x) ? x : null;
+    await EIGENE_D.laden();
+    TESTS ??= await testsLaden();
+    let titel = String(j.titel || 'Test').trim().slice(0, 120) || 'Test';
+    for (let n = 2; TESTS.some(t => testId(t) === `${fach}|${titel}`); n++) titel = `${String(j.titel || 'Test').trim().slice(0, 110)} (${n})`;
+    const t = { fach, titel, art: 'test', eigen: true, startseite: String(j.startseite || '').trim(), fragen: String(j.fragen || '').trim() || null,
+      von: zeit(j.von), bis: zeit(j.bis), punkte: typeof j.punkte === 'number' ? j.punkte : null, uebung: j.bewertet === false, erstellt: new Date().toISOString() };
+    EIGENE_D.daten.tests.push(t);
+    sag('Speichert …');
+    try { await EIGENE_D.speichern(); } catch (e) { EIGENE_D.daten.tests.pop(); throw e; }
+    TESTS.push(t);
+    Object.assign(TF, { offen: false, laeuft: false });
+    location.hash = `#/onlinetests/${encodeURIComponent(testId(t))}`;
+  } catch (e) { Object.assign(TF, { laeuft: false, fehler: wpWarum(e) }); }
+  wach(false); kosten();
+  if (document.body.dataset.ansicht === 'onlinetests' && TF.offen) testUebersicht();
+}
+function eigenerTestBearbeiten(t) {  // falsch gelesen? Text korrigieren oder den Test löschen
+  const fehler = el('p', { class: 'fehlertext', role: 'alert', hidden: true });
+  const tun = async (e, aendern) => {  // aendern(Liste, Index) → neue Liste
+    e.preventDefault();
+    const knopf = e.submitter || e.currentTarget;
+    knopf.disabled = true;
+    try {
+      const d = await EIGENE_D.laden(), vorher = d.tests, i = vorher.findIndex(x => x.erstellt === t.erstellt);
+      if (i < 0) throw new Error('Den Test gibt es nicht mehr.');
+      d.tests = aendern(vorher.slice(), i);
+      try { await EIGENE_D.speichern(); } catch (err) { d.tests = vorher; throw err; }
+      TESTS = null;
+      const bleibt = d.tests.find(x => x.erstellt === t.erstellt), ziel = bleibt ? `#/onlinetests/${encodeURIComponent(testId(bleibt))}` : '#/onlinetests';
+      if (location.hash === ziel) zeichne(); else location.hash = ziel;
+    } catch (err) { fehler.textContent = err.message; fehler.hidden = false; knopf.disabled = false; }
+  };
+  return el('details', { class: 'quellen' }, el('summary', {}, `Per Foto hinzugefügt am ${new Date(t.erstellt).toLocaleDateString('de-AT')}: bearbeiten oder löschen`),
+    el('form', { class: 'stil-form', novalidate: true, onsubmit: e => tun(e, (l, i) => {
+      const f = e.target.elements;
+      l[i] = { ...l[i], titel: f.titel.value.trim() || t.titel, startseite: f.startseite.value.trim(), fragen: f.fragen.value.trim() || null, bis: f.bis.value || null };
+      return l;
+    }) },
+      el('label', { class: 'feld' }, 'Titel', el('input', { name: 'titel', value: t.titel, maxlength: 120 })),
+      el('label', { class: 'feld' }, el('span', {}, 'Bearbeitbar bis ', el('span', { class: 'opt' }, 'optional')), el('input', { name: 'bis', type: 'datetime-local', value: t.bis || '' })),
+      el('label', { class: 'feld' }, 'Startseite', el('textarea', { name: 'startseite', rows: 4 }, t.startseite || '')),
+      el('label', { class: 'feld' }, 'Fragen (jede beginnt mit einer Zeile „Frage N“)', el('textarea', { name: 'fragen', rows: 10 }, t.fragen || '')),
+      el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll' }, 'Speichern'),
+        el('button', { class: 'knopf', type: 'button', onclick: e => confirm(`„${t.titel}“ löschen?`) && tun(e, (l, i) => l.filter((_, j) => j !== i)) }, 'Test löschen')),
+      fehler));
+}
+
+/* ---------- Unterlagen selbst hochladen: für iPad und alle ohne PC-Programm ---------- */
+// Den Text liest die App auf dem Gerät aus wie holen.py am PC: PDF mit pdf.js, PowerPoint und Word selbst, ZIP mit DecompressionStream.
+// Er landet in faecher/<Fach>.json unter „Hochgeladen/…“; der PC-Abgleich lässt diese Einträge stehen.
+const UL_ARTEN = { folien: 'Folien der Vorlesung', ps: 'Proseminar: Aufgaben und Unterlagen', syllabus: 'Syllabus und Organisatorisches' };
+const UL = { fach: '', art: 'folien', laeuft: false, hinweis: '', ergebnis: null, quellen: null };
+const UL_MAX = 300000;  // Zeichen pro Datei; die Ausgabe nimmt ohnehin höchstens 60 000
+async function zipLesen(puffer) {  // [{name, daten}] aus einer ZIP-Datei, ohne Bibliothek: Zentralverzeichnis lesen, deflate entpacken
+  const d = new DataView(puffer), u8 = new Uint8Array(puffer), aus = [];
+  let e = puffer.byteLength - 22;
+  while (e >= 0 && d.getUint32(e, true) !== 0x06054b50) e--;
+  if (e < 0) throw new Error('keine gültige ZIP-Datei');
+  let p = d.getUint32(e + 16, true);
+  for (let i = d.getUint16(e + 10, true); i > 0; i--) {
+    if (d.getUint32(p, true) !== 0x02014b50) throw new Error('die ZIP-Datei ist beschädigt');
+    const flags = d.getUint16(p + 8, true), methode = d.getUint16(p + 10, true), groesse = d.getUint32(p + 20, true), lokal = d.getUint32(p + 42, true);
+    const nl = d.getUint16(p + 28, true), roh = u8.subarray(p + 46, p + 46 + nl);
+    let name; try { name = new TextDecoder('utf-8', { fatal: true }).decode(roh); } catch { name = new TextDecoder('windows-1252').decode(roh); }
+    p += 46 + nl + d.getUint16(p + 30, true) + d.getUint16(p + 32, true);
+    if (name.endsWith('/') || /(^|\/)(__MACOSX|\.DS_Store)/.test(name) || flags & 1 || ![0, 8].includes(methode)) continue;  // Ordner, Mac-Beiwerk, verschlüsselt
+    if (groesse === 0xffffffff) throw new Error('die ZIP-Datei ist zu groß');
+    const start = lokal + 30 + d.getUint16(lokal + 26, true) + d.getUint16(lokal + 28, true), daten = u8.subarray(start, start + groesse);
+    aus.push({ name, daten: methode === 0 ? daten : new Uint8Array(await new Response(new Blob([daten]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer()) });
+  }
+  return aus;
+}
+async function pdfText(daten, melde) {
+  if (!window.pdfjsLib) {  // erst beim ersten PDF. Der „Worker“ läuft im Fenster mit: Worker dürfen nicht von fremden Adressen kommen
+    await skript('https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js', 'sha384-SnzOobpRMLXZ52iJvZm/C0fYw0OQemTXzTjIsdsfMcrCtCEe9qgzxTd3RSklO5x2');
+    await skript('https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js', 'sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e');
+  }
+  // isEvalSupported: false schließt CVE-2024-4367 (die CSP verbietet eval ohnehin); gelesen wird nur Text, gezeichnet nichts
+  const pdf = await pdfjsLib.getDocument({ data: daten, isEvalSupported: false, disableFontFace: true, useSystemFonts: false }).promise;
+  const seiten = [];
+  try {
+    for (let i = 1; i <= pdf.numPages; i++) {
+      melde(`Seite ${i} von ${pdf.numPages}`);
+      const t = await (await pdf.getPage(i)).getTextContent();
+      seiten.push(t.items.map(x => (x.str ?? '') + (x.hasEOL ? '\n' : ' ')).join('').replace(/[ \t]+/g, ' ').replace(/ ?\n ?/g, '\n').trim());
+    }
+  } finally { pdf.destroy(); }
+  return seiten.join('\n\n');
+}
+const xmlZeichen = s => s.replace(/&(#x[\da-f]+|#\d+|amp|lt|gt|quot|apos);/gi, (m, e) => {
+  if (e[0] !== '#') return { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" }[e.toLowerCase()];
+  try { return String.fromCodePoint(e[1].toLowerCase() === 'x' ? parseInt(e.slice(2), 16) : parseInt(e.slice(1), 10)); } catch { return m; }
+});
+async function textAus(name, daten, melde, tiefe = 0) {  // → [{name, text} oder {name, fehler}]
+  const endung = name.toLowerCase().match(/\.(\w+)$/)?.[1] || '';
+  try {
+    if (endung === 'zip' && tiefe < 2) {
+      const aus = [], ordner = name.replace(/\.zip$/i, '');
+      for (const x of await zipLesen(daten.buffer.slice(daten.byteOffset, daten.byteOffset + daten.byteLength))) aus.push(...await textAus(`${ordner}/${x.name}`, x.daten, melde, tiefe + 1));
+      return aus.length ? aus : [{ name, fehler: 'leere ZIP-Datei' }];
+    }
+    melde(`Liest „${name.split('/').pop()}“ …`);
+    let text;
+    if (endung === 'pdf') text = await pdfText(daten, h => melde(`Liest „${name.split('/').pop()}“, ${h} …`));
+    else if (endung === 'pptx' || endung === 'docx') {  // wie holen.py: Absätze aus word/document.xml bzw. den Folien, ohne Tags
+      const teile = (await zipLesen(daten.buffer.slice(daten.byteOffset, daten.byteOffset + daten.byteLength))).filter(x => /^(word\/document\.xml|ppt\/slides\/slide\d+\.xml)$/.test(x.name))
+        .sort((a, b) => a.name.localeCompare(b.name, 'de', { numeric: true }));
+      text = xmlZeichen(teile.map(x => new TextDecoder().decode(x.daten)).join('\n').replace(/<\/[aw]:p>/g, '\n').replace(/<[^>]+>/g, ''));
+    } else if (['txt', 'md', 'csv'].includes(endung)) text = new TextDecoder().decode(daten);
+    else if (endung === 'html' || endung === 'htm') {
+      const doc = new DOMParser().parseFromString(new TextDecoder().decode(daten), 'text/html');
+      doc.querySelectorAll('script, style').forEach(x => x.remove());
+      text = doc.body?.textContent || '';
+    } else return [{ name, fehler: /^(ppt|doc|xls|xlsx)$/.test(endung) ? 'altes oder anderes Office-Format: bitte als PDF speichern' : /^(png|jpe?g|heic|gif|mp4|mov|m4v|mp3|m4a)$/.test(endung) ? 'Bild, Video oder Ton, kein Text' : 'diesen Dateityp liest der Lernhelfer nicht' }];
+    text = text.replace(/\n{3,}/g, '\n\n').trim();
+    if (!text) return [{ name, fehler: endung === 'pdf' ? 'kein Text gefunden: eingescanntes PDF?' : 'kein Text gefunden' }];
+    return [{ name, text: text.length > UL_MAX ? text.slice(0, UL_MAX) + '\n[… gekürzt]' : text }];
+  } catch (e) { return [{ name, fehler: e.message }]; }
+}
+async function unterlagenAendern(fach, aendern) {  // faecher/<Fach>.json lesen, ändern, mit der neuesten sha zurückschreiben
+  return nacheinander(async () => {
+    const pfad = `faecher/${fach}.json`, sha = ((await gh('faecher', { roh: false })) || []).find(x => x.name === fach + '.json')?.sha;
+    const q = sha ? JSON.parse(await gh(pfad) || '{}') : {};
+    q.dateien = aendern(Array.isArray(q.dateien) ? q.dateien : []);
+    await gh(pfad, { method: 'PUT', roh: false, body: { message: `Unterlagen ${fach}`, content: base64(JSON.stringify(q)), sha } });
+    R[fach] ??= { ausgaben: [], cache: {}, quelle: null, druckt: false, fehler: '' };
+    R[fach].quelle = q;
+    return q;
+  });
+}
+async function unterlagenHinzufuegen(form) {
+  const f = form.elements, dateien = [...f.dateien.files];
+  let fach = f.fach.value.trim().replace(/\s+/g, ' ');
+  fach = Object.keys(R).find(x => x.toLowerCase() === fach.toLowerCase()) || fach;
+  UL.fach = fach; UL.art = f.art.value;
+  const fehler = !fach ? 'Zu welchem Fach gehören die Dateien?' : /[\\/:*?"<>|#%]|^\.|\.$/.test(fach) || fach.length > 40 ? 'Bitte im Fachnamen nur Buchstaben, Zahlen und Leerzeichen, höchstens 40 Zeichen.'
+    : !dateien.length ? 'Bitte erst die Dateien wählen.' : dateien.reduce((n, d) => n + d.size, 0) > 300e6 ? 'Das sind mehr als 300 MB auf einmal. Bitte in mehreren Schritten.' : '';
+  if (fehler) { UL.ergebnis = [{ name: '', fehler }]; return unterlagenZeigen(); }
+  Object.assign(UL, { laeuft: true, hinweis: 'Liest die Dateien …', ergebnis: null });
+  unterlagenZeigen();
+  const sag = text => { UL.hinweis = text; if ($('ul-status')) $('ul-status').textContent = text; };
+  const gelesen = [];
+  try {
+    for (const d of dateien) gelesen.push(...await textAus(d.name, new Uint8Array(await d.arrayBuffer()), sag));
+    const gut = gelesen.filter(x => x.text);
+    if (gut.length) {
+      sag('Speichert …');
+      const namen = new Set(gut.map(x => 'Hochgeladen/' + x.name));
+      await unterlagenAendern(fach, alt => [...alt.filter(x => !namen.has(x.datei)), ...gut.map(x => ({ datei: 'Hochgeladen/' + x.name, art: UL.art, text: x.text, hochgeladen: HEUTE }))]);
+    }
+  } catch (e) { gelesen.push({ name: '', fehler: wpWarum(e) }); }
+  Object.assign(UL, { laeuft: false, ergebnis: gelesen, quellen: null });
+  form.reset();
+  zeichne();
+}
+async function unterlagenEntfernen(fach, datei, knopf) {
+  if (!confirm(`„${datei.replace(/^Hochgeladen\//, '')}“ aus ${fach} entfernen? Die nächste Ausgabe kennt sie dann nicht mehr.`)) return;
+  knopf.disabled = true;
+  try { await unterlagenAendern(fach, alt => alt.filter(x => x.datei !== datei)); UL.quellen = null; unterlagenZeigen(); }
+  catch (e) { status(e.message, true); knopf.disabled = false; }
+}
+async function unterlagenZeigen(wahl) {
+  const s = $('unterlagen'), faecher = Object.keys(R);
+  if (wahl && !UL.laeuft) UL.fach = wahl;
+  const name = el('span', { class: 'meta' }, 'Keine Dateien gewählt');
+  const gut = UL.ergebnis?.filter(x => x.text) || [];
+  const form = el('form', { class: 'schritt', novalidate: true, 'aria-labelledby': 'ul-kopf', onsubmit: e => { e.preventDefault(); unterlagenHinzufuegen(e.target); } },
+    el('h2', { id: 'ul-kopf' }, 'Dateien hinzufügen'),
+    el('label', { class: 'feld' }, 'Fach', el('input', { name: 'fach', list: 'ul-faecher', autocomplete: 'off', value: UL.fach || faecher[0] || '', placeholder: 'z. B. Mathematik' })),
+    el('datalist', { id: 'ul-faecher' }, faecher.map(f => el('option', { value: f }))),
+    el('label', { class: 'feld' }, 'Was ist es?', el('select', { name: 'art' }, Object.entries(UL_ARTEN).map(([k, v]) => el('option', { value: k, selected: UL.art === k }, v)))),
+    el('div', { class: 'vt-wahl' }, el('input', { type: 'file', id: 'ul-dateien', name: 'dateien', class: 'sr', multiple: true, accept: '.pdf,.pptx,.docx,.zip,.txt,.md,.html,.htm,application/pdf,application/zip',
+      onchange: e => { const n = e.target.files.length; name.textContent = n ? `${n} ${n === 1 ? 'Datei' : 'Dateien'} gewählt` : 'Keine Dateien gewählt'; } }),
+      el('label', { for: 'ul-dateien', class: 'knopf' }, 'Dateien wählen'), name),
+    el('p', { class: 'klein' }, 'PDF, PowerPoint (.pptx), Word (.docx), Text oder eine ZIP-Datei aus OLAT. Der Text wird auf diesem Gerät ausgelesen; gespeichert wird nur er. Eine Datei mit gleichem Namen wird ersetzt.'),
+    el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll', disabled: UL.laeuft }, 'Hinzufügen')),
+    UL.laeuft && el('p', { class: 'presse', id: 'ul-status', role: 'status' }, UL.hinweis),
+    UL.ergebnis && el('ul', { class: 'ul-ergebnis', role: 'status' }, UL.ergebnis.map(x => el('li', {},
+      x.text ? el('span', { class: 'pille ok' }, 'Hinzugefügt') : el('span', { class: 'pille fehler' }, x.name ? 'Nicht hinzugefügt' : 'Fehler'),
+      x.name && el('span', {}, x.name), x.text ? el('span', { class: 'meta' }, `${x.text.length.toLocaleString('de-AT')} Zeichen`) : el('span', { class: 'meta' }, x.fehler)))),
+    gut.length > 0 && R[UL.fach] && el('div', { class: 'knopfreihe' }, el('a', { class: 'knopf voll', href: `#/${encodeURIComponent(UL.fach)}` }, `Zu ${UL.fach}: neue Ausgabe erstellen`)));
+  const liste = UL.quellen && faecher.map(f => {
+    const d = UL.quellen[f]?.dateien || [], eigen = d.filter(x => x.datei?.startsWith('Hochgeladen/')), pc = d.length - eigen.length;
+    return el('section', { class: 'ul-fach', 'aria-label': f }, el('h3', {}, f),
+      el('p', { class: 'meta' }, [pc && `${pc} ${pc === 1 ? 'Datei' : 'Dateien'} vom Abgleich am PC oder Mac`, `${eigen.length} selbst hochgeladen`].filter(Boolean).join(', ')),
+      eigen.length > 0 && el('ul', { class: 'ul-liste' }, eigen.map(x => el('li', {}, el('span', { class: 'name' }, x.datei.slice(12)),
+        el('span', { class: 'meta' }, [UL_ARTEN[x.art] || x.art, x.hochgeladen && `am ${kurz(x.hochgeladen)}`, `${(x.text?.length || 0).toLocaleString('de-AT')} Zeichen`].filter(Boolean).join(' · ')),
+        el('button', { class: 'knopf', type: 'button', onclick: e => unterlagenEntfernen(f, x.datei, e.currentTarget) }, 'Entfernen')))));
+  });
+  s.replaceChildren(...[
+    el('header', { class: 'ausgabe-kopf' }, el('h1', {}, 'Unterlagen'),
+      el('p', { class: 'schlagzeile' }, 'Folien und Unterlagen aus OLAT selbst hinzufügen'),
+      el('p', { class: 'meta' }, 'Für iPad, Handy und alle ohne Programm am PC oder Mac. Wie du die Dateien aus OLAT bekommst, steht in der ', el('a', { href: '#a-ohne-pc' }, 'Anleitung'), '.')),
+    form,
+    el('h2', { class: 'ul-fach' }, 'Was der Lernhelfer kennt'),
+    liste ? (liste.length ? liste : el('p', { class: 'leer' }, 'Noch keine Fächer. Lade oben die ersten Folien hoch.')) : el('p', { class: 'meta' }, 'Lade …'),
+  ].flat().filter(Boolean));
+  if (!UL.quellen) {
+    const alle = await Promise.all(faecher.map(f => quelle(f).catch(() => null)));
+    UL.quellen = Object.fromEntries(faecher.map((f, i) => [f, alle[i]]));
+    if (document.body.dataset.ansicht === 'unterlagen' && !UL.laeuft) unterlagenZeigen();
+  }
+}
+
+/* ---------- Deine Daten und Fehler melden (Einrichten bzw. Konto) ---------- */
+function datenZeigen() {
+  const ort = $('daten-teil');
+  if (!fertig()) return ort.replaceChildren();
+  ort.replaceChildren(el('div', { class: 'einst-teil' },
+    el('h3', {}, 'Deine Daten'),
+    SERVER ? el('p', { class: 'klein' }, 'Alles, was der Lernhelfer zu deinem Konto gespeichert hat, als ZIP-Datei: Konto, Tarif und Bestellungen, deine Unterlagen, Wochenausgaben, Vorträge, Kalender, Noten und Karteikarten.')
+      : el('p', { class: 'klein' }, 'Alles liegt in deinem privaten Speicher bei GitHub. Dort lädst du es jederzeit als ZIP-Datei herunter; dafür musst du bei GitHub angemeldet sein.'),
+    el('div', { class: 'knopfreihe' }, SERVER ? el('button', { class: 'knopf', type: 'button', onclick: exportLaden }, 'Alle meine Daten herunterladen')
+      : el('a', { class: 'knopf', href: `https://github.com/${cfg.repo}/archive/HEAD.zip`, target: '_blank', rel: 'noopener' }, 'Alle meine Daten herunterladen')),
+    el('h3', {}, 'Etwas klappt nicht?'),
+    el('p', { class: 'klein' }, 'Schick einen kurzen Bericht: was du gemacht hast und was passiert ist. Seite, letzte Meldungen und Browser kommen von selbst dazu.'),
+    el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf', type: 'button', onclick: () => fehlerMelden() }, 'Fehler melden'))));
+}
+async function exportLaden(e) {
+  const k = e.currentTarget;
+  k.disabled = true; k.textContent = 'Wird gepackt …';
+  try {
+    const r = await fetch('api/export', { cache: 'no-store' });
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error?.message || `Der Server antwortet ${r.status}.`);
+    speichern(await r.blob(), `lernhelfer-daten-${HEUTE}.zip`, 'application/zip');
+    k.textContent = 'Heruntergeladen';
+  } catch (err) { status(wpWarum(err), true); k.textContent = 'Alle meine Daten herunterladen'; }
+  k.disabled = false;
+}
+function fehlerMelden() {
+  const d = $('meldung'), seite = location.hash || '#/', meldungen = FEHLER_LOG.join('\n');
+  const geraet = `${navigator.userAgent}${navigator.maxTouchPoints > 1 ? ', Touch' : ''}, Fenster ${innerWidth}×${innerHeight}`;
+  const fehler = el('p', { class: 'fehlertext', role: 'alert', hidden: true });
+  d.replaceChildren(el('form', { class: 'innen', novalidate: true, onsubmit: async e => {
+    e.preventDefault();
+    const f = e.target.elements, text = f.text.value.trim();
+    if (!text) { fehler.textContent = 'Schreib kurz, was du gemacht hast und was passiert ist.'; fehler.hidden = false; return f.text.focus(); }
+    if (!SERVER) {  // eigene Version ohne Server: vorausgefüllter, öffentlicher Bericht auf GitHub, ohne Schlüssel und Inhalte
+      open('https://github.com/xnik243/lernhelfer/issues/new?' + new URLSearchParams({ title: 'Fehler: ' + text.split('\n')[0].slice(0, 70),
+        body: `**Was passiert ist**\n${text}\n\n**Letzte Meldungen**\n${meldungen || '–'}\n\n**Seite:** ${seite}\n**Gerät:** ${geraet}` }), '_blank', 'noopener');
+      return d.close();
+    }
+    f.knopf.disabled = true;
+    try {
+      await api('fehler', { text, meldung: meldungen, seite, geraet, kontakt: f.kontakt?.value.trim() });
+      d.replaceChildren(el('div', { class: 'innen' }, el('h2', { id: 'm-titel' }, 'Danke!'),
+        el('p', { class: 'klein' }, ICH ? `Dein Bericht ist angekommen. Rückfragen kommen an ${ICH.email}.` : 'Dein Bericht ist angekommen.'),
+        el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll', type: 'button', autofocus: true, onclick: () => d.close() }, 'Schließen'))));
+    } catch (err) { fehler.textContent = wpWarum(err); fehler.hidden = false; f.knopf.disabled = false; }
+  } },
+    el('h2', { id: 'm-titel' }, 'Fehler melden'),
+    el('p', { class: 'klein' }, 'Was hast du gemacht, und was ist passiert? Je genauer, desto schneller ist es behoben.'),
+    el('label', { class: 'feld' }, 'Beschreibung', el('textarea', { name: 'text', rows: 4, maxlength: 3000, autofocus: true, placeholder: 'z. B. Beim Hochladen einer PDF in BWL bleibt „Liest …“ stehen.' })),
+    SERVER && !ICH && el('label', { class: 'feld' }, el('span', {}, 'E-Mail für Rückfragen ', el('span', { class: 'opt' }, 'optional')),
+      el('input', { name: 'kontakt', type: 'email', autocomplete: 'email', inputmode: 'email', maxlength: 200 })),
+    el('details', { class: 'quellen' }, el('summary', {}, 'Das wird mitgeschickt'),
+      el('dl', {}, el('dt', {}, 'Seite'), el('dd', {}, seite), el('dt', {}, 'Meldungen'), el('dd', {}, meldungen || '–'), el('dt', {}, 'Gerät'), el('dd', {}, geraet),
+        SERVER && ICH && [el('dt', {}, 'Konto'), el('dd', {}, ICH.email)]),
+      el('p', {}, SERVER ? 'Keine Unterlagen, keine Passwörter.' : 'Es öffnet sich GitHub mit einem vorausgefüllten Bericht. Er ist öffentlich; Schlüssel und Unterlagen stehen nicht darin. Lies ihn vor dem Absenden durch.')),
+    fehler,
+    el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf', type: 'button', onclick: () => d.close() }, 'Abbrechen'),
+      el('button', { class: 'knopf voll', name: 'knopf' }, SERVER ? 'Senden' : 'Weiter zu GitHub'))));
+  d.showModal();
+}
+
 /* ---------- Einrichten: Schritt für Schritt, mit Stand ---------- */
 const WINDOWS = /Windows/.test(navigator.userAgent);
+const MAC = /Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints < 2;  // iPads melden sich auch als „Macintosh“, haben aber Touch
+// Mac: Ein Befehl fürs Terminal lädt einrichten-mac.sh von hier; Zugang und Adresse der App stehen als Variablen davor.
+// Eine Datei zum Doppelklicken würde Gatekeeper ohne Apple-Signatur sperren, und heruntergeladene .command-Dateien sind nicht ausführbar.
+const appAdresse = () => {  // Adresse der App für Mac-Befehl und PC-Datei; sie steht dort in einer Shell-Zeile, darum nur harmlose Zeichen
+  const a = new URL('.', location.href).href;
+  if (!/^https?:\/\/[\w.:\/~-]+$/.test(a)) throw new Error('Die Adresse der App enthält ungewöhnliche Zeichen. Bitte die App über ihre normale Adresse öffnen.');
+  return a;
+};
+function macBefehl(z) {
+  const app = appAdresse(), werte = [z.repo, z.github, z.api || '', app];
+  if (!z.repo || !z.github || werte.some(w => /['\\\s]/.test(w))) throw new Error('Der Zugang fehlt oder enthält ungewöhnliche Zeichen. Bitte erst Schritt 1 und 2 abschließen bzw. neu verbinden.');
+  return `LH_REPO='${werte[0]}' LH_TOKEN='${werte[1]}' LH_API='${werte[2]}' LH_APP='${app}' /bin/bash -c "$(curl -fsSL ${app}einrichten-mac.sh)"`;
+}
+function macTeil(zugang, neu) {  // zugang: () => {repo, github, api} oder ein Versprechen darauf (Server: neuer PC-Schlüssel)
+  const feld = el('textarea', { class: 'mac-befehl', readonly: true, rows: 3, hidden: true, 'aria-label': 'Befehl für das Terminal', onfocus: e => e.target.select() });
+  const knopf = el('button', { class: `knopf${neu ? ' voll' : ''}`, type: 'button', onclick: async e => {
+    const k = e.currentTarget, befehl = Promise.resolve().then(zugang).then(macBefehl);
+    k.disabled = true;
+    try {  // Safari kopiert nur direkt im Klick: darum ClipboardItem mit dem Versprechen, das den Befehl erst noch holt
+      if (window.ClipboardItem && navigator.clipboard?.write) await navigator.clipboard.write([new ClipboardItem({ 'text/plain': befehl.then(t => new Blob([t], { type: 'text/plain' })) })]);
+      else await navigator.clipboard.writeText(await befehl);
+      k.textContent = 'Befehl kopiert';
+    } catch { k.textContent = 'Befehl unten markieren und kopieren'; }
+    try { feld.value = await befehl; feld.hidden = false; } catch (err) { status(err.message, true); k.textContent = 'Befehl für den Mac kopieren'; }
+    k.disabled = false;
+  } }, 'Befehl für den Mac kopieren');
+  return [el('div', { class: 'knopfreihe' }, knopf), feld,
+    el('ol', { class: 'schritte klein' },
+      el('li', {}, 'Auf „Befehl für den Mac kopieren“ tippen.'),
+      el('li', {}, 'Das Terminal öffnen: ⌘ und Leertaste drücken, „Terminal“ tippen, Enter.'),
+      el('li', {}, 'Mit ⌘ V einfügen und Enter drücken. Fragt macOS, ob das Terminal auf den Schreibtisch darf: „Erlauben“.'),
+      el('li', {}, 'Im Chrome-Fenster (ohne Chrome: Chromium) bei OLAT einloggen und warten, bis im Terminal „Fertig“ steht. Beim ersten Mal 5 bis 15 Minuten.')),
+    el('p', { class: 'meta' }, 'Der Befehl enthält deinen Zugang zum Speicher: nur auf deinem eigenen Mac einfügen. Kein Administratorpasswort nötig.')];
+}
+const ohneComputer = () => fertig() && el('p', { class: 'klein' }, 'Nur mit iPad oder Handy: ', el('a', { href: '#/unterlagen' }, 'Unterlagen selbst hochladen'),
+  ' (Folien als PDF oder ZIP aus OLAT, ein paar Minuten pro Woche) und Onlinetests per Foto. Wie das geht, steht in der ', el('a', { href: '#a-ohne-pc' }, 'Anleitung'), '.');
 let QR_OFFEN = false, KAMERA = null, ABFRAGE = null;
 const b64url = bytes => btoa(Array.from(bytes, b => String.fromCharCode(b)).join('')).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 const speichereCfg = neu => { cfg = { ...cfg, ...neu }; merk('cfg', JSON.stringify(cfg)); };
@@ -3739,7 +4229,7 @@ function verbinden(neu) {
   if (anders && !confirm('Dieses Gerät ist schon eingerichtet. Mit dem neuen Zugang überschreiben?')) return zeichne();
   speichereCfg(neu);
   for (const k of Object.keys(R)) delete R[k];
-  TESTS = null; KAL = null;
+  TESTS = null; KAL = null; EIGENE_D.vergessen();
   return start().then(() => status('Verbunden. Dieses Gerät ist fertig eingerichtet.'));
 }
 const skript = (src, integrity) => new Promise((ok, nein) => document.head.append(
@@ -3811,8 +4301,10 @@ async function ghVerbinden(token) {
 function pcDatei(z) {  // Startdatei mit Zugang; das eigentliche Einrichten lädt sie frisch von hier (einrichten.ps1). Server: z.api
   if (!z?.repo) z = cfg;  // als Klick-Handler kommt das Klick-Ereignis an, nicht der Zugang
   if (!z?.repo || !z?.github) return status('Erst Schritt 1 und 2 abschließen, dann das PC-Programm laden.', true);
+  let app;
+  try { app = appAdresse(); } catch (e) { return status(e.message, true); }
   const skriptUrl = new URL('einrichten.ps1', location.href).href;
-  speichern(['@echo off', 'chcp 65001 >nul', 'title Lernhelfer einrichten', `set "LH_REPO=${z.repo}"`, `set "LH_TOKEN=${z.github}"`, `set "LH_API=${z.api || ''}"`,
+  speichern(['@echo off', 'chcp 65001 >nul', 'title Lernhelfer einrichten', `set "LH_REPO=${z.repo}"`, `set "LH_TOKEN=${z.github}"`, `set "LH_API=${z.api || ''}"`, `set "LH_APP=${app}"`,
     `powershell -NoProfile -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol='Tls12'; iex ([Text.Encoding]::UTF8.GetString((New-Object Net.WebClient).DownloadData('${skriptUrl}')))"`,
     'if errorlevel 1 (echo. & echo Etwas hat nicht geklappt. Die Meldung oben und die Anleitung helfen weiter. & pause & exit /b 1)',
     'echo.', 'echo Diese Datei loescht sich jetzt selbst, weil dein Speicher-Schluessel darin steht.', 'pause', '(goto) 2>nul & del "%~f0"', ''].join('\r\n'),
@@ -3823,8 +4315,9 @@ async function abgleichHolen() {  // abgleich.json schreibt der PC: wann zuletzt
   const anders = JSON.stringify(neu) !== JSON.stringify(ABGLEICH);
   ABGLEICH = neu;
   const wann = ABGLEICH && new Date(ABGLEICH.zeit).toLocaleString('de-AT', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
-  $('stand').textContent = !ABGLEICH ? `Noch kein OLAT-Abgleich. Das PC-Programm gibt es unter ${SERVER ? 'Konto' : 'Einrichten bei Schritt 3'}.`
-    : ABGLEICH.ok ? `OLAT-Abgleich ${wann}: ${ABGLEICH.text}. Der PC gleicht von selbst ab, solange er läuft.`
+  $('stand').textContent = !ABGLEICH ? (Object.keys(R).length ? 'Deine Unterlagen lädst du selbst hoch (Unterlagen). Mit dem Programm für PC oder Mac kommen sie von selbst.'
+      : `Noch kein OLAT-Abgleich. Das Programm für PC und Mac gibt es unter ${SERVER ? 'Konto' : 'Einrichten bei Schritt 3'}; ohne Computer lädst du die Unterlagen selbst hoch.`)
+    : ABGLEICH.ok ? `OLAT-Abgleich ${wann}: ${ABGLEICH.text}. Der Computer gleicht von selbst ab, solange er läuft.`
     : `${ABGLEICH.text} (seit ${wann})`;
   $('stand').classList.toggle('warnung', ABGLEICH?.ok === false);
   if (!anders) return;
@@ -3868,15 +4361,15 @@ function stilForm() {
       el('p', {}, 'Geht nicht: Regeln oder Anweisungen der App aushebeln, die Rolle der KI ändern, Anweisungen auslesen, Ergebnisse von Onlinetests, Steuerzeichen und kodierter Text. Solche Wünsche nimmt der Lernhelfer nicht an. Und was durchkommt, hat bei der KI immer den niedrigsten Rang: Regeln, Formate und Grenzen der App gehen vor.')));
 }
 function einrichtenZeigen() {
-  stilZeigen();
+  stilZeigen(); datenZeigen();
   if (SERVER) return kontoZeigen();
   const offenOR = !cfg?.openrouter, offenGH = !(cfg?.github && cfg?.repo);
   $('ei-schlagzeile').textContent = !fertig() ? 'Drei Verbindungen, dann kommt alles von selbst.'
-    : Object.keys(R).length ? 'Alles verbunden.' : 'Fast fertig: Jetzt holt der PC deine Unterlagen.';
+    : Object.keys(R).length ? 'Alles verbunden.' : 'Fast fertig: Jetzt kommen deine Unterlagen dazu, vom PC, vom Mac oder selbst hochgeladen.';
   $('abmelden-teil').hidden = !cfg;
   const stand = (ok, text, warnung) => el('p', { class: `stand${ok ? ' ok' : ''}${warnung ? ' warnung' : ''}` }, text);
   const link = (href, text, voll) => el('a', { class: `knopf${voll ? ' voll' : ''}`, href, target: '_blank', rel: 'noopener' }, text);
-  const nr = (n, text, ok) => el('h2', {}, el('span', { class: `nr${ok ? ' ok' : ''}`, 'aria-hidden': 'true' }, n), text);
+  const nr = (n, text, ok) => el('h2', { id: 'ei-' + n }, el('span', { class: `nr${ok ? ' ok' : ''}`, 'aria-hidden': 'true' }, n), text);
   const formular = (id, beschriftung, knopf, aktion, typ = 'text') => el('form', { class: 'feld', novalidate: true, onsubmit: async e => {
     e.preventDefault();
     const k = e.target.querySelector('button');
@@ -3924,9 +4417,9 @@ function einrichtenZeigen() {
         el('li', {}, link('https://github.com/settings/personal-access-tokens/new?' + new URLSearchParams({ name: 'Lernhelfer', description: 'Lernhelfer-App und PC-Abgleich: nur das Repo lernhelfer-daten', expires_in: '366', contents: 'write' }), 'Schlüssel erzeugen'),
           el('p', { class: 'klein' }, 'Bei „Repository access“ auf „Only select repositories“ und dann lernhelfer-daten wählen. Ganz unten „Generate token“ tippen und den Schlüssel kopieren.')),
         el('li', {}, formular('gh', 'Schlüssel hier einfügen', 'Verbinden', async w => { await ghVerbinden(w); if (fertig()) { history.replaceState(null, '', location.pathname + '#/einstellungen'); start(); } }, 'password')))),
-    el('section', { class: 'schritt', 'aria-labelledby': 'ei-3' }, nr('3', 'OLAT-Abgleich am PC', !!ABGLEICH?.ok),
-      stand(!!ABGLEICH?.ok, !ABGLEICH ? 'Noch kein Abgleich' : ABGLEICH.ok ? `Letzter Abgleich ${wann}: ${ABGLEICH.text}` : ABGLEICH.text, ABGLEICH?.ok === false),
-      el('p', { class: 'klein' }, 'Ein kleines Programm auf deinem Windows-PC holt neue Folien und Tests aus OLAT, solange der PC an ist. Den OLAT-Login mit Authenticator machst du selbst im Chrome-Fenster.'),
+    el('section', { class: 'schritt', 'aria-labelledby': 'ei-3' }, nr('3', 'Unterlagen aus OLAT', !!ABGLEICH?.ok || Object.keys(R).length > 0),
+      stand(!!ABGLEICH?.ok, !ABGLEICH ? (Object.keys(R).length ? 'Selbst hochgeladen, kein Abgleich' : 'Noch kein Abgleich') : ABGLEICH.ok ? `Letzter Abgleich ${wann}: ${ABGLEICH.text}` : ABGLEICH.text, ABGLEICH?.ok === false),
+      el('p', { class: 'klein' }, 'Am bequemsten holt ein kleines Programm auf deinem Windows-PC oder Mac neue Folien und Tests aus OLAT, solange der Computer an ist. Den OLAT-Login mit Authenticator machst du selbst im Browserfenster.'),
       WINDOWS ? [
         el('div', { class: 'knopfreihe' }, el('button', { class: `knopf${ABGLEICH ? '' : ' voll'}`, type: 'button', disabled: offenGH, onclick: pcDatei }, ABGLEICH ? 'PC-Programm neu laden' : 'PC-Programm herunterladen'),
           offenGH && el('span', { class: 'meta' }, 'Erst Schritt 2')),
@@ -3934,7 +4427,9 @@ function einrichtenZeigen() {
           el('li', {}, 'Fragt Chrome, ob du die Datei behalten willst: „Behalten“.'),
           el('li', {}, 'Datei öffnen. Zeigt Windows „Der Computer wurde durch Windows geschützt“: „Weitere Informationen“, dann „Trotzdem ausführen“.'),
           el('li', {}, 'Im Chrome-Fenster bei OLAT einloggen und warten, bis im schwarzen Fenster „Fertig“ steht. Das dauert beim ersten Mal 5 bis 15 Minuten.'))]
-        : el('p', { class: 'klein' }, 'Das geht nur an einem Windows-PC: dort xnik243.github.io/lernhelfer öffnen, bei „Schon eingerichtet?“ den Verbindungslink aus Schritt 4 einfügen und dann das PC-Programm laden. Für Mac gibt es den Abgleich noch nicht.')),
+        : MAC ? (offenGH ? el('p', { class: 'meta' }, 'Erst Schritt 2') : macTeil(() => cfg, !ABGLEICH))
+        : el('p', { class: 'klein' }, 'Auf diesem Gerät läuft das Programm nicht. Hast du einen Windows-PC oder Mac: dort xnik243.github.io/lernhelfer öffnen, bei „Schon eingerichtet?“ den Verbindungslink aus Schritt 4 einfügen und das Programm laden.'),
+      ohneComputer()),
     fertig() && el('section', { class: 'schritt', 'aria-labelledby': 'ei-4' }, nr('4', 'iPad und Handy'),
       el('p', { class: 'klein' }, 'Mit der Kamera des iPads oder Handys scannen und den Link öffnen: Das Gerät ist fertig eingerichtet. Der Code enthält deine Schlüssel, also nur mit eigenen Geräten scannen.'),
       QR_OFFEN && el('div', { class: 'qr', id: 'qr', role: 'img', 'aria-label': 'QR-Code mit dem Verbindungslink' }),
@@ -4048,7 +4543,7 @@ function kontoZeigen() {
   const einst = $('ei-einst').closest('section');
   einst.hidden = !ICH;
   $('k-recht')?.remove();
-  const recht = el('p', { class: 'rechtszeile meta', id: 'k-recht' }, el('a', { href: '#/upgrade' }, 'Tarife'), el('a', { href: '#/recht' }, 'Impressum, Datenschutz und AGB'),
+  const recht = el('p', { class: 'rechtszeile meta', id: 'k-recht' }, el('a', { href: '#/upgrade' }, 'Tarife'), el('a', { href: '#/recht' }, 'Impressum, Datenschutz und AGB'), el('a', { href: '#a-grenzen' }, 'Was der Lernhelfer ist und was nicht'),
     ICH?.admin && el('a', { href: '#/admin' }, 'Admin-Ecke'));
   if (PW_TOKEN) {
     $('ei-schlagzeile').textContent = 'Neues Passwort setzen.';
@@ -4067,7 +4562,8 @@ function kontoZeigen() {
           el('label', { class: 'feld' }, el('span', {}, 'Freundescode ', el('span', { class: 'opt' }, 'optional')),
             el('input', { name: 'code', type: 'text', autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', value: merk('ref') || '' })),
           el('label', { class: 'zustimmung' }, el('input', { type: 'checkbox', name: 'agb', required: true }),
-            el('span', {}, 'Ich habe die ', el('a', { href: '#/recht' }, 'AGB und die Datenschutzerklärung'), ' gelesen.'))],
+            el('span', {}, 'Ich habe die ', el('a', { href: '#/recht' }, 'AGB und die Datenschutzerklärung'), ' gelesen. Ich nutze den Lernhelfer zum Lernen und halte mich an die Regeln meiner Lehrveranstaltungen zu KI und Hilfsmitteln (',
+              el('a', { href: '#a-grenzen' }, 'was der Lernhelfer ist und was nicht'), ').'))],
           'Kostenlos registrieren', async d => {
             await api('registrieren', { email: d.email, passwort: d.passwort, code: d.code, agb: !!d.agb });
             merk('ref', null);
@@ -4113,16 +4609,18 @@ function kontoZeigen() {
       el('p', { class: 'klein' }, 'Für eigene Projekte über OpenRouter, mit rund 10 € Guthaben pro Monat (setzt sich am Monatsersten zurück). Behandle ihn wie ein Passwort.'),
       el('div', { class: 'einladen' }, el('input', { readonly: true, type: 'password', value: ICH.api, 'aria-label': 'API-Schlüssel', onfocus: e => { e.target.type = 'text'; e.target.select(); }, onblur: e => { e.target.type = 'password'; } }),
         el('button', { class: 'knopf', type: 'button', onclick: e => kopieren(e, ICH.api) }, 'Kopieren'))),
-    el('section', { class: 'schritt', 'aria-labelledby': 'k-pc' }, el('h2', { id: 'k-pc' }, 'OLAT-Abgleich am PC'),
-      el('p', { class: `stand${ABGLEICH?.ok ? ' ok' : ''}${ABGLEICH?.ok === false ? ' warnung' : ''}` }, !ABGLEICH ? 'Noch kein Abgleich' : ABGLEICH.ok ? `Letzter Abgleich ${wann}: ${ABGLEICH.text}` : ABGLEICH.text),
-      el('p', { class: 'klein' }, 'Ein kleines Programm auf deinem Windows-PC holt neue Folien und Tests aus OLAT, solange der PC an ist. Den OLAT-Login mit Authenticator machst du selbst im Chrome-Fenster.'),
+    el('section', { class: 'schritt', 'aria-labelledby': 'k-pc' }, el('h2', { id: 'k-pc' }, 'Unterlagen aus OLAT'),
+      el('p', { class: `stand${ABGLEICH?.ok ? ' ok' : ''}${ABGLEICH?.ok === false ? ' warnung' : ''}` }, !ABGLEICH ? (Object.keys(R).length ? 'Selbst hochgeladen, kein Abgleich' : 'Noch kein Abgleich') : ABGLEICH.ok ? `Letzter Abgleich ${wann}: ${ABGLEICH.text}` : ABGLEICH.text),
+      el('p', { class: 'klein' }, 'Am bequemsten holt ein kleines Programm auf deinem Windows-PC oder Mac neue Folien und Tests aus OLAT, solange der Computer an ist. Den OLAT-Login mit Authenticator machst du selbst im Browserfenster.'),
       WINDOWS ? [
         el('div', { class: 'knopfreihe' }, el('button', { class: `knopf${ABGLEICH ? '' : ' voll'}`, type: 'button', onclick: pcLaden }, ICH.pc ? 'PC-Programm neu laden' : 'PC-Programm herunterladen')),
         el('ol', { class: 'schritte klein' },
           el('li', {}, 'Fragt Chrome, ob du die Datei behalten willst: „Behalten“.'),
           el('li', {}, 'Datei öffnen. Zeigt Windows „Der Computer wurde durch Windows geschützt“: „Weitere Informationen“, dann „Trotzdem ausführen“.'),
           el('li', {}, 'Im Chrome-Fenster bei OLAT einloggen und warten, bis im schwarzen Fenster „Fertig“ steht. Das dauert beim ersten Mal 5 bis 15 Minuten.'))]
-        : el('p', { class: 'klein' }, `Das geht nur an einem Windows-PC: dort ${location.host} öffnen, anmelden und hier das PC-Programm laden. Für Mac gibt es den Abgleich noch nicht.`)),
+        : MAC ? macTeil(() => api('pc', {}).then(p => { ICH.pc = true; return { repo: p.repo, github: p.token, api: p.api }; }), !ICH.pc)
+        : el('p', { class: 'klein' }, `Auf diesem Gerät läuft das Programm nicht. Hast du einen Windows-PC oder Mac: dort ${location.host} öffnen, anmelden und hier das Programm laden.`),
+      ohneComputer()),
     el('section', { class: 'schritt', 'aria-labelledby': 'k-weg' }, el('h2', { id: 'k-weg' }, 'Abmelden'),
       el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf', type: 'button', onclick: async () => {
         await api('abmelden', {}).catch(() => {});
@@ -4229,7 +4727,8 @@ function upgradeZeigen() {
     el('section', { class: 'sperrkarte', 'aria-labelledby': 'u-freunde' }, el('h2', { id: 'u-freunde' }, 'Zusammen günstiger'),
       el('p', { class: 'klein' }, `Lade Freunde mit deinem Link ein: Sie zahlen im ersten Monat ${T.pro.rabatt} % weniger bei Pro und ${T.ultra.rabatt} % weniger bei Ultra, und sobald sie zahlen, bekommst du denselben Rabatt auf deinen nächsten Monat.`),
       el('div', { class: 'knopfreihe' }, el('a', { class: 'knopf', href: '#/einstellungen' }, ICH ? 'Zu deinem Einladungslink' : 'Konto erstellen'))),
-    el('p', { class: 'rechtszeile meta' }, el('a', { href: '#/recht' }, 'Impressum, Datenschutz und AGB')),
+    el('p', { class: 'rechtszeile meta' }, el('a', { href: '#/recht' }, 'Impressum, Datenschutz und AGB'), el('a', { href: '#a-grenzen' }, 'Was der Lernhelfer ist und was nicht'),
+      el('span', {}, 'Eine Lernhilfe, kein Angebot der Universität Innsbruck.')),
   ].filter(Boolean));
 }
 
@@ -4271,6 +4770,7 @@ async function adminZeigen() {
   const anteil = (a, b) => b ? `${Math.round(100 * a / b)} %` : '–';
   const kostet = usd => `${euro(-Math.round(usd * G.kurs * 100) || 0)} (${geld(usd)})`;
   const fix = Math.round(G.fixkosten * 100), komma = x => String(x).replace('.', ',');
+  const nutzung = d.funktionen.filter(x => x.art !== 'Gesperrt angetippt');  // meistgenutzt zuerst, wie der Server sortiert
   const stand = k => k.tarif && k.bis > jetzt ? `${T[k.tarif].name} bis ${tag(k.bis)}` : k.test_bis > jetzt ? `Ultra-Test bis ${zeitpunkt(k.test_bis)}` : k.test_bis ? 'Base, Test genutzt' : 'Base';
   const werte = el('form', { class: 'werte-form', onsubmit: async e => {
     e.preventDefault();
@@ -4302,6 +4802,19 @@ async function adminZeigen() {
     el('h2', {}, 'Vom Konto zur Zahlung'),
     el('div', { class: 'kacheln' }, [['Registriert', K.konten], ['E-Mail bestätigt', K.bestaetigt], ['Gratis-Test genutzt', K.testGenutzt], ['Mindestens einmal bezahlt', K.kunden]]
       .map(([n, x]) => kachel(n, x, `${anteil(x, K.konten)} der Konten`))),
+    el('h2', {}, 'Funktionen nach Nutzung'),
+    el('p', { class: 'klein' }, `Letzte 30 Tage, ${K.aktiv30} aktive ${K.aktiv30 === 1 ? 'Konto' : 'Konten'}. Konten: wie viele verschiedene Konten etwas genutzt haben. Nutzungen: KI-Anfragen, Speichervorgänge oder Seitenaufrufe.`),
+    el('div', { class: 'kacheln breit' }, [['Am meisten genutzt', nutzung.filter(x => x.k30).slice(0, 5)], ['Am wenigsten genutzt', nutzung.slice(-5).reverse()]].map(([titel, l]) =>
+      el('div', { class: 'kachel' }, el('p', { class: 'meta' }, titel), l.length ? el('ol', { class: 'rangliste' }, l.map(x => el('li', {}, `${x.name}: ${x.k30} ${x.k30 === 1 ? 'Konto' : 'Konten'} `, el('span', {}, `(${x.art})`))))
+        : el('p', { class: 'leer' }, 'Noch nichts.')))),
+    tabelle(['Bereich', 'Art', 'Konten 7 T', 'Konten 30 T', 'Anteil der aktiven', 'Nutzungen 30 T', 'KI-Kosten 30 T'], d.funktionen.map(x => [x.name, x.art, String(x.k7), String(x.k30),
+      el('span', {}, el('span', { class: 'anteil', 'aria-hidden': 'true' }, el('i', { style: `width: ${K.aktiv30 ? Math.min(100, Math.round(100 * x.k30 / K.aktiv30)) : 0}%` })), anteil(x.k30, K.aktiv30)),
+      String(x.n30), x.usd30 ? geld(x.usd30) : '–'])),
+    el('h2', {}, `Fehlerberichte (${d.fehler.length})`),
+    d.fehler.length ? tabelle(['Wann', 'Von', 'Seite', 'Beschreibung', 'Meldungen', 'Gerät', ''], d.fehler.map(f => [zeitpunkt(f.zeit), f.kontakt || '–', f.seite || '–',
+      el('span', { class: 'umbruch' }, f.text || '–'), el('span', { class: 'umbruch' }, f.meldung || '–'), el('span', { class: 'umbruch' }, f.geraet || '–'),
+      el('button', { class: 'knopf', type: 'button', onclick: tun('admin/fehler', { id: f.id }) }, 'Erledigt')]))
+      : el('p', { class: 'leer' }, 'Keine offenen. Neue kommen auch per Mail.'),
     el('h2', {}, 'Geld'),
     tabelle(['', `Im ${MONAT}`, `Seit Start (${G.laufzeit} ${G.laufzeit === 1 ? 'Monat' : 'Monate'})`], [
       ['Einnahmen', euro(G.einnahmen.monat), euro(G.einnahmen.gesamt)],
@@ -4355,10 +4868,10 @@ async function zeichne() {
   const [teil, tag] = anker ? ['anleitung'] : location.hash.replace(/^#\/?/, '').split('/').map(decodeURIComponent);
   const offen = SERVER && ['recht', 'upgrade'].includes(teil);  // Preise und Impressum auch ohne Konto
   let neu = teil === 'anleitung' ? 'anleitung' : offen ? teil : !fertig() || teil === 'einstellungen' ? 'einstellungen'
-    : ['kalender', 'wordpower', 'onlinetests', 'noten', 'karten', 'pruefung', 'vortrag', ...SERVER ? ['admin'] : []].includes(teil) ? teil : R[teil] ? 'ausgabe' : 'titelblatt';
+    : ['kalender', 'wordpower', 'onlinetests', 'noten', 'karten', 'pruefung', 'vortrag', 'unterlagen', ...SERVER ? ['admin'] : []].includes(teil) ? teil : R[teil] ? 'ausgabe' : 'titelblatt';
   if (SPERREN[neu] && !darf(SPERREN[neu])) neu = 'gesperrt';  // Server: Funktion ohne passenden Tarif
   if ($('meldung').open) $('meldung').close();
-  for (const id of ['titelblatt', 'ausgabe', 'einstellungen', 'kalender', 'wordpower', 'onlinetests', 'noten', 'karten', 'pruefung', 'vortrag', 'anleitung', 'gesperrt', 'upgrade', 'admin', 'recht']) $(id).hidden = id !== neu;
+  for (const id of ['titelblatt', 'ausgabe', 'einstellungen', 'kalender', 'wordpower', 'onlinetests', 'noten', 'karten', 'pruefung', 'vortrag', 'unterlagen', 'anleitung', 'gesperrt', 'upgrade', 'admin', 'recht']) $(id).hidden = id !== neu;
   document.body.dataset.ansicht = neu;
   document.querySelectorAll('.mit-daten').forEach(a => { a.hidden = !fertig(); });
   $('nav-admin').hidden = !ICH?.admin;
@@ -4371,7 +4884,7 @@ async function zeichne() {
   $('nav-faecher').replaceChildren(...Object.keys(R).map(f => el('a', { href: `#/${encodeURIComponent(f)}`, 'aria-current': neu === 'ausgabe' && teil === f ? 'page' : null },
     el('span', { class: 'punkt', 'data-fach': f, 'aria-hidden': 'true' }), f, R[f].druckt && el('span', { class: 'laeuft', role: 'img', 'aria-label': 'wird erstellt' }))));
   $('nav-faecher-kopf').hidden = !fertig() || !Object.keys(R).length;
-  const namen = { kalender: 'Kalender', wordpower: 'Word Power', onlinetests: 'Onlinetests', noten: 'Noten', karten: 'Karteikarten', pruefung: 'Prüfungstraining', vortrag: 'Vortrag', anleitung: 'Anleitung', einstellungen: SERVER ? 'Konto' : 'Einrichten',
+  const namen = { kalender: 'Kalender', wordpower: 'Word Power', onlinetests: 'Onlinetests', noten: 'Noten', karten: 'Karteikarten', pruefung: 'Prüfungstraining', vortrag: 'Vortrag', unterlagen: 'Unterlagen', anleitung: 'Anleitung', einstellungen: SERVER ? 'Konto' : 'Einrichten',
     upgrade: 'Tarife', admin: 'Admin-Ecke', recht: 'Impressum, Datenschutz und AGB' };
   document.title = neu === 'titelblatt' ? 'Lernhelfer' : `${neu === 'ausgabe' ? teil : namen[hier]} – Lernhelfer`;
   modellWahl(); $('modell-name').textContent = $('modell').value;
@@ -4389,6 +4902,7 @@ async function zeichne() {
   else if (neu === 'karten') await kartenZeigen();
   else if (neu === 'pruefung') await pruefungZeigen(tag);
   else if (neu === 'vortrag') await vortragZeigen(tag);
+  else if (neu === 'unterlagen') await unterlagenZeigen(tag);
   else if (neu === 'gesperrt') $('gesperrt').replaceChildren(el('header', { class: 'ausgabe-kopf' }, el('h1', {}, namen[teil])), sperrkarte(SPERREN[teil]));
   else if (neu === 'upgrade') upgradeZeigen();
   else if (neu === 'admin') await adminZeigen();
@@ -4400,7 +4914,11 @@ async function zeichne() {
   if (anker) $(anker)?.scrollIntoView();
   else if (woanders) scrollTo(0, 0);
   ort = location.hash;
-  if (neu !== ansicht) { ansicht = neu; if (fertig() && Object.keys(R).length) { status(HINWEIS); HINWEIS = ''; } }
+  if (neu !== ansicht) {
+    ansicht = neu;
+    if (fertig() && Object.keys(R).length) { status(HINWEIS); HINWEIS = ''; }
+    if (SERVER && ICH) api('nutzung', { was: neu === 'gesperrt' ? 'gesperrt:' + SPERREN[teil] : 'seite:' + neu }).catch(() => {});  // für die Übersicht in der Admin-Ecke
+  }
 }
 
 async function start() {

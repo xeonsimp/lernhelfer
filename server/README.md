@@ -8,7 +8,7 @@ Konten, Tarife (Base, Pro, Ultra, Ultra+ API), Zahlung per Überweisung oder Pay
 
 Preise, KI-Kontingente, Gratis-Test und Rabatte stehen oben in `server.mjs` (`TARIFE`, `TEST`). Was welcher Tarif darf, steht in `FUNKTIONEN` (9 = nur in der Admin-Ecke).
 
-## Auf dem Hetzner-Server einrichten (Ubuntu 24.04)
+## Auf dem Server einrichten (Ubuntu 24.04, etwa netcup oder Hetzner)
 
 Vorher: Die Domain zeigt mit einem A-Eintrag (und AAAA für IPv6) auf die IP des Servers.
 
@@ -114,5 +114,5 @@ Dann auf der Seite mit der Mail aus `LH_ADMIN` registrieren und bestätigen: Gan
 - **Update:** `cd /opt/lernhelfer && sudo git pull && sudo systemctl restart lernhelfer`
 - **Sicherung** jede Nacht, sieben Tage rollierend (`sudo crontab -e`):
   `0 3 * * * sqlite3 /var/lib/lernhelfer/lernhelfer.db ".backup '/var/lib/lernhelfer/sicherung-$(date +\%u).db'"`
-  Zusätzlich die Hetzner-Backups im Cloud-Panel einschalten (20 % des Serverpreises), damit eine Kopie außerhalb des Servers liegt.
+  Zusätzlich eine Kopie außerhalb des Servers: bei netcup im Server Control Panel regelmäßig einen Snapshot anlegen, bei Hetzner die Backups im Cloud-Panel einschalten (20 % des Serverpreises).
 - **Recht:** `recht-vorlage.md` ausfüllen und als `/var/lib/lernhelfer/recht.md` speichern; die App zeigt sie unter „Impressum, Datenschutz und AGB“.
