@@ -94,6 +94,7 @@ try {
   // Seite: nur die App-Dateien, mit Server-Kennung
   const seite = await fetch(BASIS + '/?ref=ABC').then(r => r.text());
   assert.match(seite, /<html lang="de" data-server>/);
+  assert.match(await fetch(BASIS + '/').then(r => r.text()), /<a class="go" href="app">/, 'Startseite für Gäste, Knopf zum Login');
   assert.equal((await fetch(BASIS + '/api/tarife').then(r => r.json())).funktionen['wp-text'], undefined, 'Hausaufgaben-Entwurf steht nirgends im Angebot');
   for (const p of ['/openrouter_key.txt.txt', '/loeser_prompt.txt', '/daten/README.md', '/server/server.mjs', '/.git/config']) assert.equal((await fetch(BASIS + p)).status, 404, p);
   const mac = await fetch(BASIS + '/einrichten-mac.sh').then(r => r.text());
@@ -180,6 +181,8 @@ try {
   // 24 Stunden Ultra: erst nach Bestätigung, dann Chat im Strom, Testbudget 0,50 $
   assert.equal((await anna('POST', '/api/test')).status, 403);
   assert.equal((await anna('POST', '/api/bestaetigen', { token: await link('anna@example.com', 'bestaetigen') })).status, 200);
+  assert.match(log, /\/app#bestaetigen=/, 'Mail-Links führen in die App');
+  assert.match((await anna('GET', '/')).text, /<html lang="de" data-server>/, 'angemeldet geht / gleich in die App');
   r = await anna('POST', '/api/test');
   assert.equal(r.j.tarif, 'ultra'); assert.equal(r.j.test, true); assert.ok(r.j.bis - Date.now() > 23.9 * 3600e3);
   r = await anna('POST', '/api/ki', { feature: 'chat', model: 'openai/gpt-6-luna', stream: true, messages: [] });

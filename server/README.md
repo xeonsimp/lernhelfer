@@ -2,6 +2,8 @@
 
 Konten, Tarife (Base, Pro, Ultra, Ultra+ API), Zahlung per Überweisung oder PayPal mit Verwendungszweck, Freunde-Bonus, Speicher und KI über einen gemeinsamen OpenRouter-Schlüssel. Dieselbe `index.html` wie auf GitHub Pages: Liefert dieser Server sie aus, setzt er `data-server`, und die App arbeitet mit Konten statt mit eigenen Schlüsseln. Die GitHub-Pages-Version bleibt unverändert.
 
+Unter `/` sehen Gäste die Startseite (`startseite.html`), die App mit Login liegt unter `/app`. Angemeldet, mit Einladungslink (`?ref=`) oder mit einem alten Link auf `/#…` geht es gleich in die App.
+
 - `server.mjs`: der ganze Server, ohne Pakete (Node 24: http, sqlite, crypto). Daten in einer SQLite-Datei.
 - `test.mjs`: Prüflauf mit OpenRouter-Attrappe: `node server/test.mjs`
 - `recht-vorlage.md`: Vorlage für Impressum, Datenschutz und AGB. Ausfüllen, prüfen lassen und als `recht.md` in den Datenordner legen.

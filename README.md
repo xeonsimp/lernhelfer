@@ -9,6 +9,7 @@ Einrichten dauert etwa 15 Minuten: In der App auf „Einrichten“ tippen und de
 ## Dateien
 
 - `index.html` – die ganze App (statisch, GitHub Pages)
+- `startseite.html`, `.css`, `.js` – Startseite des Servers unter `/`, Knopf zum Login in `/app`
 - `holen.py` – OLAT-Abgleich am PC oder Mac; `einrichten.ps1` installiert ihn unter Windows (Datei aus der App), `einrichten-mac.sh` am Mac (Befehl aus der App fürs Terminal, launchd statt Aufgabenplanung)
 - `test_holen.py` – Prüfungen, vor allem für den Testschutz (`python test_holen.py`)
 - `verschluesseln.mjs` – verschlüsselt die Prompts geschützter Bereiche ins private Daten-Repo

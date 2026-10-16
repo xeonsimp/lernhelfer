@@ -220,7 +220,7 @@ const keksSetzen = (res, name, wert, sekunden, art = 'Lax') =>
 const anmelden = (res, id) => keksSetzen(res, 'lh', marke(id, 'sitzung', 60 * TAG), 60 * 86400);
 const abmelden = res => { keksSetzen(res, 'lh', '', 0); keksSetzen(res, 'lhe', '', 0, 'Strict'); };
 const bestaetigungSenden = (id, email) => mail(email, 'Lernhelfer: E-Mail bestätigen',
-  `Hallo,\n\nbitte bestätige deine E-Mail-Adresse für den Lernhelfer:\n${BASIS}/#bestaetigen=${marke(id, 'bestaetigen', 3 * TAG)}\n\nDer Link gilt drei Tage. Hast du dich nicht angemeldet, ignoriere diese Mail einfach.` + gruss);
+  `Hallo,\n\nbitte bestätige deine E-Mail-Adresse für den Lernhelfer:\n${BASIS}/app#bestaetigen=${marke(id, 'bestaetigen', 3 * TAG)}\n\nDer Link gilt drei Tage. Hast du dich nicht angemeldet, ignoriere diese Mail einfach.` + gruss);
 const passwortPruefen = pw => { if (pw.length < 10 || pw.length > 200) nein(400, 'Das Passwort braucht mindestens 10 Zeichen.'); return pw; };
 
 // Was gilt gerade: bezahlter Tarif, sonst der 24-Stunden-Test (zählt als Ultra), sonst Base
@@ -304,7 +304,7 @@ async function freischalten(id) {
   if (erste && k.geworben_von) {
     db.prepare('insert into gutscheine (konto, von, erstellt) values (?, ?, ?)').run(k.geworben_von, k.id, t);
     const w = kontoMit(k.geworben_von);
-    await mail(w.email, 'Lernhelfer: Dein Freundes-Bonus ist da', `Hallo,\n\njemand, den du eingeladen hast, ist jetzt mit einem Tarif dabei. Danke!\n\nDeine nächste Zahlung ist dafür einen Monat lang günstiger: 20 % bei Pro, 30 % bei Ultra. Der Rabatt wird beim nächsten Bestellen automatisch abgezogen.\n${BASIS}/#/upgrade` + gruss);
+    await mail(w.email, 'Lernhelfer: Dein Freundes-Bonus ist da', `Hallo,\n\njemand, den du eingeladen hast, ist jetzt mit einem Tarif dabei. Danke!\n\nDeine nächste Zahlung ist dafür einen Monat lang günstiger: 20 % bei Pro, 30 % bei Ultra. Der Rabatt wird beim nächsten Bestellen automatisch abgezogen.\n${BASIS}/app#/upgrade` + gruss);
   }
   let warnung = null;
   try { await apiAbgleich(k); } catch (e) { warnung = e.message; console.error(e.message); }  // der stündliche Abgleich versucht es wieder
@@ -536,7 +536,7 @@ function bestellMail(k, T, monate, betrag, zweck) {
   return `Hallo,\n\ndanke für deine Bestellung. Das ist deine Vertragsbestätigung, bitte aufheben.\n\n`
     + `Tarif: ${T.name}, ${monate} ${monate === 1 ? 'Monat' : 'Monate'}\nPreis: ${eur(betrag)} einmalig im Voraus, Endpreis (Kleinunternehmer, ohne Umsatzsteuer), kein Abo\n`
     + `Verwendungszweck: ${zweck}\nBestellt am ${am} mit dem Konto ${k.email}\nAnbieter: ${anbieter}\n\n`
-    + `Der Tarif startet, sobald deine Zahlung da ist, und endet nach der Laufzeit von selbst. Zahlungsdaten: ${BASIS}/#/upgrade · AGB und Datenschutz: ${BASIS}/#/recht\n\n`
+    + `Der Tarif startet, sobald deine Zahlung da ist, und endet nach der Laufzeit von selbst. Zahlungsdaten: ${BASIS}/app#/upgrade · AGB und Datenschutz: ${BASIS}/app#/recht\n\n`
     + `Du hast verlangt, dass der Tarif gleich nach Zahlungseingang startet, und bestätigt, dass du weißt: Bei einem Widerruf zahlst du für die schon genutzte Zeit, und dein Widerrufsrecht erlischt, sobald der Vertrag vollständig erfüllt ist.\n\n`
     + `WIDERRUFSBELEHRUNG\nDu kannst diesen Vertrag binnen 14 Tagen ohne Angabe von Gründen widerrufen. Die Frist beginnt mit dem Tag des Vertragsabschlusses, also mit deiner Bestellung. `
     + `Um zu widerrufen, schick uns (${anbieter}) eine eindeutige Erklärung, am einfachsten als Antwort auf diese Mail. Du kannst dafür das Muster unten verwenden, musst aber nicht. Es reicht, wenn du den Widerruf vor Ablauf der Frist absendest.\n`
@@ -584,7 +584,7 @@ const ROUTEN = {
     const email = String(b.email || '').trim().toLowerCase();
     bremse(req, 3, email);
     const k = db.prepare('select * from konten where email = ?').get(email);
-    if (k) await mail(k.email, 'Lernhelfer: Neues Passwort', `Hallo,\n\nhier kannst du ein neues Passwort setzen:\n${BASIS}/#passwort=${marke(k.id, 'passwort', 3600e3)}\n\nDer Link gilt eine Stunde. Hast du nichts angefordert, ignoriere diese Mail.` + gruss);
+    if (k) await mail(k.email, 'Lernhelfer: Neues Passwort', `Hallo,\n\nhier kannst du ein neues Passwort setzen:\n${BASIS}/app#passwort=${marke(k.id, 'passwort', 3600e3)}\n\nDer Link gilt eine Stunde. Hast du nichts angefordert, ignoriere diese Mail.` + gruss);
   },  // antwortet immer gleich, damit niemand ausprobieren kann, welche Adressen ein Konto haben
   'POST /api/passwort-neu': ({ req, res, b }) => {
     bremse(req, 60);
@@ -622,7 +622,7 @@ const ROUTEN = {
     const b = db.prepare("select * from bestellungen where konto = ? and status = 'offen' order by id desc").get(k.id);
     if (!b) nein(404, 'Keine offene Bestellung.');
     db.prepare("update bestellungen set status = 'gemeldet', gemeldet = ? where id = ?").run(jetzt(), b.id);
-    if (ADMIN) await mail(ADMIN, `Zahlung gemeldet: ${b.zweck} · ${eur(b.betrag)}`, `${k.email} meldet ${eur(b.betrag)} für ${TARIFE[b.tarif].name}, ${b.monate} Monat(e).\nVerwendungszweck: ${b.zweck}\n\nNach Zahlungseingang freischalten: ${BASIS}/#/admin`);
+    if (ADMIN) await mail(ADMIN, `Zahlung gemeldet: ${b.zweck} · ${eur(b.betrag)}`, `${k.email} meldet ${eur(b.betrag)} für ${TARIFE[b.tarif].name}, ${b.monate} Monat(e).\nVerwendungszweck: ${b.zweck}\n\nNach Zahlungseingang freischalten: ${BASIS}/app#/admin`);
     return ich(k);
   },
   'POST /api/nutzung': ({ k, b }) => { muss(k); if (MELDBAR.has(b.was)) zaehlen(k.id, b.was); },  // Seite geöffnet, gesperrte Funktion angetippt, PDF
@@ -633,7 +633,7 @@ const ROUTEN = {
     if (!f.text && !f.meldung) nein(400, 'Schreib kurz, was passiert ist.');
     const { lastInsertRowid: id } = db.prepare('insert into fehler (zeit, konto, kontakt, seite, meldung, text, geraet) values (?, ?, ?, ?, ?, ?, ?)')
       .run(jetzt(), k?.id ?? null, f.kontakt || null, f.seite, f.meldung, f.text, f.geraet);
-    if (ADMIN) await mail(ADMIN, `Fehlerbericht #${id}${f.seite ? ': ' + f.seite : ''}`, `Von: ${f.kontakt || 'ohne Kontakt'}\nSeite: ${f.seite}\nGerät: ${f.geraet}\n\nMeldung:\n${f.meldung || '–'}\n\nBeschreibung:\n${f.text || '–'}\n\nAdmin-Ecke: ${BASIS}/#/admin`);
+    if (ADMIN) await mail(ADMIN, `Fehlerbericht #${id}${f.seite ? ': ' + f.seite : ''}`, `Von: ${f.kontakt || 'ohne Kontakt'}\nSeite: ${f.seite}\nGerät: ${f.geraet}\n\nMeldung:\n${f.meldung || '–'}\n\nBeschreibung:\n${f.text || '–'}\n\nAdmin-Ecke: ${BASIS}/app#/admin`);
   },
   'POST /api/pc': ({ k }) => {  // Schlüssel für den OLAT-Abgleich am PC; ein neuer ersetzt den alten
     muss(k);
@@ -719,12 +719,16 @@ const admin = k => { if (!istAdmin(muss(k)) || !k.ecke) nein(403, 'Nur in der Ad
 
 /* ---------- Dateien der App (nur diese, nie den Rest des Ordners) ---------- */
 const DATEIEN = {
-  '/': ['index.html', 'text/html; charset=utf-8'], '/index.html': ['index.html', 'text/html; charset=utf-8'],
+  '/': ['startseite.html', 'text/html; charset=utf-8'], '/startseite.css': ['startseite.css', 'text/css; charset=utf-8'], '/startseite.js': ['startseite.js', 'text/javascript; charset=utf-8'],
+  '/app': ['index.html', 'text/html; charset=utf-8'], '/index.html': ['index.html', 'text/html; charset=utf-8'],
   '/holen.py': ['holen.py', 'text/plain; charset=utf-8'], '/einrichten.ps1': ['einrichten.ps1', 'text/plain; charset=utf-8'],
   '/einrichten-mac.sh': ['einrichten-mac.sh', 'text/plain; charset=utf-8'],
   '/fonts/Archivo.woff2': ['fonts/Archivo.woff2', 'font/woff2'], '/fonts/SourceSerif4.woff2': ['fonts/SourceSerif4.woff2', 'font/woff2'],
 };
-function statisch(req, res, pfad) {
+function statisch(req, res, url) {
+  const pfad = url.pathname;
+  // Die Startseite ist für Gäste; angemeldet oder mit Einladung (?ref=) geht es gleich in die App
+  if (pfad === '/' && (url.search || konto(req))) { res.writeHead(302, { Location: '/app' + url.search }); return res.end(); }
   const d = DATEIEN[pfad];
   if (!d || !['GET', 'HEAD'].includes(req.method)) { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); return res.end('Nicht gefunden'); }
   let inhalt = readFileSync(join(APP, d[0]));
@@ -743,7 +747,7 @@ async function aufraeumen() {
   for (const k of db.prepare('select id from konten where or_hash is not null or (tarif = ? and bis > ?)').all('ultraplus', t)) await apiAbgleich(k).catch(e => console.error(e.message));
   for (const k of db.prepare('select * from konten where tarif is not null and bis > ? and bis < ? and erinnert != bis').all(t, t + 3 * TAG)) {
     db.prepare('update konten set erinnert = bis where id = ?').run(k.id);
-    await mail(k.email, `Lernhelfer: ${TARIFE[k.tarif].name} endet bald`, `Hallo,\n\ndein Tarif ${TARIFE[k.tarif].name} läuft am ${new Date(k.bis).toLocaleDateString('de-AT')} ab. Danach geht es mit Base weiter, deine Daten bleiben. Verlängern kannst du hier:\n${BASIS}/#/upgrade` + gruss);
+    await mail(k.email, `Lernhelfer: ${TARIFE[k.tarif].name} endet bald`, `Hallo,\n\ndein Tarif ${TARIFE[k.tarif].name} läuft am ${new Date(k.bis).toLocaleDateString('de-AT')} ab. Danach geht es mit Base weiter, deine Daten bleiben. Verlängern kannst du hier:\n${BASIS}/app#/upgrade` + gruss);
   }
   for (const [a, l] of VERSUCHE) if (!l.some(x => t - x < 15 * 60e3)) VERSUCHE.delete(a);
 }
@@ -756,7 +760,7 @@ createServer(async (req, res) => {
   if (SICHER) res.setHeader('Strict-Transport-Security', 'max-age=31536000');
   try {
     const url = new URL(req.url, BASIS);
-    if (!url.pathname.startsWith('/api/')) return statisch(req, res, url.pathname);
+    if (!url.pathname.startsWith('/api/')) return statisch(req, res, url);
     if (req.method !== 'GET' && req.headers.origin && req.headers.origin !== HERKUNFT) nein(403, 'Anfrage von fremder Seite.');
     const k = konto(req);
     const gh = url.pathname.match(/^\/api\/gh\/repos\/[^/]+\/[^/]+\/contents(?:\/(.*))?$/);
