@@ -114,8 +114,10 @@ main h2, .rubrik > :first-child, .meldung h2 { font-weight: 750; font-stretch: 9
 /* ---------- Knöpfe, Felder, Haken ---------- */
 .knopf { border: 1.5px solid transparent; border-radius: 0; border-image: var(--rahmen) 10 / 8px / 3px stretch; background: var(--bg); box-shadow: none; }
 @media (hover: hover) { .knopf:hover { background: var(--gelb-hauch); } .knopf:disabled:hover { background: var(--bg); } }
-.knopf.voll, .knopf.voll:disabled:hover { background: var(--marker) center / 100% 100% no-repeat; color: var(--auf-gelb); }
-@media (hover: hover) { .knopf.voll:hover { background: var(--marker) center / 100% 100% no-repeat, var(--gelb-hauch); } }
+/* Hauptknopf: blau gezeichneter Rahmen; angestrichen wird er erst unter der Maus (am Handy beim Tippen) */
+.knopf.voll, .knopf.voll:disabled:hover { border-image-source: var(--rahmen-blau); background: var(--bg); color: var(--text); font-weight: 650; }
+@media (hover: hover) { .knopf.voll:not(:disabled):hover { background: var(--marker) center / 100% 100% no-repeat; color: var(--auf-gelb); } }
+.knopf.voll:not(:disabled):active { background: var(--marker) center / 100% 100% no-repeat; color: var(--auf-gelb); }
 .knopf:active { transform: scale(0.97); }
 input:not([type="checkbox"], [type="file"], [type="radio"]), textarea, select { border-width: 1.5px; }
 .haken input { border: 1.5px solid var(--tinte); border-radius: 3px 5px 4px 6px / 5px 3px 6px 4px; }
