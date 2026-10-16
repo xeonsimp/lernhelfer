@@ -721,6 +721,7 @@ const admin = k => { if (!istAdmin(muss(k)) || !k.ecke) nein(403, 'Nur in der Ad
 const DATEIEN = {
   '/': ['startseite.html', 'text/html; charset=utf-8'], '/startseite.css': ['startseite.css', 'text/css; charset=utf-8'], '/startseite.js': ['startseite.js', 'text/javascript; charset=utf-8'],
   '/app': ['index.html', 'text/html; charset=utf-8'], '/index.html': ['index.html', 'text/html; charset=utf-8'],
+  '/skizze': ['skizze.html', 'text/html; charset=utf-8'], '/skizze.css': ['skizze.css', 'text/css; charset=utf-8'],  // Skizze-Fassung der App als Fallback
   '/holen.py': ['holen.py', 'text/plain; charset=utf-8'], '/einrichten.ps1': ['einrichten.ps1', 'text/plain; charset=utf-8'],
   '/einrichten-mac.sh': ['einrichten-mac.sh', 'text/plain; charset=utf-8'],
   '/fonts/Archivo.woff2': ['fonts/Archivo.woff2', 'font/woff2'], '/fonts/SourceSerif4.woff2': ['fonts/SourceSerif4.woff2', 'font/woff2'],
@@ -732,7 +733,7 @@ function statisch(req, res, url) {
   const d = DATEIEN[pfad];
   if (!d || !['GET', 'HEAD'].includes(req.method)) { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); return res.end('Nicht gefunden'); }
   let inhalt = readFileSync(join(APP, d[0]));
-  if (d[0] === 'index.html') inhalt = inhalt.toString('utf8').replace('<html lang="de">', '<html lang="de" data-server>');  // App weiß: Konten statt eigener Schlüssel
+  if (['index.html', 'skizze.html'].includes(d[0])) inhalt = inhalt.toString('utf8').replace('<html lang="de">', '<html lang="de" data-server>');  // App weiß: Konten statt eigener Schlüssel
   res.writeHead(200, { 'Content-Type': d[1], 'Cache-Control': d[0].startsWith('fonts/') ? 'public, max-age=604800' : 'no-cache' });
   res.end(req.method === 'HEAD' ? undefined : inhalt);
 }
