@@ -113,7 +113,7 @@ Dann auf der Seite mit der Mail aus `LH_ADMIN` registrieren und bestätigen: Gan
 ## Laufender Betrieb
 
 - **Zahlung kommt rein:** Admin-Ecke → bei der Bestellung mit diesem Verwendungszweck „Geld ist da“. Der Tarif startet sofort, die Person bekommt eine Mail.
-- **Update:** `cd /opt/lernhelfer && sudo git pull && sudo systemctl restart lernhelfer`
+- **Update:** automatisch. `/usr/local/bin/lernhelfer-update` läuft per Cron (root) alle 5 Minuten, holt neue Commits von `main` und startet den Dienst neu. Ist `server.mjs` fehlerhaft oder startet der Dienst nicht, bleibt der alte Stand. Log: `/var/log/lernhelfer-update.log`. Von Hand: `sudo /usr/local/bin/lernhelfer-update`
 - **Sicherung** jede Nacht, sieben Tage rollierend (`sudo crontab -e`):
   `0 3 * * * sqlite3 /var/lib/lernhelfer/lernhelfer.db ".backup '/var/lib/lernhelfer/sicherung-$(date +\%u).db'"`
   Zusätzlich eine Kopie außerhalb des Servers: bei netcup im Server Control Panel regelmäßig einen Snapshot anlegen, bei Hetzner die Backups im Cloud-Panel einschalten (20 % des Serverpreises).
