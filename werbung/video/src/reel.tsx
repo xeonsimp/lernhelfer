@@ -518,27 +518,27 @@ const RSchluss: React.FC = () => {
 const VortragHell: React.FC = () => <Vortrag thema="hell" tempo={TEMPO.vortrag} />;
 
 // Voice-over: der Erstsemester spricht seine Gedanken, knapp und umgangssprachlich; was die App zeigt, steht im Bild. Jeder Satz endet, bevor der nächste beginnt.
-// Aussprache: Uhrzeiten, Zahlen und die Adresse ausgeschrieben, damit edge-tts sie wie gesprochen liest.
+// Aussprache: Uhrzeiten, Preise und die Adresse ausgeschrieben, damit edge-tts sie wie gesprochen liest; „Base“ spricht die deutsche Stimme falsch, daher im Ton „Einstieg“ und „kostenlos starten“.
 export const REEL: Szene[] = [
-	{name: 'Hook', dauer: streck(300, TEMPO.hook), C: RHook, ton: hookTon, stimme: [[HOOK.a, 'Sonntagnacht. Morgen PS in Mathe. Und ich hab keinen Plan.']]},
-	{name: 'Abgleich', dauer: streck(480, TEMPO.abgleich), C: RAbgleich, ton: abgleichTon, stimme: [[AB.a, 'Okay. Lernhelfer. Einmal am PC einrichten, dann holt er alles selbst aus OLAT.'], [AB.c, 'Nur iPad? Dann lad ich’s selbst hoch.']]},
-	{name: 'Heute', dauer: streck(400, TEMPO.heute), C: RHeute, ton: heuteTon, stimme: [[HE.text + 30, 'Montag früh. Was ist fällig? Erledigt, abgehakt.']]},
+	{name: 'Hook', dauer: streck(300, TEMPO.hook), C: RHook, ton: hookTon, stimme: [[HOOK.a, 'Sonntagnacht, morgen PS in Mathe, und ich hab keinen Plan.']]},
+	{name: 'Abgleich', dauer: streck(480, TEMPO.abgleich), C: RAbgleich, ton: abgleichTon, stimme: [[AB.a, 'Okay, Lernhelfer: einmal am PC einrichten, dann holt er alles aus OLAT.'], [AB.c, 'Nur iPad? Dann lad ich’s selbst hoch.']]},
+	{name: 'Heute', dauer: streck(400, TEMPO.heute), C: RHeute, ton: heuteTon, stimme: [[HE.text + 50, 'Montag früh: Was ist fällig? Erledigt, abgehakt.']]},
 	{name: 'Ausgabe', dauer: streck(540, TEMPO.ausgabe), C: RAusgabe, ton: ausgabeTon, stimme: [[AU.a, 'Mathe antippen, und da ist die ganze Woche. Mit Ultra mehr als doppelt so ausführlich.']]},
 	{name: 'Chat', dauer: streck(820, TEMPO.chat), C: RChat, ton: chatTonR, stimme: [[CHT.a, 'Und wenn ich’s trotzdem nicht check?'], [CHT.b, 'Frag, wie du redest. Er antwortet nur aus deinen Unterlagen.'], [CHT.c, 'Und was da nicht drinsteht, erfindet er nicht.']]},
 	{name: 'Uebungen', dauer: streck(300, TEMPO.uebung), C: RUebung, ton: uebungTon, stimme: [[UE.text, 'Erst selbst rechnen. Dann die Lösung aufdecken.']]},
-	{name: 'Karten', dauer: streck(380, TEMPO.karten), C: RKarten, ton: kartenTon, stimme: [[KA.text, 'Begriffe abfragen. Was sitzt, kommt seltener. Und alles geht auch nach Anki.']]},
-	{name: 'Frag', dauer: streck(540, TEMPO.frag), C: RFrag, ton: fragTon, stimme: [[FRT.a, 'Wo ist eigentlich mein VWL-PS?'], [FRT.b, 'Er kennt Stundenplan, Fristen und alle Ausgaben.']]},
+	{name: 'Karten', dauer: streck(380, TEMPO.karten), C: RKarten, ton: kartenTon, stimme: [[KA.text, 'Begriffe abfragen: Was sitzt, kommt seltener, und alles geht auch nach Anki.']]},
+	{name: 'Frag', dauer: streck(540, TEMPO.frag), C: RFrag, ton: fragTon, stimme: [[FRT.a, 'Wo ist eigentlich mein VWL-PS?'], [FRT.b, 'Der kennt Stundenplan, Fristen und alle Ausgaben.']]},
 	{name: 'Kalender', dauer: streck(420, TEMPO.kalender), C: RKalender, ton: kalenderTon, stimme: [[KL.a, 'Mein Stundenplan, mit Thema jeder Einheit.'], [KL.b, 'Fristen ab ins iPad, mit Erinnerung.']]},
-	{name: 'Tests', dauer: streck(600, TEMPO.tests), C: RTests, ton: testsTon, stimme: [[OT.a, 'Welcher Onlinetest ist offen? Und bis wann?'], [OT.b, 'Kein PC? Test per Foto.'], [OT.c, 'Vorbei und nicht kapiert? Lösungsweg an einer ähnlichen Aufgabe.']]},
-	{name: 'Noten', dauer: streck(500, TEMPO.noten), C: RNoten, ton: notenTon, stimme: [[NO.a + 30, 'Wie steh ich eigentlich? Noten mit Prognose.'], [NO.b, 'Dreißig Tage bis zum Zwischentest. Der Plan steht.']]},
-	{name: 'Probeklausur', dauer: streck(440, TEMPO.probe), C: RProbe, ton: pkTon, stimme: [[PK.a, 'Generalprobe. Probeklausur mit Zeitlimit.'], [PK.b, 'Danach: Punkte, Note und jeder Lösungsweg.']]},
-	{name: 'Training', dauer: streck(450, TEMPO.training), C: RTraining, ton: trainingTon, stimme: [[TR.a, 'Dann gezielt üben, genau da, wo’s hakt.'], [TR.b, 'Und der ganze Stoff als Lernskript.']]},
+	{name: 'Tests', dauer: streck(600, TEMPO.tests), C: RTests, ton: testsTon, stimme: [[OT.a, 'Welcher Onlinetest ist offen, und bis wann?'], [OT.b, 'Kein PC? Test per Foto.'], [OT.c - 8, 'Vorbei, nicht kapiert? Lösungsweg mit anderen Zahlen.']]},
+	{name: 'Noten', dauer: streck(500, TEMPO.noten), C: RNoten, ton: notenTon, stimme: [[NO.a + 45, 'Wie steh ich eigentlich? Noten mit Prognose.'], [NO.b, 'Dreißig Tage bis zum Zwischentest, der Plan steht.']]},
+	{name: 'Probeklausur', dauer: streck(440, TEMPO.probe), C: RProbe, ton: pkTon, stimme: [[PK.a, 'Generalprobe: Probeklausur mit Zeitlimit.'], [PK.b, 'Danach: Punkte, Note und jeder Lösungsweg.']]},
+	{name: 'Training', dauer: streck(450, TEMPO.training), C: RTraining, ton: trainingTon, stimme: [[TR.a, 'Dann gezielt üben, genau da, wo es hakt.'], [TR.b, 'Und der ganze Stoff als Lernskript.']]},
 	{name: 'Podcast', dauer: streck(330, TEMPO.podcast), C: RPodcast, ton: podcastTonR, stimme: [[PO.text, 'Keine Lust zu lesen? Dann hör ich’s mir im Bus an.']]},
 	{name: 'Panik', dauer: streck(200, TEMPO.panik), C: RPanik, ton: panikTon, stimme: [[PA.text, 'Freitag Präsentation in Englisch. Panik.']]},
-	{name: 'Vortrag', dauer: streck(570, TEMPO.vortrag), C: VortragHell, ton: vortragTon(TEMPO.vortrag), stimme: streck<Satz[]>([[VT0.textA, 'Probevortrag hochladen. Jedes Füllwort wird gezählt.'], [VT0.textB, 'Feedback mit Zeitstempel und meinem Sprachniveau.']], TEMPO.vortrag)},
+	{name: 'Vortrag', dauer: streck(570, TEMPO.vortrag), C: VortragHell, ton: vortragTon(TEMPO.vortrag), stimme: streck<Satz[]>([[VT0.textA + 15, 'Vortrag hochladen, jedes Füllwort wird gezählt.'], [VT0.textB, 'Feedback mit Zeitstempel und meinem Sprachniveau.']], TEMPO.vortrag)},
 	{name: 'Coach', dauer: streck(680, TEMPO.coach), C: RCoach, ton: coachTon, stimme: [[CO.a, 'Erst selbst reflektieren, die KI prüft jeden Punkt.'], [CO.b, 'Und für Rückfragen gibt’s den Coach. Das Video bleibt auf meinem Gerät.']]},
 	{name: 'Kleinkram', dauer: streck(640, TEMPO.klein), C: RKlein, ton: kleinTon, stimme: [[10, 'Und sonst so? Frühere Ausgaben bleiben, alle Fächer auf einmal neu, dein Stil, hell oder dunkel.'], [KK.start + 5 * KK.takt - 10, 'Und alles bleibt privat.']]},
-	{name: 'Tarife', dauer: streck(460, TEMPO.tarife), C: RTarife, ton: tarifTon, stimme: [[TA.a + 10, 'Was kostet das? Base: null Euro. Kein Abo.'], [TA.b, 'Pro vier neunzig, Ultra neun neunzig im Monat.']]},
-	{name: 'Schluss', dauer: streck(230, TEMPO.schluss), C: RSchluss, ton: schlussTon, stimme: [[SC.text, 'Halb zwölf. Ich check’s.']]},
-	{name: 'CTA', dauer: 420, C: Cta, ton: ctaTon, stimme: [[CTA.a - 10, 'Base ist kostenlos. Ultra vierundzwanzig Stunden gratis testen. Auf lernhelfer Punkt x y z.']]},
+	{name: 'Tarife', dauer: streck(460, TEMPO.tarife), C: RTarife, ton: tarifTon, stimme: [[TA.a, 'Was kostet das? Einstieg: null Euro, kein Abo.'], [TA.b + 20, 'Pro vier Euro neunzig, Ultra neun Euro neunzig im Monat.']]},
+	{name: 'Schluss', dauer: streck(230, TEMPO.schluss), C: RSchluss, ton: schlussTon, stimme: [[SC.text + 40, 'Halb zwölf. Ich check’s.']]},
+	{name: 'CTA', dauer: 420, C: Cta, ton: ctaTon, stimme: [[CTA.a - 26, 'Kostenlos starten, Ultra vierundzwanzig Stunden gratis: lernhelfer Punkt x y z.']]},
 ];

@@ -19,9 +19,9 @@ export const zeitplan = (szenen: Szene[]) => {
 	const cues: Cue[] = szenen.flatMap((s, i) => s.ton.map(([f, t]) => [starts[i] + f, t] as Cue));
 	// Szenenwechsel bekommen einen Swoosh, wenn die neue Szene nicht selbst mit einem beginnt
 	for (let i = 1; i < szenen.length; i++) if (!szenen[i].ton.some(([f, t]) => t === 'swoosh' && f < 12)) cues.push([starts[i], 'swoosh']);
-	// id: Nummer der Szene, bei mehreren Sätzen mit a, b, c; jeder Satz darf bis kurz vor den nächsten dauern, der letzte bis eine halbe Sekunde vor Schluss
+	// id: Nummer der Szene, bei mehreren Sätzen mit a, b, c; jeder Satz darf bis kurz vor den nächsten dauern, der letzte bis kurz vor Schluss
 	const folge = szenen.flatMap((s, i) => (s.stimme ?? []).map(([f, text], j, alle) => ({id: String(i + 1).padStart(2, '0') + (alle.length > 1 ? 'abcdef'[j] : ''), start: starts[i] + f, text})));
-	const saetze: Sprechen[] = folge.map((s, i) => ({...s, bis: folge[i + 1] ? folge[i + 1].start - LUFT : dauer - 30}));
+	const saetze: Sprechen[] = folge.map((s, i) => ({...s, bis: folge[i + 1] ? folge[i + 1].start - LUFT : dauer - LUFT}));
 	return {starts, dauer, cues, saetze};
 };
 
