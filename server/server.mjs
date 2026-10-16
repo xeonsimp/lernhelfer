@@ -123,6 +123,7 @@ create table if not exists bestellungen (id integer primary key, konto integer r
 create table if not exists gutscheine (id integer primary key, konto integer not null references konten(id) on delete cascade, von integer, erstellt integer not null,
   eingeloest integer);
 create table if not exists werte (name text primary key, wert real not null);
+create table if not exists schluessel (name text primary key, wert text not null);
 create table if not exists nutzung (konto integer not null, was text not null, tag text not null, n integer not null default 0, usd real not null default 0,
   primary key (konto, was, tag));
 create table if not exists fehler (id integer primary key, zeit integer not null, konto integer references konten(id) on delete set null, kontakt text,
@@ -154,6 +155,14 @@ const entschluesseln = s => {
   c.setAuthTag(tag);
   return Buffer.concat([c.update(d), c.final()]).toString('utf8');
 };
+// Schlüssel, Passwörter und Zahlungsdaten aus der Admin-Ecke: verschlüsselt in der Datenbank, gehen vor /etc/lernhelfer.env.
+// GEHEIM (LH_GEHEIM) und LH_ECKE bleiben in der Datei, sonst könnte man sich aussperren.
+const SCHLUESSEL = { LH_OR_KEY: 1, LH_OR_VERWALTUNG: 1, LH_BREVO: 1, LH_PASS_WORDPOWER: 1, LH_PASS_ONLINETEST: 1,  // 1 = geheim, wird nie zurückgegeben
+  LH_ABSENDER: 0, LH_EMPFAENGER: 0, LH_IBAN: 0, LH_BIC: 0, LH_PAYPAL: 0 };
+const AUS_DATEI = Object.fromEntries(Object.keys(SCHLUESSEL).map(n => [n, E[n]]));  // Löschen in der Ecke führt hierher zurück
+for (const { name, wert } of db.prepare('select name, wert from schluessel').all())
+  try { if (name in SCHLUESSEL) E[name] = entschluesseln(wert); } catch { console.error(`Gespeicherter Wert ${name} lässt sich nicht entschlüsseln (LH_GEHEIM geändert?).`); }
+const schluesselStand = () => Object.fromEntries(Object.entries(SCHLUESSEL).map(([n, geheim]) => [n, geheim ? !!E[n] : E[n] || '']));
 const json = (res, status, daten) => { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(daten)); };
 function lies(req, max) {
   return new Promise((ok, fehl) => {
@@ -690,7 +699,7 @@ const ROUTEN = {
       from konten k left join konten w on w.id = k.geworben_von order by k.id desc`).all(monat());
     await Promise.all(konten.map(async x => { x.api = x.or_hash && E.LH_OR_VERWALTUNG ? await orNutzung(x.or_hash) : null; delete x.or_hash; }));
     return {
-      ...dashboard(konten), konten, funktionen: nutzungListe(),
+      ...dashboard(konten), konten, funktionen: nutzungListe(), schluessel: schluesselStand(),
       fehler: db.prepare('select id, zeit, kontakt, seite, meldung, text, geraet from fehler where erledigt = 0 order by id desc limit 50').all(),
       bestellungen: db.prepare("select id, email, tarif, monate, betrag, rabatt, zweck, status, erstellt, gemeldet, bezahlt from bestellungen where status in ('offen', 'gemeldet') or bezahlt > ? order by id desc").all(jetzt() - 60 * TAG),
     };
@@ -703,6 +712,18 @@ const ROUTEN = {
       if (!(x >= 0 && x < 1e5)) nein(400, 'Bitte eine Zahl eingeben, etwa 4,90.');
       db.prepare('insert into werte (name, wert) values (?, ?) on conflict (name) do update set wert = excluded.wert').run(name, x);
     }
+  },
+  'POST /api/admin/schluessel': ({ k, b }) => {  // leer = unverändert; b.weg: diese Namen löschen, dann gilt wieder /etc/lernhelfer.env
+    admin(k);
+    for (const [n, v] of Object.entries(b)) {
+      if (!(n in SCHLUESSEL) || typeof v !== 'string' || !v.trim()) continue;
+      if (v.length > 500 || /[\r\n]/.test(v)) nein(400, `${n}: zu lang oder mit Zeilenumbruch.`);
+      db.prepare('insert into schluessel (name, wert) values (?, ?) on conflict (name) do update set wert = excluded.wert').run(n, verschluesseln(v.trim()));
+      E[n] = v.trim();
+    }
+    for (const n of Array.isArray(b.weg) ? b.weg : []) if (n in SCHLUESSEL) { db.prepare('delete from schluessel where name = ?').run(n); if (AUS_DATEI[n]) E[n] = AUS_DATEI[n]; else delete E[n]; }
+    for (const x in PROMPTS) delete PROMPTS[x];  // neue Passwörter: Prompts neu entschlüsseln
+    return schluesselStand();
   },
   'POST /api/admin/bezahlt': ({ k, b }) => { admin(k); return freischalten(Number(b.id)); },
   'POST /api/admin/fehler': ({ k, b }) => { admin(k); db.prepare('update fehler set erledigt = ? where id = ?').run(jetzt(), Number(b.id)); },

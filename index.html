@@ -705,6 +705,11 @@
   .kachel p { margin: 0; }
   .kachel .zahl { margin: 4px 0 2px; color: var(--text); font: 700 1.5rem/1.2 var(--sans); font-variant-numeric: tabular-nums; }
   .admin .tabelle td { white-space: nowrap; }
+  .schluessel { margin-bottom: 28px; }
+  .schluessel summary { cursor: pointer; min-height: 32px; }
+  .schluessel form { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0 20px; }
+  .schluessel .feld .meta { font-weight: 400; }
+  .schluessel .knopfreihe, .schluessel [role=status] { grid-column: 1 / -1; }
   .werte-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; margin-top: 14px; }
   .werte-form label { display: grid; gap: 4px; color: var(--text-2); font-size: 0.875rem; font-weight: 600; }
   .werte-form input { width: 8em; }
@@ -4758,6 +4763,40 @@ function upgradeZeigen() {
   ].filter(Boolean));
 }
 
+// Schlüssel und Zahlungsdaten des Servers: hier eintragen statt in /etc/lernhelfer.env. Geheime Werte schickt der Server nie zurück, nur ob sie gesetzt sind.
+const SCHLUESSEL_FELDER = [
+  ['LH_OR_KEY', 'OpenRouter-Schlüssel', 'Die KI für alle Konten. openrouter.ai → Keys, am besten mit Monatslimit.'],
+  ['LH_PASS_ONLINETEST', 'Passwort voller Löser', 'Dasselbe wie in deiner App; ohne es meldet der Löser „noch nicht eingerichtet“.'],
+  ['LH_PASS_WORDPOWER', 'Passwort Word Power', 'Dasselbe wie in deiner App.'],
+  ['LH_BREVO', 'Brevo-API-Schlüssel', 'Für Mails (Bestätigung, Passwort, Zahlungen). brevo.com → SMTP & API → API Keys.'],
+  ['LH_ABSENDER', 'Absender der Mails', 'Muss bei Brevo als Absender bestätigt sein.'],
+  ['LH_OR_VERWALTUNG', 'OpenRouter Management-Key', 'Nur für Ultra+. openrouter.ai → Settings → Management Keys.'],
+  ['LH_EMPFAENGER', 'Empfänger der Überweisung', 'Vor- und Nachname, steht auf der Tarifseite.'],
+  ['LH_IBAN', 'IBAN', ''], ['LH_BIC', 'BIC', ''], ['LH_PAYPAL', 'PayPal', 'E-Mail-Adresse oder paypal.me-Link.'],
+];
+function schluesselForm(stand) {
+  const hinweis = el('p', { class: 'klein', role: 'status' });
+  const fehlt = SCHLUESSEL_FELDER.filter(([n]) => !stand[n]).map(x => x[1]);
+  return el('details', { class: 'schritt schluessel', open: fehlt.length > 0 },
+    el('summary', {}, el('b', {}, 'Schlüssel und Zahlungsdaten'), ' ', el('span', { class: 'meta' }, fehlt.length ? `${fehlt.length} fehlen` : 'alles gesetzt')),
+    el('p', { class: 'klein' }, 'Gilt sofort, ohne Neustart. Gespeichert verschlüsselt auf dem Server; ein Feld leer lassen heißt: unverändert. Was hier steht, geht vor /etc/lernhelfer.env.'),
+    el('form', { onsubmit: async e => {
+      e.preventDefault();
+      const f = e.target, k = f.querySelector('button.voll');
+      k.disabled = true; hinweis.textContent = 'Speichere …';
+      try { await api('admin/schluessel', Object.fromEntries(new FormData(f))); hinweis.textContent = 'Gespeichert.'; adminZeigen(); }
+      catch (err) { hinweis.textContent = err.message; k.disabled = false; }
+    } },
+      SCHLUESSEL_FELDER.map(([n, name, info]) => {
+        const geheim = typeof stand[n] === 'boolean';
+        return el('label', { class: 'feld' }, el('span', {}, name, ' ', el('span', { class: 'opt' }, geheim ? (stand[n] ? 'gesetzt' : 'fehlt') : '')),
+          el('input', { name: n, type: geheim ? 'password' : 'text', autocomplete: 'off', autocapitalize: 'off', spellcheck: 'false',
+            value: geheim ? null : stand[n], placeholder: geheim && stand[n] ? 'gesetzt, zum Ändern neu eintragen' : '' }),
+          info && el('span', { class: 'meta' }, info));
+      }),
+      el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll' }, 'Speichern')), hinweis));
+}
+
 const eckeWechsel = () => { WP = null; LOESER_PROMPT = null; LOESER_LADEN = null; kontoZeile(); zeichne(); };  // Prompts voll oder öffentlich neu laden
 async function adminZeigen() {
   const s = $('admin');
@@ -4814,6 +4853,7 @@ async function adminZeigen() {
       el('div', { class: 'knopfreihe' },
         el('button', { class: 'knopf', type: 'button', onclick: e => { e.currentTarget.disabled = true; adminZeigen(); } }, 'Aktualisieren'),
         el('button', { class: 'knopf', type: 'button', onclick: async e => { e.currentTarget.disabled = true; ICH = await api('ecke-zu', {}).catch(() => ICH); eckeWechsel(); } }, 'Ecke sperren'))),
+    schluesselForm(d.schluessel),
     el('h2', {}, 'Volle Werkzeuge'),
     el('p', { class: 'klein' }, 'Nur für dich, solange die Ecke offen ist: Word Power mit Hausaufgaben-Entwurf und der Löser mit den Originalzahlen. Alle anderen bekommen nur das Transkript und Lösungswege an Übungsaufgaben mit anderen Zahlen.'),
     el('div', { class: 'knopfreihe' }, el('a', { class: 'knopf voll', href: '#/wordpower' }, 'Word Power, voll'), el('a', { class: 'knopf voll', href: '#/onlinetests' }, 'Onlinetests mit vollem Löser')),

@@ -302,7 +302,17 @@ try {
   assert.equal(dash.geld.einnahmen.gesamt, 693 + 1490);
   assert.equal((await chef('POST', '/api/admin/werte', { fixkosten: '5,5', kurs: 'viel' })).status, 400);
   await chef('POST', '/api/admin/werte', { fixkosten: '5,5', kurs: '0,9' });
+  // Schlüssel und Zahlungsdaten aus der Admin-Ecke: gelten sofort, geheime kommen nie zurück
+  assert.equal(dash.schluessel.LH_OR_KEY, true); assert.equal(dash.schluessel.LH_BREVO, false); assert.equal(dash.schluessel.LH_IBAN, 'AT00 TEST');
+  assert.equal((await anna('POST', '/api/admin/schluessel', { LH_IBAN: 'AT00' })).status, 403);
+  assert.equal((await chef('POST', '/api/admin/schluessel', { LH_IBAN: 'a\nb' })).status, 400);
+  const neu = (await chef('POST', '/api/admin/schluessel', { LH_IBAN: ' AT61 1904 3002 3457 3201 ', LH_PASS_WORDPOWER: '', LH_GEHEIM: 'nein' })).j;
+  assert.equal(neu.LH_IBAN, 'AT61 1904 3002 3457 3201'); assert.equal(neu.LH_PASS_WORDPOWER, true, 'leer = unverändert'); assert.ok(!('LH_GEHEIM' in neu));
+  assert.equal((await fetch(BASIS + '/api/tarife').then(r => r.json())).zahlung.iban, 'AT61 1904 3002 3457 3201', 'gilt ohne Neustart');
+  assert.ok(!JSON.stringify((await chef('GET', '/api/admin')).j.schluessel).includes('sk-or-server'), 'geheime Werte bleiben auf dem Server');
+  await chef('POST', '/api/admin/schluessel', { weg: ['LH_IBAN'] });
   dash = (await chef('GET', '/api/admin')).j;
+  assert.equal(dash.schluessel.LH_IBAN, 'AT00 TEST', 'gelöscht: wieder der Wert aus der Datei');
   const G = dash.geld;
   assert.equal(G.fixkosten, 5.5); assert.equal(G.kurs, 0.9); assert.equal(G.laufzeit, 1);
   assert.equal(G.gewinn.monat, G.einnahmen.monat - Math.round((G.ki.monat + 1.5) * 0.9 * 100) - 550);

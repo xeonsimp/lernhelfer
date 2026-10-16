@@ -110,6 +110,8 @@ Dann auf dem Server `sudo chown -R lernhelfer /var/lib/lernhelfer/geschuetzt`. O
 
 Dann auf der Seite mit der Mail aus `LH_ADMIN` registrieren und bestätigen: Ganz unten in der Seitenleiste (am Handy unter „Konto“) erscheint „Admin-Ecke“. Sie fragt nach dem Passwort aus `LH_ECKE` und zeigt dann Dashboard, Zahlungen und die vollen Werkzeuge, 12 Stunden lang.
 
+OpenRouter-Schlüssel, Passwörter von Word Power und Löser, Brevo und Zahlungsdaten trägst du am einfachsten dort unter „Schlüssel und Zahlungsdaten“ ein: Sie gelten sofort ohne Neustart, liegen mit `LH_GEHEIM` verschlüsselt in der Datenbank und gehen vor die Werte aus `/etc/lernhelfer.env`. In der Datei müssen dann nur `LH_URL`, `LH_PORT`, `LH_DATEN`, `LH_GEHEIM`, `LH_ADMIN` und `LH_ECKE` stehen. Wer `LH_GEHEIM` ändert, muss die Schlüssel neu eintragen. Nutzerinnen und Nutzer brauchen weder GitHub noch eigene Schlüssel: Speicher und KI kommen vom Server, das PC- und Mac-Programm gibt es unter „Konto“.
+
 ## Laufender Betrieb
 
 - **Zahlung kommt rein:** Admin-Ecke → bei der Bestellung mit diesem Verwendungszweck „Geld ist da“. Der Tarif startet sofort, die Person bekommt eine Mail.
