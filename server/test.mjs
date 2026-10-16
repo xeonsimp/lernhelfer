@@ -183,7 +183,7 @@ try {
   assert.equal((await anna('POST', '/api/test')).status, 403);
   assert.equal((await anna('POST', '/api/bestaetigen', { token: await link('anna@example.com', 'bestaetigen') })).status, 200);
   assert.match(log, /\/app#bestaetigen=/, 'Mail-Links führen in die App');
-  assert.match((await anna('GET', '/')).text, /<html lang="de" data-server>/, 'angemeldet geht / gleich in die App');
+  assert.match((await anna('GET', '/')).text, /<a class="go" href="app">/, 'auch angemeldet zuerst die Startseite');
   r = await anna('POST', '/api/test');
   assert.equal(r.j.tarif, 'ultra'); assert.equal(r.j.test, true); assert.ok(r.j.bis - Date.now() > 23.9 * 3600e3);
   r = await anna('POST', '/api/ki', { feature: 'chat', model: 'openai/gpt-6-luna', stream: true, messages: [] });

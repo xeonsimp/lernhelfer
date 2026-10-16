@@ -728,8 +728,8 @@ const DATEIEN = {
 };
 function statisch(req, res, url) {
   const pfad = url.pathname;
-  // Die Startseite ist für Gäste; angemeldet oder mit Einladung (?ref=) geht es gleich in die App
-  if (pfad === '/' && (url.search || konto(req))) { res.writeHead(302, { Location: '/app' + url.search }); return res.end(); }
+  // Alle starten auf der Startseite (angemeldet führt „Anmelden“ ohne Login aufs Dashboard); Einladungen (?ref=) gehen gleich in die App
+  if (pfad === '/' && url.search) { res.writeHead(302, { Location: '/app' + url.search }); return res.end(); }
   const d = DATEIEN[pfad];
   if (!d || !['GET', 'HEAD'].includes(req.method)) { res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' }); return res.end('Nicht gefunden'); }
   let inhalt = readFileSync(join(APP, d[0]));
