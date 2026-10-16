@@ -95,7 +95,7 @@ try {
   const seite = await fetch(BASIS + '/?ref=ABC').then(r => r.text());
   assert.match(seite, /<html lang="de" data-server>/);
   assert.match(await fetch(BASIS + '/').then(r => r.text()), /<a class="go" href="app">/, 'Startseite für Gäste, Knopf zum Login');
-  assert.match(await fetch(BASIS + '/skizze').then(r => r.text()), /<html lang="de" data-server>[\s\S]*href="skizze.css"/, 'Skizze-Fassung unter /skizze');
+  assert.match(await fetch(BASIS + '/app').then(r => r.text()), /href="skizze.css" id="skizze-css"/, 'neues Design ist Standard');
   assert.equal((await fetch(BASIS + '/api/tarife').then(r => r.json())).funktionen['wp-text'], undefined, 'Hausaufgaben-Entwurf steht nirgends im Angebot');
   for (const p of ['/openrouter_key.txt.txt', '/loeser_prompt.txt', '/daten/README.md', '/server/server.mjs', '/.git/config']) assert.equal((await fetch(BASIS + p)).status, 404, p);
   const mac = await fetch(BASIS + '/einrichten-mac.sh').then(r => r.text());

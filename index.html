@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; font-src 'self'; connect-src 'self' https://openrouter.ai https://api.github.com https://www.youtube.com; img-src data: https://i.ytimg.com; media-src blob:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' https://openrouter.ai https://api.github.com https://www.youtube.com; img-src data: https://i.ytimg.com; media-src blob:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Lernhelfer">
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#111317" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#fbfbf9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#26302b" media="(prefers-color-scheme: dark)">
 <title>Lernhelfer</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232446c8'/%3E%3Cpath d='M11 8h3.6v13H22v3H11z' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preload" href="fonts/Archivo.woff2" as="font" type="font/woff2" crossorigin>
@@ -837,6 +837,16 @@
   .tempo { display: inline-flex; align-items: center; gap: 8px; font-size: 0.875rem; font-weight: 600; }
   .tempo select { width: auto; min-height: 40px; }
 </style>
+<link rel="stylesheet" href="skizze.css" id="skizze-css">
+<script>
+// Das neue Design (skizze.css) ist Standard; das alte lässt sich unter Einstellungen wählen und gilt für dieses Gerät
+function designWaehlen(alt) {
+  document.getElementById('skizze-css').disabled = alt;
+  const [hell, dunkel] = document.querySelectorAll('meta[name=theme-color]');
+  hell.content = alt ? '#ffffff' : '#fbfbf9'; dunkel.content = alt ? '#111317' : '#26302b';
+}
+try { if (localStorage.getItem('design') === 'alt') designWaehlen(true); } catch {}
+</script>
 </head>
 <body>
 <a class="sprung" href="#inhalt" onclick="event.preventDefault(); document.getElementById('inhalt').focus();">Zum Inhalt springen</a>
@@ -996,6 +1006,7 @@
       <div id="ei-schritte"></div>
       <section class="schritt" aria-labelledby="ei-einst">
         <h2 id="ei-einst">Einstellungen</h2>
+        <label class="feld">Design <select id="design" name="design"><option value="">Neu: Skizze auf Punktraster</option><option value="alt">Alt: schlicht</option></select></label>
         <label class="feld">Modell für neue Ausgaben <select id="modell" name="modell"></select></label>
         <p class="klein"><span id="modell-hinweis"></span><span class="nur-eigen"> Eine Ausgabe kostet meist 1 bis 8 Cent.</span></p>
         <div id="stil-teil"></div>
@@ -4938,6 +4949,8 @@ async function start() {
 
 window.onhashchange = () => SERVER && /^#(bestaetigen|passwort)=/.test(location.hash) ? kontoStart().then(zeichne) : zeichne();  // Mail-Link bei offener App
 if (SERVER) for (const a of document.querySelectorAll('a[data-ansicht="einstellungen"]')) a.lastChild.textContent = 'Konto';
+$('design').value = merk('design') || '';
+$('design').onchange = () => { merk('design', $('design').value || null); designWaehlen(!!$('design').value); };
 $('modell').onchange = () => { merk('modell', $('modell').value); $('modell-name').textContent = $('modell').value; };
 $('alle').onclick = () => Promise.all(Object.keys(R).map(f => drucke(f)));
 $('abmelden').onclick = () => {
