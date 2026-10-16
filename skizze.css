@@ -170,3 +170,6 @@ input:not([type="checkbox"], [type="file"], [type="radio"]), textarea, select { 
 }
 :root[data-thema="dunkel"] .karte .seite-h { --bg: #222120; }
 
+/* Fuß: gezeichneter Strich statt Linie, Empfehlung als leiser Kasten */
+.fuss { border-top: 0; background: var(--strich-waagrecht) left top / 360px 6px repeat-x; }
+.empfehlung { border: 1.5px solid transparent; border-radius: 0; border-image: var(--rahmen-2) 10 / 10px / 4px stretch; background-color: var(--bg); }
