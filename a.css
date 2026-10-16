@@ -1,0 +1,187 @@
+/* Variante A: das Deckblatt einer Klausur auf königsblauem Tisch. Druckschwarz, Formulargrau, Rotstift nur zum Korrigieren. */
+@font-face { font-family: "Archivo"; src: url("fonts/Archivo.woff2") format("woff2"); font-weight: 100 900; font-stretch: 62% 125%; font-display: swap; }
+
+:root {
+  --tisch: #2446c8;
+  --papier: #fcfcfa;
+  --tinte: #141414;
+  --tinte-2: #50545b;
+  --feld: #8a8f96;
+  --linie: #c9ccd1;
+  --rot: #d0121c;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --tisch: #16297a; --papier: #efefec; }
+}
+
+* { box-sizing: border-box; }
+html { background: var(--tisch); -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--tisch);
+  color: var(--tinte);
+  font: 400 1rem/1.5 "Archivo", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+::selection { background: rgb(36 70 200 / 0.18); }
+a { color: inherit; touch-action: manipulation; }
+:focus-visible { outline: 2px solid var(--tisch); outline-offset: 3px; border-radius: 3px; }
+p, ul, ol { margin: 0; }
+
+/* ---------- Blatt ---------- */
+.blatt {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: min(780px, 100% - 24px);
+  margin: clamp(12px, 5vh, 56px) auto 0;
+  padding: clamp(36px, 6vw, 64px) clamp(22px, 6.5vw, 72px) max(20px, env(safe-area-inset-bottom));
+  background: var(--papier);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.2), 0 26px 60px -26px rgb(0 0 0 / 0.5);
+}
+.blatt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.klammer { position: absolute; top: 6px; left: 6px; width: 40px; height: 40px; fill: none; stroke-linecap: round; }
+.klammer path { stroke: #9ba1aa; stroke-width: 2.4; }
+.klammer .schatten { stroke: rgb(0 0 0 / 0.16); stroke-width: 2.8; }
+
+.kopf {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--tinte);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+.marke { font-weight: 800; font-size: 0.9375rem; letter-spacing: 0.05em; text-transform: uppercase; }
+.semester, .woche { text-align: right; }
+.art, .woche { color: var(--tinte-2); }
+
+.felder { display: flex; flex-wrap: wrap; align-items: end; gap: 14px 28px; margin-top: 20px; font-size: 0.8125rem; color: var(--tinte-2); }
+.feld { display: flex; align-items: end; gap: 10px; }
+.name { flex: 1 1 220px; }
+.name::after { content: ""; flex: 1; height: 1px; margin-bottom: 4px; background: var(--feld); }
+.kaesten { display: inline-flex; }
+.kaesten i { width: 22px; height: 26px; border: 1px solid var(--feld); }
+.kaesten i + i { border-left: 0; }
+
+.titel {
+  margin: clamp(32px, 6vh, 52px) 0 0;
+  font-size: clamp(3.5rem, 12vw, 6rem);
+  font-weight: 850;
+  font-stretch: 78%;
+  line-height: 0.9;
+  letter-spacing: -0.012em;
+}
+.claim { margin-top: 14px; max-width: 32ch; font-size: clamp(1.125rem, 2vw, 1.3125rem); line-height: 1.4; text-wrap: pretty; }
+.unterstrichen { position: relative; white-space: nowrap; }
+.unterstrichen svg { position: absolute; left: -2px; right: -2px; bottom: -7px; width: calc(100% + 4px); height: 10px; overflow: visible; }
+
+.unterstrichen path, .haken path, .kreis path {
+  fill: none;
+  stroke: var(--rot);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  mix-blend-mode: multiply;
+}
+.unterstrichen path { stroke-width: 2.2; }
+
+.hinweise { margin-top: 34px; padding: 12px 16px 13px; border: 1px solid var(--tinte); font-size: 0.875rem; color: var(--tinte-2); }
+.hinweise-titel { font-weight: 700; color: var(--tinte); }
+.hinweise ul { margin-top: 4px; padding-left: 16px; list-style: "– "; }
+
+.aufgaben { margin-top: 28px; }
+.spalten, .aufgaben li { display: grid; grid-template-columns: 40px 1fr 64px; align-items: center; }
+.spalten { padding-bottom: 6px; border-bottom: 2px solid var(--tinte); font-size: 0.75rem; color: var(--tinte-2); }
+.spalten span:last-child { text-align: center; }
+.aufgaben ol { padding: 0; list-style: none; }
+.aufgaben li { min-height: 46px; padding: 6px 0; border-bottom: 1px solid var(--linie); font-size: 1rem; }
+.nr { font-size: 0.875rem; font-variant-numeric: tabular-nums; color: var(--tinte-2); }
+.haken { justify-self: center; width: 32px; height: 24px; overflow: visible; }
+.haken path { stroke-width: 2.6; }
+
+.abgabe { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 30px; margin-top: 26px; }
+.kreis-rahmen { position: relative; display: inline-block; margin: 6px 0 6px 10px; }
+.kreis { position: absolute; left: -22px; top: -14px; width: calc(100% + 44px); height: calc(100% + 28px); overflow: visible; pointer-events: none; }
+.kreis path { stroke-width: 2.4; }
+.go {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 20px 0 22px;
+  border-radius: 4px;
+  background: var(--tinte);
+  color: var(--papier);
+  font-size: 1rem;
+  font-weight: 650;
+  text-decoration: none;
+  transition: transform 160ms var(--ease-out), background-color 200ms ease;
+}
+.go svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform 220ms var(--ease-out); }
+.go:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) {
+  .go:hover { background: var(--tisch); }
+  .go:hover svg { transform: translateX(3px); }
+}
+.note { font-size: 0.875rem; color: var(--tinte-2); }
+
+.meta { display: flex; flex-wrap: wrap; margin-top: 30px; padding: 0; list-style: none; font-size: 0.8125rem; color: var(--tinte-2); }
+.meta li + li::before { content: "·"; margin: 0 10px; }
+
+.fuss {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px 24px;
+  margin-top: auto;
+  padding-top: 44px;
+  font-size: 0.75rem;
+  color: var(--tinte-2);
+}
+.fuss nav { display: flex; flex-wrap: wrap; gap: 0 18px; width: 100%; padding-top: 12px; border-top: 1px solid var(--linie); }
+.fuss nav a { padding: 6px 0; text-decoration: none; color: var(--tinte); }
+@media (hover: hover) { .fuss nav a:hover { text-decoration: underline; text-underline-offset: 0.25em; } }
+.seite { font-variant-numeric: tabular-nums; }
+
+@media (max-width: 560px) {
+  .kopf { grid-template-columns: 1fr; }
+  .semester, .woche { text-align: left; }
+  .woche { grid-row: 4; }
+  .spalten, .aufgaben li { grid-template-columns: 28px 1fr 48px; }
+  .meta { flex-direction: column; gap: 4px; }
+  .meta li + li::before { content: none; }
+}
+
+/* ---------- Einmal: Blatt landet, dann korrigiert der Rotstift ---------- */
+.unterstrichen path, .haken path, .kreis path { stroke-dasharray: 1; stroke-dashoffset: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .blatt { animation: landen 800ms var(--ease-out) both; }
+  .unterstrichen path { animation: zeichnen 520ms cubic-bezier(0.55, 0.1, 0.3, 1) 1000ms both; }
+  .haken path { animation: zeichnen 300ms cubic-bezier(0.55, 0.1, 0.3, 1) both; }
+  .aufgaben li:nth-child(1) .haken path { animation-delay: 1500ms; }
+  .aufgaben li:nth-child(2) .haken path { animation-delay: 1720ms; }
+  .aufgaben li:nth-child(3) .haken path { animation-delay: 1940ms; }
+  .aufgaben li:nth-child(4) .haken path { animation-delay: 2160ms; }
+  .aufgaben li:nth-child(5) .haken path { animation-delay: 2380ms; }
+  .kreis path { animation: zeichnen 900ms cubic-bezier(0.6, 0.05, 0.35, 1) 2800ms both; }
+}
+@keyframes landen { from { opacity: 0; transform: translateY(26px) scale(0.985); } }
+@keyframes zeichnen { from { stroke-dashoffset: 1; } }
