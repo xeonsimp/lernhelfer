@@ -96,7 +96,11 @@ try {
   assert.match(seite, /<html lang="de" data-server>/);
   assert.match(await fetch(BASIS + '/').then(r => r.text()), /<a class="go" href="app">/, 'Startseite für Gäste, Knopf zum Login');
   assert.match(await fetch(BASIS + '/app').then(r => r.text()), /href="skizze.css" id="skizze-css"/, 'neues Design ist Standard');
-  assert.equal((await fetch(BASIS + '/api/tarife').then(r => r.json())).funktionen['wp-text'], undefined, 'Hausaufgaben-Entwurf steht nirgends im Angebot');
+  const tarife = await fetch(BASIS + '/api/tarife').then(r => r.json());
+  assert.equal(tarife.funktionen['wp-text'], undefined, 'Hausaufgaben-Entwurf steht nirgends im Angebot');
+  assert.deepEqual(tarife.launch, { aktiv: true, bis: null, tag: null }, 'Launch-Angebot läuft von Anfang an');
+  assert.deepEqual([tarife.tarife.pro.preis, tarife.tarife.pro.regulaer, tarife.tarife.ultra.regulaer, tarife.tarife.ultraplus.regulaer], [490, 990, 1490, 1990]);
+  assert.ok(tarife.tarife.englisch.aktion && !tarife.tarife.englisch.dazu.includes('wp-text'), 'Englisch: Aktion, ohne Entwurf');
   for (const p of ['/openrouter_key.txt.txt', '/loeser_prompt.txt', '/daten/README.md', '/server/server.mjs', '/.git/config']) assert.equal((await fetch(BASIS + p)).status, 404, p);
   const mac = await fetch(BASIS + '/einrichten-mac.sh').then(r => r.text());
   assert.ok(mac.startsWith('#!/bin/bash\n') && !mac.includes('\r'), 'Mac-Einrichten mit Unix-Zeilenenden');
@@ -201,14 +205,10 @@ try {
   assert.equal((await anna('POST', '/api/ki', { feature: 'chat', model: 'openai/gpt-6-luna', messages: [] })).status, 429, 'Testbudget aufgebraucht');
   assert.equal((await anna('POST', '/api/test')).status, 409, 'nur einmal');
 
-  // Bestellen: Anna wurde geworben → 30 % auf einen Monat Ultra; melden; Chef bestätigt und schaltet frei
-  assert.equal((await anna('POST', '/api/bestellen', { tarif: 'ultra', monate: 1 })).status, 400, 'ohne Zustimmung zum Sofortstart');
+  // Launch-Angebot: Launch-Preis, kein Freundes-Rabatt dazu; der bleibt für später
   r = await anna('POST', '/api/bestellen', { tarif: 'ultra', monate: 1, sofort: true });
-  assert.equal(r.j.bestellung.betrag, 990 - 297); assert.match(r.j.bestellung.zweck, /^LH-[A-Z2-9]{6}$/);
-  assert.equal((await anna('POST', '/api/gemeldet')).j.bestellung.status, 'gemeldet');
-  assert.match(log, /Zahlung gemeldet: LH-/);
-  assert.match(log, /\[Mail an anna@example.com\] Lernhelfer: Deine Bestellung LH-[\s\S]*WIDERRUFSBELEHRUNG[\s\S]*MUSTER-WIDERRUFSFORMULAR/, 'Vertragsbestätigung mit Widerruf');
-  assert.equal((await anna('POST', '/api/bestellen', { tarif: 'pro', monate: 1, sofort: true })).status, 409, 'während der Prüfung');
+  assert.equal(r.j.bestellung.betrag, 990); assert.equal(r.j.bestellung.rabatt, 0, 'Rabatte lassen sich nicht kombinieren'); assert.equal(r.j.erstrabatt, true);
+  await anna('POST', '/api/storno');
   assert.equal((await anna('GET', '/api/admin')).status, 403);
   assert.equal((await chef('GET', '/api/admin')).status, 403, 'unbestätigt');
   await chef('POST', '/api/bestaetigen', { token: await link('chef@example.com', 'bestaetigen') });
@@ -218,6 +218,22 @@ try {
   assert.equal((await chef('POST', '/api/ecke', { passwort: 'falsch' })).status, 403);
   assert.equal((await chef('POST', '/api/ecke', { passwort: 'Ecke-Passwort!' })).j.ecke, true);
   assert.equal((await chef('GET', '/api/ich')).j.ecke, true);
+  // Preise einstellen: erst alles prüfen; Launch-Angebot aus, dann gelten die regulären Preise und die Rabatte wieder
+  assert.equal((await anna('POST', '/api/admin/preise', { launch: false })).status, 403);
+  assert.equal((await chef('POST', '/api/admin/preise', { launch: false, pro: { regulaer: '0,10' } })).status, 400);
+  assert.equal((await chef('POST', '/api/admin/preise', { launchBis: 'morgen' })).status, 400);
+  assert.equal((await fetch(BASIS + '/api/tarife').then(r => r.json())).launch.aktiv, true, 'ungültig: nichts gespeichert');
+  let P = (await chef('POST', '/api/admin/preise', { launch: false, pro: { regulaer: '4,90' }, ultra: { regulaer: '9,90' }, ultraplus: { regulaer: '14,90' } })).j;
+  assert.equal(P.launch.aktiv, false); assert.deepEqual([P.tarife.pro.preis, P.tarife.pro.launchPreis, P.tarife.ultraplus.rabattAuf], [490, 490, 990]);
+
+  // Bestellen: Anna wurde geworben → 30 % auf einen Monat Ultra; melden; Chef bestätigt und schaltet frei
+  assert.equal((await anna('POST', '/api/bestellen', { tarif: 'ultra', monate: 1 })).status, 400, 'ohne Zustimmung zum Sofortstart');
+  r = await anna('POST', '/api/bestellen', { tarif: 'ultra', monate: 1, sofort: true });
+  assert.equal(r.j.bestellung.betrag, 990 - 297); assert.match(r.j.bestellung.zweck, /^LH-[A-Z2-9]{6}$/);
+  assert.equal((await anna('POST', '/api/gemeldet')).j.bestellung.status, 'gemeldet');
+  assert.match(log, /Zahlung gemeldet: LH-/);
+  assert.match(log, /\[Mail an anna@example.com\] Lernhelfer: Deine Bestellung LH-[\s\S]*WIDERRUFSBELEHRUNG[\s\S]*MUSTER-WIDERRUFSFORMULAR/, 'Vertragsbestätigung mit Widerruf');
+  assert.equal((await anna('POST', '/api/bestellen', { tarif: 'pro', monate: 1, sofort: true })).status, 409, 'während der Prüfung');
   assert.deepEqual((await chef('GET', '/api/geschuetzt/wordpower')).j, { transcribe: 'TRANSKRIPT', homework: 'HAUSAUFGABE' }, 'Ecke: voll');
   assert.equal((await chef('GET', '/api/geschuetzt/onlinetest')).j.system, 'VOLLER LÖSER');
   assert.equal((await chef('POST', '/api/ki', { feature: 'wp-text', model: 'openai/gpt-6-luna', messages: [{ role: 'user', content: 'x' }] })).status, 200, 'Ecke: Entwurf, auch mit Base');
@@ -336,7 +352,7 @@ try {
   assert.match(zipAntwort.headers.get('content-disposition'), /lernhelfer-daten-\d{4}-\d\d-\d\d\.zip/);
   const z = entpacken(Buffer.from(await zipAntwort.arrayBuffer())), kj = JSON.parse(z['konto.json']);
   assert.equal(z['dateien/faecher/BWL.json'], 'neu'); assert.equal(z['dateien/abgleich.json'], '{"ok":true}'); assert.match(z['LIESMICH.txt'], /nur auf deinem Gerät/);
-  assert.equal(kj.email, 'anna@example.com'); assert.equal(kj.bestellungen.length, 2); assert.equal(kj.bestellungen[0].betrag_euro, 6.93);
+  assert.equal(kj.email, 'anna@example.com'); assert.equal(kj.bestellungen.length, 3); assert.equal(kj.bestellungen[0].status, 'storniert'); assert.equal(kj.bestellungen[1].betrag_euro, 6.93);
   assert.ok(kj.nutzung.some(x => x.was === 'unterlagen')); assert.equal(kj.fehlerberichte[0].text, 'Ausgabe bricht ab'); assert.ok(kj.ueber_einladung);
   assert.equal((await mitPc('GET', '/api/export')).status, 401, 'PC-Schlüssel: kein Export');
   // Konto löschen: Daten weg, Bestellungen bleiben für die Buchhaltung, Schlüssel bei OpenRouter gelöscht
@@ -352,6 +368,45 @@ try {
   assert.equal(dash.kennzahlen.konten, 1);
   assert.equal(dash.funktionen.find(x => x.was === 'unterlagen').k30, 1, 'Nutzung gelöschter Konten bleibt als Zahl');
   assert.equal(dash.fehler[0].kontakt, null, 'Fehlerbericht ohne Kontakt der gelöschten Person');
+  // Launch-Angebot mit Enddatum: vorbei → reguläre Preise; ohne Datum wieder an
+  P = (await chef('POST', '/api/admin/preise', { launch: true, launchBis: '2020-01-01', ultra: { launch: '7,90' } })).j;
+  assert.equal(P.launch.aktiv, false, 'Enddatum vorbei'); assert.equal(P.launch.tag, '2020-01-01'); assert.equal(P.tarife.ultra.preis, 990);
+  assert.equal((await chef('GET', '/api/admin')).j.launchEin, true, 'eingeschaltet, nur abgelaufen');
+  P = (await chef('POST', '/api/admin/preise', { launchBis: '' })).j;
+  assert.deepEqual(P.launch, { aktiv: true, bis: null, tag: null }); assert.equal(P.tarife.ultra.preis, 790); assert.equal(P.tarife.ultraplus.rabattAuf, 790);
+  assert.equal((await fetch(BASIS + '/api/tarife').then(r => r.json())).tarife.ultra.preis, 790, 'gilt sofort auf der Tarifseite');
+
+  // Aktion Englisch: neue Konten bekommen Englisch statt Base; Vortrag und Transkript mit den Modellen, die hören; Chat, Noten und der Entwurf nicht
+  assert.equal((await chef('POST', '/api/admin/werte', { 'neu-englisch': '1,5' })).status, 400);
+  await chef('POST', '/api/admin/werte', { 'neu-englisch': '180' });
+  assert.equal((await chef('GET', '/api/admin')).j.neuEnglisch, 180);
+  const lea = person();
+  r = (await lea('POST', '/api/registrieren', { email: 'lea@example.com', passwort: 'leas-passwort-1', agb: true })).j;
+  assert.equal(r.tarif, 'englisch'); assert.ok(Math.abs(r.bis - Date.now() - 180 * 864e5) < 60e3); assert.equal(r.testFrei, true);
+  await lea('POST', '/api/ki', { feature: 'vortrag', model: 'openai/gpt-6-luna', reasoning: { effort: 'high' }, messages: [{ role: 'user', content: 'Analyse' }] });
+  assert.equal(or.anfragen.at(-1).model, 'openai/gpt-6-luna', 'Englisch: Vortrag nicht mit DeepSeek'); assert.deepEqual(or.anfragen.at(-1).reasoning, { effort: 'high' });
+  assert.equal((await lea('POST', '/api/ki', { feature: 'wp-transkript', model: 'google/gemini-4-argon', messages: [{ role: 'user', content: 'x' }] })).status, 200);
+  assert.deepEqual((await lea('GET', '/api/geschuetzt/wordpower')).j, { transcribe: 'TRANSKRIPT' }, 'nur das Transkript');
+  assert.equal((await lea('POST', '/api/ki', { feature: 'wp-text', model: 'openai/gpt-6-luna', messages: [] })).status, 403, 'Hausaufgaben-Entwurf nie');
+  assert.equal((await lea('POST', '/api/ki', { feature: 'chat', model: 'openai/gpt-6-luna', messages: [] })).status, 402);
+  await lea('POST', '/api/ki', { feature: 'ausgabe', model: 'openai/gpt-6-luna', messages: [{ role: 'user', content: 'x' }] });
+  assert.equal(or.anfragen.at(-1).model, 'deepseek/deepseek-v4.1-flash', 'Ausgabe wie in Base');
+  assert.equal((await lea('PUT', gh('vortraege/v1.json'), { content: b64('{}') })).status, 201, 'Vorträge speichern');
+  assert.equal((await lea('PUT', gh('noten.json'), { content: b64('{}') })).status, 402);
+  assert.equal((await lea('POST', '/api/bestellen', { tarif: 'englisch', monate: 1, sofort: true })).status, 400, 'Englisch gibt es nicht zu kaufen');
+  await lea('POST', '/api/bestaetigen', { token: await link('lea@example.com', 'bestaetigen') });
+  assert.equal((await lea('POST', '/api/test')).j.tarif, 'ultra', 'Gratis-Test auch mit Englisch');
+  await chef('POST', '/api/admin/werte', { 'neu-englisch': '0' });
+  const max = person();
+  assert.equal((await max('POST', '/api/registrieren', { email: 'max@example.com', passwort: 'max-passwort-1', agb: true })).j.tarif, 'base', 'ausgeschaltet: wieder Base');
+  dash = (await chef('GET', '/api/admin')).j;
+  const maxId = dash.konten.find(x => x.email === 'max@example.com').id;
+  await chef('POST', '/api/admin/tarif', { konto: maxId, tarif: 'englisch', tage: 30 });
+  assert.equal((await max('GET', '/api/ich')).j.tarif, 'englisch', 'von Hand');
+  assert.equal((await chef('GET', '/api/admin')).j.kennzahlen.englisch, 2);
+  await chef('POST', '/api/admin/tarif', { konto: maxId, tarif: 'base', tage: 0 });
+  assert.equal((await max('GET', '/api/ich')).j.tarif, 'base', 'zurück auf Base');
+
   // Ecke sperren: Dashboard wieder zu; Raten wird gebremst
   assert.equal((await chef('POST', '/api/ecke-zu')).j.ecke, false);
   assert.equal((await chef('GET', '/api/admin')).status, 403);

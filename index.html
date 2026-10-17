@@ -540,6 +540,7 @@
   .vt-links { display: grid; gap: 18px; }
   .vt-note { display: flex; align-items: center; gap: 14px; }
   .vt-note b { display: block; font-size: 1.125rem; }
+  .vt-note .meta { display: block; }
   .vt-note-zahl { display: grid; place-items: center; width: 64px; height: 64px; flex: none; border-radius: 16px; background: var(--bg-3); color: var(--text); font: 750 2rem/1 var(--sans); font-variant-numeric: tabular-nums; }
   .vt-note-zahl:is([data-note="1"], [data-note="2"]) { background: var(--ok-flaeche); color: var(--ok); }
   .vt-note-zahl[data-note="4"] { background: var(--warn-flaeche); color: var(--warn); }
@@ -612,6 +613,17 @@
   .vt-leiter li { padding: 2px 0; border-radius: 4px; background: var(--bg-3); color: var(--text-3); font: 650 0.6875rem/1.4 var(--sans); text-align: center; }
   .vt-leiter li[data-an="true"] { background: var(--akzent-flaeche); color: var(--akzent-text); }
   .vt-leiter li[data-hier="true"] { box-shadow: inset 0 0 0 2px var(--akzent); }
+  .vt-leiter li[data-weg="true"] { background: linear-gradient(90deg, var(--akzent-flaeche) var(--weg), var(--bg-3) var(--weg)); outline: 1px dashed var(--akzent); outline-offset: -1px; }
+  .vt-leiter.gross { max-width: 480px; margin: 14px 0 4px; }
+  .vt-leiter.gross li { padding: 5px 0; font-size: 0.8125rem; }
+  .vt-ger-stand { margin: 2px 0 0; color: var(--akzent-text); font-weight: 650; }
+  .vt-stand { color: var(--text-3); font-weight: 550; }
+  .vt-weiter { margin: 14px 0 0; padding: 14px 16px; border-radius: var(--r-l); background: var(--bg-2); }
+  .vt-weiter h3 { margin: 0 0 6px; font: 700 1rem/1.3 var(--sans); }
+  .vt-weiter ol { display: grid; gap: 6px; margin: 0; padding-left: 1.3em; }
+  .vt-massstab { display: grid; gap: 4px; margin: 4px 0 0; padding: 0; border: 0; }
+  .vt-massstab legend { margin-bottom: 4px; padding: 0; color: var(--text-2); font-weight: 600; font-size: 0.875rem; }
+  .vt-massstab .haken { font-weight: 550; }
   .vt-grundlage { color: var(--text-2); font-size: 0.875rem; }
   .vt-grundlage h3 { margin: 18px 0 6px; color: var(--text); font: 650 0.9375rem/1.35 var(--sans); }
   .vt-grundlage h4 { margin: 12px 0 4px; color: var(--text); font: 650 0.875rem/1.35 var(--sans); }
@@ -646,6 +658,14 @@
 
   /* Server-Version (eigene Domain): Konten und Tarife statt eigener Schlüssel. Was nur in einer Version gilt, ist markiert. */
   [data-server] .nur-eigen, html:not([data-server]) .nur-server { display: none !important; }
+  /* Englisch: was man hat, steht oben; Pro- und Ultra-Funktionen eingeklappt darunter */
+  .mehr-funktionen > summary { display: flex; align-items: center; gap: 10px; min-height: 36px; padding: 6px 10px; border-radius: var(--r-s); color: var(--text-3); font-weight: 550; cursor: pointer; list-style: none; }
+  .mehr-funktionen > summary::-webkit-details-marker { display: none; }
+  .mehr-funktionen > summary::after { content: ""; width: 7px; height: 7px; margin: -3px 4px 0 auto; border: solid currentColor; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); transition: transform 0.15s; }
+  .mehr-funktionen[open] > summary::after { margin-top: 3px; transform: rotate(225deg); }
+  @media (hover: hover) { .mehr-funktionen > summary:hover { background: var(--bg-3); color: var(--text); } }
+  @media (prefers-reduced-motion: reduce) { .mehr-funktionen > summary::after { transition: none; } }
+  .mehr-funktionen .navi { padding-left: 10px; }
   .navi a[data-marke]::after { content: attr(data-marke); margin-left: auto; padding: 1px 7px; border-radius: 999px; background: var(--bg-3); color: var(--text-3); font: 650 0.6875rem/1.4 var(--sans); }
   .sperrkarte { display: grid; justify-items: start; gap: 8px; max-width: 600px; margin-top: 16px; padding: 22px; border: 1px solid var(--linie); border-radius: var(--r-l); background: var(--bg-2); }
   .sperrkarte h2, .sperrkarte h3 { margin: 0; font: 650 1.1875rem/1.3 var(--sans); }
@@ -668,6 +688,8 @@
   .tarif li.plus::before { display: none; }
   .tarif > .knopf, .tarif > .meta:last-child { margin-top: auto; }
   .tarif .marke-oben { position: absolute; top: -11px; left: 16px; }
+  .tarif .launch-preis { display: flex; align-items: center; gap: 6px; margin: -4px 0 0; }
+  .launch-hinweis { max-width: 68ch; margin: 12px 0 0; padding: 10px 14px; border-radius: var(--r-l); background: var(--akzent-flaeche); color: var(--text); font-size: 0.875rem; line-height: 1.5; }
   .zahlung dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 16px; margin: 12px 0 0; padding: 14px 16px; border-radius: var(--r); background: var(--bg-2); font-variant-numeric: tabular-nums; }
   .zahlung dt { color: var(--text-3); font-size: 0.875rem; font-weight: 600; }
   .zahlung dd { margin: 0; font-weight: 650; overflow-wrap: anywhere; -webkit-user-select: all; user-select: all; }
@@ -713,6 +735,13 @@
   .werte-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; margin-top: 14px; }
   .werte-form label { display: grid; gap: 4px; color: var(--text-2); font-size: 0.875rem; font-weight: 600; }
   .werte-form input { width: 8em; }
+  .werte-form label.haken { display: inline-flex; align-self: center; }
+  .werte-form input[type=checkbox] { width: auto; }
+  .preis-form { display: grid; justify-items: start; gap: 12px; margin-top: 14px; }
+  .preis-form .tabelle-rahmen { justify-self: stretch; }
+  .preis-form td input { width: 6.5em; }
+  .preis-form > label:not(.haken) { display: grid; gap: 4px; color: var(--text-2); font-size: 0.875rem; font-weight: 600; }
+  .preis-form .opt { font-weight: 400; color: var(--text-3); }
 
   /* Unterlagen selbst hochladen, Mac-Befehl, Admin: Nutzung und Fehlerberichte, Fehler melden */
   .unterlagen { max-width: 860px; }
@@ -886,15 +915,18 @@ aussehen();
       <p class="gruppe mit-daten" id="nav-faecher-kopf">Fächer</p>
       <div class="navi mit-daten" id="nav-faecher"></div>
       <p class="gruppe mit-daten">Werkzeuge</p>
-      <a href="#/kalender" data-ansicht="kalender" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Kalender</a>
-      <a href="#/onlinetests" data-ansicht="onlinetests" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4.5" width="14" height="16" rx="2.5"/><path d="M9.5 3.5h5M9 12.5l2 2 4-4"/></svg>Onlinetests</a>
-      <a href="#/noten" data-ansicht="noten" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><path d="M7 16.5v-4M12 16.5v-9M17 16.5v-6"/></svg>Noten</a>
-      <a href="#/karten" data-ansicht="karten" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="8" width="13" height="11" rx="2"/><path d="M7.5 5h11a2 2 0 0 1 2 2v8.5"/></svg>Karteikarten</a>
-      <a href="#/pruefung" data-ansicht="pruefung" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9.5L12 5l9 4.5-9 4.5z"/><path d="M7 11.5v4.5c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5v-4.5M21 9.5V14"/></svg>Prüfungstraining</a>
-      <a href="#/wordpower" data-ansicht="wordpower" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a1 1 0 0 1 1 1v9.5a1 1 0 0 1-1 1h-8L7 20v-3.5H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg><span translate="no">Word Power</span></a>
-      <a href="#/vortrag" data-ansicht="vortrag" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5M8.5 20.5h7"/></svg>Vortrag</a>
-      <a href="#/unterlagen" data-ansicht="unterlagen" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><path d="M12 16.5v-6M9.5 13l2.5-2.5 2.5 2.5"/></svg>Unterlagen</a>
-      <a href="#/upgrade" data-ansicht="upgrade" class="nur-server mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>Tarife</a>
+      <div class="navi" id="nav-werkzeuge">
+        <a href="#/kalender" data-ansicht="kalender" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Kalender</a>
+        <a href="#/onlinetests" data-ansicht="onlinetests" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4.5" width="14" height="16" rx="2.5"/><path d="M9.5 3.5h5M9 12.5l2 2 4-4"/></svg>Onlinetests</a>
+        <a href="#/noten" data-ansicht="noten" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h16"/><path d="M7 16.5v-4M12 16.5v-9M17 16.5v-6"/></svg>Noten</a>
+        <a href="#/karten" data-ansicht="karten" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="8" width="13" height="11" rx="2"/><path d="M7.5 5h11a2 2 0 0 1 2 2v8.5"/></svg>Karteikarten</a>
+        <a href="#/pruefung" data-ansicht="pruefung" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9.5L12 5l9 4.5-9 4.5z"/><path d="M7 11.5v4.5c0 1.4 2.2 2.5 5 2.5s5-1.1 5-2.5v-4.5M21 9.5V14"/></svg>Prüfungstraining</a>
+        <a href="#/wordpower" data-ansicht="wordpower" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a1 1 0 0 1 1 1v9.5a1 1 0 0 1-1 1h-8L7 20v-3.5H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg><span translate="no">Word Power</span></a>
+        <a href="#/vortrag" data-ansicht="vortrag" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5M8.5 20.5h7"/></svg>Vortrag</a>
+        <a href="#/unterlagen" data-ansicht="unterlagen" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 7.5a2 2 0 0 1 2-2h4l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><path d="M12 16.5v-6M9.5 13l2.5-2.5 2.5 2.5"/></svg>Unterlagen</a>
+        <a href="#/upgrade" data-ansicht="upgrade" class="nur-server mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>Tarife</a>
+      </div>
+      <details class="mehr-funktionen" id="nav-mehr" hidden><summary><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg><span id="nav-mehr-titel">Pro und Ultra</span></summary><div class="navi" id="nav-mehr-liste"></div></details>
       <hr>
       <a href="#/anleitung" data-ansicht="anleitung"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10.5 5 8.3 4.5 4 4.5v14c4.3 0 6.5.5 8 2 1.5-1.5 3.7-2 8-2v-14c-4.3 0-6.5.5-8 2zM12 6.5v14"/></svg>Anleitung</a>
       <a href="#/einstellungen" data-ansicht="einstellungen"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>Einrichten</a>
@@ -1116,10 +1148,11 @@ aussehen();
         <ul>
           <li><b>Konto:</b> Unter <a href="#/einstellungen">Konto</a> mit E-Mail und Passwort registrieren und die Adresse über den Link in der Mail bestätigen. Base ist kostenlos und bleibt es.</li>
           <li><b>Unterlagen aus OLAT:</b> Unter Konto das Programm für deinen Windows-PC oder Mac laden, siehe <a href="#a-pc">Der Abgleich am PC oder Mac</a>. Danach kommen deine Unterlagen von selbst. Nur mit iPad oder Handy lädst du sie selbst hoch, siehe <a href="#a-ohne-pc">Mit iPad oder Mac</a>.</li>
-          <li><b>Base</b> bringt die Wochenausgabe für jedes Fach und den Überblick über die Onlinetests. <b>Pro</b> dazu Kalender, Word-Power-Transkript und Vortragsanalyse, <b>Ultra</b> zusätzlich alle Fragen an die KI und Lösungswege zu den Onlinetests.</li>
+          <li><b>Base</b> bringt die Wochenausgabe für jedes Fach und den Überblick über die Onlinetests. <b>Pro</b> dazu Kalender, Word-Power-Transkript und Vortragsanalyse, <b>Ultra</b> zusätzlich alle Fragen an die KI und Lösungswege zu den Onlinetests. Mit der kostenlosen Aktion <b>Englisch</b> hast du Base, dazu Vortragsanalyse und Word-Power-Transkript.</li>
           <li><b>Ausprobieren:</b> Einmal pro Konto gibt es 24 Stunden Ultra gratis, ohne Zahlungsdaten.</li>
           <li><b>Bezahlen:</b> Unter <a href="#/upgrade">Tarife</a> wählen und per Überweisung oder PayPal mit dem angezeigten Verwendungszweck zahlen. Kein Abo: Nach der Laufzeit geht es von selbst mit Base weiter.</li>
-          <li><b>Freunde einladen:</b> Mit deinem Link unter Konto zahlen Freunde im ersten Monat weniger, und du bekommst denselben Rabatt, sobald sie zahlen.</li>
+          <li><b>Launch-Angebot:</b> Gerade gelten Einführungspreise. Was du jetzt buchst, kostet für die ganze gebuchte Laufzeit den Launch-Preis.</li>
+          <li><b>Freunde einladen:</b> Mit deinem Link unter Konto zahlen Freunde im ersten Monat weniger, und du bekommst denselben Rabatt, sobald sie zahlen. Zu den Launch-Preisen kommt kein Rabatt dazu; er bleibt gespeichert und gilt ab den regulären Preisen.</li>
         </ul>
         </div>
 
@@ -1253,8 +1286,8 @@ aussehen();
         <p>Unter <a href="#/vortrag">Vortrag</a> bekommst du Rückmeldung zu einer Präsentation, etwa vor dem PS oder für Englisch. Video oder Tonaufnahme wählen, optional Anlass und Vorgaben dazuschreiben (Zeitvorgabe, Bewertungskriterien), auf „Transkript erstellen“ tippen. Nach 1 bis 3 Minuten steht das Transkript. Dann bist du dran: Video noch einmal ansehen und aufschreiben, was gut war, was nicht und was du beim nächsten Mal anders machen willst. Danach analysiert die KI in 1 bis 2 Minuten, und du bekommst:</p>
         <ul>
           <li><b>Deine Reflexion im Abgleich:</b> zu jedem deiner Punkte „stimmt“, „teilweise“ oder „stimmt nicht“, immer mit Begründung, dazu, was du übersehen hast. Die Reflexion lässt sich überspringen, aber sie lohnt sich.</li>
-          <li><b>Note und Gesamteindruck</b>, dazu Punkte für Aufbau, Sprache, Vortragsweise und, bei Videos, Folien. Belege und Beispiele und die Kernbotschaft kommen nur dazu, wenn du „Auch den Inhalt prüfen“ ankreuzt.</li>
-          <li><b>Sprachniveau nach GER</b> (A1 bis C2) für Spektrum, Korrektheit, Flüssigkeit, Kohärenz und Vor Publikum sprechen, jede Stufe mit Belegen aus deinem Vortrag und was für die nächste fehlt.</li>
+          <li><b>Note und Gesamteindruck</b> mit Punkten je Kriterium. Du wählst den Maßstab: <b>Sprachunterricht</b> (Standard) misst wie in mündlichen Sprachprüfungen Aufgabe, Aufbau, Wortschatz, Grammatik, Flüssigkeit und Wirkung, gemessen am Zielniveau deines Kurses (ohne Angabe B2). <b>Vortrag vor Publikum</b> misst Referate und Talks nach Aufbau, Sprache und Vortragsweise. Bei Videos kommen die Folien dazu, mit „Auch den Inhalt prüfen“ Inhalt und Belege. Die Note folgt fest aus den Punkten, der Schlüssel steht unter „Bewertungsgrundlage“.</li>
+          <li><b>Sprachniveau nach GER</b> (A1 bis C2) für Spektrum, Korrektheit, Flüssigkeit, Kohärenz und Vor Publikum sprechen, jede Stufe mit Belegen aus deinem Vortrag, wo du innerhalb der Stufe stehst (knapp erreicht, sicher erreicht oder nahe an der nächsten) und drei konkrete Schritte zur nächsten Stufe, mit Formulierungen aus deinem Vortrag.</li>
           <li><b>Die wichtigsten Tipps</b>, jeweils mit einer Übung für die nächste Probe.</li>
           <li><b>Kennzahlen:</b> Sprechtempo, wie oft äh und ähm, Füllwörter, lange Pausen.</li>
           <li><b>Befunde mit Zeitstempel:</b> Grammatik, Wortwahl, leere Wörter und Brüche im Aufbau, mit Inhaltsprüfung auch Logikfehler und irreführende Formulierungen, jeweils mit Zitat, Erklärung und besserer Formulierung. Ein Tipp auf die Zeit spielt das Video an dieser Stelle ab.</li>
@@ -1343,6 +1376,7 @@ aussehen();
 <nav class="tabs" aria-label="Hauptnavigation">
   <a href="#/" data-ansicht="titelblatt" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5L12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z"/></svg>Heute</a>
   <a href="#/kalender" data-ansicht="kalender" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>Kalender</a>
+  <a href="#/wordpower" data-ansicht="wordpower" class="mit-daten" id="tab-wordpower"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a1 1 0 0 1 1 1v9.5a1 1 0 0 1-1 1h-8L7 20v-3.5H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M8.5 9.5h7M8.5 12.5h4.5"/></svg><span translate="no">Word Power</span></a>
   <a href="#/onlinetests" data-ansicht="onlinetests" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4.5" width="14" height="16" rx="2.5"/><path d="M9.5 3.5h5M9 12.5l2 2 4-4"/></svg>Tests</a>
   <a href="#/vortrag" data-ansicht="vortrag" class="mit-daten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5M8.5 20.5h7"/></svg>Vortrag</a>
   <a href="#/anleitung" data-ansicht="anleitung"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10.5 5 8.3 4.5 4 4.5v14c4.3 0 6.5.5 8 2 1.5-1.5 3.7-2 8-2v-14c-4.3 0-6.5.5-8 2zM12 6.5v14"/></svg>Anleitung</a>
@@ -1546,7 +1580,9 @@ async function api(pfad, body) {
   if (!r.ok) throw Object.assign(new Error(j.error?.message || `Der Server antwortet ${r.status}. Bitte gleich nochmal.`), { status: r.status });
   return j;
 }
-const darf = f => !SERVER || !!ICH?.ecke || !!(ICH && TARIFE && TARIFE.tarife[ICH.tarif].rang >= TARIFE.funktionen[f]);  // Admin-Ecke: alles
+const darf = f => { const T = ICH && TARIFE?.tarife[ICH.tarif]; return !SERVER || !!ICH?.ecke || !!T && (T.rang >= TARIFE.funktionen[f] || !!T.dazu?.includes(f)); };  // Admin-Ecke: alles; Englisch: dazu
+const gratis = () => !ICH || !TARIFE?.tarife[ICH.tarif]?.preis;  // Base oder die Aktion Englisch
+const danach = () => ICH?.tarif === 'englisch' ? 'Englisch' : 'Base';  // was nach einem Test oder Tarif gilt (Englisch läuft daneben weiter)
 
 let cfg = JSON.parse(merk('cfg') || 'null');  // { openrouter, github, repo }; beim Einrichten Schritt für Schritt gefüllt
 const fertig = () => SERVER ? !!ICH : !!(cfg?.openrouter && cfg?.github && cfg?.repo);
@@ -3103,7 +3139,9 @@ const GER = [
     'Kann ein komplexes Thema klar und gut gegliedert präsentieren und Standpunkte ausführlich mit Nebenpunkten, Gründen und Beispielen stützen.',
     'Kann ein komplexes Thema souverän und überzeugend präsentieren, auch vor einem Publikum ohne Vorwissen, und den Aufbau flexibel an das Publikum anpassen.'] },
 ];
-// Präsentation: die fünf Dimensionen der VALUE-Rubrik Oral Communication (AAC&U), in eigenen Worten; true = Inhalt, nur wenn angekreuzt
+// Zwei Maßstäbe. Sprachunterricht (Standard): wie gut jemand die Fremdsprache beim Präsentieren einsetzt, gemessen am Zielniveau,
+// mit den Kriterien mündlicher Sprachprüfungen. Vortrag vor Publikum: der Vortrag als Vortrag, nach der VALUE-Rubrik Oral Communication (AAC&U).
+// Je Kriterium [Name, englischer Name, Beschreibung, true = Inhalt, nur wenn angekreuzt]
 const VT_KRITERIEN = [
   ['Aufbau', 'Organization', 'Einleitung, Hauptteil und Schluss sind erkennbar, die Teile folgen schlüssig aufeinander, Überleitungen führen durch den Vortrag.'],
   ['Sprache', 'Language', 'Die Wortwahl passt zu Publikum und Anlass, ist präzise und anschaulich; Fachbegriffe stimmen und werden erklärt.'],
@@ -3111,34 +3149,68 @@ const VT_KRITERIEN = [
   ['Belege und Beispiele', 'Supporting Material', 'Beispiele, Zahlen, Vergleiche und Quellen stützen die Aussagen und machen sie glaubwürdig.', true],
   ['Kernbotschaft', 'Central Message', 'Die Hauptaussage ist klar, wird früh genannt, ist begründet und bleibt am Ende hängen.', true],
 ];
+const VT_MASSSTAB = {
+  kurs: { name: 'Sprachunterricht', lang: 'Präsentation im Sprachunterricht: Englisch in der Schule, im Sprachkurs oder im PS',
+    grundlage: 'Kriterien mündlicher Sprachprüfungen, gemessen am Zielniveau',
+    rolle: ziel => `Du bist eine erfahrene, faire Lehrkraft für Fremdsprachen und bewertest eine Präsentation im Sprachunterricht (Schule, Sprachkurs oder Sprach-PS an der Uni). Gemessen wird, wie gut die Person die Fremdsprache beim Präsentieren einsetzt und die Aufgabe erfüllt, gemessen am Zielniveau ${ziel} des GER. Es geht nicht darum, ob das ein Profi-Vortrag auf einer Bühne wäre: Rhetorische Kunstgriffe, Showeffekte und ein perfekter Auftritt sind kein Maßstab.`,
+    anker: ziel => `gemessen am Zielniveau ${ziel}: 10 = deutlich über dem Zielniveau, kaum etwas zu verbessern (perfekt muss es dafür nicht sein); 8 bis 9 = Zielniveau sicher erreicht, nur Kleinigkeiten; 7 = Zielniveau erreicht, mit erkennbaren Schwächen; 5 bis 6 = Zielniveau knapp erreicht, mit deutlichen Schwächen; 3 bis 4 = Zielniveau nicht erreicht, aber gut verständlich; 0 bis 2 = Aufgabe verfehlt oder kaum verständlich`,
+    kriterien: [
+      ['Aufgabe erfüllt', 'Task Achievement', 'Thema und Auftrag sind erfüllt, die Zeitvorgabe passt, das Publikum versteht, worum es geht und warum.'],
+      ['Aufbau und Verknüpfung', 'Discourse Management', 'Erkennbare Einleitung, Hauptteil und Schluss; Signalwörter führen durch den Vortrag (first of all, moving on to, to sum up), Sätze und Teile sind sinnvoll verknüpft.'],
+      ['Wortschatz', 'Lexical Resource', 'Passender Themenwortschatz, Kollokationen und Umschreibungen, wo ein Wort fehlt; wenig Wiederholung, Register passend für eine Präsentation.'],
+      ['Grammatik', 'Grammatical Resource', 'Bandbreite der Strukturen (Nebensätze, Zeiten, Passiv, Bedingungssätze) und wie sicher sie sitzen. Es zählt, was sich wiederholt oder das Verstehen stört, nicht jeder einzelne Versprecher.'],
+      ['Flüssigkeit', 'Fluency', 'Freies, zusammenhängendes Sprechen in angenehmem Tempo; Zögern und Selbstkorrekturen stören den Fluss kaum.'],
+      ['Wirkung aufs Publikum', 'Delivery', 'Einstieg, Ansprache des Publikums, Betonung und Pausen halten die Zuhörenden dabei; mit Standbildern auch Blickkontakt, Haltung und Folien.'],
+      ['Inhalt und Argumentation', 'Content', 'Aussagen stimmen, sind begründet und mit Beispielen gestützt; die Kernaussage bleibt hängen.', true]] },
+  buehne: { name: 'Vortrag vor Publikum', lang: 'Vortrag vor Publikum: Referat, Konferenz oder Talk, auch in der Erstsprache',
+    grundlage: 'VALUE-Rubrik Oral Communication (AAC&U), gemessen an einem guten Vortrag im ersten Studienjahr',
+    rolle: () => 'Du bist Sprech- und Präsentationscoach und bewertest einen Vortrag vor Publikum (Referat, Konferenz oder Talk), gemessen an einem guten Vortrag im ersten Studienjahr.',
+    anker: () => 'gemessen an einem guten Vortrag im ersten Studienjahr: 10 = herausragend, kaum etwas zu verbessern (perfekt muss es dafür nicht sein); 8 bis 9 = sehr gut, nur Kleinigkeiten; 7 = gut, mit erkennbaren Schwächen; 5 bis 6 = in Ordnung, mit deutlichen Schwächen; 3 bis 4 = schwach, aber verständlich; 0 bis 2 = kaum zu folgen',
+    kriterien: VT_KRITERIEN },
+};
+// Note aus dem Durchschnitt der Kriterien (österreichischer Schlüssel): rechnet die App, damit sie zu den Punkten passt
+const VT_SCHLUESSEL = [[88, 1], [75, 2], [63, 3], [50, 4], [0, 5]];
+const vtNote = punkte => VT_SCHLUESSEL.find(([ab]) => punkte >= ab)[1];
 const VT_QUELLEN = [
   ['Europarat (2001): Gemeinsamer europäischer Referenzrahmen für Sprachen, Tabelle 3 „Qualitative Aspekte des mündlichen Sprachgebrauchs“', 'https://www.coe.int/en/web/common-european-framework-reference-languages/table-3-cefr-3.3-common-reference-levels-qualitative-aspects-of-spoken-language-use'],
   ['Europarat (2020): Common European Framework of Reference for Languages, Companion Volume, Skala „Addressing audiences“', 'https://rm.coe.int/common-european-framework-of-reference-for-languages-learning-teaching/16809ea0d4'],
+  ['Kriterien mündlicher Sprachprüfungen, an denen sich der Maßstab Sprachunterricht orientiert: Cambridge English C1 Advanced (Grammatical Resource, Lexical Resource, Discourse Management) und IELTS Speaking (Fluency and Coherence)', null],
   ['AAC&U (2009): VALUE Rubric Oral Communication', 'https://www.aacu.org/value/rubrics/value-rubrics-oral-communication'],
   ['Nicol, D. & Macfarlane-Dick, D. (2006): Formative assessment and self-regulated learning: a model and seven principles of good feedback practice. Studies in Higher Education 31(2)', 'https://doi.org/10.1080/03075070600572090'],
 ];
-const VT_OHNE_INHALT = 'Bewerte nur Sprache und Vortragsweise, nicht den Inhalt: Ob die Argumente logisch sind, ob Aussagen stimmen oder belegt sind und wie gut die Beispiele sind, gehört nicht in die Analyse, weder in Urteil, Note und Kriterien noch in Stärken, Tipps oder Befunde.';
-const vtAnalyse = inhalt => { const kriterien = VT_KRITERIEN.filter(k => inhalt || !k[3]); return `Du bist Sprech- und Präsentationscoach für Studierende der Wirtschaftswissenschaften an der Universität Innsbruck. Du bekommst das wortgetreue Transkript eines Vortrags mit Zeitstempeln [m:ss], inklusive aller äh und ähm, Wiederholungen, Abbrüche und Fehler, dazu Kennzahlen, die die App gezählt hat, Anlass und Vorgaben, soweit angegeben, und manchmal Standbilder aus dem Video.
+const VT_OHNE_INHALT = 'Bewerte nur Sprache und Vortragsweise, nicht den Inhalt: Ob die Argumente logisch sind, ob Aussagen stimmen oder belegt sind und wie gut die Beispiele sind, gehört nicht in die Analyse, weder in Urteil und Kriterien noch in Stärken, Tipps oder Befunde.';
+const vtKriterien = (massstab, inhalt) => (VT_MASSSTAB[massstab] || VT_MASSSTAB.kurs).kriterien.filter(k => inhalt || !k[3]);
+const vtAnalyse = (inhalt, massstab = 'kurs', ziel = '') => {
+  const M = VT_MASSSTAB[massstab] || VT_MASSSTAB.kurs, kriterien = vtKriterien(massstab, inhalt), kurs = M === VT_MASSSTAB.kurs;
+  const zielText = ziel || 'B2';
+  return `${M.rolle(zielText)} Du bekommst das wortgetreue Transkript des Vortrags mit Zeitstempeln [m:ss], inklusive aller äh und ähm, Wiederholungen, Abbrüche und Fehler, dazu Kennzahlen, die die App gezählt hat, Anlass und Vorgaben, soweit angegeben, und manchmal Standbilder aus dem Video.
 
-Analysiere gründlich, ehrlich und konkret, wie ein strenger, aber wohlwollender Coach.${inhalt ? '' : ' ' + VT_OHNE_INHALT} Antworte ausschließlich mit einem JSON-Objekt in genau diesem Aufbau:
+Analysiere gründlich, konkret und fair, wie eine erfahrene Lehrkraft, die gut erklärt: Stärken genauso klar benennen wie Schwächen, nichts schönreden und nichts strenger machen, als es ist.${inhalt ? '' : ' ' + VT_OHNE_INHALT} Antworte ausschließlich mit einem JSON-Objekt in genau diesem Aufbau:
 {"sprache": "Sprache des Vortrags, z. B. Englisch",
- "thema": "worum es geht, ein Satz",
- "note": österreichische Schulnote als Zahl 1 bis 5 (1 Sehr gut, 2 Gut, 3 Befriedigend, 4 Genügend, 5 Nicht genügend),
- "punkte": 0 bis 100,
- "urteil": "Gesamteindruck in drei bis vier Sätzen",
+ "thema": "worum es geht, ein Satz",${kurs ? `
+ "ziel": "das Zielniveau, an dem du misst: ${ziel ? ziel : 'steht eines in Anlass und Vorgaben, dieses, sonst B2'}",` : ''}
+ "urteil": "Gesamteindruck in drei bis vier Sätzen, ohne Note und ohne Punktzahl",
  "kriterien": [{"name": "…", "punkte": 0 bis 10, "kommentar": "ein bis zwei Sätze mit Beleg"}],
- "ger": {"gesamt": "B2", "skalen": [{"name": "Spektrum", "niveau": "B2", "begruendung": "…", "naechste": "…"}]},
+ "ger": {"gesamt": {"niveau": "B2", "stand": 0 bis 100, "warum": "…", "naechste": ["…", "…", "…"]},
+         "skalen": [{"name": "Spektrum", "niveau": "B2", "stand": 0 bis 100, "begruendung": "…", "naechste": "…"}]},
  "reflexion": {"punkte": [{"feld": "gut", "aussage": "…", "urteil": "stimmt", "begruendung": "…"}], "uebersehen": ["…"], "fazit": "…"} oder null,
  "staerken": ["konkrete Stärke, mit Zeitstempel, wo möglich"],
  "tipps": [{"titel": "kurze Handlungsanweisung", "warum": "ein bis zwei Sätze mit Beleg aus dem Vortrag", "uebung": "konkrete Übung für die nächste Probe"}],
  "fuellwoerter": [{"wort": "like", "anzahl": 4}],
  "befunde": [{"zeit": "m:ss", "art": "grammatik", "zitat": "…", "problem": "…", "besser": "…"}]}
 
-kriterien: genau diese ${kriterien.length === 5 ? 'fünf' : 'drei'}, in dieser Reihenfolge und mit genau diesen Namen; sie folgen den Dimensionen der VALUE-Rubrik Oral Communication (AAC&U):
+kriterien: genau diese ${kriterien.length}, in dieser Reihenfolge und mit genau diesen Namen (${M.grundlage}):
 ${kriterien.map(([n, en, t]) => `- ${n} (${en}): ${t}`).join('\n')}
 Nur wenn Standbilder dabei sind, zusätzlich als letztes: Folien (Lesbarkeit, Textmenge und Bezug zum Gesagten).
+punkte: je Kriterium 0 bis 10, halbe Punkte erlaubt, ${M.anker(zielText)}. Aus dem Durchschnitt der Kriterien rechnet die App Punkte und Note (ab 88 von 100 Sehr gut, ab 75 Gut, ab 63 Befriedigend, ab 50 Genügend). Vergib die Punkte deshalb je Kriterium für sich, ehrlich in beide Richtungen.
 
-ger: das Sprachniveau nach dem Gemeinsamen Europäischen Referenzrahmen für Sprachen (GER) des Europarats. Miss ausschließlich an den Deskriptoren der BEWERTUNGSGRUNDLAGE unten, nicht nach eigenem Ermessen. skalen: genau diese fünf, in dieser Reihenfolge und mit genau diesen Namen: ${GER.map(g => g.name).join(', ')}. niveau: genau eine Stufe A1, A2, B1, B2, C1 oder C2, und zwar die höchste, deren Deskriptor der Vortrag insgesamt erfüllt; liegt er zwischen zwei Stufen, die niedrigere. begruendung: zwei bis drei Sätze, die den Deskriptor dieser Stufe mit Belegen aus dem Vortrag verbinden (Zeitstempel, kurzes Zitat oder Kennzahl). naechste: was für die nächsthöhere Stufe fehlt, gemessen an deren Deskriptor, mit einem konkreten Beispiel aus dem Vortrag; bei C2 leer. gesamt: die Stufe, die die fünf Skalen zusammen am besten trifft, nicht der Höchstwert. Für Flüssigkeit zählen auch die Kennzahlen der App (Tempo, äh-Laute, Pausen). Aussprache bewertest du nicht, weil du die Aufnahme nicht hörst; schließ auch nicht aus dem Transkript darauf.
+ger: das Sprachniveau nach dem Gemeinsamen Europäischen Referenzrahmen für Sprachen (GER) des Europarats, gemessen an den Deskriptoren der BEWERTUNGSGRUNDLAGE unten, nicht nach eigenem Ermessen. So stufst du fair ein:
+- Best fit: Je Skala die Stufe, deren Deskriptor den Vortrag insgesamt am besten beschreibt. Eine Stufe ist erreicht, wenn ihr Deskriptor überwiegend zutrifft, nicht erst, wenn er in jedem Satz erfüllt ist. Einzelne Ausrutscher senken keine Stufe, nur Muster, die sich wiederholen oder das Verstehen stören.
+- Gesprochen ist nicht geschrieben: Das Transkript hält jedes äh, jeden Fehlstart und jeden Versprecher fest. Auch geübte Sprecherinnen und Sprecher, Muttersprachler eingeschlossen, klingen wortwörtlich aufgeschrieben so. Das spricht nicht gegen ein höheres Niveau, solange der Satz verständlich bleibt; selbst korrigierte Fehler sprechen sogar dafür. Einige äh pro Minute (grob bis vier) sind in freier Rede normal.
+- C1 heißt nicht fehlerfrei: Fehler sind selten und fallen kaum auf. C2 heißt nicht perfekt wie ein Muttersprachler, sondern souverän, flexibel und präzise; auch auf C2 verspricht man sich gelegentlich.
+- Stufe so ein, wie es eine erfahrene, faire Prüferin für mündliche Sprachprüfungen täte (etwa Cambridge English C1 Advanced): weder streng noch großzügig.
+skalen: genau diese fünf, in dieser Reihenfolge und mit genau diesen Namen: ${GER.map(g => g.name).join(', ')}. niveau: genau eine Stufe A1, A2, B1, B2, C1 oder C2. stand: wie weit der Vortrag innerhalb dieser Stufe ist, 0 bis 100: 0 bis 33 knapp erreicht, 34 bis 66 sicher in der Stufe, 67 bis 100 nahe an der nächsten (einiges aus deren Deskriptor trifft schon zu); bei C2, wie souverän. begruendung: zwei bis drei Sätze, warum diese Stufe und dieser Stand, mit Belegen aus dem Vortrag (Zeitstempel, kurzes Zitat oder Kennzahl). naechste: was für die nächsthöhere Stufe konkret fehlt, gemessen an ihrem Deskriptor, mit einer Stelle aus dem Vortrag und wie sie auf der nächsten Stufe klingen würde (vorher → nachher, in der Sprache des Vortrags); bei C2, was noch souveräner wäre. Für Flüssigkeit zählen auch die Kennzahlen der App (Tempo, äh-Laute, Pausen). Aussprache bewertest du nicht, weil du die Aufnahme nicht hörst; schließ auch nicht aus dem Transkript darauf.
+gesamt: niveau und stand, die die fünf Skalen zusammen am besten treffen, nicht der Höchst- und nicht der Tiefstwert. warum: zwei bis drei Sätze, warum genau diese Stufe und dieser Stand, mit der stärksten und der schwächsten Skala. naechste: genau drei Schritte, die den größten Unterschied zur nächsten Stufe machen, das Wichtigste zuerst, jeder ein bis zwei Sätze mit einem Beispiel aus dem Vortrag (vorher → nachher).
 
 reflexion: nur, wenn unten eine SELBSTREFLEXION steht, sonst null. Die Person hat ihr Video noch einmal angesehen und sich selbst eingeschätzt; prüfe jede ihrer Aussagen an Transkript, Kennzahlen und Standbildern. punkte: jede Aussage einzeln, in ihrer Reihenfolge; feld ist gut, schlecht oder besser, je nachdem, wo sie steht; aussage gibt sie in wenigen Worten wieder. urteil ist genau einer dieser Werte: stimmt, teilweise, stimmt nicht. Bei gut und schlecht: ob die Belege die Einschätzung stützen. Bei besser: stimmt, wenn der Vorsatz eine der größten Schwächen trifft; teilweise, wenn er hilft, aber nicht das Wichtigste ist; stimmt nicht, wenn er an den Befunden vorbeigeht, und dann was wichtiger wäre. begruendung: immer, zwei bis drei Sätze, mit Beleg (Zeitstempel, Zitat oder Kennzahl), direkt an die Person (du). Sei ehrlich in beide Richtungen: Wer zu streng mit sich ist, hört genauso deutlich, dass etwas gar nicht schlimm war, wie jemand, der etwas übersieht. uebersehen: höchstens drei wichtige Punkte aus deiner Analyse, die in der Reflexion fehlen, je ein Satz mit Begründung. fazit: zwei Sätze, wie treffend die Selbsteinschätzung insgesamt ist.
 
@@ -3146,7 +3218,7 @@ tipps: drei bis fünf, das Wichtigste zuerst. Nur Tipps, die sich aus diesem Vor
 
 fuellwoerter: Wörter und Floskeln, die hier als Füller dienen (etwa also, halt, eben, sozusagen, quasi, irgendwie, eigentlich, ja, genau, okay, like, you know, basically, actually, so, I mean, kind of), mit Anzahl. Nur zählen, wo sie wirklich Füller sind. Laute wie äh, ähm, uh und um zählt die App selbst; die gehören nicht hierher.
 
-befunde: Jede einzelne Stelle als eigener Eintrag, nichts zusammenfassen. art ist genau einer dieser Werte:
+befunde: Jede einzelne Stelle als eigener Eintrag, nichts zusammenfassen. Nur echte Fehler und deutliche Schwächen: Ist das Original auch richtig oder nur Geschmackssache, ist es kein Befund. art ist genau einer dieser Werte:
 - grammatik: Grammatik-, Kongruenz-, Zeitform-, Präpositions-, Wortstellungs- und Satzbaufehler
 - wortwahl: falsches, unpassendes oder zu umgangssprachliches Wort, falscher Fachbegriff, Germanismus im Englischen oder Anglizismus im Deutschen
 - leer: Wörter oder Sätze ohne Inhalt, Floskeln, Wiederholungen, die nichts hinzufügen, unnötige Abschwächungen (ich denke mal, eigentlich, sort of)
@@ -3156,7 +3228,7 @@ ${inhalt ? `- logik: Fehlschluss oder fachlicher Fehler (Korrelation als Ursache
 - fuellwort: Stelle, an der sich äh und Füllwörter so häufen, dass der Satz darunter leidet
 zeit: Zeitstempel der Zeile, in der die Stelle steht. zitat: wörtlich aus dem Transkript, nur der betroffene Teil. problem: auf Deutsch, was genau falsch oder schwach ist. besser: verbesserte Formulierung in der Sprache des Vortrags.
 
-Alle Erklärungen auf Deutsch, Zitate und Verbesserungen in der Sprache des Vortrags. Bewerte gemessen an einem Vortrag im ersten Studienjahr und berücksichtige Anlass und Vorgaben, etwa eine Zeitvorgabe. Erfinde nichts: Was nicht im Transkript oder auf den Standbildern ist, bewertest du nicht. Offensichtlich falsch gehörte Wörter der Spracherkennung sind keine Fehler des Vortrags.
+Alle Erklärungen auf Deutsch, Zitate und Verbesserungen in der Sprache des Vortrags. Berücksichtige Anlass und Vorgaben, etwa eine Zeitvorgabe. Erfinde nichts: Was nicht im Transkript oder auf den Standbildern ist, bewertest du nicht. Offensichtlich falsch gehörte Wörter der Spracherkennung sind keine Fehler des Vortrags.
 
 === BEWERTUNGSGRUNDLAGE GER ===
 Kurzfassungen der Deskriptoren aus Tabelle 3 des GER (Europarat 2001, „Qualitative Aspekte des mündlichen Sprachgebrauchs“) und der Skala „Addressing audiences“ aus dem Begleitband (Europarat 2020). Sie geben den offiziellen Wortlaut sinngemäß wieder; stufe danach ein.
@@ -3341,17 +3413,24 @@ Was will ich beim nächsten Mal anders machen: ${v.reflexion.besser || '(nichts 
 
 === TRANSKRIPT ===
 ${vtText(v)}`;
-  const { text: antwort, preis } = await strom({ ...VT_DENKEN, feature: 'vortrag', response_format: { type: 'json_object' }, messages: [{ role: 'system', content: vtAnalyse(v.inhalt) },
+  const { text: antwort, preis } = await strom({ ...VT_DENKEN, feature: 'vortrag', response_format: { type: 'json_object' }, messages: [{ role: 'system', content: vtAnalyse(v.inhalt, v.massstab, v.ziel) },
     { role: 'user', content: [{ type: 'text', text }, ...bilder.flatMap(b => [{ type: 'text', text: `Standbild bei ${mmss(b.t)}:` }, { type: 'image_url', image_url: { url: b.url } }])] }] },
     x => { job.hinweis = `Schreibt die Bewertung … ${(x.match(/"zeit"/g) || []).length} Befunde`; }, () => { job.hinweis = 'Analysiert … denkt nach'; });
   let a;
   try { a = JSON.parse(antwort.slice(antwort.indexOf('{'), antwort.lastIndexOf('}') + 1)); }
   catch { throw new Error('Die Analyse kam unvollständig an. Bitte noch einmal bewerten lassen.'); }
   const liste = x => Array.isArray(x) ? x.filter(Boolean) : [];
-  const ger = a.ger && { gesamt: GER_STUFEN.includes(a.ger.gesamt) ? a.ger.gesamt : null, skalen: liste(a.ger.skalen).filter(g => g.name && GER_STUFEN.includes(g.niveau)) };
+  const stand = x => x != null && Number.isFinite(+x) ? Math.max(0, Math.min(100, Math.round(+x))) : null;
+  const gg = a.ger && (typeof a.ger.gesamt === 'string' ? { niveau: a.ger.gesamt } : a.ger.gesamt || {});
+  const ger = a.ger && { gesamt: GER_STUFEN.includes(gg.niveau) ? { niveau: gg.niveau, stand: stand(gg.stand), warum: String(gg.warum || ''), naechste: liste(gg.naechste).map(String) } : null,
+    skalen: liste(a.ger.skalen).filter(g => g.name && GER_STUFEN.includes(g.niveau)).map(g => ({ ...g, stand: stand(g.stand) })) };
   const refl = v.reflexion && a.reflexion && { punkte: liste(a.reflexion.punkte).filter(r => r.aussage && r.begruendung), uebersehen: liste(a.reflexion.uebersehen), fazit: a.reflexion.fazit || '' };
-  v.analyse = { ...a, ger: ger?.skalen.length ? ger : null, reflexion: refl?.punkte.length ? refl : null,
-    note: Math.min(5, Math.max(1, Math.round(+a.note) || 3)), kriterien: liste(a.kriterien), staerken: liste(a.staerken), tipps: liste(a.tipps),
+  // Punkte und Note rechnet die App aus den Kriterien, damit sie immer zusammenpassen
+  const kriterien = liste(a.kriterien).filter(k => k.name).map(k => ({ ...k, punkte: Math.max(0, Math.min(10, Math.round(2 * +k.punkte) / 2 || 0)) }));
+  const punkte = kriterien.length ? Math.round(10 * kriterien.reduce((s, k) => s + k.punkte, 0) / kriterien.length) : Math.max(0, Math.min(100, Math.round(+a.punkte) || 0));
+  v.analyse = { ...a, ger: ger?.skalen.length ? ger : null, reflexion: refl?.punkte.length ? refl : null, massstab: v.massstab || 'kurs',
+    ziel: v.massstab === 'buehne' ? null : GER_STUFEN.includes(a.ziel) ? a.ziel : v.ziel || 'B2',
+    punkte, note: vtNote(punkte), kriterien, staerken: liste(a.staerken), tipps: liste(a.tipps),
     fuellwoerter: liste(a.fuellwoerter).filter(f => f.wort && f.anzahl > 0), befunde: liste(a.befunde).filter(b => b.zitat).sort((x, y) => vtSek(x.zeit) - vtSek(y.zeit)) };
   v.bilder = bilder.length; v.kosten = (v.kosten || 0) + preis; v.bewertet = new Date().toISOString();
 }
@@ -3408,8 +3487,8 @@ function vtStart(form) {
     form.reset(); form.querySelector('.vt-datei-name').textContent = 'Keine Datei gewählt';
   });
 }
-const vtBewerten = (v, kontext, reflexion, inhalt) => vtLauf(v.id, async job => {
-  v.kontext = kontext; v.reflexion = reflexion; v.inhalt = inhalt;
+const vtBewerten = (v, kontext, reflexion, inhalt, massstab, ziel) => vtLauf(v.id, async job => {
+  Object.assign(v, { kontext, reflexion, inhalt, massstab, ziel });
   await vtAnalysieren(v, job);
   job.hinweis = 'Speichert die Analyse …';
   await vtSpeichern(v);
@@ -3437,7 +3516,8 @@ function vtSpielen(id, t) {
   const los = () => { video.currentTime = t; video.play().catch(() => {}); };
   if (video.readyState < 1) video.addEventListener('loadedmetadata', los, { once: true }); else los();
 }
-const vtKontext = v => `Du bist Präsentationscoach. Beantworte Rückfragen zu diesem Vortrag und seiner Analyse knapp, konkret und auf Deutsch; Formulierungsvorschläge in der Sprache des Vortrags. Stütze dich auf Transkript und Analyse.${v.inhalt ? '' : ' Inhalt, Logik der Argumente und Belege beurteilst du nur, wenn die Person ausdrücklich danach fragt.'}
+const vtKontext = v => `Du bist Präsentations- und Sprachcoach. Beantworte Rückfragen zu diesem Vortrag und seiner Analyse knapp, konkret und auf Deutsch; Formulierungsvorschläge in der Sprache des Vortrags. Stütze dich auf Transkript und Analyse.${v.inhalt ? '' : ' Inhalt, Logik der Argumente und Belege beurteilst du nur, wenn die Person ausdrücklich danach fragt.'}
+Maßstab: ${v.analyse?.massstab === 'buehne' ? 'Vortrag vor Publikum' : `Präsentation im Sprachunterricht, gemessen am Zielniveau ${v.analyse?.ziel || 'B2'}`}. Fragt die Person, wie sie die nächste GER-Stufe erreicht, antworte mit konkreten Formulierungen aus ihrem Vortrag (vorher → nachher).
 
 Anlass und Vorgaben: ${v.kontext || 'nicht angegeben'}
 
@@ -3488,7 +3568,7 @@ function vtUebersicht() {
         el('span', { class: 'wann' }, v.analyse ? el('span', { class: 'pille' }, `Note ${v.analyse.note}`) : el('span', { class: 'pille warn' }, 'ohne Analyse')))))
         : el('p', { class: 'leer' }, 'Noch keine. Die erste erscheint hier.')),
     el('section', { class: 'block' }, el('h2', {}, 'Wonach bewertet wird'),
-      el('p', { class: 'klein' }, 'Sprache nach dem Gemeinsamen Europäischen Referenzrahmen (Europarat), Präsentation nach den fünf Dimensionen der VALUE-Rubrik Oral Communication (AAC&U). Die KI muss jede Einstufung mit Stellen aus deinem Vortrag belegen.'),
+      el('p', { class: 'klein' }, 'Sprachniveau nach dem Gemeinsamen Europäischen Referenzrahmen (Europarat), mit dem Stand innerhalb der Stufe und was für die nächste fehlt. Dazu Kriterien wie in mündlichen Sprachprüfungen, gemessen am Zielniveau deines Kurses, oder für Referate und Talks die VALUE-Rubrik Oral Communication (AAC&U). Die KI muss jede Einstufung mit Stellen aus deinem Vortrag belegen.'),
       vtGrundlage(null))];
 }
 // Während das Transkript entsteht: das Video schon einmal ansehen, gleich danach kommt die Selbstreflexion
@@ -3514,10 +3594,17 @@ function vtReflexionTeil(v) {
 }
 function vtReflexionForm(v) {
   const meldungP = el('p', { class: 'fehlertext', role: 'alert', hidden: true });
+  const ziel = el('label', { class: 'feld', hidden: v.massstab === 'buehne' }, el('span', {}, 'Zielniveau der Lehrveranstaltung ', el('span', { class: 'opt' }, 'Note und Punkte messen daran')),
+    el('select', { name: 'ziel' }, [['', 'Weiß ich nicht: B2 (Matura-Niveau), außer es steht in den Vorgaben'], ['B1', 'B1'], ['B2', 'B2'], ['C1', 'C1'], ['C2', 'C2']]
+      .map(([w, t]) => el('option', { value: w, selected: (v.ziel || '') === w }, t))));
   const form = el('form', { class: 'vt-reflexion-form', novalidate: true, oninput: () => { meldungP.hidden = true; }, onsubmit: e => { e.preventDefault(); los(true); } },
     VT_REFL.map(([k, frage, bsp]) => el('label', { class: 'feld' }, el('span', {}, frage), el('textarea', { name: k, rows: 3, placeholder: bsp }, v.reflexion?.[k] || ''))),
     el('label', { class: 'feld' }, el('span', {}, 'Anlass und Vorgaben ', el('span', { class: 'opt' }, 'optional')),
       el('textarea', { name: 'kontext', rows: 2, placeholder: 'z. B. Englisch-Präsentation, 5 Minuten, Thema Marketing-Mix.' }, v.kontext || '')),
+    el('fieldset', { class: 'vt-massstab' }, el('legend', {}, 'Bewerten als'),
+      Object.entries(VT_MASSSTAB).map(([k, m]) => el('label', { class: 'haken' },
+        el('input', { type: 'radio', name: 'massstab', value: k, checked: (v.massstab || 'kurs') === k, onchange: () => { ziel.hidden = k !== 'kurs'; } }), m.lang))),
+    ziel,
     el('label', { class: 'haken' }, el('input', { type: 'checkbox', name: 'inhalt', checked: !!v.inhalt }), 'Auch den Inhalt prüfen: Logik der Argumente, Belege und Beispiele'),
     el('p', { class: 'meta' }, 'Ohne Haken geht es nur um Sprache und Vortragsweise: Grammatik, Wortwahl, Füllwörter, Tempo und Aufbau.'),
     meldungP,
@@ -3529,7 +3616,7 @@ function vtReflexionForm(v) {
     const f = form.elements, r = Object.fromEntries(VT_REFL.map(([k]) => [k, f[k].value.trim()]));
     if (mit && !Object.values(r).some(Boolean)) { Object.assign(meldungP, { textContent: 'Schreib mindestens einen Punkt, oder überspring die Reflexion.', hidden: false }); return f.gut.focus(); }
     meldungP.hidden = true;
-    vtBewerten(v, f.kontext.value.trim(), mit ? r : null, f.inhalt.checked);
+    vtBewerten(v, f.kontext.value.trim(), mit ? r : null, f.inhalt.checked, f.massstab.value || 'kurs', f.massstab.value === 'buehne' ? '' : f.ziel.value);
   }
   return form;
 }
@@ -3549,11 +3636,19 @@ function vtUeberspringen(ohne, doch) {  // erst nachfragen und kurz sagen, was S
       el('button', { class: 'knopf voll', type: 'button', autofocus: true, onclick: () => { d.close(); doch(); } }, 'Doch reflektieren'))));
   d.showModal();
 }
+// Wie weit innerhalb der Stufe: in Worten und als Leiter, die nächste Stufe gestrichelt und so weit gefüllt, wie der Vortrag schon ist
+const vtStand = (n, i) => n == null ? '' : n < 34 ? 'knapp erreicht' : n < 67 ? 'sicher erreicht' : i < 5 ? `nahe an ${GER_STUFEN[i + 1]}` : 'souverän';
+const vtLeiter = (i, stand, gross) => el('ol', { class: `vt-leiter${gross ? ' gross' : ''}`, 'aria-hidden': 'true' }, GER_STUFEN.map((x, j) => el('li', { 'data-an': String(j <= i), 'data-hier': String(j === i),
+  'data-weg': j === i + 1 && stand != null ? 'true' : null, style: j === i + 1 && stand != null ? `--weg: ${stand}%` : null }, x)));
 // Was die KI bekommt und wonach sie misst, zum Nachlesen und Herzeigen; die erreichte Stufe ist markiert
 function vtGrundlage(a) {
+  const massstaebe = a?.massstab ? [a.massstab] : Object.keys(VT_MASSSTAB);
   return el('details', { class: 'quellen vt-grundlage' }, el('summary', {}, 'Bewertungsgrundlage: Kriterien und Quellen'),
     el('p', {}, 'Die KI bewertet nicht nach eigenem Ermessen: Sie bekommt mit jedem Vortrag diese Kriterien und muss jede Einstufung mit Stellen aus dem Vortrag belegen. Die Deskriptoren stehen hier kurz in eigenen Worten; den Wortlaut haben die Quellen.'),
     el('h3', {}, 'Sprache: Gemeinsamer Europäischer Referenzrahmen (GER)'),
+    el('p', {}, 'So stuft die KI ein: Je Skala gilt die Stufe, deren Beschreibung insgesamt am besten passt; erreicht ist sie, wenn sie überwiegend zutrifft, nicht erst, wenn jeder Satz sitzt. Einzelne Versprecher senken keine Stufe, nur Fehler, die sich wiederholen oder das Verstehen stören. '
+      + 'Ein wortwörtliches Transkript lässt jeden frei gesprochenen Vortrag holpriger aussehen, auch bei Muttersprachlern; äh und Selbstkorrekturen zählen darum nicht gegen ein höheres Niveau. C1 heißt nicht fehlerfrei, C2 nicht perfekt. '
+      + 'Dazu kommt, wo du innerhalb der Stufe stehst: knapp erreicht, sicher erreicht oder schon nahe an der nächsten, und was für die nächste konkret fehlt.'),
     GER.map(g => {
       const hier = a?.ger?.skalen.find(x => x.name === g.name)?.niveau;
       return [el('h4', {}, `${g.name} (${g.en})`), el('dl', {}, g.stufen.map((t, i) => {
@@ -3562,10 +3657,13 @@ function vtGrundlage(a) {
       }))];
     }),
     el('p', {}, 'Interaktion entfällt, weil ein Vortrag ein Monolog ist. Aussprache bewertet die App nicht: Die Analyse liest das Transkript und hört die Aufnahme nicht.'),
-    el('h3', {}, 'Präsentation: VALUE-Rubrik Oral Communication'),
-    el('dl', {}, VT_KRITERIEN.map(([n, en, t, inhalt]) => [el('dt', {}, n), el('dd', {}, `${t} (${en})`, inhalt && ' Nur mit Inhaltsprüfung.')])),
+    massstaebe.map(m => [el('h3', {}, `${VT_MASSSTAB[m].name}: ${VT_MASSSTAB[m].grundlage}`),
+      el('dl', {}, VT_MASSSTAB[m].kriterien.map(([n, en, t, inhalt]) => [el('dt', {}, n), el('dd', {}, `${t} (${en})`, inhalt && ' Nur mit Inhaltsprüfung.')]))]),
+    el('h3', {}, 'Von den Punkten zur Note'),
+    el('p', {}, `Jedes Kriterium bekommt 0 bis 10 Punkte${massstaebe.includes('kurs') ? ', im Sprachunterricht gemessen am Zielniveau (ohne Angabe B2): 8 bis 9 heißt Zielniveau sicher erreicht, 10 deutlich darüber' : ''}. `
+      + 'Die Punkte von 100 sind der Durchschnitt mal zehn, die Note folgt daraus: ab 88 Sehr gut, ab 75 Gut, ab 63 Befriedigend, ab 50 Genügend, darunter Nicht genügend.'),
     el('h3', {}, 'Quellen'),
-    el('ul', {}, VT_QUELLEN.map(([text, url]) => el('li', {}, text, ' ', el('a', { href: url, target: '_blank', rel: 'noopener' }, url.replace(/^https:\/\/(www\.)?/, '').split('/')[0])))));
+    el('ul', {}, VT_QUELLEN.map(([text, url]) => el('li', {}, text, url && [' ', el('a', { href: url, target: '_blank', rel: 'noopener' }, url.replace(/^https:\/\/(www\.)?/, '').split('/')[0])]))));
 }
 function vtSeite(v) {
   const a = v.analyse, z = vtZahlen(v), job = VT.job?.id === v.id && VT.job, fehler = VT.fehler?.id === v.id && VT.fehler.text;
@@ -3612,14 +3710,17 @@ function vtSeite(v) {
   };
   zeigeBefunde();
   const r = a.reflexion, ger = a.ger;
+  const gg = !ger ? {} : typeof ger.gesamt === 'string' ? { niveau: ger.gesamt } : ger.gesamt || {}, gi = GER_STUFEN.indexOf(gg.niveau);  // ältere Analysen: nur die Stufe
   return [
     el('a', { class: 'zurueck', href: '#/vortrag' }, 'Alle Vorträge'), kopf,
     job && presse('vortrag', job), fehler && el('p', { class: 'fehlertext' }, fehler),
     el('section', { class: 'vt-gesamt', 'aria-label': 'Gesamtbewertung' },
       el('div', { class: 'vt-links' }, el('div', { class: 'vt-note' }, el('span', { class: 'vt-note-zahl', 'data-note': a.note }, a.note),
-        el('div', {}, el('b', {}, VT_NOTEN[a.note]), el('span', { class: 'meta' }, `${a.punkte} von 100 Punkten${SERVER ? ' · Einschätzung der KI, keine Note deiner Lehrveranstaltung' : ''}`))), el('p', { class: 'vt-urteil' }, a.urteil)),
+        el('div', {}, el('b', {}, VT_NOTEN[a.note]), el('span', { class: 'meta' }, `${a.punkte} von 100 Punkten${SERVER ? ' · Einschätzung der KI, keine Note deiner Lehrveranstaltung' : ''}`),
+          a.massstab && el('span', { class: 'meta' }, a.massstab === 'kurs' ? `Sprachunterricht, gemessen am Zielniveau ${a.ziel}` : 'Vortrag vor Publikum, gemessen an einem guten Vortrag im ersten Studienjahr'))),
+        el('p', { class: 'vt-urteil' }, a.urteil)),
       el('ul', { class: 'vt-kriterien' }, a.kriterien.map(k => el('li', {},
-        el('div', { class: 'vt-k-kopf' }, el('span', {}, k.name), el('b', {}, `${k.punkte}/10`)),
+        el('div', { class: 'vt-k-kopf' }, el('span', {}, k.name), el('b', {}, `${komma(+k.punkte || 0)}/10`)),
         el('div', { class: 'vt-balken', 'aria-hidden': 'true' }, el('span', { style: `width:${Math.max(0, Math.min(10, +k.punkte || 0)) * 10}%` })),
         el('p', { class: 'meta' }, k.kommentar))))),
     r ? el('section', { class: 'block' }, el('h2', {}, 'Deine Reflexion im Abgleich'),
@@ -3632,13 +3733,18 @@ function vtSeite(v) {
       r.uebersehen.length > 0 && [el('h3', {}, 'Nicht erwähnt, aber wichtig'), el('ul', { class: 'vt-staerken' }, r.uebersehen.map(x => el('li', {}, x)))])
       : el('p', { class: 'meta' }, 'Ohne Selbstreflexion bewertet. Ganz unten bei „Reflexion nachholen“ kannst du sie ergänzen; die KI prüft dann jeden deiner Punkte.'),
     ger && el('section', { class: 'block' },
-      el('div', { class: 'vt-ger-kopf' }, el('span', { class: 'vt-ger-stufe' }, ger.gesamt || '–'),
-        el('div', {}, el('h2', {}, 'Sprachniveau nach GER'), el('p', { class: 'meta' }, 'Gemessen an den Deskriptoren des Gemeinsamen Europäischen Referenzrahmens (Europarat), jede Stufe mit Belegen aus deinem Vortrag.'))),
+      el('div', { class: 'vt-ger-kopf' }, el('span', { class: 'vt-ger-stufe' }, gg.niveau || '–'),
+        el('div', {}, el('h2', {}, 'Sprachniveau nach GER'), gg.stand != null && el('p', { class: 'vt-ger-stand' }, vtStand(gg.stand, gi)),
+          el('p', { class: 'meta' }, 'Gemessen an den Deskriptoren des Gemeinsamen Europäischen Referenzrahmens (Europarat), jede Stufe mit Belegen aus deinem Vortrag.'))),
+      gg.stand != null && vtLeiter(gi, gg.stand, true),
+      gg.warum && el('p', {}, gg.warum),
+      gg.naechste?.length > 0 && el('div', { class: 'vt-weiter' }, el('h3', {}, gi < 5 ? `So kommst du auf ${GER_STUFEN[gi + 1]}` : 'So wird es noch souveräner'),
+        el('ol', {}, gg.naechste.map(x => el('li', {}, x)))),
       el('ul', { class: 'vt-ger-skalen' }, ger.skalen.map(g => {
         const i = GER_STUFEN.indexOf(g.niveau);
-        return el('li', {}, el('div', { class: 'vt-k-kopf' }, el('span', {}, g.name), el('b', {}, g.niveau)),
-          el('ol', { class: 'vt-leiter', 'aria-hidden': 'true' }, GER_STUFEN.map((x, j) => el('li', { 'data-an': String(j <= i), 'data-hier': String(j === i) }, x))),
-          el('p', {}, g.begruendung), g.naechste && i < 5 && el('p', { class: 'meta' }, el('b', {}, `Für ${GER_STUFEN[i + 1]}: `), g.naechste));
+        return el('li', {}, el('div', { class: 'vt-k-kopf' }, el('span', {}, g.name), el('b', {}, g.niveau, g.stand != null && el('span', { class: 'vt-stand' }, ' · ' + vtStand(g.stand, i)))),
+          vtLeiter(i, g.stand), el('p', {}, g.begruendung),
+          g.naechste && (i < 5 || g.stand != null) && el('p', { class: 'meta' }, el('b', {}, i < 5 ? `Für ${GER_STUFEN[i + 1]}: ` : 'Noch souveräner: '), g.naechste));
       })),
       vtGrundlage(a)),
     el('section', { class: 'vt-zahlen', 'aria-label': 'Kennzahlen' },
@@ -4521,7 +4627,7 @@ function sperrkarte(f, klein) {
     el('div', { class: 'knopfreihe' },
       ICH?.testFrei && el('button', { class: 'knopf voll', type: 'button', onclick: testStarten }, '24 Stunden Ultra gratis testen'),
       el('a', { class: `knopf${ICH?.testFrei ? '' : ' voll'}`, href: '#/upgrade' }, ICH?.testFrei ? 'Tarife ansehen' : `${name} freischalten`)),
-    ICH?.testFrei && el('p', { class: 'meta' }, 'Einmal pro Konto, ohne Zahlungsdaten. Danach geht es von selbst mit Base weiter.'));
+    ICH?.testFrei && el('p', { class: 'meta' }, `Einmal pro Konto, ohne Zahlungsdaten. Danach geht es von selbst mit ${danach()} weiter.`));
 }
 async function testStarten(e) {
   const knopf = e.currentTarget, ort = knopf.closest('.knopfreihe');
@@ -4543,7 +4649,7 @@ function kontoZeile() {  // statt Guthaben: Tarif und wie viel vom KI-Kontingent
     k.replaceChildren(...!ICH || !TARIFE ? [] : [
       el('span', {}, ICH.test ? `Ultra-Test bis ${zeitpunkt(ICH.bis)}` : TARIFE.tarife[ICH.tarif].name + (ICH.bis ? ` bis ${new Date(ICH.bis).toLocaleDateString('de-AT')}` : '')),
       el('span', {}, `KI-Kontingent ${ICH.genutzt} % genutzt`),
-      (ICH.tarif === 'base' || ICH.test) && el('a', { href: '#/upgrade' }, 'Mehr freischalten')].filter(Boolean));
+      (gratis() || ICH.test) && el('a', { href: '#/upgrade' }, 'Mehr freischalten')].filter(Boolean));
 }
 function neuLaden(hinweis) {  // nach An- und Abmelden: alles frisch, damit nichts vom vorigen Konto stehen bleibt
   try { if (hinweis) sessionStorage.setItem('hinweis', hinweis); } catch {}
@@ -4623,7 +4729,7 @@ function kontoZeigen() {
             await api('registrieren', { email: d.email, passwort: d.passwort, code: d.code, agb: !!d.agb });
             merk('ref', null);
             neuLaden('Willkommen! Wir haben dir eine Mail geschickt: Bestätige darin deine Adresse, dann kannst du Ultra 24 Stunden gratis testen.');
-          }, el('p', { class: 'klein' }, merk('ref') && p ? `Mit dem Freundescode zahlst du im ersten Monat ${p.pro.rabatt} % weniger bei Pro und ${p.ultra.rabatt} % weniger bei Ultra.`
+          }, el('p', { class: 'klein' }, merk('ref') && p ? `Mit dem Freundescode zahlst du im ersten Monat ${p.pro.rabatt} % weniger bei Pro und ${p.ultra.rabatt} % weniger bei Ultra.${TARIFE.launch.aktiv ? ' ' + LAUNCH_RABATT : ''}`
             : 'Base ist kostenlos und bleibt es: jede Woche eine Ausgabe pro Fach aus deinen OLAT-Unterlagen.')),
         el('div', {},
           kontoForm('Anmelden', [kontoFeld('email', 'E-Mail', 'email', { autocomplete: 'username', inputmode: 'email' }),
@@ -4643,17 +4749,18 @@ function kontoZeigen() {
         try { await api('bestaetigung-senden', {}); k.textContent = 'Gesendet, schau ins Postfach'; } catch (err) { status(err.message, true); k.disabled = false; }
       } }, 'Mail nochmal senden'))),
     el('section', { class: 'schritt', 'aria-labelledby': 'k-tarif' }, el('h2', { id: 'k-tarif' }, 'Dein Tarif'),
-      el('p', { class: `stand${ICH.tarif === 'base' ? '' : ' ok'}` }, ICH.test ? `Ultra-Test bis ${zeitpunkt(ICH.bis)}`
-        : T[ICH.tarif].name + (ICH.bis ? ` bis ${new Date(ICH.bis).toLocaleDateString('de-AT')}` : ', kostenlos')),
+      el('p', { class: `stand${gratis() ? '' : ' ok'}` }, ICH.test ? `Ultra-Test bis ${zeitpunkt(ICH.bis)}`
+        : T[ICH.tarif].name + (ICH.bis ? ` bis ${new Date(ICH.bis).toLocaleDateString('de-AT')}` : '') + (gratis() ? ', kostenlos' : '')),
+      ICH.tarif === 'englisch' && el('p', { class: 'klein' }, 'Alles aus Base, dazu Vortrag analysieren und YouTube-Talks für Word Power transkribieren.'),
       el('div', { class: 'kontingent', role: 'img', 'aria-label': `KI-Kontingent zu ${ICH.genutzt} Prozent genutzt` }, el('span', { style: `width: ${ICH.genutzt}%` })),
       el('p', { class: 'meta' }, `KI-Kontingent ${ICH.test ? 'des Tests' : 'diesen Monat'}: ${ICH.genutzt} % genutzt`),
       ICH.bestellung && el('p', { class: 'klein' }, ICH.bestellung.status === 'gemeldet' ? 'Deine Zahlung wird geprüft. Sobald sie da ist, wird freigeschaltet und du bekommst eine Mail.'
         : [`Offene Bestellung ${ICH.bestellung.zweck}: `, el('a', { href: '#/upgrade' }, 'Zahlungsdaten ansehen')]),
       el('div', { class: 'knopfreihe' },
-        el('a', { class: `knopf${ICH.tarif === 'base' ? ' voll' : ''}`, href: '#/upgrade' }, ICH.tarif === 'base' || ICH.test ? 'Tarife ansehen' : 'Verlängern oder wechseln'),
+        el('a', { class: `knopf${gratis() ? ' voll' : ''}`, href: '#/upgrade' }, gratis() || ICH.test ? 'Tarife ansehen' : 'Verlängern oder wechseln'),
         ICH.testFrei && el('button', { class: 'knopf', type: 'button', onclick: testStarten }, '24 Stunden Ultra gratis testen'))),
     el('section', { class: 'schritt', 'aria-labelledby': 'k-freunde' }, el('h2', { id: 'k-freunde' }, 'Freunde einladen'),
-      el('p', { class: 'klein' }, `Wer sich mit deinem Link anmeldet, zahlt im ersten Monat ${T.pro.rabatt} % weniger bei Pro und ${T.ultra.rabatt} % weniger bei Ultra. Sobald die Person zum ersten Mal zahlt, bekommst du denselben Rabatt auf deinen nächsten Monat. Für jede Person einmal, ohne Obergrenze.`),
+      el('p', { class: 'klein' }, `Wer sich mit deinem Link anmeldet, zahlt im ersten Monat ${T.pro.rabatt} % weniger bei Pro und ${T.ultra.rabatt} % weniger bei Ultra. Sobald die Person zum ersten Mal zahlt, bekommst du denselben Rabatt auf deinen nächsten Monat. Für jede Person einmal, ohne Obergrenze.${TARIFE.launch.aktiv ? ' ' + LAUNCH_RABATT : ''}`),
       el('div', { class: 'einladen' },
         el('input', { readonly: true, value: einladung, 'aria-label': 'Dein Einladungslink', onfocus: e => e.target.select() }),
         el('button', { class: 'knopf voll', type: 'button', onclick: e => navigator.share
@@ -4690,6 +4797,7 @@ function kontoZeigen() {
 }
 
 const UP = { wahl: null, monate: 1 };
+const LAUNCH_RABATT = 'Solange die Launch-Preise gelten, kommen keine Rabatte dazu, weil sich Rabatte nicht kombinieren lassen. Sie bleiben gespeichert und gelten ab den regulären Preisen.';
 const PLAN = {  // was jeder Tarif dazubringt
   base: ['Wochenausgabe für jedes Fach: Zusammenfassung, Übungen, Begriffe, Termine, geschrieben von DeepSeek V4.1', 'OLAT-Abgleich am PC', 'Onlinetests im Überblick',
     'Word Power: das Journal als Vorlage mit deinen Word Partnerships'],
@@ -4711,7 +4819,7 @@ const reicht = (budget, t) => Math.floor(budget / AUSGABE_USD[t] / 10) * 10;
 const AUSGABE_USD = { base: 0.03, pro: 0.05, ultra: 0.06 };  // DeepSeek, Luna, Luna als Ultra-Fassung (gemessen 2,5–3 Cent, vorsichtig gerechnet)
 function upgradeZeigen() {
   if (!TARIFE) return $('upgrade').replaceChildren(el('p', { class: 'fehlertext' }, 'Die Tarife ließen sich nicht laden. Bist du online?'));
-  const T = TARIFE.tarife, z = TARIFE.zahlung, b = ICH?.bestellung, mitRabatt = !!ICH && (ICH.erstrabatt || ICH.gutscheine > 0);
+  const T = TARIFE.tarife, L = TARIFE.launch, z = TARIFE.zahlung, b = ICH?.bestellung, mitRabatt = !L.aktiv && !!ICH && (ICH.erstrabatt || ICH.gutscheine > 0);
   const rabatt = t => mitRabatt ? Math.round((T[t].rabattAuf ?? T[t].preis) * T[t].rabatt / 100) : 0;
   const tun = (pfad, body) => async e => { e.currentTarget.disabled = true; try { ICH = await api(pfad, body); } catch (err) { status(err.message, true); } upgradeZeigen(); kontoZeile(); };
   const karte = t => {
@@ -4720,6 +4828,7 @@ function upgradeZeigen() {
       t === 'ultra' && el('span', { class: 'pille akzent marke-oben' }, 'Empfohlen'),
       el('h3', { id: 'tarif-' + t }, T[t].name),
       el('p', { class: 'preis' }, T[t].preis ? euro(T[t].preis) : '€ 0', el('small', {}, T[t].preis ? ' pro Monat' : ' für immer')),
+      L.aktiv && T[t].regulaer > T[t].preis && el('p', { class: 'meta launch-preis' }, el('span', { class: 'pille akzent' }, 'Launch-Preis'), ` später ${euro(T[t].regulaer)}`),
       rabatt(t) > 0 && el('p', { class: 'meta' }, `Erster Monat ${euro(T[t].preis - rabatt(t))} mit ${ICH.erstrabatt ? 'Freundes-Rabatt' : 'deinem Gutschein'}`),
       el('ul', {}, DAZU[t] && el('li', { class: 'plus' }, DAZU[t]), PLAN[t].map(x => el('li', {}, x))),
       t === 'base' ? el('p', { class: 'meta' }, aktuell || ICH?.tarif === 'base' ? 'Dein Tarif' : 'Gilt immer dann, wenn kein anderer läuft.')
@@ -4742,7 +4851,7 @@ function upgradeZeigen() {
     el('fieldset', { class: 'laufzeit' }, el('legend', { class: 'sr' }, 'Laufzeit'),
       TARIFE.monate.map(m => el('label', {}, el('input', { type: 'radio', name: 'monate', value: m, checked: UP.monate === m, onchange: () => { UP.monate = m; preisZeigen(); } }), `${m} ${m === 1 ? 'Monat' : 'Monate'}`))),
     el('p', { class: 'klein' }, 'Zu zahlen: ', zuZahlen, rabatt(UP.wahl) > 0 && ` (${euro(rabatt(UP.wahl))} Rabatt auf einen Monat schon abgezogen)`,
-      '. Einmal im Voraus, kein Abo: Danach geht es von selbst mit Base weiter, nichts verlängert sich automatisch.'),
+      `. Einmal im Voraus, kein Abo: Danach geht es von selbst mit ${danach()} weiter, nichts verlängert sich automatisch.`),
     el('label', { class: 'zustimmung' }, el('input', { type: 'checkbox', name: 'sofort', onchange: () => { fehler.hidden = true; } }),
       el('span', {}, 'Der Tarif soll gleich nach Zahlungseingang starten. Mir ist bekannt, dass ich dann für die schon genutzte Zeit zahle und mein Widerrufsrecht mit vollständiger Erfüllung erlischt.')),
     el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll' }, 'Zahlungspflichtig bestellen'),
@@ -4762,12 +4871,15 @@ function upgradeZeigen() {
     el('header', { class: 'ausgabe-kopf' }, el('h1', {}, 'Tarife'),
       el('p', { class: 'schlagzeile' }, 'Base bleibt kostenlos. Pro und Ultra schalten frei, was dir in der Woche am meisten Zeit spart.'),
       el('p', { class: 'meta' }, 'Endpreise in Euro. Als Kleinunternehmer verrechne ich keine Umsatzsteuer.'),
+      L.aktiv && el('p', { class: 'launch-hinweis' }, el('b', {}, 'Launch-Angebot: '),
+        `Pro, Ultra und Ultra+ gibt es gerade zum Einführungspreis${L.tag ? `, bis ${new Date(L.tag + 'T12:00').toLocaleDateString('de-AT')}` : ''}. Danach gelten die höheren regulären Preise. Was du jetzt buchst, kostet für die ganze gebuchte Laufzeit den Launch-Preis. `
+        + 'Rabatte wie der Freundes-Rabatt kommen nicht dazu, weil sich Rabatte nicht kombinieren lassen; sie bleiben gespeichert und gelten ab den regulären Preisen.'),
       ICH && el('p', { class: 'meta' }, `Dein Tarif: ${ICH.test ? `Ultra-Test bis ${zeitpunkt(ICH.bis)}` : T[ICH.tarif].name + (ICH.bis ? ` bis ${new Date(ICH.bis).toLocaleDateString('de-AT')}` : '')}`)),
     zahlung,
     ICH?.testFrei && el('section', { class: 'sperrkarte', 'aria-labelledby': 'u-test' }, el('h2', { id: 'u-test' }, 'Erst ausprobieren?'),
-      el('p', { class: 'klein' }, '24 Stunden lang alles aus Ultra, einmal pro Konto, ohne Zahlungsdaten. Danach geht es von selbst mit Base weiter.'),
+      el('p', { class: 'klein' }, `24 Stunden lang alles aus Ultra, einmal pro Konto, ohne Zahlungsdaten. Danach geht es von selbst mit ${danach()} weiter.`),
       el('div', { class: 'knopfreihe' }, el('button', { class: 'knopf voll', type: 'button', onclick: testStarten }, '24 Stunden Ultra gratis testen'))),
-    el('div', { class: 'tarife' }, Object.keys(T).map(karte)),
+    el('div', { class: 'tarife' }, Object.keys(T).filter(t => !T[t].aktion).map(karte)),
     el('p', { class: 'meta fair' }, `Fair Use: Jeder Tarif deckt KI-Kosten bis zu einem Betrag pro Monat. Base reicht für rund ${reicht(T.base.budget, 'base')} Wochenausgaben mit DeepSeek, `
       + `Pro für rund ${reicht(T.pro.budget, 'pro')} mit dem gründlicheren GPT-6 Luna, Ultra für rund ${reicht(T.ultra.budget, 'ultra')} in der Ultra-Fassung. Wie viel du schon genutzt hast, steht in der Seitenleiste; am Monatsersten geht es wieder bei null los.`),
     bestellen,
@@ -4780,7 +4892,7 @@ function upgradeZeigen() {
         el('li', {}, 'Deine Ausgaben und Vorträge bleiben bei jedem Tarif erhalten, auch wenn er endet.'),
         el('li', {}, 'Jeder Tarif hat ein KI-Kontingent pro Monat, damit die Kosten planbar bleiben. Im Alltag reicht es weit.'))),
     el('section', { class: 'sperrkarte', 'aria-labelledby': 'u-freunde' }, el('h2', { id: 'u-freunde' }, 'Zusammen günstiger'),
-      el('p', { class: 'klein' }, `Lade Freunde mit deinem Link ein: Sie zahlen im ersten Monat ${T.pro.rabatt} % weniger bei Pro und ${T.ultra.rabatt} % weniger bei Ultra, und sobald sie zahlen, bekommst du denselben Rabatt auf deinen nächsten Monat.`),
+      el('p', { class: 'klein' }, `Lade Freunde mit deinem Link ein: Sie zahlen im ersten Monat ${T.pro.rabatt} % weniger bei Pro und ${T.ultra.rabatt} % weniger bei Ultra, und sobald sie zahlen, bekommst du denselben Rabatt auf deinen nächsten Monat.${L.aktiv ? ' ' + LAUNCH_RABATT : ''}`),
       el('div', { class: 'knopfreihe' }, el('a', { class: 'knopf', href: '#/einstellungen' }, ICH ? 'Zu deinem Einladungslink' : 'Konto erstellen'))),
     el('p', { class: 'rechtszeile meta' }, el('a', { href: '#/recht' }, 'Impressum, Datenschutz und AGB'), el('a', { href: '#a-grenzen' }, 'Was der Lernhelfer ist und was nicht'),
       el('span', {}, 'Eine Lernhilfe, kein Angebot der Universität Innsbruck.')),
@@ -4860,7 +4972,8 @@ async function adminZeigen() {
   const kostet = usd => `${euro(-Math.round(usd * G.kurs * 100) || 0)} (${geld(usd)})`;
   const fix = Math.round(G.fixkosten * 100), komma = x => String(x).replace('.', ',');
   const nutzung = d.funktionen.filter(x => x.art !== 'Gesperrt angetippt');  // meistgenutzt zuerst, wie der Server sortiert
-  const stand = k => k.tarif && k.bis > jetzt ? `${T[k.tarif].name} bis ${tag(k.bis)}` : k.test_bis > jetzt ? `Ultra-Test bis ${zeitpunkt(k.test_bis)}` : k.test_bis ? 'Base, Test genutzt' : 'Base';
+  const stand = k => [k.tarif && k.bis > jetzt ? `${T[k.tarif].name} bis ${tag(k.bis)}` : k.test_bis > jetzt ? `Ultra-Test bis ${zeitpunkt(k.test_bis)}` : k.englisch_bis > jetzt ? null : k.test_bis ? 'Base, Test genutzt' : 'Base',
+    k.englisch_bis > jetzt && `Englisch bis ${tag(k.englisch_bis)}`].filter(Boolean).join(', ');
   const werte = el('form', { class: 'werte-form', onsubmit: async e => {
     e.preventDefault();
     const f = e.target.elements;
@@ -4870,6 +4983,32 @@ async function adminZeigen() {
   } },
     el('label', {}, 'Fixkosten pro Monat in €', el('input', { name: 'fixkosten', type: 'text', inputmode: 'decimal', value: komma(G.fixkosten) })),
     el('label', {}, '1 $ KI kostet dich in €', el('input', { name: 'kurs', type: 'text', inputmode: 'decimal', value: komma(G.kurs) })),
+    el('button', { class: 'knopf', name: 'knopf' }, 'Speichern'));
+  const ZU = Object.keys(T).filter(t => T[t].preis), L = TARIFE.launch;
+  const preise = el('form', { class: 'preis-form', onsubmit: async e => {
+    e.preventDefault();
+    const f = e.target.elements, body = { launch: f.launch.checked, launchBis: f.launchBis.value };
+    for (const t of ZU) body[t] = { launch: f['launch-' + t].value, regulaer: f['regulaer-' + t].value };
+    f.knopf.disabled = true;
+    try { Object.assign(TARIFE, await api('admin/preise', body)); } catch (err) { alert(err.message); }
+    adminZeigen();
+  } },
+    tabelle(['Tarif', 'Launch-Preis in €', 'Regulär in €', 'Gilt jetzt'], ZU.map(t => [T[t].name,
+      el('input', { name: 'launch-' + t, type: 'text', inputmode: 'decimal', value: komma((T[t].launchPreis / 100).toFixed(2)), 'aria-label': `${T[t].name} Launch-Preis` }),
+      el('input', { name: 'regulaer-' + t, type: 'text', inputmode: 'decimal', value: komma((T[t].regulaer / 100).toFixed(2)), 'aria-label': `${T[t].name} regulär` }),
+      euro(T[t].preis)])),
+    el('label', { class: 'haken' }, el('input', { type: 'checkbox', name: 'launch', checked: d.launchEin }), 'Launch-Angebot läuft: Launch-Preise, keine Rabatte dazu'),
+    el('label', {}, el('span', {}, 'Endet nach diesem Tag ', el('span', { class: 'opt' }, 'leer: bis du es ausschaltest')), el('input', { name: 'launchBis', type: 'date', value: L.tag || '' })),
+    el('button', { class: 'knopf', name: 'knopf' }, 'Preise speichern'));
+  const englisch = el('form', { class: 'werte-form', onsubmit: async e => {
+    e.preventDefault();
+    const f = e.target.elements;
+    f.knopf.disabled = true;
+    try { await api('admin/werte', { 'neu-englisch': f.an.checked ? f.tage.value : '0' }); } catch (err) { alert(err.message); }
+    adminZeigen();
+  } },
+    el('label', { class: 'haken' }, el('input', { type: 'checkbox', name: 'an', checked: d.neuEnglisch > 0 }), 'Neue Konten bekommen Englisch statt Base'),
+    el('label', {}, 'für so viele Tage', el('input', { name: 'tage', type: 'number', min: 1, step: 1, value: d.neuEnglisch || 180 })),
     el('button', { class: 'knopf', name: 'knopf' }, 'Speichern'));
   s.replaceChildren(
     el('header', { class: 'ausgabe-kopf' }, el('h1', {}, 'Admin-Ecke'),
@@ -4881,12 +5020,21 @@ async function adminZeigen() {
     el('h2', {}, 'Volle Werkzeuge'),
     el('p', { class: 'klein' }, 'Nur für dich, solange die Ecke offen ist: Word Power mit Hausaufgaben-Entwurf und der Löser mit den Originalzahlen. Alle anderen bekommen nur das Transkript und Lösungswege an Übungsaufgaben mit anderen Zahlen.'),
     el('div', { class: 'knopfreihe' }, el('a', { class: 'knopf voll', href: '#/wordpower' }, 'Word Power, voll'), el('a', { class: 'knopf voll', href: '#/onlinetests' }, 'Onlinetests mit vollem Löser')),
+    el('h2', {}, 'Preise und Launch-Angebot'),
+    el('p', { class: 'klein' }, L.aktiv ? `Das Launch-Angebot läuft${L.tag ? ` bis ${new Date(L.tag + 'T12:00').toLocaleDateString('de-AT')}` : ', bis du es ausschaltest'}: Die Tarifseite zeigt die Launch-Preise mit „später …“, Freundes-Rabatte und Gutscheine werden nicht abgezogen und bleiben für danach.`
+      : 'Kein Launch-Angebot: Es gelten die regulären Preise, Freundes-Rabatte und Gutscheine werden abgezogen.'),
+    preise,
+    el('h2', {}, 'Aktion Englisch'),
+    el('p', { class: 'klein' }, 'Kostenlos: alles aus Base, dazu Vortrag analysieren und YouTube-Talks für Word Power transkribieren. Der Hausaufgaben-Entwurf bleibt bei dir. In der Seitenleiste stehen diese Funktionen oben, Pro und Ultra eingeklappt darunter. Einzelne Konten: unten bei „Tarif von Hand“ Englisch wählen.'),
+    el('p', { class: 'meta' }, d.neuEnglisch > 0 ? `An: Wer sich jetzt registriert, hat ${d.neuEnglisch} Tage Englisch. Gerade ${K.englisch} ${K.englisch === 1 ? 'Konto' : 'Konten'} mit Englisch.` : `Aus: Neue Konten starten mit Base. Gerade ${K.englisch} ${K.englisch === 1 ? 'Konto' : 'Konten'} mit Englisch.`),
+    englisch,
     el('h2', {}, 'Auf einen Blick'),
     el('div', { class: 'kacheln' },
       kachel('Konten', K.konten, `+${K.neu7} in 7 Tagen, +${K.neu30} in 30 Tagen`),
       kachel('Aktiv in 7 Tagen', K.aktiv7, `${K.aktiv30} in 30 Tagen`),
       kachel('Zahlende jetzt', Object.values(K.zahlend).reduce((a, b) => a + b, 0), Object.entries(K.zahlend).map(([t, n]) => `${T[t].name} ${n}`).join(', ')),
       kachel('Im Gratis-Test', K.imTest, `${K.testGenutzt} haben ihn genutzt`),
+      kachel('Mit Englisch', K.englisch, d.neuEnglisch > 0 ? `neue Konten bekommen ${d.neuEnglisch} Tage` : 'Aktion für neue Konten aus'),
       kachel('Monatsumsatz (MRR)', euro(K.mrr), 'laufende Tarife mal Monatspreis'),
       kachel(`Gewinn im ${MONAT}`, euro(G.gewinn.monat), `seit Start ${euro(G.gewinn.gesamt)}`)),
     el('h2', {}, 'Vom Konto zur Zahlung'),
@@ -4945,11 +5093,27 @@ async function rechtZeigen() {
 /* ---------- Ansichten ---------- */
 let ansicht = '', ort = null;
 function modellWahl() {
-  const nur = SERVER && ICH?.tarif === 'base' && !ICH?.ecke;
+  const nur = SERVER && !!ICH && TARIFE?.tarife[ICH.tarif]?.rang === 0 && !ICH.ecke;  // Base und Englisch
   $('modell').disabled = nur;
   $('modell').value = nur ? BASIS_MODELL : MODELLE[merk('modell')] ? merk('modell') : Object.keys(MODELLE)[0];
-  $('modell-hinweis').textContent = nur ? 'In Base schreibt DeepSeek V4.1 mit maximalem Nachdenken. Ab Pro wählst du GPT-6 Luna, MiMo oder Sol.'
+  $('modell-hinweis').textContent = nur ? `In ${TARIFE.tarife[ICH.tarif].name} schreibt DeepSeek V4.1 mit maximalem Nachdenken. Ab Pro wählst du GPT-6 Luna, MiMo oder Sol.`
     : 'GPT-6 Luna schreibt am gründlichsten, MiMo ist am schnellsten, DeepSeek am günstigsten.';
+}
+// Englisch (Aktion): oben steht, was man hat, Vortrag und Word Power zuerst; gesperrte Pro- und Ultra-Funktionen eingeklappt darunter.
+// Alle anderen Tarife: Reihenfolge wie im HTML, gesperrte mit Marke „Pro“ oder „Ultra“.
+const WERKZEUGE = [...document.querySelectorAll('#nav-werkzeuge > a')];
+function leisteOrdnen() {
+  const englisch = SERVER && !!ICH && !!TARIFE?.tarife[ICH.tarif]?.dazu && !ICH.ecke;
+  const zu = a => englisch && SPERREN[a.dataset.ansicht] && !darf(SPERREN[a.dataset.ansicht]);
+  const vorn = a => englisch && ['vortrag', 'wordpower'].includes(a.dataset.ansicht) ? 0 : 1;
+  $('nav-werkzeuge').replaceChildren(...WERKZEUGE.filter(a => !zu(a)).sort((a, b) => vorn(a) - vorn(b)));
+  $('nav-mehr-liste').replaceChildren(...WERKZEUGE.filter(zu));
+  $('nav-mehr').hidden = !fertig() || !$('nav-mehr-liste').children.length;
+  $('nav-mehr-titel').textContent = `Pro und Ultra (${$('nav-mehr-liste').children.length})`;
+  if ($('nav-mehr-liste').querySelector('[aria-current]')) $('nav-mehr').open = true;  // gerade dort: aufgeklappt lassen
+  const kalenderZu = englisch && !darf('kalender');  // Handy: Word Power statt des gesperrten Kalenders
+  document.querySelector('.tabs a[data-ansicht="kalender"]').hidden ||= kalenderZu;
+  $('tab-wordpower').hidden ||= !kalenderZu;
 }
 async function zeichne() {
   const v = !SERVER && verbindungLesen(location.hash);  // QR-Code bzw. Verbindungslink von einem anderen Gerät
@@ -4964,6 +5128,7 @@ async function zeichne() {
   for (const id of ['titelblatt', 'ausgabe', 'einstellungen', 'kalender', 'wordpower', 'onlinetests', 'noten', 'karten', 'pruefung', 'vortrag', 'unterlagen', 'anleitung', 'gesperrt', 'upgrade', 'admin', 'recht']) $(id).hidden = id !== neu;
   document.body.dataset.ansicht = neu;
   document.querySelectorAll('.mit-daten').forEach(a => { a.hidden = !fertig(); });
+  leisteOrdnen();
   $('nav-admin').hidden = !ICH?.admin;
   const hier = neu === 'gesperrt' ? teil : neu;
   document.querySelectorAll('a[data-ansicht]').forEach(a => {

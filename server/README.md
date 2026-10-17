@@ -114,6 +114,8 @@ OpenRouter-Schlüssel, Passwörter von Word Power und Löser, Brevo und Zahlungs
 
 ## Laufender Betrieb
 
+- **Preise und Launch-Angebot:** Admin-Ecke → „Preise und Launch-Angebot“. Je Tarif Launch-Preis und regulären Preis eintragen, das Launch-Angebot an- oder ausschalten und optional ein Enddatum setzen; danach gelten von selbst die regulären Preise. Solange es läuft, werden keine Freundes-Rabatte oder Gutscheine abgezogen, sie bleiben für danach. Bezahlte Laufzeiten behalten ihren Preis.
+- **Aktion Englisch:** Admin-Ecke → „Aktion Englisch“. Eingeschaltet bekommen neue Konten für die eingestellten Tage den Tarif Englisch: Base plus Vortragsanalyse und Word-Power-Transkript, kostenlos, KI-Kontingent 3 $ im Monat. Der Hausaufgaben-Entwurf bleibt nur in der Admin-Ecke. Einzelne Konten: in der Kontenliste „Tarif von Hand“ → Englisch.
 - **Zahlung kommt rein:** Admin-Ecke → bei der Bestellung mit diesem Verwendungszweck „Geld ist da“. Der Tarif startet sofort, die Person bekommt eine Mail.
 - **Update:** automatisch. `/usr/local/bin/lernhelfer-update` läuft per Cron (root) alle 5 Minuten, holt neue Commits von `main` und startet den Dienst neu. Ist `server.mjs` fehlerhaft oder startet der Dienst nicht, bleibt der alte Stand. Log: `/var/log/lernhelfer-update.log`. Von Hand: `sudo /usr/local/bin/lernhelfer-update`
 - **Sicherung** jede Nacht, sieben Tage rollierend (`sudo crontab -e`):
