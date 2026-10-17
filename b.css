@@ -1,0 +1,151 @@
+/* Variante B: eine kopierte Skriptseite in Computer Modern, wie sie aus LaTeX kommt; der Textmarker streicht das Wichtigste an. */
+@font-face { font-family: "CMU Serif"; src: url("fonts/CMUSerif-Regular.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "CMU Serif"; src: url("fonts/CMUSerif-Italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "CMU Serif"; src: url("fonts/CMUSerif-Bold.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
+
+:root {
+  --papier: #f5f5f2;
+  --toner: #161616;
+  --toner-2: #4a4a48;
+  --gelb: #ffee32;
+  --rosa: #ff8fcf;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --papier: #dcdcd8; }
+}
+
+* { box-sizing: border-box; }
+html { background: var(--papier); -webkit-text-size-adjust: 100%; }
+body {
+  position: relative;
+  margin: 0;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  background: var(--papier);
+  color: var(--toner);
+  font: 400 1.1875rem/1.42 "CMU Serif", "Latin Modern Roman", Georgia, serif;
+  font-kerning: normal;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+::selection { background: rgb(255 238 50 / 0.6); }
+a { color: inherit; touch-action: manipulation; }
+:focus-visible { outline: 2px solid var(--toner); outline-offset: 3px; }
+
+/* Kopierer: Schatten am Bund links, Tonerstaub, etwas dunklere Ränder */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgb(20 20 20 / 0.55), rgb(20 20 20 / 0.18) 22px, rgb(20 20 20 / 0.05) 70px, transparent 140px),
+    linear-gradient(270deg, rgb(20 20 20 / 0.08), transparent 40px),
+    linear-gradient(180deg, rgb(20 20 20 / 0.07), transparent 30px);
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.11;
+  mix-blend-mode: multiply;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.95' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.6 1.15'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- Satzspiegel ---------- */
+.seite {
+  position: relative;
+  max-width: 35em;
+  margin: 0 auto;
+  padding: clamp(28px, 6vh, 64px) clamp(24px, 6vw, 40px) max(28px, env(safe-area-inset-bottom));
+  text-align: justify;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+.lauf {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 5px;
+  border-bottom: 0.6px solid var(--toner);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+
+.titelei { margin: clamp(40px, 9vh, 88px) 0 clamp(32px, 6vh, 56px); text-align: center; hyphens: manual; }
+h1 { margin: 0; font-weight: 400; font-size: clamp(3.25rem, 10vw, 5.25rem); line-height: 1; letter-spacing: -0.01em; }
+.untertitel { margin: 18px auto 0; max-width: 30em; font-size: 1.1875rem; text-align: center; text-wrap: balance; }
+.datum { margin: 10px 0 0; font-size: 1rem; color: var(--toner-2); font-variant-numeric: tabular-nums; text-wrap: balance; }
+
+h2 { margin: 1.6em 0 0.6em; font-size: 1.375rem; font-weight: 700; line-height: 1.3; text-align: left; }
+.snr { display: inline-block; min-width: 1.6em; }
+p { margin: 0; }
+.satz + .satz, .satz + .beweis { margin-top: 0.7em; }
+.beweis { margin-top: 0.7em; }
+.qed { display: inline-block; float: right; width: 0.62em; height: 0.62em; margin-top: 0.42em; border: 0.08em solid var(--toner); }
+
+.liste { margin: 0 0 0.9em; padding: 0; list-style: none; counter-reset: n; text-align: left; }
+.liste li { position: relative; padding-left: 2.6em; counter-increment: n; }
+.liste li + li { margin-top: 0.15em; }
+.liste li::before { content: "(" counter(n, lower-roman) ")"; position: absolute; left: 0; width: 2em; text-align: right; }
+
+sup { font-size: 0.65em; line-height: 0; }
+sup a { text-decoration: none; padding: 0 0.1em; }
+
+/* Knopf als gerahmte Box, wie \fbox */
+.go {
+  display: inline-block;
+  margin: 0 0.1em;
+  padding: 0.34em 0.6em 0.28em;
+  border: 0.9px solid var(--toner);
+  font-size: 1.06em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 160ms var(--ease-out);
+}
+.go:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) {
+  .go:hover { background: rgb(255 238 50 / 0.45); }
+}
+
+.fuss { margin-top: 2.2em; padding-top: 0.5em; font-size: 0.875rem; line-height: 1.4; text-align: left; position: relative; }
+.fuss::before { content: ""; position: absolute; top: 0; left: 0; width: 34%; border-top: 0.6px solid var(--toner); }
+.fuss p + p { margin-top: 0.2em; }
+.fuss nav { display: flex; flex-wrap: wrap; gap: 0 1.4em; margin-top: 1.2em; }
+.fuss nav a { padding: 6px 0; }
+
+/* ---------- Textmarker ---------- */
+mark {
+  color: inherit;
+  margin: 0 -0.12em;
+  padding: 0 0.12em;
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 100% 100%;
+  mix-blend-mode: multiply;
+}
+.gelb { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M1.2 3.6C18 2.4 36 3.4 55 2.6S86 3.3 99 2.2L99.6 17.4C82 18.6 63 17.1 44 18S12 17.2.4 18.3Z' fill='%23ffee32' fill-opacity='.92'/%3E%3C/svg%3E"); }
+.rosa { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M1.2 3.6C18 2.4 36 3.4 55 2.6S86 3.3 99 2.2L99.6 17.4C82 18.6 63 17.1 44 18S12 17.2.4 18.3Z' fill='%23ff8fcf' fill-opacity='.85'/%3E%3C/svg%3E"); }
+.go mark { margin: 0; padding: 0 0.08em; }
+
+@media (max-width: 560px) {
+  body { font-size: 1.0625rem; }
+  .seite { text-align: left; }
+  .lauf { font-size: 0.8125rem; }
+  body::before { background: linear-gradient(90deg, rgb(20 20 20 / 0.45), rgb(20 20 20 / 0.1) 10px, transparent 48px), linear-gradient(180deg, rgb(20 20 20 / 0.07), transparent 30px); }
+}
+
+/* ---------- Einmal: der Marker streicht an, Zeile für Zeile ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .seite { animation: auflegen 700ms var(--ease-out) both; }
+  mark { animation: streichen 900ms cubic-bezier(0.5, 0, 0.25, 1) both; }
+  .m1 { animation-delay: 900ms; animation-duration: 1300ms; }
+  .m2 { animation-delay: 2300ms; animation-duration: 380ms; }
+  .m3 { animation-delay: 2850ms; animation-duration: 460ms; }
+}
+@keyframes auflegen { from { opacity: 0; } }
+@keyframes streichen { from { background-size: 0% 100%; } }

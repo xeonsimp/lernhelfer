@@ -3,3 +3,6 @@ Quelle: Google Fonts (latin-Teilmenge, variable Schnitte).
 https://github.com/google/fonts/tree/main/ofl/archivo
 https://github.com/google/fonts/tree/main/ofl/sourceserif4
 https://openfontlicense.org
+
+CMU Serif (Computer Modern Unicode, nach Donald E. Knuth; Andrey V. Panov u. a.) steht ebenfalls unter der SIL Open Font License 1.1.
+Quelle: npm-Paket computer-modern 0.1.3 (jsDelivr), auf Latin gekürzt.

@@ -19,14 +19,18 @@ const ADMIN = (E.LH_ADMIN || '').trim().toLowerCase();
 const TAG = 864e5, MONAT = 30 * TAG;
 if (SICHER && !E.LH_GEHEIM) throw new Error('LH_GEHEIM fehlt (lange Zufallszeichenkette, verschlüsselt gespeicherte API-Schlüssel).');
 
-// Preise in Cent pro Monat. budget: Fair Use, KI-Kosten in $ pro Monat, die der Server für ein Konto höchstens trägt.
+// Preise in Cent pro Monat: preis gilt gerade, launchPreis während des Launch-Angebots, regulaer danach (preiseSetzen, Admin-Ecke).
+// budget: Fair Use, KI-Kosten in $ pro Monat, die der Server für ein Konto höchstens trägt.
 // rabatt: % auf einen Monat für geworbene Freunde und ihre Werber; bei Ultra+ nur auf den Ultra-Teil, das API-Guthaben kostet echtes Geld.
+// Englisch: kostenlose Aktion (nicht zu kaufen), Base plus dazu: YouTube-Transkript und Vortragsanalyse; der Hausaufgaben-Entwurf nie.
 const TARIFE = {
   base: { name: 'Base', preis: 0, rang: 0, budget: 2 },  // DeepSeek: eine Ausgabe 2–4 Cent, also rund 60 im Monat
-  pro: { name: 'Pro', preis: 490, rang: 1, budget: 3, rabatt: 20 },
-  ultra: { name: 'Ultra', preis: 990, rang: 2, budget: 6, rabatt: 30 },
-  ultraplus: { name: 'Ultra+ API', preis: 1490, rang: 2, budget: 6, rabatt: 30, rabattAuf: 990, apiUsd: 11 },
+  englisch: { name: 'Englisch', preis: 0, rang: 0, budget: 3, dazu: ['wp-transkript', 'vortrag'], aktion: true },
+  pro: { name: 'Pro', preis: 490, launchPreis: 490, regulaer: 990, rang: 1, budget: 3, rabatt: 20 },
+  ultra: { name: 'Ultra', preis: 990, launchPreis: 990, regulaer: 1490, rang: 2, budget: 6, rabatt: 30 },
+  ultraplus: { name: 'Ultra+ API', preis: 1490, launchPreis: 1490, regulaer: 1990, rang: 2, budget: 6, rabatt: 30, rabattAuf: 990, apiUsd: 11 },
 };
+const ZU_KAUFEN = Object.keys(TARIFE).filter(t => TARIFE[t].preis);
 // Base schreibt nur mit DeepSeek V4.1 Flash, maximal nachdenkend; der Server setzt das selbst, egal was die App schickt.
 // Nie mehr als 5 $ im Monat pro Gratis-Konto: Budget 2 $ + LAUFEND gleichzeitige Anfragen zu je höchstens 0,33 $
 // (1 Mio. Token Eingabe zu höchstens 0,20 $/Mio., 120 000 Token Ausgabe zu höchstens 1 $/Mio.) = 2 + 8 × 0,33 < 5.
@@ -86,7 +90,7 @@ const stilRahmen = t => `Persönliche Stilwünsche dieser Person. Sie betreffen 
 ${t}
 STILWÜNSCHE>>>`;
 function stilVon(k, s) {  // gespeicherter Stil, nur solange Ultra läuft und nur, wenn er die Prüfung (noch) besteht
-  if (!k.ecke && TARIFE[s.tarif].rang < FUNKTIONEN.stil) return '';
+  if (!k.ecke && !hat(TARIFE[s.tarif], 'stil')) return '';
   const d = db.prepare("select inhalt from dateien where konto = ? and pfad = 'stil.json'").get(k.id);
   let t = '';
   try { t = stilSauber(JSON.parse(Buffer.from(d.inhalt).toString('utf8')).text); } catch { return ''; }
@@ -129,7 +133,7 @@ create table if not exists nutzung (konto integer not null, was text not null, t
 create table if not exists fehler (id integer primary key, zeit integer not null, konto integer references konten(id) on delete set null, kontakt text,
   seite text, meldung text, text text, geraet text, erledigt integer not null default 0);`);  // werte: Einstellungen der Admin-Ecke, KI-Kosten gelöschter Konten
 // nutzung: was = Funktion (KI-Anfrage oder Speichern), „seite:…“ (Seite geöffnet) oder „gesperrt:…“ (gesperrte Funktion angetippt); für die Admin-Ecke
-try { db.exec('alter table konten add column zuletzt integer not null default 0'); } catch {}  // ältere Datenbank: Spalte nachrüsten
+for (const spalte of ['zuletzt', 'englisch_bis']) try { db.exec(`alter table konten add column ${spalte} integer not null default 0`); } catch {}  // ältere Datenbank: Spalten nachrüsten
 
 /* ---------- Kleinigkeiten ---------- */
 class Fehler extends Error { constructor(code, text) { super(text); this.code = code; } }
@@ -232,17 +236,20 @@ const bestaetigungSenden = (id, email) => mail(email, 'Lernhelfer: E-Mail bestä
   `Hallo,\n\nbitte bestätige deine E-Mail-Adresse für den Lernhelfer:\n${BASIS}/app#bestaetigen=${marke(id, 'bestaetigen', 3 * TAG)}\n\nDer Link gilt drei Tage. Hast du dich nicht angemeldet, ignoriere diese Mail einfach.` + gruss);
 const passwortPruefen = pw => { if (pw.length < 10 || pw.length > 200) nein(400, 'Das Passwort braucht mindestens 10 Zeichen.'); return pw; };
 
-// Was gilt gerade: bezahlter Tarif, sonst der 24-Stunden-Test (zählt als Ultra), sonst Base
+// Was gilt gerade: bezahlter Tarif, sonst der 24-Stunden-Test (zählt als Ultra), sonst die Aktion Englisch, sonst Base
 function stufe(k) {
-  if (k.tarif && k.bis > jetzt()) return { tarif: k.tarif, bis: k.bis, test: false };
-  if (k.test_bis > jetzt()) return { tarif: 'ultra', bis: k.test_bis, test: true };
+  const t = jetzt();
+  if (k.tarif && k.bis > t) return { tarif: k.tarif, bis: k.bis, test: false };
+  if (k.test_bis > t) return { tarif: 'ultra', bis: k.test_bis, test: true };
+  if (k.englisch_bis > t) return { tarif: 'englisch', bis: k.englisch_bis, test: false };
   return { tarif: 'base', bis: null, test: false };
 }
+const hat = (T, f) => T.rang >= FUNKTIONEN[f] || !!T.dazu?.includes(f);
 function darf(k, f) {
   const s = stufe(k), rang = FUNKTIONEN[f];
   if (k.ecke) return s;  // Admin-Ecke: alles, ohne Kontingent
   if (rang > 2) nein(403, 'Diese Funktion gibt es hier nicht.');
-  if (TARIFE[s.tarif].rang < rang) nein(402, `${NAMEN[f]} gehört zu ${rang === 1 ? 'Pro' : 'Ultra'}.`);
+  if (!hat(TARIFE[s.tarif], f)) nein(402, `${NAMEN[f]} gehört zu ${rang === 1 ? 'Pro' : 'Ultra'}.`);
   return s;
 }
 const verbraucht = (id, test) => db.prepare('select usd from verbrauch where konto = ? and monat = ?').get(id, test ? 'test' : monat())?.usd || 0;
@@ -255,6 +262,8 @@ const SEITEN = { titelblatt: 'Heute', ausgabe: 'Wochenausgabe lesen', unterlagen
   karten: 'Karteikarten', pruefung: 'Prüfungstraining', vortrag: 'Vortrag', wordpower: 'Word Power', anleitung: 'Anleitung', upgrade: 'Tarife', einstellungen: 'Konto' };
 const MELDBAR = new Set([...Object.keys(SEITEN).map(x => 'seite:' + x), ...Object.keys(FUNKTIONEN).filter(f => FUNKTIONEN[f] <= 2).map(f => 'gesperrt:' + f), 'export']);
 const bezahlt = id => !!db.prepare("select 1 from bestellungen where konto = ? and status = 'bezahlt'").get(id);
+// Freundes-Rabatt der geworbenen Person: offen, bis eine Zahlung ihn wirklich abgezogen hat (zum Launch-Preis gibt es keinen, er bleibt für danach)
+const erstrabatt = k => !!k.geworben_von && !db.prepare("select 1 from bestellungen where konto = ? and status = 'bezahlt' and rabatt > 0 and gutschein is null").get(k.id);
 
 function ich(k) {
   const ecke = !!k.ecke;
@@ -262,11 +271,11 @@ function ich(k) {
   const s = stufe(k), budget = s.test ? TEST.budget : TARIFE[s.tarif].budget;
   return {
     email: k.email, bestaetigt: !!k.bestaetigt, admin: istAdmin(k), ecke,
-    tarif: s.tarif, bis: s.bis, test: s.test, testFrei: !k.test_bis && !bezahlt(k.id) && s.tarif === 'base',
+    tarif: s.tarif, bis: s.bis, test: s.test, testFrei: !k.test_bis && !bezahlt(k.id) && !TARIFE[s.tarif].preis,
     genutzt: Math.min(100, Math.round(100 * verbraucht(k.id, s.test) / budget)),
     code: k.code, freunde: db.prepare('select count(*) n from konten where geworben_von = ?').get(k.id).n,
     gutscheine: db.prepare('select count(*) n from gutscheine where konto = ? and eingeloest is null').get(k.id).n,
-    erstrabatt: !!k.geworben_von && !bezahlt(k.id),
+    erstrabatt: erstrabatt(k),
     bestellung: db.prepare("select id, tarif, monate, betrag, rabatt, zweck, status from bestellungen where konto = ? and status in ('offen', 'gemeldet') order by id desc").get(k.id) || null,
     api: s.tarif === 'ultraplus' && k.or_key && k.or_an ? entschluesseln(k.or_key) : null,
     pc: !!db.prepare("select 1 from marken where konto = ? and art = 'sync'").get(k.id),
@@ -276,9 +285,11 @@ function ich(k) {
 /* ---------- Zahlungen und Freunde-Bonus ---------- */
 // Geworbene bekommen den Rabatt auf ihre erste Zahlung; Werbende einen Gutschein, sobald die geworbene Person zum ersten Mal zahlt.
 // Ein Rabatt pro Bestellung, auf einen Monat; weitere Gutscheine bleiben für die nächste.
+// Während des Launch-Angebots gibt es keine Rabatte dazu (nichts lässt sich kombinieren); Gutscheine bleiben für danach.
 function rabattFuer(k, T) {
+  if (LAUNCH.aktiv) return { rabatt: 0, gutschein: null };
   const betrag = Math.round((T.rabattAuf ?? T.preis) * T.rabatt / 100);
-  if (k.geworben_von && !bezahlt(k.id)) return { rabatt: betrag, gutschein: null };
+  if (erstrabatt(k)) return { rabatt: betrag, gutschein: null };
   const g = db.prepare('select id from gutscheine where konto = ? and eingeloest is null order by id').get(k.id);
   return g ? { rabatt: betrag, gutschein: g.id } : { rabatt: 0, gutschein: null };
 }
@@ -313,7 +324,7 @@ async function freischalten(id) {
   if (erste && k.geworben_von) {
     db.prepare('insert into gutscheine (konto, von, erstellt) values (?, ?, ?)').run(k.geworben_von, k.id, t);
     const w = kontoMit(k.geworben_von);
-    await mail(w.email, 'Lernhelfer: Dein Freundes-Bonus ist da', `Hallo,\n\njemand, den du eingeladen hast, ist jetzt mit einem Tarif dabei. Danke!\n\nDeine nächste Zahlung ist dafür einen Monat lang günstiger: 20 % bei Pro, 30 % bei Ultra. Der Rabatt wird beim nächsten Bestellen automatisch abgezogen.\n${BASIS}/app#/upgrade` + gruss);
+    await mail(w.email, 'Lernhelfer: Dein Freundes-Bonus ist da', `Hallo,\n\njemand, den du eingeladen hast, ist jetzt mit einem Tarif dabei. Danke!\n\nDeine nächste Zahlung ist dafür einen Monat lang günstiger: ${TARIFE.pro.rabatt} % bei Pro, ${TARIFE.ultra.rabatt} % bei Ultra. Der Rabatt wird beim nächsten Bestellen automatisch abgezogen${LAUNCH.aktiv ? '. Solange die Launch-Preise gelten, gibt es keine Rabatte dazu; dein Gutschein bleibt bis danach gespeichert' : ''}.\n${BASIS}/app#/upgrade` + gruss);
   }
   let warnung = null;
   try { await apiAbgleich(k); } catch (e) { warnung = e.message; console.error(e.message); }  // der stündliche Abgleich versucht es wieder
@@ -371,7 +382,7 @@ async function ki(req, res, k) {
   const s = darf(k, b.feature);
   if (!MODELLE.has(b.model)) nein(400, 'Dieses Modell gibt es hier nicht.');
   if (b.feature === 'test-foto') { Object.assign(b, FOTO_KI); delete b.reasoning; delete b.provider; }
-  else if (!k.ecke && s.tarif === 'base') Object.assign(b, BASIS_KI);
+  else if (!k.ecke && TARIFE[s.tarif].rang === 0 && !TARIFE[s.tarif].dazu?.includes(b.feature)) Object.assign(b, BASIS_KI);  // Englisch: Vortrag und Transkript mit den Modellen, die hören
   const stil = b.stil !== false && stilVon(k, s);  // Reihenfolge: REGEL, Stil, dann was die App schickt
   b.messages = [...stil ? [{ role: 'system', content: stilRahmen(stil) }] : [], ...Array.isArray(b.messages) ? b.messages : []];
   if (['loeser', 'training', 'probeklausur'].includes(b.feature) && !k.ecke) b.messages = [{ role: 'system', content: REGEL }, ...b.messages];
@@ -447,6 +458,22 @@ async function prompts(bereich) {
 /* ---------- Admin-Ecke ---------- */
 const wert = (name, vorgabe) => db.prepare('select wert from werte where name = ?').get(name)?.wert ?? vorgabe;
 const wertDazu = db.prepare('insert into werte (name, wert) values (?, ?) on conflict (name) do update set wert = wert + excluded.wert');
+const wertSetzen = (name, x) => db.prepare('insert into werte (name, wert) values (?, ?) on conflict (name) do update set wert = excluded.wert').run(name, x);
+// Preise aus der Admin-Ecke (werte preis:pro, regulaer:pro …, launch, launch-bis); ohne Eintrag gelten die aus TARIFE.
+// Läuft das Launch-Angebot (an, und das Enddatum ist nicht vorbei), gilt der Launch-Preis, sonst der reguläre. Vor jeder Anfrage neu.
+const VORGABE = Object.fromEntries(ZU_KAUFEN.map(t => [t, [TARIFE[t].launchPreis, TARIFE[t].regulaer]]));
+let LAUNCH = { aktiv: true, bis: null, tag: null };
+function preiseSetzen() {
+  const bis = wert('launch-bis', 0);
+  LAUNCH = { aktiv: !!wert('launch', 1) && (!bis || jetzt() < bis), bis: bis || null, tag: bis ? new Date(bis).toLocaleDateString('sv-SE') : null };  // tag: JJJJ-MM-TT wie eingegeben
+  for (const t of ZU_KAUFEN) {
+    const T = TARIFE[t];
+    T.launchPreis = wert('preis:' + t, VORGABE[t][0]); T.regulaer = wert('regulaer:' + t, VORGABE[t][1]);
+    T.preis = LAUNCH.aktiv ? T.launchPreis : T.regulaer;
+  }
+  TARIFE.ultraplus.rabattAuf = TARIFE.ultra.preis;
+}
+preiseSetzen();
 async function orNutzung(hash) {  // Ultra+: was der eigene Schlüssel verbraucht hat, in $ (gesamt und im laufenden Monat)
   try {
     const r = await fetch(`${OR}/keys/${hash}`, { headers: { Authorization: 'Bearer ' + E.LH_OR_VERWALTUNG }, signal: AbortSignal.timeout(5000) });
@@ -479,7 +506,7 @@ function dashboard(konten) {  // Kennzahlen, Geld und Verlauf; KI-Kosten in $, m
   return {
     kennzahlen: { konten: konten.length, bestaetigt: n(x => x.bestaetigt), neu7: n(x => x.erstellt > t - 7 * TAG), neu30: n(x => x.erstellt > t - 30 * TAG),
       aktiv7: n(x => x.zuletzt > t - 7 * TAG), aktiv30: n(x => x.zuletzt > t - 30 * TAG), imTest: n(x => x.test_bis > t), testGenutzt: n(x => x.test_bis > 0),
-      kunden: n(x => x.bezahlt > 0), zahlend, mrr: Object.entries(zahlend).reduce((s, [x, z]) => s + z * TARIFE[x].preis, 0) },
+      kunden: n(x => x.bezahlt > 0), englisch: n(x => x.englisch_bis > t), zahlend, mrr: Object.entries(zahlend).reduce((s, [x, z]) => s + z * TARIFE[x].preis, 0) },
     geld, verlauf,
     freunde: { geworben: n(x => x.werber), zahlend: n(x => x.werber && x.bezahlt > 0),
       offen: summe('select count(*) n from gutscheine where eingeloest is null'), eingeloest: summe('select count(*) n from gutscheine where eingeloest is not null') },
@@ -521,7 +548,7 @@ function exportieren(req, res, k) {
   const iso = x => x ? new Date(x).toISOString() : null, s = stufe(k);
   const konto = {
     email: k.email, registriert: iso(k.erstellt), bestaetigt: !!k.bestaetigt, zuletzt_aktiv: iso(k.zuletzt),
-    tarif: TARIFE[s.tarif].name, tarif_bis: iso(s.bis), gratis_test_bis: iso(k.test_bis), freundescode: k.code, ueber_einladung: !!k.geworben_von,
+    tarif: TARIFE[s.tarif].name, tarif_bis: iso(s.bis), gratis_test_bis: iso(k.test_bis), englisch_bis: iso(k.englisch_bis), freundescode: k.code, ueber_einladung: !!k.geworben_von,
     eingeladene_personen: db.prepare('select count(*) n from konten where geworben_von = ?').get(k.id).n,
     offene_gutscheine: db.prepare('select count(*) n from gutscheine where konto = ? and eingeloest is null').get(k.id).n,
     ultraplus_schluessel: !!k.or_hash,
@@ -556,7 +583,7 @@ function bestellMail(k, T, monate, betrag, zweck) {
 
 /* ---------- Routen ---------- */
 const ROUTEN = {
-  'GET /api/tarife': () => ({ tarife: TARIFE, test: TEST, monate: MONATE, funktionen: Object.fromEntries(Object.entries(FUNKTIONEN).filter(([, r]) => r <= 2)),
+  'GET /api/tarife': () => ({ tarife: TARIFE, launch: LAUNCH, test: TEST, monate: MONATE, funktionen: Object.fromEntries(Object.entries(FUNKTIONEN).filter(([, r]) => r <= 2)),
     zahlung: { empfaenger: E.LH_EMPFAENGER || '', iban: E.LH_IBAN || '', bic: E.LH_BIC || '', paypal: E.LH_PAYPAL || '' } }),
   'GET /api/recht': () => ({ text: existsSync(join(DATEN, 'recht.md')) ? readFileSync(join(DATEN, 'recht.md'), 'utf8') : '' }),
   'GET /api/ich': ({ k }) => ich(muss(k)),
@@ -570,7 +597,9 @@ const ROUTEN = {
     const werber = b.code ? db.prepare('select id from konten where code = ?').get(String(b.code).trim().toUpperCase()) : null;
     if (b.code && !werber) nein(400, 'Diesen Freundescode gibt es nicht. Leer lassen geht auch.');
     let neu; do neu = code(6); while (db.prepare('select 1 from konten where code = ?').get(neu));
-    const { lastInsertRowid: id } = db.prepare('insert into konten (email, pw, erstellt, code, geworben_von) values (?, ?, ?, ?, ?)').run(email, pwHash(pw), jetzt(), neu, werber?.id ?? null);
+    const tage = wert('neu-englisch', 0);  // Admin-Ecke: neue Konten starten so viele Tage mit Englisch statt Base
+    const { lastInsertRowid: id } = db.prepare('insert into konten (email, pw, erstellt, code, geworben_von, englisch_bis) values (?, ?, ?, ?, ?, ?)')
+      .run(email, pwHash(pw), jetzt(), neu, werber?.id ?? null, tage > 0 ? jetzt() + tage * TAG : 0);
     anmelden(res, id);
     await bestaetigungSenden(id, email);
     return ich({ id });
@@ -607,7 +636,7 @@ const ROUTEN = {
     muss(k);
     if (!k.bestaetigt) nein(403, 'Bitte bestätige zuerst deine E-Mail-Adresse. Der Link steht in der Mail, die wir dir geschickt haben.');
     if (k.test_bis || bezahlt(k.id)) nein(409, 'Den Ultra-Test gibt es einmal pro Konto, und du hast ihn schon genutzt.');
-    if (stufe(k).tarif !== 'base') nein(409, 'Du hast schon einen Tarif.');
+    if (TARIFE[stufe(k).tarif].preis) nein(409, 'Du hast schon einen Tarif.');
     db.prepare('update konten set test_bis = ? where id = ?').run(jetzt() + TEST.stunden * 3600e3, k.id);
     return ich(k);
   },
@@ -689,7 +718,7 @@ const ROUTEN = {
 
   'GET /api/admin': async ({ k }) => {
     admin(k);
-    const konten = db.prepare(`select k.id, k.email, k.erstellt, k.bestaetigt, k.tarif, k.bis, k.test_bis, k.zuletzt, k.or_hash, w.email werber,
+    const konten = db.prepare(`select k.id, k.email, k.erstellt, k.bestaetigt, k.tarif, k.bis, k.test_bis, k.englisch_bis, k.zuletzt, k.or_hash, w.email werber,
         coalesce((select usd from verbrauch where konto = k.id and monat = ?), 0) ki_monat,
         coalesce((select sum(usd) from verbrauch where konto = k.id and monat != 'test'), 0) ki_gesamt,
         (select count(*) from konten g where g.geworben_von = k.id) geworben,
@@ -699,19 +728,35 @@ const ROUTEN = {
       from konten k left join konten w on w.id = k.geworben_von order by k.id desc`).all(monat());
     await Promise.all(konten.map(async x => { x.api = x.or_hash && E.LH_OR_VERWALTUNG ? await orNutzung(x.or_hash) : null; delete x.or_hash; }));
     return {
-      ...dashboard(konten), konten, funktionen: nutzungListe(), schluessel: schluesselStand(),
+      ...dashboard(konten), konten, funktionen: nutzungListe(), schluessel: schluesselStand(), neuEnglisch: wert('neu-englisch', 0), launchEin: !!wert('launch', 1),
       fehler: db.prepare('select id, zeit, kontakt, seite, meldung, text, geraet from fehler where erledigt = 0 order by id desc limit 50').all(),
       bestellungen: db.prepare("select id, email, tarif, monate, betrag, rabatt, zweck, status, erstellt, gemeldet, bezahlt from bestellungen where status in ('offen', 'gemeldet') or bezahlt > ? order by id desc").all(jetzt() - 60 * TAG),
     };
   },
-  'POST /api/admin/werte': ({ k, b }) => {  // Fixkosten pro Monat in € und was 1 $ KI in € kostet
+  'POST /api/admin/werte': ({ k, b }) => {  // Fixkosten pro Monat in €, was 1 $ KI in € kostet, wie viele Tage neue Konten Englisch bekommen (0 = aus)
     admin(k);
-    for (const name of ['fixkosten', 'kurs']) {
+    for (const name of ['fixkosten', 'kurs', 'neu-englisch']) {
       if (b[name] == null || b[name] === '') continue;
       const x = Number(String(b[name]).replace(',', '.'));
-      if (!(x >= 0 && x < 1e5)) nein(400, 'Bitte eine Zahl eingeben, etwa 4,90.');
-      db.prepare('insert into werte (name, wert) values (?, ?) on conflict (name) do update set wert = excluded.wert').run(name, x);
+      if (!(x >= 0 && x < 1e5) || name === 'neu-englisch' && !Number.isInteger(x)) nein(400, name === 'neu-englisch' ? 'Bitte ganze Tage eingeben, 0 schaltet es aus.' : 'Bitte eine Zahl eingeben, etwa 4,90.');
+      wertSetzen(name, x);
     }
+  },
+  'POST /api/admin/preise': ({ k, b }) => {  // Launch- und reguläre Preise in €, Launch-Angebot an/aus und optional bis zu einem Tag (JJJJ-MM-TT, endet um Mitternacht)
+    admin(k);
+    const cent = x => { const c = Math.round(Number(String(x).replace(',', '.')) * 100); if (!(c >= 50 && c <= 100000)) nein(400, 'Preise bitte in Euro zwischen 0,50 und 1000, etwa 4,90.'); return c; };
+    const neu = [];
+    for (const t of ZU_KAUFEN) for (const [feld, name] of [['launch', 'preis:'], ['regulaer', 'regulaer:']])
+      if (b[t]?.[feld] != null && b[t][feld] !== '') neu.push([name + t, cent(b[t][feld])]);
+    if ('launchBis' in b) {
+      const bis = b.launchBis ? Date.parse(b.launchBis + 'T23:59:59') : 0;
+      if (!(bis >= 0) || b.launchBis && !/^\d{4}-\d\d-\d\d$/.test(b.launchBis)) nein(400, 'Das Enddatum bitte als Datum, etwa 2026-12-31.');
+      neu.push(['launch-bis', bis]);
+    }
+    if ('launch' in b) neu.push(['launch', b.launch ? 1 : 0]);
+    for (const [name, x] of neu) wertSetzen(name, x);  // erst alles prüfen, dann speichern
+    preiseSetzen();
+    return { tarife: TARIFE, launch: LAUNCH };
   },
   'POST /api/admin/schluessel': ({ k, b }) => {  // leer = unverändert; b.weg: diese Namen löschen, dann gilt wieder /etc/lernhelfer.env
     admin(k);
@@ -732,7 +777,10 @@ const ROUTEN = {
     admin(k);
     const z = kontoMit(Number(b.konto)), tage = Number(b.tage);
     if (!z || !TARIFE[b.tarif] || !(tage >= 0)) nein(400, 'Konto, Tarif oder Tage fehlen.');
-    db.prepare('update konten set tarif = ?, bis = ? where id = ?').run(b.tarif === 'base' ? null : b.tarif, b.tarif === 'base' ? 0 : jetzt() + tage * TAG, z.id);
+    const bis = tage > 0 ? jetzt() + tage * TAG : 0;
+    if (b.tarif === 'englisch') db.prepare('update konten set englisch_bis = ? where id = ?').run(bis, z.id);  // eigene Spalte: bleibt neben einem gekauften Tarif
+    else if (b.tarif === 'base') db.prepare('update konten set tarif = null, bis = 0, englisch_bis = 0 where id = ?').run(z.id);
+    else db.prepare('update konten set tarif = ?, bis = ? where id = ?').run(b.tarif, bis, z.id);
     await apiAbgleich(z).catch(e => console.error(e.message));
   },
 };
@@ -769,7 +817,7 @@ async function aufraeumen() {
   for (const k of db.prepare('select id from konten where or_hash is not null or (tarif = ? and bis > ?)').all('ultraplus', t)) await apiAbgleich(k).catch(e => console.error(e.message));
   for (const k of db.prepare('select * from konten where tarif is not null and bis > ? and bis < ? and erinnert != bis').all(t, t + 3 * TAG)) {
     db.prepare('update konten set erinnert = bis where id = ?').run(k.id);
-    await mail(k.email, `Lernhelfer: ${TARIFE[k.tarif].name} endet bald`, `Hallo,\n\ndein Tarif ${TARIFE[k.tarif].name} läuft am ${new Date(k.bis).toLocaleDateString('de-AT')} ab. Danach geht es mit Base weiter, deine Daten bleiben. Verlängern kannst du hier:\n${BASIS}/app#/upgrade` + gruss);
+    await mail(k.email, `Lernhelfer: ${TARIFE[k.tarif].name} endet bald`, `Hallo,\n\ndein Tarif ${TARIFE[k.tarif].name} läuft am ${new Date(k.bis).toLocaleDateString('de-AT')} ab. Danach geht es mit ${k.englisch_bis > k.bis ? 'Englisch' : 'Base'} weiter, deine Daten bleiben. Verlängern kannst du hier:\n${BASIS}/app#/upgrade` + gruss);
   }
   for (const [a, l] of VERSUCHE) if (!l.some(x => t - x < 15 * 60e3)) VERSUCHE.delete(a);
 }
@@ -783,6 +831,7 @@ createServer(async (req, res) => {
   try {
     const url = new URL(req.url, BASIS);
     if (!url.pathname.startsWith('/api/')) return statisch(req, res, url);
+    preiseSetzen();  // ein Enddatum des Launch-Angebots gilt auf die Minute
     if (req.method !== 'GET' && req.headers.origin && req.headers.origin !== HERKUNFT) nein(403, 'Anfrage von fremder Seite.');
     const k = konto(req);
     const gh = url.pathname.match(/^\/api\/gh\/repos\/[^/]+\/[^/]+\/contents(?:\/(.*))?$/);

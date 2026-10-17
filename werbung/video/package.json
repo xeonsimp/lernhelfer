@@ -1,0 +1,27 @@
+{
+  "name": "lernhelfer-werbung",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Werbespot für den Lernhelfer (Remotion)",
+  "scripts": {
+    "studio": "remotion studio",
+    "still": "remotion still",
+    "render": "remotion render"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.536",
+    "@remotion/fonts": "4.0.536",
+    "@remotion/media": "4.0.536",
+    "@remotion/paths": "4.0.536",
+    "@remotion/rough-notation": "4.0.536",
+    "@remotion/transitions": "4.0.536",
+    "react": "19.2.9",
+    "react-dom": "19.2.9",
+    "remotion": "4.0.536",
+    "roughjs": "4.6.6"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.18",
+    "typescript": "5.9.3"
+  }
+}

@@ -1,0 +1,212 @@
+{
+ "01": {
+  "text": "Sonntagnacht, morgen Proseminar in Mathe, und ich hab keinen Plan.",
+  "sek": 4.44,
+  "tempo": "1.06",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "02a": {
+  "text": "Okay, Lernhelfer: einmal am Computer einrichten, dann holt er alles aus Olat.",
+  "sek": 5.09,
+  "tempo": "1.06",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "02b": {
+  "text": "Nur iPad? Dann lad ich’s selbst hoch.",
+  "sek": 2.56,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "03": {
+  "text": "Montag früh: Was ist fällig? Erledigt, abgehakt.",
+  "sek": 4.21,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "04": {
+  "text": "Mathe antippen, und da ist die ganze Woche. Mit Ultra mehr als doppelt so ausführlich.",
+  "sek": 5.71,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "05a": {
+  "text": "Und wenn ich’s trotzdem nicht check?",
+  "sek": 1.64,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "05b": {
+  "text": "Frag, wie du redest. Er antwortet nur aus deinen Unterlagen.",
+  "sek": 4.35,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "05c": {
+  "text": "Und was da nicht drinsteht, erfindet er nicht.",
+  "sek": 2.63,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "06": {
+  "text": "Erst selbst rechnen. Dann die Lösung aufdecken.",
+  "sek": 3.47,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "07": {
+  "text": "Begriffe abfragen: Was sitzt, kommt seltener, und alles geht auch nach Anki.",
+  "sek": 5.41,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "08a": {
+  "text": "Wo ist eigentlich mein Proseminar in Volkswirtschaft?",
+  "sek": 2.82,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "08b": {
+  "text": "Der kennt Stundenplan, Fristen und alle Ausgaben.",
+  "sek": 3.56,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "09a": {
+  "text": "Mein Stundenplan, mit Thema jeder Einheit.",
+  "sek": 3.02,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "09b": {
+  "text": "Fristen ab ins iPad, mit Erinnerung.",
+  "sek": 2.72,
+  "tempo": "1.06",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "10a": {
+  "text": "Welcher Onlinetest ist offen, und bis wann?",
+  "sek": 2.91,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "10b": {
+  "text": "Kein Computer? Test per Foto.",
+  "sek": 2.58,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "10c": {
+  "text": "Vorbei, nicht kapiert? Lösungsweg mit anderen Zahlen.",
+  "sek": 3.54,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "11a": {
+  "text": "Wie steh ich eigentlich? Noten mit Prognose.",
+  "sek": 3.14,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "11b": {
+  "text": "Dreißig Tage bis zum Zwischentest, der Plan steht.",
+  "sek": 3.06,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "12a": {
+  "text": "Generalprobe: Probeklausur mit Zeitlimit.",
+  "sek": 3.34,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "12b": {
+  "text": "Danach Punkte, Note und jeder Lösungsweg.",
+  "sek": 3.37,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "13a": {
+  "text": "Dann gezielt üben, genau da, wo es hakt.",
+  "sek": 3.17,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "13b": {
+  "text": "Und der ganze Stoff als Lernskript.",
+  "sek": 2.21,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "14": {
+  "text": "Keine Lust zu lesen? Dann hör ich’s mir im Bus an.",
+  "sek": 2.99,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "15": {
+  "text": "Freitag Präsentation in Englisch. Panik.",
+  "sek": 3.02,
+  "tempo": "1.06",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "16a": {
+  "text": "Vortrag hochladen, jedes Füllwort wird gezählt.",
+  "sek": 3.13,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "16b": {
+  "text": "Feedback mit Zeitstempel und meinem Sprachniveau.",
+  "sek": 3.12,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "17a": {
+  "text": "Erst selbst reflektieren, die App prüft jeden Punkt.",
+  "sek": 3.42,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "17b": {
+  "text": "Und für Rückfragen gibt’s den Coach. Das Video bleibt auf meinem Gerät.",
+  "sek": 4.1,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "18a": {
+  "text": "Und sonst so? Frühere Ausgaben bleiben, alle Fächer auf einmal neu, dein Stil, hell oder dunkel.",
+  "sek": 6.89,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "18b": {
+  "text": "Und alles bleibt privat.",
+  "sek": 1.73,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "19a": {
+  "text": "Was kostet das? Einstieg: null Euro, kein Abo.",
+  "sek": 3.96,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "19b": {
+  "text": "Pro vier Euro neunzig, Ultra neun Euro neunzig im Monat.",
+  "sek": 3.77,
+  "tempo": "1.12",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "20": {
+  "text": "Halb zwölf. Ich check’s.",
+  "sek": 1.68,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ },
+ "21": {
+  "text": "Kostenlos starten, Ultra vierundzwanzig Stunden gratis: lernhelfer Punkt x y z.",
+  "sek": 6.02,
+  "tempo": "1.0",
+  "stimme": "elevenlabs/eleven-v4-turbo:liam"
+ }
+}
